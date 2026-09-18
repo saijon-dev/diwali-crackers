@@ -1,0 +1,890 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.adm-add-vendor-content {
+  --background: #ffefad;
+}
+
+.adm-add-vendor-page {
+  position: relative;
+  z-index: 20;
+
+  width: 100%;
+  min-height: 100%;
+
+  box-sizing: border-box;
+
+  padding-bottom: 90px;
+
+  background: transparent;
+
+  font-family: 'Poppins', sans-serif;
+}
+
+
+/* =========================================
+   STATIC SIDE DECORATIONS
+========================================= */
+
+.side-decoration {
+  position: fixed !important;
+
+  top: 0;
+  bottom: 0;
+
+  width: 145px;
+  height: 100vh;
+
+  object-fit: contain;
+  object-position: center;
+
+  opacity: 0.14;
+
+  pointer-events: none;
+
+  z-index: 5;
+}
+
+.side-decoration-left {
+  left: 0;
+}
+
+.side-decoration-right {
+  right: 0;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.add-vendor-header {
+  position: relative;
+  z-index: 30;
+
+  width: 100%;
+
+  height: 76px;
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  padding: 18px 50px 14px;
+
+  overflow: hidden;
+
+  background-image:
+    linear-gradient(
+      rgba(117, 12, 12, 0.18),
+      rgba(117, 12, 12, 0.18)
+    ),
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 0 0 24px 24px;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.back-button {
+  position: absolute;
+
+  left: 7px;
+  top: 20px;
+
+  z-index: 5;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #fff8dc;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-button ion-icon {
+  font-size: 25px;
+
+  filter:
+    drop-shadow(
+      0 1px 2px rgba(60, 0, 0, 0.4)
+    );
+}
+
+.back-button:active {
+  transform: scale(0.92);
+}
+
+
+/* =========================================
+   HEADER CONTENT
+========================================= */
+
+.header-content {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100%;
+  max-width: 80%;
+
+  text-align: center;
+
+  padding: 0 10px;
+}
+
+.header-content h1 {
+  margin: 0;
+
+  color: #fff8dc;
+
+  font-family: Georgia, 'Times New Roman', serif;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  line-height: 1.15;
+
+  text-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+.header-content p {
+  margin: 4px 0 0;
+
+  color: #fff8dc;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  line-height: 1.3;
+
+  opacity: 0.92;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+form {
+  position: relative;
+  z-index: 30;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 18px 16px 0;
+}
+
+
+/* =========================================
+   FORM CARD
+========================================= */
+
+.form-card {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-bottom: 16px;
+
+  padding: 18px;
+
+  border: 1px solid rgba(23, 35, 60, 0.07);
+
+  border-radius: 20px;
+
+  background: #fffdf2;
+
+  box-shadow:
+    0 5px 16px rgba(86, 48, 10, 0.08);
+}
+
+
+/* =========================================
+   SECTION HEADING
+========================================= */
+
+.section-heading {
+  margin-bottom: 17px;
+
+  padding-bottom: 10px;
+
+  border-bottom:
+    1px solid #eee4c9;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #17233c;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  line-height: 1.25;
+}
+
+.section-heading p {
+  margin: 4px 0 0;
+
+  color: #625d51;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+
+  margin:
+    0
+    0
+    7px
+    1px;
+
+  color: #29334b;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.input-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  height: 44px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius: 12px;
+
+  background: #fffef8;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #ef0b1c;
+
+  box-shadow:
+    0 0 0 3px rgba(239, 11, 28, 0.08);
+}
+
+.input-icon {
+  flex-shrink: 0;
+
+  margin-left: 12px;
+
+  color: #625d51;
+
+  font-size: 18px;
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #17233c;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 12px;
+}
+
+.input-wrapper input::placeholder {
+  color: #aaa28e;
+}
+
+
+/* =========================================
+   TEXTAREA
+========================================= */
+
+.textarea-wrapper {
+  min-height: 90px;
+
+  height: auto;
+
+  align-items: flex-start;
+}
+
+.textarea-icon {
+  margin-top: 13px;
+}
+
+.textarea-wrapper textarea {
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 86px;
+
+  box-sizing: border-box;
+
+  padding: 11px 12px;
+
+  border: none;
+
+  outline: none;
+
+  resize: vertical;
+
+  background: transparent;
+
+  color: #17233c;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+.textarea-wrapper textarea::placeholder {
+  color: #aaa28e;
+}
+
+
+/* =========================================
+   SELECT
+========================================= */
+
+.select-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  height: 44px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius: 12px;
+
+  background: #fffef8;
+}
+
+.select-wrapper:focus-within {
+  border-color: #ef0b1c;
+
+  box-shadow:
+    0 0 0 3px rgba(239, 11, 28, 0.08);
+}
+
+.select-icon {
+  flex-shrink: 0;
+
+  margin-left: 12px;
+
+  color: #625d51;
+
+  font-size: 18px;
+}
+
+.select-wrapper select {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+
+  padding:
+    0
+    28px
+    0
+    10px;
+
+  border: none;
+
+  outline: none;
+
+  appearance: auto;
+
+  background: transparent;
+
+  color: #17233c;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 12px;
+}
+
+
+/* =========================================
+   VALIDATION
+========================================= */
+
+.error-message {
+  margin:
+    5px
+    2px
+    0;
+
+  color: #d51425;
+
+  font-size: 9px;
+
+  line-height: 1.35;
+}
+
+
+/* =========================================
+   SUCCESS MESSAGE
+========================================= */
+
+.success-message {
+  position: relative;
+  z-index: 30;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin:
+    2px
+    16px
+    12px;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    1px solid #b9dfbe;
+
+  border-radius: 12px;
+
+  background: #e7f6e9;
+
+  color: #24722d;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+.success-message ion-icon {
+  flex-shrink: 0;
+
+  font-size: 19px;
+}
+
+
+/* =========================================
+   API ERROR
+========================================= */
+
+.api-error-message {
+  position: relative;
+  z-index: 30;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin:
+    2px
+    16px
+    12px;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    1px solid #efc3bc;
+
+  border-radius: 12px;
+
+  background: #fff0ed;
+
+  color: #d51425;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+.api-error-message ion-icon {
+  flex-shrink: 0;
+
+  font-size: 19px;
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.form-actions {
+  position: relative;
+  z-index: 30;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.8fr)
+    minmax(0, 1.5fr);
+
+  gap: 10px;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-top: 4px;
+
+  padding:
+    0
+    0
+    20px;
+}
+
+.clear-button,
+.add-button {
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding:
+    0
+    12px;
+
+  border-radius: 13px;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.clear-button {
+  border:
+    1px solid #d6c9a7;
+
+  background: #fffdf2;
+
+  color: #ef0b1c;
+}
+
+.clear-button ion-icon {
+  font-size: 17px;
+}
+
+.add-button {
+  border: none;
+
+  background: #ef0b1c;
+
+  color: #fff8dc;
+
+  box-shadow:
+    0 5px 12px rgba(239, 11, 28, 0.20);
+}
+
+.add-button ion-icon {
+  font-size: 18px;
+}
+
+.clear-button:active,
+.add-button:active {
+  transform: scale(0.97);
+}
+
+.clear-button:disabled,
+.add-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+  .add-vendor-header {
+    height: 70px;
+    min-height: 70px;
+
+    padding:
+      16px
+      42px
+      12px;
+
+    border-radius: 0 0 22px 22px;
+  }
+
+  .header-content {
+    max-width: 82%;
+  }
+
+  .header-content h1 {
+    font-size: 20px;
+  }
+
+  .header-content p {
+    margin-top: 3px;
+
+    font-size: 9px;
+  }
+
+  .back-button {
+    left: 4px;
+    top: 18px;
+
+    width: 34px;
+    height: 34px;
+  }
+
+  .back-button ion-icon {
+    font-size: 23px;
+  }
+
+  .side-decoration {
+    width: 90px;
+
+    opacity: 0.12;
+  }
+
+  form {
+    padding:
+      16px
+      12px
+      0;
+  }
+
+  .form-card {
+    padding: 15px;
+
+    border-radius: 18px;
+
+    margin-bottom: 14px;
+  }
+
+  .section-heading {
+    margin-bottom: 15px;
+  }
+
+  .section-heading h2 {
+    font-size: 15px;
+  }
+
+  .section-heading p {
+    font-size: 9px;
+  }
+
+  .form-group {
+    margin-bottom: 13px;
+  }
+
+  .form-group label {
+    font-size: 11px;
+  }
+
+  .input-wrapper,
+  .select-wrapper {
+    height: 43px;
+  }
+
+  .input-wrapper input,
+  .select-wrapper select,
+  .textarea-wrapper textarea {
+    font-size: 11px;
+  }
+
+  .input-icon,
+  .select-icon {
+    font-size: 17px;
+  }
+
+  .textarea-wrapper {
+    min-height: 86px;
+  }
+
+  .textarea-wrapper textarea {
+    min-height: 82px;
+  }
+
+  .error-message {
+    font-size: 8px;
+  }
+
+  .clear-button,
+  .add-button {
+    height: 46px;
+
+    font-size: 12px;
+  }
+
+  .success-message,
+  .api-error-message {
+    margin-left: 12px;
+    margin-right: 12px;
+
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================
+   NORMAL MOBILE
+========================================= */
+
+@media (min-width: 361px) and (max-width: 699px) {
+
+  .side-decoration {
+    width: 110px;
+
+    opacity: 0.14;
+  }
+}
+
+
+/* =========================================
+   LARGER MOBILE / TABLET
+========================================= */
+
+@media (min-width: 500px) {
+
+  .adm-add-vendor-page {
+    max-width: 620px;
+
+    margin: 0 auto;
+  }
+
+  .add-vendor-header {
+    border-radius: 0 0 24px 24px;
+  }
+
+  .side-decoration {
+    width: 170px;
+
+    opacity: 0.16;
+  }
+
+  form {
+    padding-top: 24px;
+  }
+
+  .form-card {
+    padding: 22px;
+  }
+
+  .input-wrapper,
+  .select-wrapper {
+    height: 46px;
+  }
+
+  .input-wrapper input,
+  .select-wrapper select,
+  .textarea-wrapper textarea {
+    font-size: 13px;
+  }
+}

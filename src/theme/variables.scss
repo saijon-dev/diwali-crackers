@@ -1,2 +1,472 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+/* =========================================
+   DIWALI CRACKERS
+   GLOBAL THEME VARIABLES
+========================================= */
+
+
+/* =========================================
+   COLORS
+========================================= */
+
+:root {
+
+  /* ---------- Main Background ---------- */
+
+  --diwali-background: #ffefad;
+
+
+  /* ---------- Cards / Surfaces ---------- */
+
+  --diwali-card: #fffdf2;
+
+  --diwali-card-light: #fffdf7;
+
+
+  /* ---------- Primary Colors ---------- */
+
+  --diwali-red: #ef0b1c;
+
+  --diwali-dark-red: #9e2020;
+
+  --diwali-category-red: #8f1d1d;
+
+
+  /* ---------- Text Colors ---------- */
+
+  --diwali-text: #17233c;
+
+  --diwali-secondary-text: #625d51;
+
+  --diwali-muted-text: #99917e;
+
+  --diwali-placeholder-text: #817968;
+
+
+  /* ---------- Light / Festive ---------- */
+
+  --diwali-cream: #fff8dc;
+
+  --diwali-gold: #f7df9d;
+
+  --diwali-quantity-background: #f7e9bd;
+
+  --diwali-divider: #eee4c9;
+
+
+  /* ---------- Status ---------- */
+
+  --diwali-stock-green: #24722d;
+
+  --diwali-stock-red: #d51425;
+
+
+  /* ---------- Other Existing Accent ---------- */
+
+  --diwali-orange: #d97706;
+}
+
+
+/* =========================================
+   FONT FAMILIES
+========================================= */
+
+:root {
+
+  /*
+   * Normal application UI
+   */
+  --diwali-font-body:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+
+  /*
+   * Festive / decorative headings
+   *
+   * Used for:
+   * - Page titles
+   * - Category section headings
+   */
+  --diwali-font-heading:
+    Georgia,
+    'Times New Roman',
+    serif;
+}
+
+
+/* =========================================
+   FONT SIZES
+========================================= */
+
+:root {
+
+  /* ---------- Page Header ---------- */
+
+  --diwali-title-size: 22px;
+
+  --diwali-title-size-mobile: 20px;
+
+
+  /* ---------- Section Heading ---------- */
+
+  --diwali-section-heading-min: 19px;
+
+  --diwali-section-heading-fluid: 4.4vw;
+
+  --diwali-section-heading-max: 23px;
+
+
+  /* ---------- Main Product ---------- */
+
+  --diwali-product-title-size: 20px;
+
+  --diwali-main-price-size: 21px;
+
+  --diwali-description-size: 12px;
+
+
+  /* ---------- Product Cards ---------- */
+
+  --diwali-card-category-size-min: 8px;
+
+  --diwali-card-category-size-fluid: 2.5vw;
+
+  --diwali-card-category-size-max: 12px;
+
+
+  --diwali-card-product-size-min: 10px;
+
+  --diwali-card-product-size-fluid: 3vw;
+
+  --diwali-card-product-size-max: 14px;
+
+
+  --diwali-card-original-price-min: 9px;
+
+  --diwali-card-original-price-fluid: 2.5vw;
+
+  --diwali-card-original-price-max: 12px;
+
+
+  --diwali-card-sale-price-min: 11px;
+
+  --diwali-card-sale-price-fluid: 3vw;
+
+  --diwali-card-sale-price-max: 15px;
+
+
+  /* ---------- Buttons ---------- */
+
+  --diwali-button-size-min: 10px;
+
+  --diwali-button-size-fluid: 3vw;
+
+  --diwali-button-size-max: 13px;
+
+
+  --diwali-main-button-size: 14px;
+
+  --diwali-small-button-size: 10px;
+
+
+  /* ---------- Supporting Text ---------- */
+
+  --diwali-stock-size: 9px;
+
+  --diwali-product-count-size: 9px;
+
+  --diwali-meta-size: 10px;
+}
+
+
+/* =========================================
+   FONT WEIGHTS
+========================================= */
+
+:root {
+
+  /* ---------- Regular ---------- */
+
+  --diwali-weight-regular: 400;
+
+
+  /* ---------- Medium ---------- */
+
+  --diwali-weight-medium: 500;
+
+
+  /* ---------- Semi Bold ---------- */
+
+  --diwali-weight-semibold: 600;
+
+
+  /* ---------- Bold ---------- */
+
+  --diwali-weight-bold: 700;
+
+
+  /* ---------- Extra Bold ---------- */
+
+  --diwali-weight-extrabold: 800;
+}
+
+
+/* =========================================
+   BORDER RADIUS
+========================================= */
+
+:root {
+
+  /* ---------- Header ---------- */
+
+  --diwali-header-radius: 24px;
+
+
+  /* ---------- Main Cards ---------- */
+
+  --diwali-main-card-radius: 20px;
+
+  --diwali-card-radius: 13px;
+
+
+  /* ---------- Buttons ---------- */
+
+  --diwali-button-radius: 8px;
+
+  --diwali-main-button-radius: 14px;
+
+
+  /* ---------- Inputs ---------- */
+
+  --diwali-input-radius: 10px;
+
+
+  /* ---------- Pills ---------- */
+
+  --diwali-pill-radius: 20px;
+
+
+  /* ---------- Circular ---------- */
+
+  --diwali-circle-radius: 50%;
+}
+
+
+/* =========================================
+   COMMON DIMENSIONS
+========================================= */
+
+:root {
+
+  /* ---------- Header ---------- */
+
+  --diwali-header-height: 76px;
+
+  --diwali-header-height-mobile: 70px;
+
+
+  /* ---------- Page Padding ---------- */
+
+  --diwali-page-padding: 16px;
+
+  --diwali-page-padding-mobile: 12px;
+
+  --diwali-page-padding-large: 20px;
+
+
+  /* ---------- Buttons ---------- */
+
+  --diwali-card-button-height: 34px;
+
+  --diwali-main-button-height: 50px;
+
+
+  /* ---------- Quantity Controls ---------- */
+
+  --diwali-quantity-height: 38px;
+
+  --diwali-quantity-button-size: 29px;
+
+
+  /* ---------- Back Button ---------- */
+
+  --diwali-back-button-size: 34px;
+
+  --diwali-back-button-icon-size: 23px;
+}
+
+
+/* =========================================
+   SPACING
+========================================= */
+
+:root {
+
+  --diwali-space-2: 2px;
+
+  --diwali-space-3: 3px;
+
+  --diwali-space-4: 4px;
+
+  --diwali-space-5: 5px;
+
+  --diwali-space-6: 6px;
+
+  --diwali-space-7: 7px;
+
+  --diwali-space-8: 8px;
+
+  --diwali-space-9: 9px;
+
+  --diwali-space-10: 10px;
+
+  --diwali-space-12: 12px;
+
+  --diwali-space-14: 14px;
+
+  --diwali-space-16: 16px;
+
+  --diwali-space-18: 18px;
+
+  --diwali-space-20: 20px;
+
+  --diwali-space-24: 24px;
+}
+
+
+/* =========================================
+   PRODUCT GRID
+========================================= */
+
+:root {
+
+  --diwali-product-grid-columns: 2;
+
+  --diwali-product-grid-gap: 8px;
+
+  --diwali-product-grid-gap-large: 12px;
+
+
+  /* Product image */
+
+  --diwali-product-image-ratio: 1 / 0.82;
+
+  --diwali-product-image-padding: 8px;
+}
+
+
+/* =========================================
+   SHADOWS
+========================================= */
+
+:root {
+
+  /* Product cards */
+
+  --diwali-card-shadow:
+    0 4px 12px rgba(86, 48, 10, 0.08);
+
+
+  /* Inputs / search */
+
+  --diwali-input-shadow:
+    0 2px 8px rgba(50, 30, 0, 0.08);
+
+
+  /* Main product card */
+
+  --diwali-main-card-shadow:
+    0 5px 16px rgba(86, 48, 10, 0.08);
+
+
+  /* Main CTA */
+
+  --diwali-button-shadow:
+    0 5px 12px rgba(158, 32, 32, 0.22);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+:root {
+
+  --diwali-header-overlay:
+    rgba(117, 12, 12, 0.18);
+
+  --diwali-header-text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================================
+   PRODUCT IMAGE
+========================================= */
+
+:root {
+
+  --diwali-product-image-background: #f7f3df;
+
+  --diwali-image-placeholder-background: #f7e9bd;
+
+  --diwali-image-placeholder-color: #99917e;
+}
+
+
+/* =========================================
+   DECORATIONS
+========================================= */
+
+:root {
+
+  --diwali-decoration-min-width: 100px;
+
+  --diwali-decoration-fluid-width: 30vw;
+
+  --diwali-decoration-max-width: 150px;
+
+  --diwali-decoration-opacity: 0.14;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 360px) {
+
+  :root {
+
+    --diwali-header-height: 70px;
+
+    --diwali-page-padding: 12px;
+
+    --diwali-product-grid-gap: 6px;
+
+    --diwali-section-heading-size: 17px;
+
+    --diwali-card-button-height: 32px;
+
+  }
+}
+
+
+/* =========================================
+   LARGE MOBILE / TABLET
+========================================= */
+
+@media (min-width: 430px) {
+
+  :root {
+
+    --diwali-page-padding: 20px;
+
+    --diwali-product-grid-gap: 12px;
+
+  }
+}

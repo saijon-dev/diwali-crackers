@@ -1,0 +1,384 @@
+<ion-content
+  [fullscreen]="true"
+  class="admin-products-content"
+>
+
+  <div class="admin-products-page">
+
+
+    <!-- =====================================
+         HEADER
+         ===================================== -->
+
+ <header class="vendor-header">
+
+
+  <!-- ================================
+       HAMBURGER MENU
+       ================================ -->
+
+  <button
+    type="button"
+    class="menu-button"
+    (click)="toggleMenu()"
+    aria-label="Open menu"
+  >
+
+    <ion-icon
+      name="menu-outline">
+    </ion-icon>
+
+  </button>
+
+
+  <!-- ================================
+       TITLE
+       ================================ -->
+
+  <div class="vendor-title">
+
+    <h1>
+      Vendor Products
+    </h1>
+
+    <p>
+      Manage Your Crackers, Spread the Festive Joy!
+    </p>
+
+  </div>
+
+
+</header>
+
+
+    <!-- =====================================
+         SEARCH + ADD
+         ===================================== -->
+
+    <section class="search-section">
+
+      <div class="search-box">
+
+        <ion-icon
+          name="search-outline"
+          class="search-icon"
+        >
+        </ion-icon>
+
+        <input
+          type="text"
+          placeholder="Search your products..."
+          [(ngModel)]="searchText"
+          autocomplete="off"
+        />
+
+      </div>
+
+
+      <!-- ADD PRODUCT -->
+
+      <button
+        type="button"
+        class="add-product-button"
+        (click)="addProduct()"
+        aria-label="Add product"
+      >
+
+        <ion-icon
+          name="add-outline"
+        >
+        </ion-icon>
+
+      </button>
+
+    </section>
+
+
+    <!-- =====================================
+         PRODUCT CONTROLS
+         ===================================== -->
+
+    <section class="product-controls">
+
+
+      <!-- TOTAL PRODUCTS -->
+
+      <div class="total-products">
+
+        Total Products:
+        {{ filteredProducts.length }}
+
+      </div>
+
+
+      <!-- CATEGORY FILTER -->
+
+      <div class="category-filter-box">
+
+        <select
+          [(ngModel)]="selectedCategory"
+        >
+
+          @for (
+            category of categories;
+            track category
+          ) {
+
+            <option
+              [value]="category"
+            >
+
+              @if (category === 'all') {
+
+                All Categories
+
+              }
+
+              @else {
+
+                {{ category }}
+
+              }
+
+            </option>
+
+          }
+
+        </select>
+
+
+        <ion-icon
+          name="chevron-down-outline"
+        >
+        </ion-icon>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================
+         PRODUCT GRID
+         ===================================== -->
+
+    <section class="product-grid">
+
+      @for (
+        product of filteredProducts;
+        track product.id
+      ) {
+
+        <article
+          class="product-card"
+        >
+
+
+          <!-- PRODUCT IMAGE -->
+
+          <div class="product-image-container">
+
+            <img
+              [src]="product.image"
+              [alt]="product.name"
+              class="product-image"
+            />
+
+          </div>
+
+
+          <!-- PRODUCT INFORMATION -->
+
+          <div class="product-information">
+
+
+            <!-- CATEGORY -->
+
+            <div class="product-category">
+
+              {{ product.category }}
+
+            </div>
+
+
+            <!-- PRODUCT NAME -->
+
+            <h3>
+
+              {{ product.name }}
+
+            </h3>
+
+
+            <!-- PRICE -->
+
+            <div class="price">
+
+              ₹{{ product.price.toFixed(2) }}
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            @if (product.stock > 0) {
+
+              <div class="stock">
+
+                <span class="stock-dot"></span>
+
+                <span>
+                  In Stock ({{ product.stock }})
+                </span>
+
+              </div>
+
+            }
+
+            @else {
+
+              <div
+                class="stock out-of-stock"
+              >
+
+                <span class="stock-dot"></span>
+
+                <span>
+                  Out of Stock
+                </span>
+
+              </div>
+
+            }
+
+
+            <!-- THREE DOT MENU -->
+
+            <button
+              type="button"
+              class="product-menu-button"
+              (click)="openProductMenu(product)"
+              aria-label="Product options"
+            >
+
+              <ion-icon
+                name="ellipsis-vertical-outline"
+              >
+              </ion-icon>
+
+            </button>
+
+
+          </div>
+
+        </article>
+
+      }
+
+
+      <!-- ===================================
+           NO PRODUCTS
+           =================================== -->
+
+      @if (filteredProducts.length === 0) {
+
+        <div class="no-products">
+
+          <ion-icon
+            name="cube-outline"
+          >
+          </ion-icon>
+
+          <p>
+            No products found
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- =====================================
+         TOP CORNER DECORATION
+         ===================================== -->
+
+    <img
+      src="assets/images/top-rightdesign.png"
+      alt=""
+      class="top-decoration"
+    />
+
+  </div>
+
+  @if (menuOpen) {
+
+    <div
+      class="menu-overlay"
+      (click)="closeMenu()"
+    >
+
+      <!-- =================================
+           SIDE MENU
+           ================================= -->
+
+      <aside
+        class="side-menu"
+        (click)="$event.stopPropagation()"
+      >
+
+
+        <!-- ===============================
+             MENU HEADER
+             =============================== -->
+
+        <div class="side-menu-header">
+
+          <button
+            type="button"
+            class="close-menu-button"
+            (click)="closeMenu()"
+            aria-label="Close menu"
+          >
+
+            <ion-icon
+              name="close-outline">
+            </ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <!-- ===============================
+             LOGOUT
+             =============================== -->
+
+        <button
+          type="button"
+          class="logout-area"
+          (click)="logout()"
+        >
+
+          <span class="menu-decoration">
+            ✦
+          </span>
+
+          <span class="logout-text">
+            Logout
+          </span>
+
+          <span class="menu-decoration">
+            ✦
+          </span>
+
+        </button>
+
+
+      </aside>
+
+    </div>
+
+  }
+
+</ion-content>

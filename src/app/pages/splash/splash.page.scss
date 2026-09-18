@@ -1,0 +1,357 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap');
+
+
+/* =========================================
+   SPLASH SCREEN
+   ========================================= */
+
+.splash-screen {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  background: #5a0624;
+}
+
+
+/* =========================================
+   BACKGROUND IMAGE
+   ========================================= */
+
+.splash-background {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: url('/assets/images/splash-bg.png');
+
+  background-size: cover;
+  background-position: center center;
+
+  background-repeat: no-repeat;
+
+  z-index: 1;
+}
+
+
+/* =========================================
+   DARK OVERLAY
+   ========================================= */
+
+.splash-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(45, 0, 20, 0.12) 0%,
+    rgba(45, 0, 20, 0.05) 35%,
+    rgba(45, 0, 20, 0.18) 100%
+  );
+
+  z-index: 2;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   MAIN TEXT CONTENT
+   ========================================= */
+
+.splash-content {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 19%;
+
+  left: 0;
+  right: 0;
+
+  width: 100%;
+
+  padding: 0 20px;
+
+  text-align: center;
+
+  color: #fff3d0;
+}
+
+
+/* Sparkle Your */
+
+.subtitle {
+  margin-bottom: 2px;
+
+  font-family: 'Playfair Display', serif;
+
+  font-size: clamp(17px, 4.8vw, 25px);
+
+  font-weight: 600;
+
+  line-height: 1.2;
+
+  color: #ffe08a;
+
+  text-shadow:
+    0 2px 5px rgba(60, 0, 20, 0.6);
+}
+
+
+/* Diwali */
+
+.splash-content h1 {
+  margin: 0;
+
+  font-family: 'Playfair Display', serif;
+
+  font-size: clamp(48px, 13vw, 72px);
+
+  font-weight: 700;
+
+  line-height: 0.98;
+
+  letter-spacing: -1px;
+
+  color: #fff0a8;
+
+  text-shadow:
+    0 3px 8px rgba(65, 0, 15, 0.7),
+    0 0 12px rgba(255, 180, 40, 0.25);
+}
+
+
+/* with Our Crackers */
+
+.tagline {
+  margin-top: 4px;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: clamp(14px, 3.8vw, 20px);
+
+  font-weight: 500;
+
+  line-height: 1.3;
+
+  color: #fff8e4;
+
+  text-shadow:
+    0 2px 5px rgba(60, 0, 20, 0.6);
+}
+
+
+/* =========================================
+   SAFE • BRIGHT • FESTIVE
+   ========================================= */
+
+.features {
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: clamp(14px, 4vw, 22px);
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: clamp(11px, 3vw, 15px);
+
+  font-weight: 500;
+
+  letter-spacing: 0.3px;
+
+  color: #fff3d0;
+
+  text-shadow:
+    0 2px 4px rgba(50, 0, 15, 0.7);
+}
+
+
+.separator {
+  color: #ffd166;
+
+  font-size: 0.9em;
+}
+
+
+/* =========================================
+   LOADING SECTION
+   ========================================= */
+
+.loading-section {
+  position: absolute;
+
+  z-index: 3;
+
+  left: 0;
+  right: 0;
+
+  bottom: 8%;
+
+  width: 100%;
+
+  text-align: center;
+
+  padding: 0 20px;
+}
+
+
+/* Loading text */
+
+.loading-text {
+  margin-bottom: 10px;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: clamp(11px, 3vw, 15px);
+
+  font-weight: 500;
+
+  color: #fff3d0;
+
+  text-shadow:
+    0 2px 4px rgba(50, 0, 15, 0.7);
+}
+
+
+/* =========================================
+   LOADING BAR
+   ========================================= */
+
+.loading-bar {
+  width: clamp(80px, 25vw, 120px);
+
+  height: 6px;
+
+  margin: 0 auto;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+
+  background: rgba(255, 238, 180, 0.25);
+
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+.loading-progress {
+  width: 65%;
+
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    #ff9d1c,
+    #ffd166
+  );
+
+  animation: loadingAnimation 1.8s ease-in-out infinite;
+}
+
+
+/* =========================================
+   LOADING ANIMATION
+   ========================================= */
+
+@keyframes loadingAnimation {
+
+  0% {
+    width: 15%;
+  }
+
+  50% {
+    width: 75%;
+  }
+
+  100% {
+    width: 15%;
+  }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+   ========================================= */
+
+@media (max-width: 360px) {
+
+  .splash-content {
+    top: 20%;
+    padding: 0 15px;
+  }
+
+  .features {
+    margin-top: 12px;
+    gap: 5px;
+  }
+
+  .loading-section {
+    bottom: 7%;
+  }
+
+}
+
+
+/* =========================================
+   LARGE PHONES
+   ========================================= */
+
+@media (min-width: 430px) {
+
+  .splash-content {
+    top: 18%;
+  }
+
+  .loading-section {
+    bottom: 9%;
+  }
+
+}
+
+
+/* =========================================
+   VERY TALL SCREENS
+   ========================================= */
+
+@media (min-height: 850px) {
+
+  .splash-content {
+    top: 20%;
+  }
+
+}
+
+
+/* =========================================
+   SAFE AREA SUPPORT
+   ========================================= */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+
+  .splash-screen {
+
+    padding-top: env(safe-area-inset-top);
+
+    padding-bottom: env(safe-area-inset-bottom);
+
+  }
+
+}

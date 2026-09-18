@@ -1,0 +1,116 @@
+<div class="tabs-container">
+
+  <!-- ================================= -->
+  <!-- PAGE CONTENT -->
+  <!-- ================================= -->
+
+<main class="tabs-content">
+  <ion-router-outlet></ion-router-outlet>
+</main>
+
+
+  <!-- ================================= -->
+  <!-- CUSTOMER NAVIGATION -->
+  <!-- ================================= -->
+
+  @if (role === null) {
+
+    <nav
+      class="bottom-navigation customer-navigation"
+      aria-label="Customer navigation">
+
+      @for (tab of customerTabs; track tab.route) {
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="isActive(tab.route)"
+          (click)="navigateTo(tab.route)">
+
+          <ion-icon
+            [name]="tab.icon">
+          </ion-icon>
+
+          <span class="nav-label">
+            {{ tab.label }}
+          </span>
+
+        </button>
+
+      }
+
+    </nav>
+
+  }
+
+
+  <!-- ================================= -->
+  <!-- VENDOR NAVIGATION -->
+  <!-- ================================= -->
+
+  @if (role === 'VENDOR') {
+
+    <nav
+      class="bottom-navigation vendor-navigation"
+      aria-label="Vendor navigation">
+
+      @for (tab of vendorTabs; track tab.route) {
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="isActive(tab.route)"
+          (click)="navigateTo(tab.route)">
+
+          <ion-icon
+            [name]="tab.icon">
+          </ion-icon>
+
+          <span class="nav-label">
+            {{ tab.label }}
+          </span>
+
+        </button>
+
+      }
+
+    </nav>
+
+  }
+
+
+  <!-- ================================= -->
+  <!-- ADMIN NAVIGATION -->
+  <!-- ================================= -->
+
+  @if (role === 'ADMIN') {
+
+    <nav
+      class="bottom-navigation admin-navigation"
+      aria-label="Admin navigation">
+
+      @for (tab of adminTabs; track tab.route) {
+
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="isActive(tab.route)"
+          (click)="navigateTo(tab.route)">
+
+          <ion-icon
+            [name]="tab.icon">
+          </ion-icon>
+
+          <span class="nav-label">
+            {{ tab.label }}
+          </span>
+
+        </button>
+
+      }
+
+    </nav>
+
+  }
+
+</div>

@@ -1,0 +1,361 @@
+<ion-content
+  [fullscreen]="true"
+  class="login-content"
+>
+
+  <div class="login-page">
+
+
+    <!-- =====================================
+         BACKGROUND
+         ===================================== -->
+
+    <div class="login-background"></div>
+
+
+    <!-- =====================================
+         DARK OVERLAY
+         ===================================== -->
+
+    <div class="login-overlay"></div>
+
+
+    <!-- =====================================
+         BACK BUTTON
+         ===================================== -->
+
+    <div class="back-button-container">
+
+      <app-back-button></app-back-button>
+
+    </div>
+
+
+    <!-- =====================================
+         MAIN CONTENT
+         ===================================== -->
+
+    <div class="login-container">
+
+
+      <!-- ===================================
+           BRAND
+           =================================== -->
+
+      <div class="brand-section">
+
+        <div class="brand-name">
+
+          🪔 Diwali Crackers
+
+        </div>
+
+
+        <div class="brand-title">
+
+          Admin Portal
+
+        </div>
+
+
+        <div class="brand-decoration">
+
+          ─── ✦ ───
+
+        </div>
+
+      </div>
+
+
+      <!-- ===================================
+           LOGIN CARD
+           =================================== -->
+
+      <div class="login-card">
+
+
+        <!-- =================================
+             CARD TITLE
+             ================================= -->
+
+        <div class="card-title">
+
+          @if (!isOtpStep) {
+
+            Admin Login
+
+          }
+
+          @else {
+
+            Verify OTP
+
+          }
+
+        </div>
+
+
+        <!-- =================================
+             CARD SUBTITLE
+             ================================= -->
+
+        <div class="card-subtitle">
+
+          @if (!isOtpStep) {
+
+            Enter your registered mobile number
+            <br>
+            to receive an OTP
+
+          }
+
+          @else {
+
+            Enter the OTP sent to
+            <br>
+            <strong>
+              {{ mobileNumber?.value }}
+            </strong>
+
+          }
+
+        </div>
+
+
+        <!-- =================================
+             FORM
+             ================================= -->
+
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onLogin()"
+          novalidate
+        >
+
+
+          <!-- =================================
+               MOBILE NUMBER
+               ================================= -->
+
+          @if (!isOtpStep) {
+
+            <div class="input-group">
+
+
+              <div class="input-wrapper">
+
+
+                <ion-icon
+                  name="call-outline"
+                  class="input-icon"
+                ></ion-icon>
+
+
+                <ion-input
+                  type="tel"
+                  formControlName="mobileNumber"
+                  placeholder="Mobile Number"
+                  autocomplete="tel"
+                  inputmode="numeric"
+                  maxlength="10"
+                >
+                </ion-input>
+
+
+              </div>
+
+
+              <!-- MOBILE VALIDATION -->
+
+              @if (
+                mobileNumber?.invalid &&
+                mobileNumber?.touched
+              ) {
+
+                <div class="error-message">
+
+                  @if (
+                    mobileNumber?.errors?.['required']
+                  ) {
+
+                    Mobile number is required
+
+                  }
+
+                  @if (
+                    mobileNumber?.errors?.['pattern']
+                  ) {
+
+                    Enter a valid 10-digit mobile number
+
+                  }
+
+                </div>
+
+              }
+
+              @if (errorMessage) {
+
+  <div class="api-error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+}
+
+            </div>
+
+          }
+
+
+          <!-- =================================
+               OTP
+               ================================= -->
+
+          @if (isOtpStep) {
+
+            <div class="input-group">
+
+
+              <div class="input-wrapper">
+
+
+                <ion-icon
+                  name="lock-closed-outline"
+                  class="input-icon"
+                ></ion-icon>
+
+
+                <ion-input
+                  type="tel"
+                  formControlName="otp"
+                  placeholder="Enter 6-digit OTP"
+                  inputmode="numeric"
+                  maxlength="6"
+                  autocomplete="one-time-code"
+                >
+                </ion-input>
+
+
+              </div>
+
+
+              <!-- OTP VALIDATION -->
+
+              @if (
+                otp?.invalid &&
+                otp?.touched
+              ) {
+
+                <div class="error-message">
+
+                  @if (
+                    otp?.errors?.['required']
+                  ) {
+
+                    OTP is required
+
+                  }
+
+                  @if (
+                    otp?.errors?.['pattern']
+                  ) {
+
+                    Enter a valid 6-digit OTP
+
+                  }
+
+                </div>
+
+              }
+
+            </div>
+
+
+            <!-- =================================
+                 CHANGE MOBILE
+                 ================================= -->
+
+            <button
+              type="button"
+              class="change-number-button"
+              (click)="changeMobileNumber()"
+            >
+
+              Change mobile number
+
+            </button>
+
+          }
+
+
+          <!-- =================================
+               LOGIN / VERIFY BUTTON
+               ================================= -->
+
+          <ion-button
+            type="submit"
+            expand="block"
+            class="login-button"
+            [disabled]="isLoading"
+          >
+
+            @if (!isOtpStep) {
+
+              @if (isLoading) {
+
+                Sending OTP...
+
+              }
+
+              @else {
+
+                Send OTP
+
+              }
+
+            }
+
+            @else {
+
+              @if (isLoading) {
+
+                Verifying...
+
+              }
+
+              @else {
+
+                Verify & Login
+
+              }
+
+            }
+
+          </ion-button>
+
+
+        </form>
+
+      </div>
+
+
+      <!-- ===================================
+           FOOTER TEXT
+           =================================== -->
+
+      <div class="login-footer">
+
+        Together let's make
+        <br>
+        every celebration brighter!
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</ion-content>

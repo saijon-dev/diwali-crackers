@@ -1,0 +1,1312 @@
+/* =========================================
+   ADMIN PRODUCTS CONTENT
+========================================= */
+
+.admin-products-content {
+  --background: #ffefad;
+
+  --padding-top: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-bottom: 0;
+}
+
+
+/* =========================================
+   MAIN PAGE
+========================================= */
+
+.admin-products-page {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100%;
+
+  padding:
+    0
+    16px
+    120px
+    16px;
+
+  box-sizing: border-box;
+
+  background: #ffefad;
+
+  overflow: visible;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.vendor-header {
+  position: relative;
+
+  width: calc(100% + 32px);
+
+  margin-left: -16px;
+
+  min-height: 76px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    18px
+    50px
+    14px;
+
+  box-sizing: border-box;
+
+  background-image:
+    linear-gradient(
+      rgba(117, 12, 12, 0.18),
+      rgba(117, 12, 12, 0.18)
+    ),
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+
+  background-position: center;
+
+  border-radius:
+    0
+    0
+    24px
+    24px;
+
+  overflow: hidden;
+
+  z-index: 5;
+}
+
+
+/* =========================================
+   IONIC BACK BUTTON
+========================================= */
+
+.back-button {
+  position: absolute;
+
+  left: 7px;
+
+  top: 20px;
+
+  z-index: 15;
+
+  width: 34px;
+
+  height: 34px;
+
+  margin: 0;
+
+  padding: 0;
+
+  --background: transparent;
+  --background-hover: transparent;
+  --background-focused: transparent;
+  --background-activated: transparent;
+
+  --color: #fff8dc;
+
+  --icon-font-size: 23px;
+
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+
+.back-button::part(native) {
+  background: transparent;
+
+  border: none;
+
+  box-shadow: none;
+
+  padding: 0;
+}
+
+
+/* =========================================
+   HEADER TITLE
+========================================= */
+
+.vendor-title {
+  width: 100%;
+
+  margin: 0;
+
+  text-align: center;
+}
+
+
+.vendor-title h1 {
+  margin: 0;
+
+  color: #fff8dc;
+
+  font-family:
+    Georgia,
+    'Times New Roman',
+    serif;
+
+  font-size: 22px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  letter-spacing: 0.2px;
+
+  text-align: center;
+
+  text-shadow:
+    0 1px 3px
+    rgba(0, 0, 0, 0.25);
+}
+
+
+.vendor-title p {
+  margin:
+    4px
+    0
+    0;
+
+  color: #fff8dc;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  line-height: 1.35;
+
+  text-align: center;
+
+  opacity: 0.95;
+
+  text-shadow:
+    0 1px 2px
+    rgba(60, 0, 0, 0.45);
+}
+
+
+/* =========================================
+   SEARCH + ADD PRODUCT
+========================================= */
+
+.search-section {
+  position: relative;
+
+  z-index: 10;
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-top: 14px;
+
+  margin-bottom: 13px;
+}
+
+
+/* =========================================
+   SEARCH BOX
+========================================= */
+
+.search-box {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  padding:
+    0
+    15px;
+
+  background: #fffdf2;
+
+  border:
+    1px solid
+    rgba(120, 50, 0, 0.08);
+
+  border-radius: 25px;
+
+  box-shadow:
+    0 3px 10px
+    rgba(70, 30, 0, 0.10);
+
+  box-sizing: border-box;
+}
+
+
+.search-icon {
+  flex-shrink: 0;
+
+  font-size: 24px;
+
+  color: #17233c;
+}
+
+
+.search-box input {
+  width: 100%;
+
+  min-width: 0;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 400;
+
+  color: #17233c;
+}
+
+
+.search-box input::placeholder {
+  color: #817968;
+}
+
+
+/* =========================================
+   ADD PRODUCT + BUTTON
+========================================= */
+
+.add-product-button {
+  flex-shrink: 0;
+
+  width: 48px;
+
+  height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 13px;
+
+  background: #ef0b1c;
+
+  color: #fff8dc;
+
+  box-shadow:
+    0 4px 10px
+    rgba(158, 32, 32, 0.20);
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.add-product-button ion-icon {
+  font-size: 25px;
+}
+
+
+.add-product-button:active {
+  transform: scale(0.95);
+}
+
+
+/* =========================================
+   PRODUCT CONTROLS
+========================================= */
+
+.product-controls {
+  position: relative;
+
+  z-index: 10;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin:
+    0
+    2px
+    12px;
+}
+
+
+/* =========================================
+   TOTAL PRODUCTS
+========================================= */
+
+.total-products {
+  min-width: 0;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  color: #17233c;
+}
+
+
+/* =========================================
+   CATEGORY FILTER
+========================================= */
+
+.category-filter-box {
+  position: relative;
+
+  flex-shrink: 0;
+
+  width: 140px;
+
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  background: #fffdf7;
+
+  border:
+    1px solid
+    rgba(120, 50, 0, 0.10);
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 7px
+    rgba(70, 30, 0, 0.07);
+}
+
+
+.category-filter-box select {
+  width: 100%;
+
+  height: 100%;
+
+  padding:
+    0
+    30px
+    0
+    12px;
+
+  border: none;
+
+  outline: none;
+
+  appearance: none;
+
+  background: transparent;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  color: #17233c;
+
+  cursor: pointer;
+}
+
+
+.category-filter-box ion-icon {
+  position: absolute;
+
+  right: 10px;
+
+  pointer-events: none;
+
+  font-size: 18px;
+
+  color: #17233c;
+}
+
+
+/* =========================================
+   PRODUCT GRID
+========================================= */
+
+.product-grid {
+  position: relative;
+
+  z-index: 5;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+/* =========================================
+   PRODUCT CARD
+========================================= */
+
+.product-card {
+  position: relative;
+
+  min-width: 0;
+
+  background: #fffdf7;
+
+  border-radius: 13px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 4px 12px
+    rgba(86, 48, 10, 0.08);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease;
+}
+
+
+.product-card:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================
+   PRODUCT IMAGE
+========================================= */
+
+.product-image-container {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio:
+    1 / 0.72;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 8px;
+
+  box-sizing: border-box;
+
+  background: #fffdf2;
+}
+
+
+.product-image {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+
+/* =========================================
+   PRODUCT INFORMATION
+========================================= */
+
+.product-information {
+  position: relative;
+
+  padding:
+    7px
+    9px
+    11px;
+}
+
+
+/* =========================================
+   CATEGORY BADGE
+========================================= */
+
+.product-category {
+  display: inline-flex;
+
+  align-items: center;
+
+  max-width:
+    calc(100% - 4px);
+
+  margin:
+    0
+    0
+    5px;
+
+  padding:
+    3px
+    8px;
+
+  border-radius: 10px;
+
+  background: #f7df9d;
+
+  color: #8f1d1d;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   PRODUCT NAME
+========================================= */
+
+.product-information h3 {
+  margin:
+    0
+    0
+    5px;
+
+  min-height: 32px;
+
+  padding-right: 32px;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size:
+    clamp(
+      10px,
+      3vw,
+      14px
+    );
+
+  font-weight: 700;
+
+  line-height: 1.35;
+
+  color: #17233c;
+}
+
+
+/* =========================================
+   PRICE
+========================================= */
+
+.price {
+  margin-bottom: 5px;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size:
+    clamp(
+      14px,
+      4vw,
+      18px
+    );
+
+  font-weight: 800;
+
+  color: #ef0b1c;
+}
+
+
+/* =========================================
+   STOCK
+========================================= */
+
+.stock {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size:
+    clamp(
+      9px,
+      2.8vw,
+      12px
+    );
+
+  font-weight: 600;
+
+  color: #24722d;
+}
+
+
+.stock-dot {
+  width: 7px;
+
+  height: 7px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #24722d;
+}
+
+
+.stock.out-of-stock {
+  color: #d51425;
+}
+
+
+.stock.out-of-stock .stock-dot {
+  background: #d51425;
+}
+
+
+/* =========================================
+   THREE DOT PRODUCT MENU
+========================================= */
+
+.product-menu-button {
+  position: absolute;
+
+  right: 9px;
+
+  bottom: 10px;
+
+  width: 34px;
+
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #f7df9d;
+
+  color: #8f1d1d;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.product-menu-button ion-icon {
+  font-size: 21px;
+}
+
+
+.product-menu-button:active {
+  transform: scale(0.92);
+}
+
+
+/* =========================================
+   NO PRODUCTS
+========================================= */
+
+.no-products {
+  grid-column: 1 / -1;
+
+  min-height: 180px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  color: #817968;
+}
+
+
+.no-products ion-icon {
+  font-size: 42px;
+}
+
+
+.no-products p {
+  margin: 0;
+
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+
+/* =========================================
+   TOP CORNER DECORATION
+========================================= */
+
+.top-decoration {
+  position: absolute;
+
+  top: 67px;
+
+  right: 0;
+
+  width:
+    clamp(
+      80px,
+      25vw,
+      125px
+    );
+
+  height: auto;
+
+  z-index: 3;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+  .admin-products-page {
+    padding-left: 12px;
+
+    padding-right: 12px;
+
+    padding-bottom: 110px;
+  }
+
+
+  .vendor-header {
+    width: calc(100% + 24px);
+
+    margin-left: -12px;
+
+    min-height: 70px;
+
+    padding-top: 16px;
+
+    padding-bottom: 12px;
+  }
+
+
+  .vendor-title h1 {
+    font-size: 20px;
+  }
+
+
+  .vendor-title p {
+    font-size: 9px;
+  }
+
+
+  .back-button {
+    left: 4px;
+
+    top: 18px;
+
+    width: 34px;
+
+    height: 34px;
+
+    --icon-font-size: 23px;
+  }
+
+
+  .search-section {
+    gap: 7px;
+
+    margin-top: 12px;
+  }
+
+
+  .search-box {
+    height: 46px;
+
+    padding-left: 13px;
+
+    padding-right: 13px;
+  }
+
+
+  .search-icon {
+    font-size: 22px;
+  }
+
+
+  .search-box input {
+    font-size: 11px;
+  }
+
+
+  .add-product-button {
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 12px;
+  }
+
+
+  .add-product-button ion-icon {
+    font-size: 23px;
+  }
+
+
+  .category-filter-box {
+    width: 122px;
+
+    height: 37px;
+  }
+
+
+  .category-filter-box select {
+    font-size: 10px;
+
+    padding-left: 10px;
+
+    padding-right: 27px;
+  }
+
+
+  .product-grid {
+    gap: 7px;
+  }
+
+
+  .product-information {
+    padding-left: 7px;
+
+    padding-right: 7px;
+  }
+
+
+  .product-category {
+    padding:
+      3px
+      6px;
+
+    font-size: 8px;
+  }
+
+
+  .product-menu-button {
+    width: 32px;
+
+    height: 32px;
+  }
+
+
+  .product-menu-button ion-icon {
+    font-size: 19px;
+  }
+
+
+  .top-decoration {
+    top: 60px;
+  }
+
+}
+
+
+/* =========================================
+   LARGER PHONES
+========================================= */
+
+@media (min-width: 430px) {
+
+  .admin-products-page {
+    padding-left: 20px;
+
+    padding-right: 20px;
+  }
+
+
+  .vendor-header {
+    width: calc(100% + 40px);
+
+    margin-left: -20px;
+
+    min-height: 76px;
+  }
+
+
+  .product-grid {
+    gap: 12px;
+  }
+
+
+  .product-card {
+    border-radius: 15px;
+  }
+
+}
+/* =========================
+   MENU BUTTON
+========================= */
+
+.menu-button {
+  position: absolute;
+
+  left: 7px;
+  top: 20px;
+
+  z-index: 5;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #fff8dc;
+
+  cursor: pointer;
+}
+
+.menu-button ion-icon {
+  font-size: 26px;
+}
+
+
+/* =========================
+   SIDE MENU OVERLAY
+========================= */
+
+.menu-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 100;
+
+  background: rgba(23, 35, 60, 0.32);
+
+  animation: menuOverlayIn 0.2s ease;
+}
+
+
+/* =========================
+   SIDE MENU
+========================= */
+
+.side-menu {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: min(78vw, 300px);
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffefad;
+
+  box-shadow:
+    6px 0 22px rgba(0, 0, 0, 0.14);
+
+  overflow: hidden;
+
+  animation: sideMenuIn 0.25s ease;
+}
+
+
+/* =========================
+   SIDE MENU HEADER
+========================= */
+
+.side-menu-header {
+  position: relative;
+
+  height: 76px;
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+
+  background-image:
+    linear-gradient(
+      rgba(117, 12, 12, 0.18),
+      rgba(117, 12, 12, 0.18)
+    ),
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+  background-position: center;
+
+  border-radius: 0 0 20px 0;
+}
+
+
+/* =========================
+   CLOSE BUTTON
+========================= */
+
+.close-menu-button {
+  position: absolute;
+
+  right: 12px;
+  top: 20px;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #fff8dc;
+
+  cursor: pointer;
+}
+
+.close-menu-button ion-icon {
+  font-size: 25px;
+}
+
+
+/* =========================
+   LOGOUT AREA
+========================= */
+
+.logout-area {
+  width: calc(100% - 28px);
+
+  min-height: 52px;
+
+  margin: 18px 14px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #fff4c9;
+
+  color: #17233c;
+
+  font-family: 'Poppins', sans-serif;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.logout-area:active {
+  transform: scale(0.98);
+}
+
+.logout-area:hover {
+  background: #f7e9bd;
+}
+
+
+.logout-text {
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #ef0b1c;
+}
+
+
+.menu-decoration {
+  color: #ef0b1c;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   MENU ANIMATIONS
+========================= */
+
+@keyframes menuOverlayIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+@keyframes sideMenuIn {
+
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+
+}
+
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-width: 360px) {
+
+  .menu-button {
+    left: 4px;
+    top: 18px;
+
+    width: 32px;
+    height: 32px;
+  }
+
+  .menu-button ion-icon {
+    font-size: 24px;
+  }
+
+  .side-menu {
+    width: min(82vw, 280px);
+  }
+
+  .side-menu-header {
+    height: 70px;
+    min-height: 70px;
+  }
+
+  .close-menu-button {
+    top: 18px;
+  }
+
+  .logout-area {
+    width: calc(100% - 24px);
+
+    margin-left: 12px;
+    margin-right: 12px;
+
+    min-height: 48px;
+  }
+
+  .logout-text {
+    font-size: 13px;
+  }
+
+}

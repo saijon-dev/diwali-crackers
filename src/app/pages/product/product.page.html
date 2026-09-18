@@ -1,0 +1,674 @@
+<ion-content
+  [fullscreen]="true"
+  class="product-content"
+>
+
+  <div class="product-page">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="product-header">
+
+      <ion-back-button
+        class="back-button"
+        defaultHref="/tabs/home"
+        text="">
+      </ion-back-button>
+
+      <h1>
+        Product Details
+      </h1>
+
+    </header>
+
+
+    <!-- =========================
+         LOADING
+    ========================== -->
+
+    @if (isLoading) {
+
+      <main class="product-container">
+
+        <div class="product-loading">
+
+          <p>
+            Loading product...
+          </p>
+
+        </div>
+
+      </main>
+
+    }
+
+
+    <!-- =========================
+         ERROR
+    ========================== -->
+
+    @if (
+      !isLoading &&
+      errorMessage
+    ) {
+
+      <main class="product-container">
+
+        <div class="product-error">
+
+          <p>
+            {{ errorMessage }}
+          </p>
+
+        </div>
+
+      </main>
+
+    }
+
+
+    <!-- =========================
+         PRODUCT
+    ========================== -->
+
+    @if (
+      !isLoading &&
+      !errorMessage &&
+      product
+    ) {
+
+      <main class="product-container">
+
+
+        <!-- =========================
+             IMAGE GALLERY
+        ========================== -->
+
+        <section class="image-section">
+
+          <div class="main-image-container">
+
+
+            <!-- Previous -->
+
+            @if (
+              product.imageUrls &&
+              product.imageUrls.length > 1
+            ) {
+
+              <button
+                type="button"
+                class="image-arrow left"
+                (click)="previousImage()"
+                aria-label="Previous image"
+              >
+
+                <ion-icon
+                  name="chevron-back-outline">
+                </ion-icon>
+
+              </button>
+
+            }
+
+
+            <!-- Main Image -->
+
+            @if (
+              product.imageUrls &&
+              product.imageUrls.length > 0
+            ) {
+
+              <img
+                class="main-product-image"
+                [src]="
+                  product.imageUrls[selectedImageIndex]
+                "
+                [alt]="product.productName"
+              >
+
+            } @else {
+
+              <div class="main-product-image product-image-placeholder">
+
+                <ion-icon
+                  name="image-outline">
+                </ion-icon>
+
+              </div>
+
+            }
+
+
+            <!-- Next -->
+
+            @if (
+              product.imageUrls &&
+              product.imageUrls.length > 1
+            ) {
+
+              <button
+                type="button"
+                class="image-arrow right"
+                (click)="nextImage()"
+                aria-label="Next image"
+              >
+
+                <ion-icon
+                  name="chevron-forward-outline">
+                </ion-icon>
+
+              </button>
+
+            }
+
+          </div>
+
+
+          <!-- =========================
+               THUMBNAILS
+          ========================== -->
+
+          @if (
+            product.imageUrls &&
+            product.imageUrls.length > 1
+          ) {
+
+            <div class="thumbnail-row">
+
+              @for (
+                image of product.imageUrls;
+                track $index
+              ) {
+
+                <button
+                  type="button"
+                  class="thumbnail"
+                  [class.selected]="
+                    selectedImageIndex === $index
+                  "
+                  (click)="selectImage($index)"
+                >
+
+                  <img
+                    [src]="image"
+                    [alt]="product.productName"
+                  >
+
+                </button>
+
+              }
+
+            </div>
+
+          }
+
+        </section>
+
+
+        <!-- =========================
+             PRODUCT INFORMATION
+        ========================== -->
+
+        <section class="product-info-card">
+
+
+          <!-- Category -->
+
+          <span class="category-badge">
+
+            {{ product.categoryName }}
+
+          </span>
+
+
+          <!-- Product Name -->
+
+          <h2>
+
+            {{ product.productName }}
+
+          </h2>
+
+
+          <!-- Price -->
+
+          <div class="price-row">
+
+            @if (
+              product.mrp >
+              product.sellingPrice
+            ) {
+
+              <span class="old-price">
+
+                ₹{{ product.mrp }}
+
+              </span>
+
+            }
+
+            <span class="new-price">
+
+              ₹{{ product.sellingPrice }}
+
+            </span>
+
+          </div>
+
+
+          <!-- Description -->
+
+          <p class="description">
+
+            {{ product.description }}
+
+          </p>
+
+
+          <!-- Product Details -->
+
+          <div class="product-meta">
+
+
+            <div class="meta-item">
+
+              <span>
+                Brand
+              </span>
+
+              <strong>
+                {{ product.brandName }}
+              </strong>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <span>
+                Size
+              </span>
+
+              <strong>
+                {{ product.size }}
+              </strong>
+
+            </div>
+
+
+            <div class="meta-item">
+
+              <span>
+                Pack
+              </span>
+
+              <strong>
+                {{ product.packQuantity }}
+                {{ product.packUnit }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <!-- =========================
+               STOCK
+          ========================== -->
+
+          <div class="stock-row">
+
+            @if (
+              product.isAvailable &&
+              product.stockQuantity > 0
+            ) {
+
+              <span class="stock-available">
+                In Stock
+              </span>
+
+              <span class="stock-count">
+                {{ product.stockQuantity }}
+                available
+              </span>
+
+            } @else {
+
+              <span class="stock-out">
+                Out of Stock
+              </span>
+
+            }
+
+          </div>
+
+
+          <!-- =========================
+               QUANTITY
+          ========================== -->
+
+          @if (
+            product.isAvailable &&
+            product.stockQuantity > 0
+          ) {
+
+            <div class="quantity-section">
+
+              <span class="quantity-label">
+                Quantity
+              </span>
+
+
+              <div class="quantity-control">
+
+                <button
+                  type="button"
+                  (click)="decreaseQuantity()"
+                  [disabled]="quantity <= 1"
+                  aria-label="Decrease quantity"
+                >
+
+                  <ion-icon
+                    name="remove-outline">
+                  </ion-icon>
+
+                </button>
+
+
+                <span>
+                  {{ quantity }}
+                </span>
+
+
+                <button
+                  type="button"
+                  (click)="increaseQuantity()"
+                  [disabled]="
+                    quantity >=
+                    product.stockQuantity
+                  "
+                  aria-label="Increase quantity"
+                >
+
+                  <ion-icon
+                    name="add-outline">
+                  </ion-icon>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          }
+
+        </section>
+
+
+        <!-- =========================
+             ADD TO CART
+        ========================== -->
+
+        @if (
+          product.isAvailable &&
+          product.stockQuantity > 0
+        ) {
+
+          <section class="cart-section">
+
+            <button
+              type="button"
+              class="add-cart-button"
+              [class.added]="addedToCart"
+              (click)="addToCart()"
+            >
+
+              @if (addedToCart) {
+
+                <ion-icon
+                  name="checkmark-circle-outline">
+                </ion-icon>
+
+                <span>
+                  Added to Cart
+                </span>
+
+              } @else {
+
+                <ion-icon
+                  name="cart-outline">
+                </ion-icon>
+
+                <span>
+                  Add to Cart
+                </span>
+
+              }
+
+            </button>
+
+          </section>
+
+        }
+
+
+        <!-- =========================
+             SHOP INFORMATION
+        ========================== -->
+
+        <section class="shop-details-card">
+
+          <h2>
+            Shop Details
+          </h2>
+
+
+          <h3>
+            {{ product.storeName }}
+          </h3>
+
+
+          <p>
+            {{ product.storeAddress }}
+          </p>
+
+
+          <p>
+            {{ product.city }},
+            {{ product.state }}
+            - {{ product.pincode }}
+          </p>
+
+
+          <p>
+            {{ product.contactNumber }}
+          </p>
+
+        </section>
+
+
+        <!-- =========================
+             EXPLORE MORE
+        ========================== -->
+
+        <section class="explore-section">
+
+
+          <div class="explore-title">
+
+            <img
+              src="assets/images/exploreMore.png"
+              alt="Explore More"
+            >
+
+          </div>
+
+
+          <!-- =========================
+               EXPLORE PRODUCT GRID
+          ========================== -->
+
+          <div class="explore-grid">
+
+            @for (
+              productItem of exploreProducts;
+              track productItem.productStoreId
+            ) {
+
+              <article
+                class="explore-product-card"
+                (click)="openProduct(productItem)"
+              >
+
+
+                <!-- Product Image -->
+
+                <div class="explore-image">
+
+                  @if (
+                    productItem.imageUrls &&
+                    productItem.imageUrls.length > 0
+                  ) {
+
+                    <img
+                      [src]="productItem.imageUrls[0]"
+                      [alt]="productItem.productName"
+                    >
+
+                  } @else {
+
+                    <div class="product-image-placeholder">
+
+                      <ion-icon
+                        name="image-outline">
+                      </ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- Product Info -->
+
+                <div class="explore-info">
+
+
+                  <!-- Category -->
+
+                  <span class="explore-category">
+
+                    {{ productItem.categoryName }}
+
+                  </span>
+
+
+                  <!-- Name -->
+
+                  <h3>
+
+                    {{ productItem.productName }}
+
+                  </h3>
+
+
+                  <!-- Price -->
+
+                  <div class="explore-price">
+
+                    @if (
+                      productItem.mrp >
+                      productItem.sellingPrice
+                    ) {
+
+                      <span class="explore-old-price">
+
+                        ₹{{ productItem.mrp }}
+
+                      </span>
+
+                    }
+
+                    <span class="explore-new-price">
+
+                      ₹{{ productItem.sellingPrice }}
+
+                    </span>
+
+                  </div>
+
+
+                  <!-- Add To Cart -->
+
+                  <button
+                    type="button"
+                    class="small-cart-button"
+                    [disabled]="
+                      !productItem.isAvailable ||
+                      productItem.stockQuantity <= 0
+                    "
+                    (click)="$event.stopPropagation()"
+                  >
+
+                    <ion-icon
+                      name="cart-outline">
+                    </ion-icon>
+
+                    Add to Cart
+
+                  </button>
+
+                </div>
+
+              </article>
+
+            }
+
+
+            <!-- No Explore Products -->
+
+            @if (
+              exploreProducts.length === 0
+            ) {
+
+              <div class="no-explore-products">
+
+                <p>
+                  No more products available.
+                </p>
+
+              </div>
+
+            }
+
+          </div>
+
+        </section>
+
+
+      </main>
+
+    }
+
+
+    <!-- =========================
+         BOTTOM DECORATION
+    ========================== -->
+
+    <div class="bottom-decoration">
+
+      <img
+        src="assets/images/bottom-leftdesign.png"
+        alt=""
+      >
+
+    </div>
+
+  </div>
+
+</ion-content>

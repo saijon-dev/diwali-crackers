@@ -1,0 +1,462 @@
+<ion-content
+  [fullscreen]="true"
+  class="home-content"
+>
+
+  <div class="home-page">
+
+
+    <!-- =====================================
+         HEADER
+         ===================================== -->
+
+    <header class="home-header">
+
+
+      <!-- ================================
+           HAMBURGER MENU
+           ================================ -->
+
+      <button
+        type="button"
+        class="menu-button"
+        (click)="toggleMenu()"
+        aria-label="Open menu"
+      >
+
+        <ion-icon
+          name="menu-outline"
+        ></ion-icon>
+
+      </button>
+
+
+      <!-- ================================
+           BRAND
+           ================================ -->
+
+      <div class="brand">
+
+        <span class="brand-name">
+          Diwali Crackers
+        </span>
+
+      </div>
+
+    </header>
+
+
+    <!-- =====================================
+         SEARCH
+         ===================================== -->
+
+    <div class="search-container">
+
+      <ion-searchbar
+        placeholder="Search for crackers, categories..."
+        [(ngModel)]="searchText"
+        mode="ios"
+        class="custom-search"
+      >
+      </ion-searchbar>
+
+    </div>
+
+
+    <!-- =====================================
+         HERO BANNER
+         ===================================== -->
+
+    <section class="hero-section">
+
+      <img
+        src="assets/images/rectangle-image.png"
+        alt="Light Up Your Celebrations"
+        class="hero-banner"
+      />
+
+    </section>
+
+
+    <!-- =====================================
+         CATEGORIES HEADER
+         ===================================== -->
+
+    <section class="categories-section">
+
+      <div class="section-header">
+
+        <h2>
+          Categories
+        </h2>
+<button
+  type="button"
+  class="view-all"
+  (click)="openCategories()"
+>
+  View All
+</button>
+
+      </div>
+
+
+      <!-- Categories -->
+
+      <div class="category-grid">
+
+        @for (
+          category of categories;
+          track category.name
+        ) {
+
+          <div
+            class="category-item"
+            (click)="selectCategory(category.name)"
+          >
+
+            <div
+              class="category-image"
+              [style.background]="category.background"
+            >
+
+              <span class="category-icon">
+                {{ category.icon }}
+              </span>
+
+            </div>
+
+            <span class="category-name">
+              {{ category.name }}
+            </span>
+
+          </div>
+
+        }
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================
+         NEW ARRIVALS
+         ===================================== -->
+
+    <section class="new-arrivals-section">
+
+      <div class="new-arrivals-header">
+
+        <img
+          src="assets/images/new-arrival.png"
+          alt="New Arrivals"
+          class="new-arrivals-design"
+        />
+
+      </div>
+
+
+      <!-- ===================================
+           LOADING
+           =================================== -->
+
+      @if (isLoadingProducts) {
+
+        <div class="products-loading">
+
+          <p>
+            Loading crackers...
+          </p>
+
+        </div>
+
+      }
+
+
+      <!-- ===================================
+           ERROR
+           =================================== -->
+
+      @if (
+        !isLoadingProducts &&
+        productErrorMessage
+      ) {
+
+        <div class="products-error">
+
+          <p>
+            {{ productErrorMessage }}
+          </p>
+
+          <button
+            type="button"
+            (click)="loadProducts()"
+          >
+            Try Again
+          </button>
+
+        </div>
+
+      }
+
+
+      <!-- ===================================
+           PRODUCT GRID
+           =================================== -->
+
+      @if (
+        !isLoadingProducts &&
+        !productErrorMessage
+      ) {
+
+        <div class="product-grid">
+
+          @for (
+            product of products;
+            track product.productStoreId
+          ) {
+
+            <article
+              class="product-card"
+              (click)="openProduct(product)"
+            >
+
+
+              <!-- =========================
+                   PRODUCT IMAGE
+              ========================== -->
+
+              <div class="product-image-container">
+
+                @if (
+                  product.imageUrls &&
+                  product.imageUrls.length > 0
+                ) {
+
+                  <img
+                    [src]="product.imageUrls[0]"
+                    [alt]="product.productName"
+                    class="product-image"
+                  />
+
+                } @else {
+
+                  <div class="product-image-placeholder">
+
+                    <ion-icon
+                      name="image-outline">
+                    </ion-icon>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- =========================
+                   PRODUCT INFORMATION
+              ========================== -->
+
+              <div class="product-information">
+
+
+                <!-- Category -->
+
+                <span class="product-category">
+                  {{ product.categoryName }}
+                </span>
+
+
+                <!-- Product Name -->
+
+                <h3>
+                  {{ product.productName }}
+                </h3>
+
+
+                <!-- Price -->
+
+                <div class="price-row">
+
+                  @if (
+                    product.mrp >
+                    product.sellingPrice
+                  ) {
+
+                    <span class="original-price">
+                      Rs.{{ product.mrp }}
+                    </span>
+
+                  }
+
+                  <span class="sale-price">
+                    Rs.{{ product.sellingPrice }}
+                  </span>
+
+                </div>
+
+
+                <!-- Stock -->
+
+                @if (
+                  product.isAvailable &&
+                  product.stockQuantity > 0
+                ) {
+
+                  <div class="product-stock">
+                    In Stock
+                  </div>
+
+                } @else {
+
+                  <div class="product-stock out-of-stock">
+                    Out of Stock
+                  </div>
+
+                }
+
+
+                <!-- Add To Cart -->
+
+                <button
+                  type="button"
+                  class="add-cart-button"
+                  [disabled]="
+                    !product.isAvailable ||
+                    product.stockQuantity <= 0
+                  "
+                  (click)="
+                    $event.stopPropagation();
+                    addToCart(product)
+                  "
+                >
+
+                  Add to Cart
+
+                </button>
+
+              </div>
+
+            </article>
+
+          }
+
+
+          <!-- =================================
+               NO PRODUCTS
+               ================================= -->
+
+          @if (products.length === 0) {
+
+            <div class="no-products">
+
+              <ion-icon
+                name="image-outline">
+              </ion-icon>
+
+              <p>
+                No products available.
+              </p>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- =====================================
+         BOTTOM DECORATION
+         ===================================== -->
+
+    <img
+      src="assets/images/bottom-leftdesign.png"
+      alt=""
+      class="bottom-left-decoration"
+    />
+
+
+    <img
+      src="assets/images/top-rightdesign.png"
+      alt=""
+      class="top-right-decoration"
+    />
+
+  </div>
+
+
+  <!-- =====================================
+       SIDE MENU OVERLAY
+       ===================================== -->
+
+  @if (menuOpen) {
+
+    <div
+      class="menu-overlay"
+      (click)="closeMenu()"
+    >
+
+      <aside
+        class="side-menu"
+        (click)="$event.stopPropagation()"
+      >
+
+
+        <!-- ===============================
+             MENU HEADER
+             =============================== -->
+
+        <div class="side-menu-header">
+
+          <button
+            type="button"
+            class="close-menu-button"
+            (click)="closeMenu()"
+            aria-label="Close menu"
+          >
+
+            <ion-icon
+              name="close-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <!-- ===============================
+             ADMIN LOGIN
+             =============================== -->
+
+        <button
+          type="button"
+          class="admin-login-area"
+          (click)="goToAdminLogin()"
+        >
+
+          <span class="admin-decoration">
+            ✦
+          </span>
+
+          <span class="admin-login-text">
+            Admin Login
+          </span>
+
+          <span class="admin-decoration">
+            ✦
+          </span>
+
+        </button>
+
+
+      </aside>
+
+    </div>
+
+  }
+
+</ion-content>

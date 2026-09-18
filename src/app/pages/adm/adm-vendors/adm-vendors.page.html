@@ -1,0 +1,236 @@
+<ion-content
+  [fullscreen]="true"
+  class="adm-vendors-content">
+
+  <div class="adm-vendors-page">
+
+    <!-- ================================= -->
+    <!-- HEADER -->
+    <!-- ================================= -->
+
+    <header class="vendors-header">
+
+      <ion-back-button
+        class="back-button"
+        defaultHref="/admin-login"
+        text="">
+      </ion-back-button>
+
+      <div class="header-title">
+        <h1>Manage Vendors</h1>
+      </div>
+
+    </header>
+
+
+    <!-- ================================= -->
+    <!-- SEARCH + ADD VENDOR -->
+    <!-- ================================= -->
+
+    <section class="search-section">
+
+      <div class="search-box">
+
+        <ion-icon
+          name="search-outline"
+          class="search-icon">
+        </ion-icon>
+
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Search vendors..."
+          autocomplete="off" />
+
+      </div>
+
+      <button
+        type="button"
+        class="add-vendor-button"
+        aria-label="Add vendor"
+        (click)="addVendor()">
+
+        <ion-icon name="add-outline"></ion-icon>
+
+      </button>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- STATUS FILTERS -->
+    <!-- ================================= -->
+
+    <section class="status-filters">
+
+      <button
+        type="button"
+        class="status-filter"
+        [class.active]="selectedStatus === 'ALL'"
+        (click)="selectStatus('ALL')">
+
+        All ({{ allCount }})
+
+      </button>
+
+      <button
+        type="button"
+        class="status-filter"
+        [class.active]="selectedStatus === 'Active'"
+        (click)="selectStatus('Active')">
+
+        Active ({{ activeCount }})
+
+      </button>
+
+      <button
+        type="button"
+        class="status-filter"
+        [class.active]="selectedStatus === 'Inactive'"
+        (click)="selectStatus('Inactive')">
+
+        Inactive ({{ inactiveCount }})
+
+      </button>
+
+    </section>
+
+
+    <!-- ================================= -->
+    <!-- VENDOR LIST -->
+    <!-- ================================= -->
+
+    <section class="vendor-list">
+
+      @for (vendor of filteredVendors; track vendor.id) {
+
+        <article
+          class="vendor-card"
+          (click)="openVendor(vendor)">
+
+          <!-- IMAGE -->
+
+          <div class="vendor-image-container">
+
+            <img
+              [src]="vendor.image"
+              [alt]="vendor.name"
+              class="vendor-image" />
+
+          </div>
+
+
+          <!-- INFORMATION -->
+
+          <div class="vendor-information">
+
+            <div class="vendor-name-row">
+
+              <h2>
+                {{ vendor.name }}
+              </h2>
+
+            </div>
+
+
+            <div class="vendor-location">
+
+              <ion-icon name="location-outline"></ion-icon>
+
+              <span>
+                {{ vendor.location }}
+              </span>
+
+            </div>
+
+
+            <div class="vendor-stats">
+
+              <span>
+                {{ vendor.products }} Products
+              </span>
+
+              <span class="separator">
+                •
+              </span>
+
+              <span>
+                {{ vendor.orders }} Orders
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- STATUS -->
+
+          <div class="vendor-status">
+
+            <span
+              class="status-badge"
+              [class.active-status]="vendor.status === 'Active'"
+              [class.inactive-status]="vendor.status === 'Inactive'">
+
+              {{ vendor.status }}
+
+            </span>
+
+          </div>
+
+
+          <!-- ARROW -->
+
+          <button
+            type="button"
+            class="vendor-arrow"
+            aria-label="Open vendor"
+            (click)="openVendor(vendor); $event.stopPropagation()">
+
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+
+          </button>
+
+
+          <!-- THREE DOTS -->
+
+          <button
+            type="button"
+            class="vendor-menu-button"
+            aria-label="Vendor options"
+            (click)="openMoreMenu(vendor); $event.stopPropagation()">
+
+            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+
+          </button>
+
+        </article>
+
+      }
+
+
+      <!-- ================================= -->
+      <!-- NO RESULTS -->
+      <!-- ================================= -->
+
+      @if (filteredVendors.length === 0) {
+
+        <div class="no-vendors">
+
+          <ion-icon name="people-outline"></ion-icon>
+
+          <h3>No vendors found</h3>
+
+          <p>
+            Try changing your search or filter.
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
+</ion-content>

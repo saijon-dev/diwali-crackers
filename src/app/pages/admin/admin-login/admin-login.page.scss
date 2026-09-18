@@ -1,0 +1,642 @@
+/* =========================================
+   LOGIN CONTENT
+   ========================================= */
+
+.login-content {
+
+  --background: #4b061f;
+
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+
+}
+
+
+/* =========================================
+   LOGIN PAGE
+   ========================================= */
+
+.login-page {
+
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100%;
+
+  overflow: hidden;
+
+  background: #4b061f;
+
+}
+
+
+/* =========================================
+   BACKGROUND
+   ========================================= */
+
+.login-background {
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image:
+    url('/assets/images/login-bg.png');
+
+  background-size: cover;
+
+  background-position: center center;
+
+  background-repeat: no-repeat;
+
+  z-index: 1;
+
+}
+
+
+/* =========================================
+   OVERLAY
+   ========================================= */
+
+.login-overlay {
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(50, 0, 20, 0.08),
+      rgba(70, 0, 20, 0.12)
+    );
+
+  z-index: 2;
+
+  pointer-events: none;
+
+}
+
+
+/* =========================================
+   BACK BUTTON
+   ========================================= */
+
+.back-button-container {
+
+  position: absolute;
+
+  top:
+    calc(
+      env(safe-area-inset-top) + 8px
+    );
+
+  left: 8px;
+
+  z-index: 20;
+
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+   ========================================= */
+
+.login-container {
+
+  position: relative;
+
+  z-index: 3;
+
+  width: 100%;
+
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    calc(
+      env(safe-area-inset-top) + 20px
+    )
+    14px
+    calc(
+      env(safe-area-inset-bottom) + 20px
+    );
+
+}
+
+
+/* =========================================
+   BRAND
+   ========================================= */
+
+.brand-section {
+
+  width: 100%;
+
+  text-align: center;
+
+  margin-bottom: 14px;
+
+}
+
+
+.brand-name {
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size:
+    clamp(17px, 4.5vw, 22px);
+
+  font-weight: 700;
+
+  color: #fff5d6;
+
+  text-shadow:
+    0 2px 5px
+    rgba(40, 0, 15, 0.65);
+
+}
+
+
+.brand-title {
+
+  margin-top: 2px;
+
+  font-family:
+    'Playfair Display',
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(19px, 5vw, 27px);
+
+  font-weight: 700;
+
+  color: #ffd66d;
+
+  text-shadow:
+    0 2px 6px
+    rgba(50, 0, 15, 0.7);
+
+}
+
+
+.brand-decoration {
+
+  margin-top: 2px;
+
+  font-family:
+    'Playfair Display',
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(11px, 3vw, 15px);
+
+  color: #ffc43d;
+
+}
+
+
+/* =========================================
+   LOGIN CARD
+   ========================================= */
+
+.login-card {
+
+  width: 100%;
+
+  max-width: 370px;
+
+  box-sizing: border-box;
+
+  padding:
+    20px
+    16px
+    17px;
+
+  background:
+    rgba(255, 250, 239, 0.97);
+
+  border:
+    1px solid
+    rgba(255, 205, 100, 0.55);
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 8px 25px
+    rgba(35, 0, 10, 0.32);
+
+}
+
+
+/* =========================================
+   CARD TITLE
+   ========================================= */
+
+.card-title {
+
+  text-align: center;
+
+  font-family:
+    'Playfair Display',
+    Georgia,
+    serif;
+
+  font-size:
+    clamp(20px, 5.5vw, 27px);
+
+  font-weight: 700;
+
+  color: #101f48;
+
+}
+
+
+/* =========================================
+   CARD SUBTITLE
+   ========================================= */
+
+.card-subtitle {
+
+  margin-top: 4px;
+
+  margin-bottom: 16px;
+
+  text-align: center;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size:
+    clamp(10px, 2.8vw, 13px);
+
+  line-height: 1.45;
+
+  color: #34436b;
+
+}
+
+
+.card-subtitle strong {
+
+  color: #10265c;
+
+  font-weight: 600;
+
+}
+
+
+/* =========================================
+   INPUT GROUP
+   ========================================= */
+
+.input-group {
+
+  width: 100%;
+
+  margin-bottom: 12px;
+
+}
+
+
+/* =========================================
+   INPUT WRAPPER
+   ========================================= */
+
+.input-wrapper {
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  min-height: 47px;
+
+  box-sizing: border-box;
+
+  padding:
+    0
+    10px;
+
+  background: #ffffff;
+
+  border:
+    1px solid #d7dce7;
+
+  border-radius: 9px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+.input-wrapper:focus-within {
+
+  border-color: #c99224;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(201, 146, 36, 0.12);
+
+}
+
+
+/* =========================================
+   INPUT ICON
+   ========================================= */
+
+.input-icon {
+
+  flex-shrink: 0;
+
+  margin-right: 8px;
+
+  font-size: 20px;
+
+  color: #162b62;
+
+}
+
+
+/* =========================================
+   ION INPUT
+   ========================================= */
+
+.input-wrapper ion-input {
+
+  flex: 1;
+
+  --padding-start: 0;
+  --padding-end: 0;
+
+  --padding-top: 0;
+  --padding-bottom: 0;
+
+  --color: #17244b;
+
+  --placeholder-color: #75809b;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 13px;
+
+}
+
+
+/* =========================================
+   ERROR MESSAGE
+   ========================================= */
+
+.error-message {
+
+  padding:
+    4px
+    3px
+    0;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 10px;
+
+  color: #d71920;
+
+}
+
+
+/* =========================================
+   CHANGE NUMBER
+   ========================================= */
+
+.change-number-button {
+
+  display: block;
+
+  margin:
+    -2px
+    0
+    10px
+    auto;
+
+  padding: 2px 0;
+
+  border: none;
+
+  background: transparent;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  color: #a06a18;
+
+  cursor: pointer;
+
+}
+
+
+/* =========================================
+   LOGIN BUTTON
+   ========================================= */
+
+.login-button {
+
+  margin:
+    5px
+    0
+    0;
+
+  --background: #ed111b;
+
+  --background-activated: #c90810;
+
+  --background-disabled: #d98b8f;
+
+  --border-radius: 8px;
+
+  --box-shadow:
+    0 3px 8px
+    rgba(190, 0, 15, 0.25);
+
+  height: 45px;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+}
+
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+.login-footer {
+
+  margin-top: 13px;
+
+  text-align: center;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size:
+    clamp(9px, 2.5vw, 12px);
+
+  line-height: 1.45;
+
+  color: #fff1ce;
+
+  text-shadow:
+    0 2px 4px
+    rgba(30, 0, 10, 0.7);
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+   ========================================= */
+
+@media (max-width: 360px) {
+
+  .login-container {
+
+    padding-left: 10px;
+
+    padding-right: 10px;
+
+    padding-top: 15px;
+
+    padding-bottom: 15px;
+
+  }
+
+
+  .brand-section {
+
+    margin-bottom: 9px;
+
+  }
+
+
+  .login-card {
+
+    padding:
+      16px
+      12px
+      14px;
+
+  }
+
+
+  .card-subtitle {
+
+    margin-bottom: 12px;
+
+  }
+
+
+  .input-wrapper {
+
+    min-height: 43px;
+
+  }
+
+
+  .login-button {
+
+    height: 42px;
+
+  }
+
+}
+
+/* =========================================
+   API ERROR MESSAGE
+   ========================================= */
+
+.api-error-message {
+
+  margin:
+    5px
+    3px
+    0;
+
+  padding:
+    8px
+    10px;
+
+  border-radius: 7px;
+
+  background: #fff0f0;
+
+  border:
+    1px solid
+    rgba(215, 25, 32, 0.18);
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  line-height: 1.4;
+
+  color: #d71920;
+
+}
+
+
+/* =========================================
+   TALL PHONES
+   ========================================= */
+
+@media (min-height: 800px) {
+
+  .login-card {
+
+    padding-top: 21px;
+
+    padding-bottom: 18px;
+
+  }
+
+}
