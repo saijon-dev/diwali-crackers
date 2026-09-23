@@ -50,6 +50,8 @@ export class AdminAddProductPage implements OnInit {
 
   brandName = '';
 
+  isKidsSpecial = false;
+
   size = '';
 
   packQuantity: number | null = null;
@@ -739,20 +741,24 @@ onCategoryImageSelected(event: Event): void {
     }
 
 
-    /*
-     * PACK QUANTITY
-     */
+/*
+ * =========================
+ * PACK QUANTITY
+ * =========================
+ */
 
-    if (
-      this.packQuantity === null ||
-      this.packQuantity <= 0
-    ) {
+if (
+  this.packQuantity === null ||
+  !Number.isFinite(this.packQuantity) ||
+  this.packQuantity <= 0 ||
+  !Number.isInteger(this.packQuantity)
+) {
 
-      this.errorMessage =
-        'Please enter a valid pack quantity.';
+  this.errorMessage =
+    'Please enter a valid pack quantity greater than 0.';
 
-      return;
-    }
+  return;
+}
 
 
     /*
@@ -804,16 +810,24 @@ onCategoryImageSelected(event: Event): void {
      * STOCK
      */
 
-    if (
-      this.stockQuantity === null ||
-      this.stockQuantity < 0
-    ) {
+ /*
+ * =========================
+ * STOCK
+ * =========================
+ */
 
-      this.errorMessage =
-        'Please enter a valid stock quantity.';
+if (
+  this.stockQuantity === null ||
+  !Number.isFinite(this.stockQuantity) ||
+  this.stockQuantity <= 0 ||
+  !Number.isInteger(this.stockQuantity)
+) {
 
-      return;
-    }
+  this.errorMessage =
+    'Please enter a valid stock quantity greater than 0.';
+
+  return;
+}
 
 
     /*
@@ -851,6 +865,9 @@ onCategoryImageSelected(event: Event): void {
 
       brandName:
         this.brandName.trim(),
+
+      isKidsSpecial:
+        this.isKidsSpecial,
 
       size:
         this.size.trim(),
@@ -957,6 +974,8 @@ onCategoryImageSelected(event: Event): void {
     this.description = '';
 
     this.brandName = '';
+
+    this.isKidsSpecial = false;
 
     this.size = '';
 

@@ -3,7 +3,8 @@
    ========================================= */
 
 .home-content {
-  --background: #ffefad;
+   --background:
+    var(--diwali-background);
 
   --padding-top: 0;
   --padding-start: 0;
@@ -36,7 +37,8 @@
 
   box-sizing: border-box;
 
-  background: #ffefad;
+ --background:
+    var(--diwali-background);
 
   /*
    * Do not clip the scrollable content.
@@ -716,7 +718,6 @@
   pointer-events: none;
 }
 
-
 /* =========================================
    SIDE MENU OVERLAY
 ========================================= */
@@ -724,27 +725,21 @@
 .menu-overlay {
   position: fixed;
 
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
 
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
 
   background:
-    rgba(
-      20,
-      15,
-      5,
-      0.38
-    );
+    rgba(20, 15, 5, 0.38);
 
-  z-index: 1000;
+  z-index: 9999;
 
   animation:
     overlay-fade-in
     0.2s ease;
+
+  box-sizing: border-box;
 }
 
 
@@ -753,35 +748,40 @@
 ========================================= */
 
 .side-menu {
-  position: absolute;
+  position: fixed;
 
   top: 0;
   left: 0;
   bottom: 0;
 
-  width:
-    min(
-      78vw,
-      320px
-    );
+  width: min(78vw, 320px);
 
-  background: #ffefad;
+  height: 100vh;
+
+  height: 100dvh;
+
+
+  background:
+    var(--diwali-background);
+
   box-shadow:
-    4px 0 18px rgba(
-      50,
-      20,
-      0,
-      0.18
-    );
+    4px 0 18px
+    rgba(50, 20, 0, 0.18);
 
   box-sizing: border-box;
 
   padding-top:
     env(safe-area-inset-top);
 
+  overflow-y: auto;
+
+  z-index: 10000;
+
   animation:
     side-menu-slide-in
     0.25s ease;
+
+  overscroll-behavior: contain;
 }
 
 
@@ -790,6 +790,7 @@
 ========================================= */
 
 .side-menu-header {
+
   height: 56px;
 
   display: flex;
@@ -801,10 +802,16 @@
     12px;
 
   box-sizing: border-box;
+
 }
 
 
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
 .close-menu-button {
+
   width: 42px;
 
   height: 42px;
@@ -826,24 +833,31 @@
   cursor: pointer;
 
   -webkit-tap-highlight-color: transparent;
+
 }
 
 
 .close-menu-button ion-icon {
+
   font-size: 28px;
+
 }
 
 
 .close-menu-button:active {
-  transform: scale(0.92);
+
+  transform:
+    scale(0.92);
+
 }
 
 
 /* =========================================
-   ADMIN LOGIN INSIDE SIDE MENU
+   ADMIN LOGIN
 ========================================= */
 
 .admin-login-area {
+
   width:
     calc(
       100% - 28px
@@ -895,10 +909,16 @@
   box-sizing: border-box;
 
   -webkit-tap-highlight-color: transparent;
+
+  appearance: none;
+
+  -webkit-appearance: none;
+
 }
 
 
 .admin-decoration {
+
   font-family:
     'Poppins',
     'Segoe UI',
@@ -908,10 +928,12 @@
   font-size: 11px;
 
   color: #d97706;
+
 }
 
 
 .admin-login-text {
+
   font-family:
     'Poppins',
     'Segoe UI',
@@ -930,28 +952,36 @@
   letter-spacing: 0.2px;
 
   color: #9e2020;
+
 }
 
 
 .admin-login-area:active {
-  transform: scale(0.98);
+
+  transform:
+    scale(0.98);
+
 }
 
 
 /* =========================================
-   SIDE MENU ANIMATION
+   ANIMATIONS
 ========================================= */
 
 @keyframes side-menu-slide-in {
 
   from {
+
     transform:
       translateX(-100%);
+
   }
 
   to {
+
     transform:
       translateX(0);
+
   }
 
 }
@@ -960,11 +990,46 @@
 @keyframes overlay-fade-in {
 
   from {
+
     opacity: 0;
+
   }
 
   to {
+
     opacity: 1;
+
+  }
+
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 360px) {
+
+  .side-menu {
+
+    width: 82vw;
+
+  }
+
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .menu-overlay,
+  .side-menu {
+
+    animation: none;
+
   }
 
 }

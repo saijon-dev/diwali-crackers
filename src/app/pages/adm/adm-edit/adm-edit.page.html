@@ -1,0 +1,667 @@
+<ion-content
+  [fullscreen]="true"
+  class="adm-edit-content">
+
+  <div class="adm-edit-page">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header class="edit-header">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()">
+
+        <ion-icon
+          name="arrow-back-outline">
+        </ion-icon>
+
+      </button>
+
+
+      <div class="header-title">
+
+        <h1>
+          Vendor Details
+        </h1>
+
+      </div>
+
+
+      <!-- EDIT BUTTON -->
+
+      @if (vendor && !isEditing) {
+
+        <button
+          type="button"
+          class="header-edit-button"
+          aria-label="Edit vendor"
+          (click)="enableEdit()">
+
+          <ion-icon
+            name="create-outline">
+          </ion-icon>
+
+        </button>
+
+      }
+
+
+      <!-- CANCEL BUTTON -->
+
+      @if (vendor && isEditing) {
+
+        <button
+          type="button"
+          class="header-edit-button"
+          aria-label="Cancel editing"
+          (click)="cancelEdit()">
+
+          <ion-icon
+            name="close-outline">
+          </ion-icon>
+
+        </button>
+
+      }
+
+    </header>
+
+
+
+    <!-- =====================================
+         LOADING
+    ====================================== -->
+
+    @if (isLoading) {
+
+      <div class="vendor-state">
+
+        <div class="loading-spinner"></div>
+
+        <p>
+          Loading vendor details...
+        </p>
+
+      </div>
+
+    }
+
+
+
+    <!-- =====================================
+         ERROR
+    ====================================== -->
+
+    @if (!isLoading && errorMessage) {
+
+      <div class="vendor-state error-state">
+
+        <ion-icon
+          name="close-outline">
+        </ion-icon>
+
+
+        <h3>
+          Unable to load vendor
+        </h3>
+
+
+        <p>
+          {{ errorMessage }}
+        </p>
+
+
+        <button
+          type="button"
+          class="retry-button"
+          (click)="retryLoadVendor()">
+
+          Try Again
+
+        </button>
+
+      </div>
+
+    }
+
+
+
+    <!-- =====================================
+         VENDOR CONTENT
+    ====================================== -->
+
+    @if (!isLoading && vendor) {
+
+      <div class="vendor-container">
+
+
+        <!-- =================================
+             VENDOR PROFILE
+        ================================== -->
+
+        <section class="vendor-profile-card">
+
+
+          <div class="profile-image-wrapper">
+
+            <img
+              [src]="vendorImage"
+              [alt]="vendor.storeName"
+              class="profile-image" />
+
+          </div>
+
+
+          <div class="profile-information">
+
+            <h2>
+              {{ vendor.storeName }}
+            </h2>
+
+
+            <p class="profile-owner">
+
+              <ion-icon
+                name="person-outline">
+              </ion-icon>
+
+              {{ vendor.name }}
+
+            </p>
+
+
+            <span
+              class="profile-status"
+              [class.active-status]="
+                vendor.status === 'ACTIVE'
+              "
+              [class.inactive-status]="
+                vendor.status === 'INACTIVE'
+              ">
+
+              {{ vendor.status }}
+
+            </span>
+
+          </div>
+
+
+        </section>
+
+
+
+        <!-- =================================
+             PERSONAL INFORMATION
+        ================================== -->
+
+        <section class="vendor-card">
+
+          <div class="section-heading">
+
+            <span>✦</span>
+
+            <h2>
+              Personal Information
+            </h2>
+
+            <span>✦</span>
+
+          </div>
+
+
+          <div class="details-grid">
+
+
+            <!-- NAME -->
+
+            <div class="detail-field">
+
+              <label>
+                Name
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.name"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  {{ vendor.name }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="detail-field">
+
+              <label>
+                Email
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="email"
+                  [(ngModel)]="vendor.email"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  <ion-icon
+                    name="mail-outline">
+                  </ion-icon>
+
+                  {{ vendor.email }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- MOBILE -->
+
+            <div class="detail-field">
+
+              <label>
+                Mobile Number
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="tel"
+                  [(ngModel)]="vendor.mobileNumber"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  <ion-icon
+                    name="call-outline">
+                  </ion-icon>
+
+                  {{ vendor.mobileNumber }}
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             STORE INFORMATION
+        ================================== -->
+
+        <section class="vendor-card">
+
+          <div class="section-heading">
+
+            <span>✦</span>
+
+            <h2>
+              Store Information
+            </h2>
+
+            <span>✦</span>
+
+          </div>
+
+
+          <div class="details-grid">
+
+
+            <!-- STORE NAME -->
+
+            <div class="detail-field full-width">
+
+              <label>
+                Store Name
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.storeName"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  <ion-icon
+                    name="storefront-outline">
+                  </ion-icon>
+
+                  {{ vendor.storeName }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- ADDRESS -->
+
+            <div class="detail-field full-width">
+
+              <label>
+                Address
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.address"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  <ion-icon
+                    name="location-outline">
+                  </ion-icon>
+
+                  {{ vendor.address }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- CITY -->
+
+            <div class="detail-field">
+
+              <label>
+                City
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.city"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  {{ vendor.city }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- STATE -->
+
+            <div class="detail-field">
+
+              <label>
+                State
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.state"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  {{ vendor.state }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- PINCODE -->
+
+            <div class="detail-field">
+
+              <label>
+                Pincode
+              </label>
+
+
+              @if (isEditing) {
+
+                <input
+                  type="text"
+                  [(ngModel)]="vendor.pincode"
+                />
+
+              } @else {
+
+                <div class="detail-value">
+
+                  {{ vendor.pincode }}
+
+                </div>
+
+              }
+
+            </div>
+
+
+
+            <!-- STATUS -->
+
+            <div class="detail-field">
+
+              <label>
+                Status
+              </label>
+
+
+              @if (isEditing) {
+
+                <select
+                  [(ngModel)]="vendor.status">
+
+                  <option value="ACTIVE">
+                    ACTIVE
+                  </option>
+
+                  <option value="INACTIVE">
+                    INACTIVE
+                  </option>
+
+                </select>
+
+              } @else {
+
+                <div class="detail-value">
+
+                  <span
+                    class="status-badge"
+                    [class.active-status]="
+                      vendor.status === 'ACTIVE'
+                    "
+                    [class.inactive-status]="
+                      vendor.status === 'INACTIVE'
+                    ">
+
+                    {{ vendor.status }}
+
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             SYSTEM INFORMATION
+        ================================== -->
+
+        <section class="vendor-card system-card">
+
+          <div class="section-heading">
+
+            <span>✦</span>
+
+            <h2>
+              Vendor Information
+            </h2>
+
+            <span>✦</span>
+
+          </div>
+
+
+          <div class="details-grid">
+
+
+            <div class="detail-field">
+
+              <label>
+                Vendor ID
+              </label>
+
+              <div class="detail-value readonly">
+
+                {{ vendor.userId }}
+
+              </div>
+
+            </div>
+
+
+            <div class="detail-field">
+
+              <label>
+                Status
+              </label>
+
+              <div class="detail-value readonly">
+
+                {{ vendor.status }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             UPDATE BUTTON
+        ================================== -->
+
+        @if (isEditing) {
+
+          <section class="update-section">
+
+
+            <div class="update-decoration">
+
+              ✦ &nbsp; ✦ &nbsp; ✦
+
+            </div>
+
+
+            <button
+              type="button"
+              class="update-button"
+              [disabled]="isSaving"
+              (click)="updateVendor()">
+
+
+              @if (isSaving) {
+
+                <span>
+                  Updating...
+                </span>
+
+              } @else {
+
+                <ion-icon
+                  name="save-outline">
+                </ion-icon>
+
+                <span>
+                  Update Vendor
+                </span>
+
+              }
+
+            </button>
+
+
+          </section>
+
+        }
+
+
+      </div>
+
+    }
+
+  </div>
+
+</ion-content>

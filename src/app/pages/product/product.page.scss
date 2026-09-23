@@ -3,7 +3,8 @@
 ================================= */
 
 .product-content {
-  --background: #ffefad;
+  --background:
+    var(--diwali-background);
 }
 
 .product-page {

@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   ChangeDetectorRef
 } from '@angular/core';
 
@@ -48,7 +49,7 @@ import {
     IonBackButton
   ]
 })
-export class ProductPage implements OnInit {
+export class ProductPage implements OnInit, OnDestroy {
 
 
   /* =====================================
@@ -56,6 +57,13 @@ export class ProductPage implements OnInit {
      ===================================== */
 
   selectedImageIndex = 0;
+
+  /*
+   * Automatically changes the product
+   * image every 5 seconds.
+   */
+  private imageInterval:
+    ReturnType<typeof setInterval> | null = null;
 
 
   /* =====================================
@@ -177,6 +185,14 @@ export class ProductPage implements OnInit {
     productStoreId: number
   ): void {
 
+    /*
+     * Stop the previous image slider
+     * before loading another product.
+     */
+
+    this.stopImageSlider();
+
+
     this.isLoading = true;
 
     this.errorMessage = '';
@@ -243,6 +259,8 @@ export class ProductPage implements OnInit {
             this.errorMessage =
               'Product not found.';
 
+            this.stopImageSlider();
+
             this.cdr.detectChanges();
 
             return;
@@ -273,15 +291,6 @@ export class ProductPage implements OnInit {
            *
            * Exclude every store entry having
            * the same productId.
-           *
-           * This means if Bhuchakram has:
-           *
-           * productId 1 / storeId 1
-           * productId 1 / storeId 2
-           * productId 1 / storeId 6
-           *
-           * all three are excluded when
-           * viewing any one of them.
            */
 
           this.exploreProducts =
@@ -308,6 +317,15 @@ export class ProductPage implements OnInit {
 
           this.cdr.detectChanges();
 
+
+          /*
+           * =================================
+           * START AUTOMATIC IMAGE SLIDER
+           * =================================
+           */
+
+          this.startImageSlider();
+
         },
 
 
@@ -333,11 +351,136 @@ export class ProductPage implements OnInit {
             'Unable to load product.';
 
 
+          /*
+           * Make sure no previous product
+           * slider is still running.
+           */
+
+          this.stopImageSlider();
+
+
           this.cdr.detectChanges();
 
         }
 
       });
+
+  }
+
+
+  /* =====================================
+     START IMAGE SLIDER
+     ===================================== */
+
+  startImageSlider(): void {
+
+    /*
+     * Always clear an existing interval
+     * before creating a new one.
+     */
+
+    this.stopImageSlider();
+
+
+    /*
+     * No slider needed if there is only
+     * one image or no images.
+     */
+
+    if (
+      !this.product?.images ||
+      this.product.images.length <= 1
+    ) {
+
+      return;
+
+    }
+
+
+    this.imageInterval =
+      setInterval(() => {
+
+        if (
+          !this.product?.images ||
+          this.product.images.length <= 1
+        ) {
+
+          return;
+
+        }
+
+
+        /*
+         * Move to the next image.
+         *
+         * When the last image is reached,
+         * return to the first image.
+         */
+
+        this.selectedImageIndex =
+          (
+            this.selectedImageIndex + 1
+          ) %
+          this.product.images.length;
+
+
+        /*
+         * Force the view to update.
+         */
+
+        this.cdr.detectChanges();
+
+      }, 5000);
+
+  }
+
+
+  /* =====================================
+     STOP IMAGE SLIDER
+     ===================================== */
+
+  stopImageSlider(): void {
+
+    if (
+      this.imageInterval !== null
+    ) {
+
+      clearInterval(
+        this.imageInterval
+      );
+
+      this.imageInterval = null;
+
+    }
+
+  }
+
+
+  /* =====================================
+     GET CURRENT IMAGE
+     ===================================== */
+
+  getCurrentImage(): string {
+
+    if (
+      !this.product?.images ||
+      this.product.images.length === 0
+    ) {
+
+      return 'assets/images/rectangle-image.png';
+
+    }
+
+
+    return (
+      this.product
+        .images[
+          this.selectedImageIndex
+        ]
+        ?.imageUrl
+      ||
+      'assets/images/rectangle-image.png'
+    );
 
   }
 
@@ -351,18 +494,47 @@ export class ProductPage implements OnInit {
   ): void {
 
     if (!this.product) {
+
       return;
+
     }
 
+
     if (
-      !this.product.imageUrls ||
-      this.product.imageUrls.length === 0
+      !this.product.images ||
+      this.product.images.length === 0
     ) {
+
       return;
+
     }
+
+
+    if (
+      index < 0 ||
+      index >= this.product.images.length
+    ) {
+
+      return;
+
+    }
+
 
     this.selectedImageIndex =
       index;
+
+
+    /*
+     * Restart automatic slider.
+     *
+     * Selected image stays visible for
+     * another 5 seconds.
+     */
+
+    this.startImageSlider();
+
+
+    this.cdr.detectChanges();
 
   }
 
@@ -374,15 +546,19 @@ export class ProductPage implements OnInit {
   previousImage(): void {
 
     if (!this.product) {
+
       return;
+
     }
 
 
     if (
-      !this.product.imageUrls ||
-      this.product.imageUrls.length === 0
+      !this.product.images ||
+      this.product.images.length === 0
     ) {
+
       return;
+
     }
 
 
@@ -391,13 +567,23 @@ export class ProductPage implements OnInit {
     ) {
 
       this.selectedImageIndex =
-        this.product.imageUrls.length - 1;
+        this.product.images.length - 1;
 
-      return;
+    } else {
+
+      this.selectedImageIndex--;
+
     }
 
 
-    this.selectedImageIndex--;
+    /*
+     * Restart automatic slider.
+     */
+
+    this.startImageSlider();
+
+
+    this.cdr.detectChanges();
 
   }
 
@@ -409,30 +595,44 @@ export class ProductPage implements OnInit {
   nextImage(): void {
 
     if (!this.product) {
+
       return;
+
     }
 
 
     if (
-      !this.product.imageUrls ||
-      this.product.imageUrls.length === 0
+      !this.product.images ||
+      this.product.images.length === 0
     ) {
+
       return;
+
     }
 
 
     if (
       this.selectedImageIndex ===
-      this.product.imageUrls.length - 1
+      this.product.images.length - 1
     ) {
 
       this.selectedImageIndex = 0;
 
-      return;
+    } else {
+
+      this.selectedImageIndex++;
+
     }
 
 
-    this.selectedImageIndex++;
+    /*
+     * Restart automatic slider.
+     */
+
+    this.startImageSlider();
+
+
+    this.cdr.detectChanges();
 
   }
 
@@ -444,7 +644,9 @@ export class ProductPage implements OnInit {
   increaseQuantity(): void {
 
     if (!this.product) {
+
       return;
+
     }
 
 
@@ -466,7 +668,9 @@ export class ProductPage implements OnInit {
 
   decreaseQuantity(): void {
 
-    if (this.quantity > 1) {
+    if (
+      this.quantity > 1
+    ) {
 
       this.quantity--;
 
@@ -482,7 +686,9 @@ export class ProductPage implements OnInit {
   addToCart(): void {
 
     if (!this.product) {
+
       return;
+
     }
 
 
@@ -537,6 +743,25 @@ export class ProductPage implements OnInit {
   ): number {
 
     return product.productStoreId;
+
+  }
+
+
+  /* =====================================
+     DESTROY
+     ===================================== */
+
+  ngOnDestroy(): void {
+
+    /*
+     * Stop the image slider when leaving
+     * the Product Details page.
+     *
+     * This prevents the interval from
+     * continuing in the background.
+     */
+
+    this.stopImageSlider();
 
   }
 

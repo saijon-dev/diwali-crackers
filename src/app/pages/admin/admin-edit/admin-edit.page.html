@@ -1,0 +1,897 @@
+<ion-content [fullscreen]="true">
+
+  <div class="edit-page">
+
+
+    <!-- =====================================
+         DIWALI HEADER
+    ====================================== -->
+
+    <div class="page-header">
+
+      <img
+        class="header-decoration header-decoration-left"
+        src="assets/images/top-left.png"
+        alt=""
+      />
+
+      <img
+        class="header-decoration header-decoration-right"
+        src="assets/images/top-right.png"
+        alt=""
+      />
+
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+      >
+
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
+
+      </button>
+
+
+      <div class="header-content">
+
+        <div class="header-brand">
+          DIWALI
+        </div>
+
+        <h1>
+          Edit Product
+        </h1>
+
+        <span class="product-id">
+          Product ID: {{ productId }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         LOADING
+    ====================================== -->
+
+    @if (isLoading) {
+
+      <div class="state-container">
+
+        <div class="loading-spinner"></div>
+
+        <p>
+          Loading product...
+        </p>
+
+      </div>
+
+    }
+
+
+
+    <!-- =====================================
+         ERROR
+    ====================================== -->
+
+    @if (!isLoading && errorMessage) {
+
+      <div class="state-container error-state">
+
+        <ion-icon
+          name="close-outline"
+        ></ion-icon>
+
+        <p>
+          {{ errorMessage }}
+        </p>
+
+        <button
+          type="button"
+          class="retry-button"
+          (click)="loadProduct()"
+        >
+          Try Again
+        </button>
+
+      </div>
+
+    }
+
+
+
+    <!-- =====================================
+         PRODUCT
+    ====================================== -->
+
+    @if (!isLoading && product) {
+
+      <div class="edit-container">
+
+
+      <!-- =================================
+     IMAGE SECTION
+================================== -->
+
+<section class="image-card">
+
+  <div class="section-heading">
+
+    <span class="heading-decoration">
+      ✦
+    </span>
+
+    <h2>
+      Product Images
+    </h2>
+
+    <span class="heading-decoration">
+      ✦
+    </span>
+
+  </div>
+
+
+  <!-- MAIN IMAGE -->
+
+  <div class="main-image-wrapper">
+
+    @if (
+      product.images &&
+      product.images.length > 0
+    ) {
+
+      <img
+        class="main-product-image"
+        [src]="getExistingImageUrl()"
+        [alt]="product.productName"
+      />
+
+    } @else {
+
+      <div class="no-image">
+
+        <ion-icon
+          name="image-outline"
+        ></ion-icon>
+
+        <span>
+          No Image Available
+        </span>
+
+      </div>
+
+    }
+
+  </div>
+
+
+  <!-- EXISTING IMAGE THUMBNAILS -->
+
+  @if (
+    product.images &&
+    product.images.length > 0
+  ) {
+
+    <div class="thumbnail-row">
+
+      @for (
+        image of product.images;
+        track image.productImageId
+      ) {
+
+        <button
+          type="button"
+          class="thumbnail-button"
+          [class.selected]="
+            selectedImageIndex === $index
+          "
+          (click)="selectImage($index)"
+        >
+
+          <img
+            [src]="image.imageUrl"
+            [alt]="product.productName"
+          />
+
+        </button>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- =================================
+       ADD NEW IMAGES
+  ================================== -->
+
+  <div class="image-upload-section">
+
+    <div class="upload-heading">
+
+      <span>
+        Add / Replace Images
+      </span>
+
+    </div>
+
+
+    <label
+      class="image-upload-button"
+    >
+
+      <ion-icon
+        name="add-outline"
+      ></ion-icon>
+
+      <span>
+        Choose Images
+      </span>
+
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        (change)="onImageSelected($event)"
+      />
+
+    </label>
+
+
+    <p class="upload-hint">
+      You can select multiple images.
+    </p>
+
+
+    <!-- NEW IMAGE PREVIEWS -->
+
+    @if (
+      newImagePreviews.length > 0
+    ) {
+
+      <div class="new-images-section">
+
+        <div class="new-images-heading">
+
+          New Images
+          ({{ newImagePreviews.length }})
+
+        </div>
+
+
+        <div class="new-image-grid">
+
+          @for (
+            preview of newImagePreviews;
+            track $index
+          ) {
+
+            <div
+              class="new-image-item"
+            >
+
+              <img
+                [src]="preview"
+                alt="New product image"
+              />
+
+
+              <button
+                type="button"
+                class="remove-image-button"
+                (click)="removeNewImage($index)"
+              >
+
+                <ion-icon
+                  name="close-outline"
+                ></ion-icon>
+
+              </button>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <button
+          type="button"
+          class="clear-images-button"
+          (click)="clearNewImages()"
+        >
+          Remove selected images
+        </button>
+
+      </div>
+
+    }
+
+  </div>
+
+</section>
+
+
+        <!-- =================================
+             BASIC INFORMATION
+        ================================== -->
+
+        <section class="edit-card">
+
+          <div class="section-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Product Information
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="form-field full-width">
+
+              <label>
+                Product Name
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.productName"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Product Code
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.productCode"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Brand Name
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.brandName"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Category
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.categoryName"
+                readonly
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Size
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.size"
+              />
+
+            </div>
+
+
+            <div class="form-field full-width">
+
+              <label>
+                Description
+              </label>
+
+              <textarea
+                rows="4"
+                [(ngModel)]="product.description"
+              ></textarea>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Kids Special
+              </label>
+
+              <select
+                [(ngModel)]="product.isKidsSpecial"
+              >
+
+                <option [ngValue]="true">
+                  Yes
+                </option>
+
+                <option [ngValue]="false">
+                  No
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Availability
+              </label>
+
+              <select
+                [(ngModel)]="product.isAvailable"
+              >
+
+                <option [ngValue]="true">
+                  Available
+                </option>
+
+                <option [ngValue]="false">
+                  Not Available
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             PACK INFORMATION
+        ================================== -->
+
+        <section class="edit-card">
+
+          <div class="section-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Pack Information
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+          <div class="form-grid">
+
+            <div class="form-field">
+
+              <label>
+                Pack Quantity
+              </label>
+
+              <input
+                type="number"
+                min="1"
+                [(ngModel)]="product.packQuantity"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Pack Unit
+              </label>
+
+              <select
+                [(ngModel)]="product.packUnit"
+              >
+
+                <option value="PACK">
+                  PACK
+                </option>
+
+                <option value="BOX">
+                  BOX
+                </option>
+
+                <option value="PIECE">
+                  PIECE
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             PRICE & STOCK
+        ================================== -->
+
+        <section class="edit-card">
+
+          <div class="section-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Price & Stock
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="form-field">
+
+              <label>
+                MRP
+              </label>
+
+              <div class="currency-input">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="product.mrp"
+                />
+
+              </div>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Selling Price
+              </label>
+
+              <div class="currency-input">
+
+                <span>₹</span>
+
+                <input
+                  type="number"
+                  min="0"
+                  [(ngModel)]="product.sellingPrice"
+                />
+
+              </div>
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Stock Quantity
+              </label>
+
+              <input
+                type="number"
+                min="0"
+                [(ngModel)]="product.stockQuantity"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Badge
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.badge"
+                placeholder="Example: Trending"
+              />
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             STORE INFORMATION
+        ================================== -->
+
+        <section class="edit-card">
+
+          <div class="section-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Store Information
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="form-field full-width">
+
+              <label>
+                Store Name
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.storeName"
+              />
+
+            </div>
+
+
+            <div class="form-field full-width">
+
+              <label>
+                Store Address
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.storeAddress"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                City
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.city"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                State
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.state"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Pincode
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.pincode"
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Contact Number
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="product.contactNumber"
+              />
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             SYSTEM INFORMATION
+        ================================== -->
+
+        <section class="edit-card system-card">
+
+          <div class="section-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Product Details
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="form-field">
+
+              <label>
+                Product ID
+              </label>
+
+              <input
+                type="text"
+                [value]="product.productId"
+                readonly
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Product Store ID
+              </label>
+
+              <input
+                type="text"
+                [value]="product.productStoreId"
+                readonly
+              />
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label>
+                Category ID
+              </label>
+
+              <input
+                type="text"
+                [value]="product.categoryId"
+                readonly
+              />
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =================================
+             UPDATE
+        ================================== -->
+
+        <div class="update-section">
+
+          <div class="update-decoration">
+            ✦ &nbsp; ✦ &nbsp; ✦
+          </div>
+
+
+          <button
+            type="button"
+            class="update-button"
+            [disabled]="isSaving"
+            (click)="updateProduct()"
+          >
+
+            @if (isSaving) {
+
+              <span>
+                Updating...
+              </span>
+
+            } @else {
+
+              <ion-icon
+                name="save-outline"
+              ></ion-icon>
+
+              <span>
+                Update Product
+              </span>
+
+            }
+
+          </button>
+
+        </div>
+
+
+      </div>
+
+    }
+
+  </div>
+
+</ion-content>

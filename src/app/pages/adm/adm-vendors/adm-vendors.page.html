@@ -4,6 +4,7 @@
 
   <div class="adm-vendors-page">
 
+
     <!-- ================================= -->
     <!-- HEADER -->
     <!-- ================================= -->
@@ -16,11 +17,17 @@
         text="">
       </ion-back-button>
 
+
       <div class="header-title">
-        <h1>Manage Vendors</h1>
+
+        <h1>
+          Manage Vendors
+        </h1>
+
       </div>
 
     </header>
+
 
 
     <!-- ================================= -->
@@ -36,6 +43,7 @@
           class="search-icon">
         </ion-icon>
 
+
         <input
           type="text"
           [(ngModel)]="searchText"
@@ -44,17 +52,21 @@
 
       </div>
 
+
       <button
         type="button"
         class="add-vendor-button"
         aria-label="Add vendor"
         (click)="addVendor()">
 
-        <ion-icon name="add-outline"></ion-icon>
+        <ion-icon
+          name="add-outline">
+        </ion-icon>
 
       </button>
 
     </section>
+
 
 
     <!-- ================================= -->
@@ -73,6 +85,7 @@
 
       </button>
 
+
       <button
         type="button"
         class="status-filter"
@@ -82,6 +95,7 @@
         Active ({{ activeCount }})
 
       </button>
+
 
       <button
         type="button"
@@ -96,140 +110,248 @@
     </section>
 
 
+
+    <!-- ================================= -->
+    <!-- LOADING -->
+    <!-- ================================= -->
+
+    @if (isLoading) {
+
+      <div class="vendor-state">
+
+        <div class="loading-spinner"></div>
+
+        <p>
+          Loading vendors...
+        </p>
+
+      </div>
+
+    }
+
+
+
+    <!-- ================================= -->
+    <!-- ERROR -->
+    <!-- ================================= -->
+
+    @if (!isLoading && errorMessage) {
+
+      <div class="vendor-state error-state">
+
+        <ion-icon
+          name="people-outline">
+        </ion-icon>
+
+
+        <h3>
+          Unable to load vendors
+        </h3>
+
+
+        <p>
+          {{ errorMessage }}
+        </p>
+
+
+        <button
+          type="button"
+          class="retry-button"
+          (click)="retryLoadVendors()">
+
+          Try Again
+
+        </button>
+
+      </div>
+
+    }
+
+
+
     <!-- ================================= -->
     <!-- VENDOR LIST -->
     <!-- ================================= -->
 
-    <section class="vendor-list">
+    @if (!isLoading && !errorMessage) {
 
-      @for (vendor of filteredVendors; track vendor.id) {
-
-        <article
-          class="vendor-card"
-          (click)="openVendor(vendor)">
-
-          <!-- IMAGE -->
-
-          <div class="vendor-image-container">
-
-            <img
-              [src]="vendor.image"
-              [alt]="vendor.name"
-              class="vendor-image" />
-
-          </div>
+      <section class="vendor-list">
 
 
-          <!-- INFORMATION -->
+        @for (
+          vendor of filteredVendors;
+          track vendor.id
+        ) {
 
-          <div class="vendor-information">
 
-            <div class="vendor-name-row">
+          <article
+            class="vendor-card"
+            (click)="openVendor(vendor)">
 
-              <h2>
+
+            <!-- IMAGE -->
+
+            <div class="vendor-image-container">
+
+              <img
+                [src]="vendor.image"
+                [alt]="vendor.storeName"
+                class="vendor-image" />
+
+            </div>
+
+
+
+            <!-- INFORMATION -->
+
+            <div class="vendor-information">
+
+
+              <div class="vendor-name-row">
+
+                <h2>
+                  {{ vendor.storeName }}
+                </h2>
+
+              </div>
+
+
+              <div class="vendor-owner">
+
                 {{ vendor.name }}
-              </h2>
+
+              </div>
+
+
+              <div class="vendor-location">
+
+                <ion-icon
+                  name="location-outline">
+                </ion-icon>
+
+                <span>
+                  {{ vendor.location }}
+                </span>
+
+              </div>
+
+
+              <div class="vendor-contact">
+
+                <span>
+                  {{ vendor.mobileNumber }}
+                </span>
+
+                <span class="separator">
+                  •
+                </span>
+
+                <span>
+                  {{ vendor.pincode }}
+                </span>
+
+              </div>
+
 
             </div>
 
 
-            <div class="vendor-location">
 
-              <ion-icon name="location-outline"></ion-icon>
+            <!-- STATUS -->
 
-              <span>
-                {{ vendor.location }}
+            <div class="vendor-status">
+
+              <span
+                class="status-badge"
+                [class.active-status]="
+                  vendor.status === 'Active'
+                "
+                [class.inactive-status]="
+                  vendor.status === 'Inactive'
+                ">
+
+                {{ vendor.status }}
+
               </span>
 
             </div>
 
 
-            <div class="vendor-stats">
 
-              <span>
-                {{ vendor.products }} Products
-              </span>
+            <!-- ARROW -->
 
-              <span class="separator">
-                •
-              </span>
+            <button
+              type="button"
+              class="vendor-arrow"
+              aria-label="Open vendor"
+              (click)="
+                openVendor(vendor);
+                $event.stopPropagation()
+              ">
 
-              <span>
-                {{ vendor.orders }} Orders
-              </span>
+              <ion-icon
+                name="chevron-forward-outline">
+              </ion-icon>
 
-            </div>
+            </button>
+
+
+
+            <!-- THREE DOTS -->
+
+            <button
+              type="button"
+              class="vendor-menu-button"
+              aria-label="Vendor options"
+              (click)="
+                openMoreMenu(vendor);
+                $event.stopPropagation()
+              ">
+
+              <ion-icon
+                name="ellipsis-horizontal-outline">
+              </ion-icon>
+
+            </button>
+
+
+          </article>
+
+        }
+
+
+
+        <!-- ================================= -->
+        <!-- NO RESULTS -->
+        <!-- ================================= -->
+
+        @if (filteredVendors.length === 0) {
+
+          <div class="no-vendors">
+
+            <ion-icon
+              name="people-outline">
+            </ion-icon>
+
+
+            <h3>
+              No vendors found
+            </h3>
+
+
+            <p>
+              Try changing your search or filter.
+            </p>
 
           </div>
 
-
-          <!-- STATUS -->
-
-          <div class="vendor-status">
-
-            <span
-              class="status-badge"
-              [class.active-status]="vendor.status === 'Active'"
-              [class.inactive-status]="vendor.status === 'Inactive'">
-
-              {{ vendor.status }}
-
-            </span>
-
-          </div>
+        }
 
 
-          <!-- ARROW -->
+      </section>
 
-          <button
-            type="button"
-            class="vendor-arrow"
-            aria-label="Open vendor"
-            (click)="openVendor(vendor); $event.stopPropagation()">
+    }
 
-            <ion-icon name="chevron-forward-outline"></ion-icon>
-
-          </button>
-
-
-          <!-- THREE DOTS -->
-
-          <button
-            type="button"
-            class="vendor-menu-button"
-            aria-label="Vendor options"
-            (click)="openMoreMenu(vendor); $event.stopPropagation()">
-
-            <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
-
-          </button>
-
-        </article>
-
-      }
-
-
-      <!-- ================================= -->
-      <!-- NO RESULTS -->
-      <!-- ================================= -->
-
-      @if (filteredVendors.length === 0) {
-
-        <div class="no-vendors">
-
-          <ion-icon name="people-outline"></ion-icon>
-
-          <h3>No vendors found</h3>
-
-          <p>
-            Try changing your search or filter.
-          </p>
-
-        </div>
-
-      }
-
-    </section>
 
   </div>
 

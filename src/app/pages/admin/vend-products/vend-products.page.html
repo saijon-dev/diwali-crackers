@@ -1,0 +1,414 @@
+<ion-content
+  [fullscreen]="true"
+  class="vend-products-content"
+>
+
+  <div class="vend-products-page">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="products-header">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+      >
+
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
+
+      </button>
+
+
+      <div class="header-title">
+
+        <h1>My Products</h1>
+
+        <span>
+          Manage your store products
+        </span>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <main class="products-main">
+
+
+      <!-- =================================================
+           SEARCH + CATEGORY
+      ================================================== -->
+
+      <section class="filter-section">
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+          <ion-icon
+            name="search-outline"
+            class="search-icon"
+          ></ion-icon>
+
+
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Search products"
+            autocomplete="off"
+          />
+
+
+          @if (searchText) {
+
+            <button
+              type="button"
+              class="clear-search"
+              (click)="clearSearch()"
+            >
+
+              <ion-icon
+                name="close-outline"
+              ></ion-icon>
+
+            </button>
+
+          }
+
+        </div>
+
+
+
+        <!-- CATEGORY -->
+
+        <div class="category-filter">
+
+          <select
+            [(ngModel)]="selectedCategory"
+            (ngModelChange)="onCategoryChange()"
+          >
+
+            <option value="ALL">
+              All Categories
+            </option>
+
+
+            @for (
+              category of categories;
+              track category.categoryId
+            ) {
+
+              <option
+                [value]="category.categoryName"
+              >
+                {{ category.categoryName }}
+              </option>
+
+            }
+
+          </select>
+
+
+          <ion-icon
+            name="chevron-down-outline"
+          ></ion-icon>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =================================================
+           SECTION HEADING
+      ================================================== -->
+
+      <section class="products-heading">
+
+        <div>
+
+          <span class="section-kicker">
+            YOUR STORE
+          </span>
+
+          <h2>
+            My Products
+          </h2>
+
+        </div>
+
+
+        @if (!isLoadingProducts) {
+
+          <span class="product-count">
+
+            {{ filteredProducts.length }}
+
+          </span>
+
+        }
+
+      </section>
+
+
+
+      <!-- =================================================
+           LOADING
+      ================================================== -->
+
+      @if (isLoadingProducts) {
+
+        <section class="loading-grid">
+
+          @for (
+            item of [1,2,3,4];
+            track item
+          ) {
+
+            <div class="skeleton-card">
+
+              <div class="skeleton-image"></div>
+
+              <div class="skeleton-line large"></div>
+
+              <div class="skeleton-line small"></div>
+
+              <div class="skeleton-line price"></div>
+
+            </div>
+
+          }
+
+        </section>
+
+      }
+
+
+
+      <!-- =================================================
+           ERROR
+      ================================================== -->
+
+      @else if (errorMessage) {
+
+        <section class="state-card">
+
+          <div class="state-icon">
+
+            <ion-icon
+              name="alert-circle-outline"
+            ></ion-icon>
+
+          </div>
+
+          <h3>
+            Something went wrong
+          </h3>
+
+          <p>
+            {{ errorMessage }}
+          </p>
+
+          <button
+            type="button"
+            (click)="retry()"
+          >
+            Try Again
+          </button>
+
+        </section>
+
+      }
+
+
+
+      <!-- =================================================
+           PRODUCTS
+      ================================================== -->
+
+      @else if (filteredProducts.length > 0) {
+
+        <section class="product-grid">
+
+          @for (
+            product of filteredProducts;
+            track product.productId
+          ) {
+
+            <article
+              class="product-card"
+              (click)="openProduct(product)"
+            >
+
+
+              <!-- IMAGE -->
+
+              <div class="product-image">
+
+                <img
+                  [src]="getProductImage(product)"
+                  [alt]="product.productName"
+                />
+
+
+                @if (product.isKidsSpecial) {
+
+                  <span class="kids-badge">
+                    Kids
+                  </span>
+
+                }
+
+              </div>
+
+
+
+              <!-- PRODUCT INFO -->
+
+              <div class="product-info">
+
+
+                <span class="category-name">
+
+                  {{ product.categoryName }}
+
+                </span>
+
+
+                <h3>
+
+                  {{ product.productName }}
+
+                </h3>
+
+
+                @if (product.brandName) {
+
+                  <p class="brand-name">
+
+                    {{ product.brandName }}
+
+                  </p>
+
+                }
+
+
+                <div class="price-row">
+
+                  <span class="selling-price">
+
+                    {{ formatPrice(product.sellingPrice) }}
+
+                  </span>
+
+
+                  @if (
+                    product.mrp &&
+                    product.mrp > product.sellingPrice
+                  ) {
+
+                    <span class="mrp">
+
+                      {{ formatPrice(product.mrp) }}
+
+                    </span>
+
+                  }
+
+                </div>
+
+
+                <span
+                  class="stock-status"
+                  [class]="getStockClass(product)"
+                >
+
+                  {{ getStockText(product) }}
+
+                </span>
+
+              </div>
+
+            </article>
+
+          }
+
+        </section>
+
+      }
+
+
+
+      <!-- =================================================
+           EMPTY
+      ================================================== -->
+
+      @else {
+
+        <section class="empty-state">
+
+          <div class="empty-icon">
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+          </div>
+
+
+          <h3>
+
+            @if (searchText || selectedCategory !== 'ALL') {
+
+              No matching products
+
+            } @else {
+
+              No products yet
+
+            }
+
+          </h3>
+
+
+          <p>
+
+            @if (
+              searchText ||
+              selectedCategory !== 'ALL'
+            ) {
+
+              Try changing your search
+              or category filter.
+
+            } @else {
+
+              Products you add to your
+              store will appear here.
+
+            }
+
+          </p>
+
+        </section>
+
+      }
+
+    </main>
+
+  </div>
+
+</ion-content>

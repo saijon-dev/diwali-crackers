@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
+
+/* =========================================
+   ADD VENDOR REQUEST
+========================================= */
+
 export interface AddVendorRequest {
   name: string;
   email: string;
@@ -14,6 +19,11 @@ export interface AddVendorRequest {
   state: string;
   pincode: string;
 }
+
+
+/* =========================================
+   ADD VENDOR RESPONSE
+========================================= */
 
 export interface AddVendorResponse {
   success?: boolean;
@@ -30,6 +40,31 @@ export interface AddVendorResponse {
   pincode?: string;
 }
 
+
+/* =========================================
+   ADMIN VENDOR RESPONSE
+========================================= */
+
+export interface AdminVendorResponse {
+  userId: number;
+  name: string;
+  email: string;
+  mobileNumber: string;
+
+  storeName: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+
+  status: string;
+}
+
+
+/* =========================================
+   VENDOR SERVICE
+========================================= */
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,7 +73,15 @@ export class VendorService {
   private readonly vendorUrl =
     `${environment.apiUrl}/admin/vendors`;
 
-  constructor(private http: HttpClient) {}
+
+  constructor(
+    private http: HttpClient
+  ) {}
+
+
+  /* =========================================
+     ADD VENDOR
+  ========================================== */
 
   addVendor(
     vendor: AddVendorRequest
@@ -48,5 +91,20 @@ export class VendorService {
       this.vendorUrl,
       vendor
     );
+
   }
+
+
+  /* =========================================
+     GET ALL VENDORS
+  ========================================== */
+
+  getAllVendors(): Observable<AdminVendorResponse[]> {
+
+    return this.http.get<AdminVendorResponse[]>(
+      this.vendorUrl
+    );
+
+  }
+
 }

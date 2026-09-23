@@ -348,4 +348,8 @@ export class HomePage implements OnInit {
 
 }
 
+openSearch(): void {
+  this.router.navigate(['/tabs/search']);
+}
+
 }

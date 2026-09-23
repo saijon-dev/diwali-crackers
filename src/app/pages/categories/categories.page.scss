@@ -3,7 +3,8 @@
    ========================================= */
 
 .categories-content {
-  --background: #ffefad;
+   --background:
+    var(--diwali-background);
 
   --padding-top: 0;
   --padding-start: 0;
@@ -36,7 +37,7 @@
 
   box-sizing: border-box;
 
-  background: #ffefad;
+  background: #ffffff;
 
   overflow: visible;
 

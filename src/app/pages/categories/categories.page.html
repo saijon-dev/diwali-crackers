@@ -205,12 +205,12 @@
                   <div class="product-image-container">
 
                     @if (
-                      product.imageUrls &&
-                      product.imageUrls.length > 0
+                      product.images &&
+                      product.images.length > 0
                     ) {
 
                       <img
-                        [src]="product.imageUrls[0]"
+                        [src]="product.images[0].imageUrl"
                         [alt]="product.productName"
                         class="product-image"
                       />

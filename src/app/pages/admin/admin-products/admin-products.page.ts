@@ -1,216 +1,250 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
 
 import {
   IonContent,
-  IonIcon,
-    IonBackButton
+  IonIcon
 } from '@ionic/angular';
 
-import {
-  addIcons
-} from 'ionicons';
+import { addIcons } from 'ionicons';
 
 import {
   addOutline,
+  closeOutline,
+  gridOutline,
+  logOutOutline,
   menuOutline,
-  searchOutline,
-  chevronDownOutline,
-  cubeOutline,
-  ellipsisVerticalOutline
+  searchOutline
 } from 'ionicons/icons';
 
 
-interface AdminProduct {
+/* ====================================================
+   PRODUCT IMAGE
+==================================================== */
 
-  id: number;
+export interface AdminProductImage {
+  productImageId: number;
+  imageUrl: string;
+}
 
-  name: string;
 
-  category: string;
+/* ====================================================
+   ADMIN PRODUCT
+==================================================== */
 
-  price: number;
-
-  stock: number;
-
-  image: string;
-
+export interface AdminProduct {
+  productId: number;
+  productName: string;
+  categoryId: number;
+  categoryName: string;
+  images: AdminProductImage[];
 }
 
 
 @Component({
   selector: 'app-admin-products',
-
   templateUrl: './admin-products.page.html',
-
   styleUrls: ['./admin-products.page.scss'],
-
   standalone: true,
-
   imports: [
     IonContent,
-    IonIcon,
-    FormsModule,
-      IonBackButton
+    IonIcon
   ]
 })
 export class AdminProductsPage {
 
-
-
-  menuOpen = false;
-
-  /* =====================================
-     SEARCH
-     ===================================== */
-
   searchText = '';
 
-
-  /* =====================================
-     CATEGORY FILTER
-     ===================================== */
-
-  selectedCategory = 'all';
+  isMenuOpen = false;
 
 
-  /* =====================================
-     CATEGORY LIST
-     ===================================== */
+  /* ====================================================
+     TEMPORARY ADMIN PRODUCTS
 
-  categories: string[] = [
+     Later replace with:
+     GET /api/admin/products
+  ==================================================== */
 
-    'all',
-
-    'Sparklers',
-
-    'Chakkers',
-
-    'Flower Pots',
-
-    'Rockets',
-
-    'Sky Shots',
-
-    'Gift Boxes',
-
-    'Roman Candles',
-
-    'Walas'
-
-  ];
-
-
-  /* =====================================
-     PRODUCTS
-     ===================================== */
-
-  products: AdminProduct[] = [
+  adminProducts: AdminProduct[] = [
 
     {
-      id: 1,
-      name: '12" Sparklers (10 pcs)',
-      category: 'Sparklers',
-      price: 150,
-      stock: 100,
-      image: 'assets/images/rectangle-image.png'
+      productId: 1,
+      productName: 'Flower Pot',
+      categoryId: 1,
+      categoryName: 'Flower Pots',
+      images: [
+        {
+          productImageId: 1,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 2,
-      name: 'Colour Sky (5 pcs)',
-      category: 'Sky Shots',
-      price: 220,
-      stock: 50,
-      image: 'assets/images/rectangle-image.png'
+      productId: 2,
+      productName: 'Color Sparklers',
+      categoryId: 2,
+      categoryName: 'Sparklers',
+      images: [
+        {
+          productImageId: 2,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 3,
-      name: 'Flower Pot (Big)',
-      category: 'Flower Pots',
-      price: 299,
-      stock: 75,
-      image: 'assets/images/rectangle-image.png'
+      productId: 3,
+      productName: 'Rocket',
+      categoryId: 3,
+      categoryName: 'Rockets',
+      images: [
+        {
+          productImageId: 3,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 4,
-      name: 'Rocket Set (5 pcs)',
-      category: 'Rockets',
-      price: 180,
-      stock: 60,
-      image: 'assets/images/rectangle-image.png'
+      productId: 4,
+      productName: 'Chakkar',
+      categoryId: 4,
+      categoryName: 'Chakkars',
+      images: [
+        {
+          productImageId: 4,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 5,
-      name: 'Sky Shots (12 shots)',
-      category: 'Sky Shots',
-      price: 450,
-      stock: 20,
-      image: 'assets/images/rectangle-image.png'
+      productId: 5,
+      productName: 'Atom Bomb',
+      categoryId: 5,
+      categoryName: 'Bombs',
+      images: [
+        {
+          productImageId: 5,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 6,
-      name: 'Gift Box (Combo)',
-      category: 'Gift Boxes',
-      price: 599,
-      stock: 35,
-      image: 'assets/images/rectangle-image.png'
+      productId: 6,
+      productName: 'Color Fountain',
+      categoryId: 6,
+      categoryName: 'Fountains',
+      images: [
+        {
+          productImageId: 6,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 7,
-      name: 'Roman Candles (5 pcs)',
-      category: 'Roman Candles',
-      price: 250,
-      stock: 40,
-      image: 'assets/images/rectangle-image.png'
+      productId: 7,
+      productName: 'Ground Spinner',
+      categoryId: 7,
+      categoryName: 'Ground Spinners',
+      images: [
+        {
+          productImageId: 7,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     },
 
     {
-      id: 8,
-      name: '100 Wala',
-      category: 'Walas',
-      price: 450,
-      stock: 25,
-      image: 'assets/images/rectangle-image.png'
+      productId: 8,
+      productName: 'Mini Flower Pot',
+      categoryId: 1,
+      categoryName: 'Flower Pots',
+      images: [
+        {
+          productImageId: 8,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
+    },
+
+    {
+      productId: 9,
+      productName: 'Electric Sparkler',
+      categoryId: 2,
+      categoryName: 'Sparklers',
+      images: [
+        {
+          productImageId: 9,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
+    },
+
+    {
+      productId: 10,
+      productName: 'Big Rocket',
+      categoryId: 3,
+      categoryName: 'Rockets',
+      images: [
+        {
+          productImageId: 10,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
+    },
+
+    {
+      productId: 11,
+      productName: 'Fancy Fountain',
+      categoryId: 6,
+      categoryName: 'Fountains',
+      images: [
+        {
+          productImageId: 11,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
+    },
+
+    {
+      productId: 12,
+      productName: 'Wheel Chakkar',
+      categoryId: 4,
+      categoryName: 'Chakkars',
+      images: [
+        {
+          productImageId: 12,
+          imageUrl: 'assets/images/rectangle-image.png'
+        }
+      ]
     }
 
   ];
 
 
   constructor(
-    private router: Router,
-      private authService: AuthService
+    private router: Router
   ) {
 
     addIcons({
-
       addOutline,
-
+      closeOutline,
+      gridOutline,
+      logOutOutline,
       menuOutline,
-
-      searchOutline,
-
-      chevronDownOutline,
-
-      cubeOutline,
-
-      ellipsisVerticalOutline
-
+      searchOutline
     });
 
   }
 
 
-  /* =====================================
-     FILTERED PRODUCTS
-     ===================================== */
+  /* ====================================================
+     FILTER
+  ==================================================== */
 
   get filteredProducts(): AdminProduct[] {
 
@@ -219,30 +253,80 @@ export class AdminProductsPage {
         .trim()
         .toLowerCase();
 
+    if (!search) {
+      return this.adminProducts;
+    }
 
-    return this.products.filter(product => {
-
-      const matchesSearch =
-        product.name
+    return this.adminProducts.filter(
+      product =>
+        product.productName
           .toLowerCase()
-          .includes(search);
+          .includes(search)
+        ||
+        product.categoryName
+          .toLowerCase()
+          .includes(search)
+    );
+  }
 
 
-      const matchesCategory =
-        this.selectedCategory === 'all' ||
-        product.category === this.selectedCategory;
+  /* ====================================================
+     SEARCH
+  ==================================================== */
 
+  onSearchChange(event: Event): void {
 
-      return matchesSearch && matchesCategory;
+    const input =
+      event.target as HTMLInputElement;
 
-    });
+    this.searchText = input.value;
 
   }
 
 
-  /* =====================================
-     ADD PRODUCT
-     ===================================== */
+  clearSearch(): void {
+
+    this.searchText = '';
+
+  }
+
+
+  /* ====================================================
+     GET PRODUCT IMAGE
+  ==================================================== */
+
+  getProductImage(product: AdminProduct): string {
+
+    return (
+      product.images?.[0]?.imageUrl
+      ||
+      'assets/images/rectangle-image.png'
+    );
+
+  }
+
+
+  /* ====================================================
+     EXISTING ADMIN PRODUCT
+  ==================================================== */
+
+  openProduct(product: AdminProduct): void {
+
+    this.router.navigate(
+      ['/tabs/add-product'],
+      {
+        state: {
+          adminProduct: product
+        }
+      }
+    );
+
+  }
+
+
+  /* ====================================================
+     ADD FROM SCRATCH
+  ==================================================== */
 
   addProduct(): void {
 
@@ -253,55 +337,46 @@ export class AdminProductsPage {
   }
 
 
-  /* =====================================
-     PRODUCT MENU
-     ===================================== */
+  /* ====================================================
+     SIDE MENU
+  ==================================================== */
 
-  openProductMenu(
-    product: AdminProduct
-  ): void {
+  toggleMenu(): void {
 
-    console.log(
-      'Product Menu:',
-      product
-    );
+    this.isMenuOpen =
+      !this.isMenuOpen;
 
   }
 
 
-  /* =====================================
-   SIDE MENU
-   ===================================== */
+  closeMenu(): void {
 
-toggleMenu(): void {
+    this.isMenuOpen = false;
 
-  this.menuOpen =
-    !this.menuOpen;
-
-}
+  }
 
 
-closeMenu(): void {
+  /* ====================================================
+     LOGOUT
+  ==================================================== */
 
-  this.menuOpen = false;
+  logout(): void {
 
-}
+    this.closeMenu();
 
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('role');
 
-/* =====================================
-   LOGOUT
-   ===================================== */
+    localStorage.removeItem('smartlearn_token');
+    localStorage.removeItem('smartlearn_refresh_token');
+    localStorage.removeItem('smartlearn_role');
+    localStorage.removeItem('smartlearn_user_id');
 
-logout(): void {
+    this.router.navigate([
+      '/admin-login'
+    ]);
 
-  this.menuOpen = false;
-
-  this.authService.logout();
-
-  this.router.navigate([
-    '/admin-login'
-  ]);
-
-}
+  }
 
 }

@@ -95,8 +95,8 @@
             <!-- Previous -->
 
             @if (
-              product.imageUrls &&
-              product.imageUrls.length > 1
+              product.images &&
+              product.images.length > 1
             ) {
 
               <button
@@ -118,21 +118,21 @@
             <!-- Main Image -->
 
             @if (
-              product.imageUrls &&
-              product.imageUrls.length > 0
+              product.images &&
+              product.images.length > 0
             ) {
 
               <img
                 class="main-product-image"
-                [src]="
-                  product.imageUrls[selectedImageIndex]
-                "
+                [src]="getCurrentImage()"
                 [alt]="product.productName"
               >
 
             } @else {
 
-              <div class="main-product-image product-image-placeholder">
+              <div
+                class="main-product-image product-image-placeholder"
+              >
 
                 <ion-icon
                   name="image-outline">
@@ -146,8 +146,8 @@
             <!-- Next -->
 
             @if (
-              product.imageUrls &&
-              product.imageUrls.length > 1
+              product.images &&
+              product.images.length > 1
             ) {
 
               <button
@@ -173,15 +173,15 @@
           ========================== -->
 
           @if (
-            product.imageUrls &&
-            product.imageUrls.length > 1
+            product.images &&
+            product.images.length > 1
           ) {
 
             <div class="thumbnail-row">
 
               @for (
-                image of product.imageUrls;
-                track $index
+                image of product.images;
+                track image.productImageId
               ) {
 
                 <button
@@ -194,7 +194,7 @@
                 >
 
                   <img
-                    [src]="image"
+                    [src]="image.imageUrl"
                     [alt]="product.productName"
                   >
 
@@ -530,12 +530,12 @@
                 <div class="explore-image">
 
                   @if (
-                    productItem.imageUrls &&
-                    productItem.imageUrls.length > 0
+                    productItem.images &&
+                    productItem.images.length > 0
                   ) {
 
                     <img
-                      [src]="productItem.imageUrls[0]"
+                      [src]="productItem.images[0].imageUrl"
                       [alt]="productItem.productName"
                     >
 
@@ -660,14 +660,6 @@
          BOTTOM DECORATION
     ========================== -->
 
-    <div class="bottom-decoration">
-
-      <img
-        src="assets/images/bottom-leftdesign.png"
-        alt=""
-      >
-
-    </div>
 
   </div>
 

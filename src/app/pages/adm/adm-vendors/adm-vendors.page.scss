@@ -1,16 +1,20 @@
 :host {
   display: block;
+
   width: 100%;
   height: 100%;
 }
+
 
 /* =========================================
    PAGE
 ========================================= */
 
 .adm-vendors-content {
-  --background: #ffefad;
+  --background:
+    var(--diwali-background);
 }
+
 
 .adm-vendors-page {
   position: relative;
@@ -22,9 +26,14 @@
 
   padding-bottom: 90px;
 
-  background: #ffefad;
+  --background:
+    var(--diwali-background);
 
-  font-family: 'Poppins', sans-serif;
+  font-family:
+    'Poppins',
+    'Segoe UI',
+    Arial,
+    sans-serif;
 }
 
 
@@ -41,6 +50,7 @@
   width: 100%;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -60,6 +70,7 @@
     url('/assets/images/top-bg.png');
 
   background-size: cover;
+
   background-position: center;
 
   z-index: 5;
@@ -72,6 +83,7 @@
 
 .header-title {
   width: 100%;
+
   max-width: 80%;
 
   text-align: center;
@@ -79,12 +91,17 @@
   color: #fff8dc;
 }
 
+
 .header-title h1 {
   margin: 0;
 
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family:
+    Georgia,
+    'Times New Roman',
+    serif;
 
   font-size: 22px;
+
   font-weight: 700;
 
   line-height: 1.15;
@@ -131,9 +148,12 @@
   --padding-bottom: 0;
 }
 
+
 .back-button::part(native) {
   background: transparent;
+
   border: none;
+
   box-shadow: none;
 
   padding: 0;
@@ -146,6 +166,7 @@
 
 .search-section {
   display: flex;
+
   align-items: center;
 
   gap: 9px;
@@ -172,6 +193,7 @@
   height: 48px;
 }
 
+
 .search-box input {
   width: 100%;
   height: 48px;
@@ -193,11 +215,16 @@
   font-family: 'Poppins', sans-serif;
 
   font-size: 13px;
+
+  box-shadow:
+    0 2px 8px rgba(50, 30, 0, 0.08);
 }
+
 
 .search-box input::placeholder {
   color: #99917e;
 }
+
 
 .search-box input:focus {
   border-color: #ef0b1c;
@@ -205,6 +232,7 @@
   box-shadow:
     0 0 0 3px rgba(239, 11, 28, 0.07);
 }
+
 
 .search-icon {
   position: absolute;
@@ -223,8 +251,7 @@
 
 
 /* =========================================
-   ADD VENDOR BUTTON
-   Same style as Vendor Products
+   ADD VENDOR
 ========================================= */
 
 .add-vendor-button {
@@ -234,6 +261,7 @@
   height: 48px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
@@ -251,13 +279,13 @@
     0 5px 12px rgba(239, 11, 28, 0.20);
 
   cursor: pointer;
-
-  -webkit-tap-highlight-color: transparent;
 }
+
 
 .add-vendor-button ion-icon {
   font-size: 25px;
 }
+
 
 .add-vendor-button:active {
   transform: scale(0.94);
@@ -270,6 +298,7 @@
 
 .status-filters {
   display: flex;
+
   align-items: center;
 
   gap: 8px;
@@ -285,9 +314,11 @@
   scrollbar-width: none;
 }
 
+
 .status-filters::-webkit-scrollbar {
   display: none;
 }
+
 
 .status-filter {
   flex-shrink: 0;
@@ -311,14 +342,8 @@
   font-weight: 600;
 
   cursor: pointer;
-
-  -webkit-tap-highlight-color: transparent;
-
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
 }
+
 
 .status-filter.active {
   border-color: #ef0b1c;
@@ -326,10 +351,6 @@
   background: #ef0b1c;
 
   color: #fff8dc;
-}
-
-.status-filter:active {
-  transform: scale(0.96);
 }
 
 
@@ -360,6 +381,7 @@
   position: relative;
 
   display: flex;
+
   align-items: center;
 
   width: 100%;
@@ -370,7 +392,8 @@
 
   padding: 12px 50px 12px 12px;
 
-  border: 1px solid rgba(23, 35, 60, 0.07);
+  border:
+    1px solid rgba(23, 35, 60, 0.07);
 
   border-radius: 16px;
 
@@ -384,9 +407,8 @@
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
-
-  -webkit-tap-highlight-color: transparent;
 }
+
 
 .vendor-card:active {
   transform: scale(0.985);
@@ -413,6 +435,7 @@
   background: #f3ecd1;
 }
 
+
 .vendor-image {
   display: block;
 
@@ -424,7 +447,7 @@
 
 
 /* =========================================
-   VENDOR INFORMATION
+   INFORMATION
 ========================================= */
 
 .vendor-information {
@@ -435,9 +458,11 @@
   padding: 0 10px;
 }
 
+
 .vendor-name-row {
   min-width: 0;
 }
+
 
 .vendor-name-row h2 {
   margin: 0;
@@ -446,13 +471,38 @@
 
   color: #17233c;
 
-  font-family: 'Poppins', sans-serif;
+  font-family:
+    'Poppins',
+    sans-serif;
 
   font-size: 15px;
 
   font-weight: 700;
 
   line-height: 1.3;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   OWNER NAME
+========================================= */
+
+.vendor-owner {
+  margin-top: 2px;
+
+  overflow: hidden;
+
+  color: #625d51;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
 
   white-space: nowrap;
 
@@ -471,7 +521,7 @@
 
   gap: 4px;
 
-  margin-top: 5px;
+  margin-top: 4px;
 
   color: #625d51;
 
@@ -480,6 +530,7 @@
   line-height: 1.3;
 }
 
+
 .vendor-location ion-icon {
   flex-shrink: 0;
 
@@ -487,6 +538,7 @@
 
   color: #ef0b1c;
 }
+
 
 .vendor-location span {
   overflow: hidden;
@@ -498,17 +550,17 @@
 
 
 /* =========================================
-   STATS
+   CONTACT
 ========================================= */
 
-.vendor-stats {
+.vendor-contact {
   display: flex;
 
   align-items: center;
 
   gap: 5px;
 
-  margin-top: 7px;
+  margin-top: 5px;
 
   color: #99917e;
 
@@ -518,6 +570,16 @@
 
   line-height: 1;
 }
+
+
+.vendor-contact span:first-child {
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
 
 .separator {
   color: #c4b89e;
@@ -532,8 +594,10 @@
   position: absolute;
 
   right: 45px;
+
   top: 12px;
 }
+
 
 .status-badge {
   display: inline-flex;
@@ -542,6 +606,7 @@
   justify-content: center;
 
   min-width: 48px;
+
   height: 20px;
 
   padding: 0 8px;
@@ -557,11 +622,13 @@
   line-height: 1;
 }
 
+
 .active-status {
   background: #e7f6e9;
 
   color: #24722d;
 }
+
 
 .inactive-status {
   background: #fff0ed;
@@ -578,6 +645,7 @@
   position: absolute;
 
   right: 7px;
+
   top: 50%;
 
   transform: translateY(-50%);
@@ -601,6 +669,7 @@
   cursor: pointer;
 }
 
+
 .vendor-arrow ion-icon {
   font-size: 18px;
 }
@@ -614,6 +683,7 @@
   position: absolute;
 
   right: 39px;
+
   bottom: 7px;
 
   width: 26px;
@@ -635,8 +705,109 @@
   cursor: pointer;
 }
 
+
 .vendor-menu-button ion-icon {
   font-size: 17px;
+}
+
+
+/* =========================================
+   LOADING / ERROR
+========================================= */
+
+.vendor-state {
+  min-height: 45vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 30px 20px;
+
+  text-align: center;
+
+  color: #625d51;
+}
+
+
+.vendor-state p {
+  margin: 0;
+
+  font-size: 11px;
+}
+
+
+.vendor-state h3 {
+  margin: 3px 0 0;
+
+  color: #17233c;
+
+  font-family: Georgia, serif;
+
+  font-size: 18px;
+}
+
+
+.error-state ion-icon {
+  font-size: 42px;
+
+  color: #ef0b1c;
+}
+
+
+.loading-spinner {
+  width: 30px;
+
+  height: 30px;
+
+  border: 3px solid rgba(23, 35, 60, 0.12);
+
+  border-top-color: #ef0b1c;
+
+  border-radius: 50%;
+
+  animation:
+    vendorSpin 0.8s linear infinite;
+}
+
+
+@keyframes vendorSpin {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+.retry-button {
+  margin-top: 4px;
+
+  padding: 9px 17px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #17233c;
+
+  color: #fff8dc;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 600;
 }
 
 
@@ -650,6 +821,7 @@
   flex-direction: column;
 
   align-items: center;
+
   justify-content: center;
 
   padding: 55px 20px;
@@ -657,21 +829,26 @@
   text-align: center;
 }
 
+
 .no-vendors ion-icon {
   font-size: 44px;
 
   color: #ef0b1c;
 }
 
+
 .no-vendors h3 {
   margin: 12px 0 4px;
 
   color: #17233c;
 
-  font-size: 15px;
+  font-family: Georgia, serif;
+
+  font-size: 17px;
 
   font-weight: 700;
 }
+
 
 .no-vendors p {
   margin: 0;
@@ -690,6 +867,7 @@
 
   .vendors-header {
     height: 70px;
+
     min-height: 70px;
 
     border-radius: 0 0 22px 22px;
@@ -697,23 +875,23 @@
     padding: 16px 42px 12px;
   }
 
+
   .header-title {
     max-width: 82%;
   }
+
 
   .header-title h1 {
     font-size: 20px;
   }
 
+
   .back-button {
     left: 4px;
+
     top: 18px;
-
-    width: 34px;
-    height: 34px;
-
-    --icon-font-size: 23px;
   }
+
 
   .search-section {
     gap: 8px;
@@ -724,10 +902,12 @@
       9px;
   }
 
+
   .search-box,
   .search-box input {
     height: 46px;
   }
+
 
   .search-box input {
     padding-left: 39px;
@@ -735,28 +915,29 @@
     font-size: 12px;
   }
 
+
   .search-icon {
     left: 13px;
+
     font-size: 19px;
   }
 
+
   .add-vendor-button {
     width: 46px;
+
     height: 46px;
-
-    border-radius: 13px;
   }
 
-  .add-vendor-button ion-icon {
-    font-size: 24px;
-  }
 
   .status-filters {
     gap: 7px;
 
     padding-left: 12px;
+
     padding-right: 12px;
   }
+
 
   .status-filter {
     height: 32px;
@@ -766,12 +947,15 @@
     font-size: 10px;
   }
 
+
   .vendor-list {
     gap: 8px;
 
     padding-left: 12px;
+
     padding-right: 12px;
   }
+
 
   .vendor-card {
     min-height: 88px;
@@ -785,51 +969,53 @@
     border-radius: 14px;
   }
 
+
   .vendor-image-container {
     width: 62px;
+
     height: 62px;
 
     border-radius: 11px;
   }
 
+
   .vendor-information {
     padding-left: 9px;
+
     padding-right: 6px;
   }
+
 
   .vendor-name-row h2 {
     font-size: 14px;
   }
 
-  .vendor-location {
-    margin-top: 4px;
 
+  .vendor-location {
     font-size: 9px;
   }
 
-  .vendor-location ion-icon {
-    font-size: 12px;
-  }
 
-  .vendor-stats {
-    margin-top: 6px;
-
+  .vendor-contact {
     font-size: 8px;
   }
 
+
   .vendor-status {
     right: 40px;
+
     top: 9px;
   }
 
+
   .status-badge {
     min-width: 43px;
-    height: 18px;
 
-    padding: 0 7px;
+    height: 18px;
 
     font-size: 7px;
   }
+
 
   .vendor-arrow {
     right: 5px;
@@ -837,17 +1023,17 @@
     width: 28px;
   }
 
+
   .vendor-menu-button {
     right: 33px;
+
     bottom: 4px;
 
     width: 23px;
+
     height: 23px;
   }
 
-  .vendor-menu-button ion-icon {
-    font-size: 15px;
-  }
 }
 
 
@@ -863,30 +1049,42 @@
     margin: 0 auto;
   }
 
+
   .vendors-header {
     border-radius: 0 0 24px 24px;
   }
 
+
   .vendor-card {
     min-height: 100px;
 
-    padding: 13px 54px 13px 13px;
+    padding:
+      13px
+      54px
+      13px
+      13px;
   }
+
 
   .vendor-image-container {
     width: 72px;
+
     height: 72px;
   }
+
 
   .vendor-name-row h2 {
     font-size: 16px;
   }
 
+
   .vendor-location {
     font-size: 10px;
   }
 
-  .vendor-stats {
+
+  .vendor-contact {
     font-size: 9px;
   }
+
 }

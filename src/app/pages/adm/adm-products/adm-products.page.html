@@ -1,0 +1,807 @@
+<ion-content
+  [fullscreen]="true"
+  class="adm-products-content"
+>
+
+  <div class="adm-products-page">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="products-header">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+        aria-label="Go back"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
+      </button>
+
+
+      <div class="header-title">
+
+        <h1>
+          Products
+        </h1>
+
+        <span>
+          Manage your crackers
+        </span>
+
+      </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="products-main">
+
+
+      <!-- ===================================================
+           SEARCH
+      ==================================================== -->
+
+      <div class="product-actions">
+
+        <div class="search-box">
+
+          <ion-icon
+            name="search-outline"
+            class="search-icon"
+          ></ion-icon>
+
+
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            placeholder="Search products"
+            autocomplete="off"
+          />
+
+
+          @if (searchText) {
+
+            <button
+              type="button"
+              class="clear-search"
+              (click)="searchText = ''"
+              aria-label="Clear search"
+            >
+
+              <ion-icon
+                name="close-outline"
+              ></ion-icon>
+
+            </button>
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- ===================================================
+           PRODUCT COUNT
+      ==================================================== -->
+
+      <div class="products-heading">
+
+        <div>
+
+          <span class="section-kicker">
+            Collection
+          </span>
+
+          <h2>
+            All Products
+          </h2>
+
+        </div>
+
+
+        <span class="product-count">
+          {{ filteredProducts.length }}
+        </span>
+
+      </div>
+
+
+      <!-- ===================================================
+           PRODUCT LIST
+      ==================================================== -->
+
+      @if (filteredProducts.length > 0) {
+
+        <section class="product-list">
+
+
+          @for (
+            product of filteredProducts;
+            track product.id
+          ) {
+
+            <article
+              class="product-card"
+            >
+
+
+              <!-- PRODUCT IMAGE -->
+
+              <div class="product-image">
+
+                @if (
+                  product.images.length > 0
+                ) {
+
+                  <img
+                    [src]="product.images[0]"
+                    [alt]="product.productName"
+                  />
+
+                } @else {
+
+                  <div
+                    class="image-placeholder"
+                  >
+
+                    <ion-icon
+                      name="cube-outline"
+                    ></ion-icon>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- PRODUCT INFORMATION -->
+
+              <div class="product-info">
+
+                <span class="product-label">
+                  PRODUCT
+                </span>
+
+
+                <h3>
+                  {{ product.productName }}
+                </h3>
+
+
+                <span class="product-category">
+                  {{
+                    getCategoryName(
+                      product.categoryId
+                    )
+                  }}
+                </span>
+
+
+                <span
+                  class="product-status"
+                  [class.inactive]="
+                    product.status === 'INACTIVE'
+                  "
+                >
+                  {{ product.status }}
+                </span>
+
+
+                @if (
+                  product.images.length > 1
+                ) {
+
+                  <span class="image-count">
+
+                    <ion-icon
+                      name="image-outline"
+                    ></ion-icon>
+
+                    {{ product.images.length }}
+                    images
+
+                  </span>
+
+                } @else {
+
+                  <span class="image-count">
+
+                    <ion-icon
+                      name="image-outline"
+                    ></ion-icon>
+
+                    1 image
+
+                  </span>
+
+                }
+
+              </div>
+
+
+              <!-- EDIT BUTTON -->
+
+              <button
+                type="button"
+                class="product-arrow"
+                aria-label="Edit product"
+                (click)="
+                  openEditProduct(product)
+                "
+              >
+
+                <span>
+                  ›
+                </span>
+
+              </button>
+
+
+            </article>
+
+          }
+
+        </section>
+
+
+      } @else {
+
+
+        <!-- =================================================
+             EMPTY STATE
+        ================================================== -->
+
+        <section
+          class="empty-products"
+        >
+
+          <div class="empty-icon">
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+          </div>
+
+
+          <h3>
+            No products found
+          </h3>
+
+
+          <p>
+            Try a different search or add
+            a new product.
+          </p>
+
+
+          <button
+            type="button"
+            (click)="openAddProduct()"
+          >
+
+            <ion-icon
+              name="add-outline"
+            ></ion-icon>
+
+            Add Product
+
+          </button>
+
+        </section>
+
+      }
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       ADD / UPDATE PRODUCT MODAL
+  ====================================================== -->
+
+  @if (isAddProductOpen) {
+
+    <div
+      class="modal-layer"
+      (click)="closeAddProduct()"
+    >
+
+
+      <div
+        class="add-product-modal"
+        (click)="$event.stopPropagation()"
+      >
+
+
+        <!-- =================================================
+             MODAL HEADER
+        ================================================== -->
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-kicker">
+
+              {{
+                isEditMode
+                  ? 'EDIT PRODUCT'
+                  : 'NEW PRODUCT'
+              }}
+
+            </span>
+
+
+            <h2>
+
+              {{
+                isEditMode
+                  ? 'Update Product'
+                  : 'Add Product'
+              }}
+
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="modal-close"
+            (click)="closeAddProduct()"
+            [disabled]="isAddingProduct"
+            aria-label="Close"
+          >
+
+            <ion-icon
+              name="close-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <!-- =================================================
+             DECORATIVE LINE
+        ================================================== -->
+
+        <div class="modal-decoration">
+
+          <span>
+            ✦
+          </span>
+
+          <div></div>
+
+          <span>
+            ✦
+          </span>
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT NAME
+        ================================================== -->
+
+        <div class="form-field">
+
+          <label>
+            Product Name
+          </label>
+
+
+          <div class="input-wrapper">
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+
+            <input
+              type="text"
+              [(ngModel)]="productName"
+              placeholder="Enter product name"
+              maxlength="100"
+              autocomplete="off"
+            />
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT CATEGORY
+        ================================================== -->
+
+        <div class="form-field">
+
+          <label>
+            Product Category
+          </label>
+
+
+          <!-- CATEGORY SELECT + ADD CATEGORY BUTTON -->
+
+          <div class="category-select-row">
+
+            <div
+              class="input-wrapper category-wrapper"
+            >
+
+              <ion-icon
+                name="cube-outline"
+              ></ion-icon>
+
+
+              <select
+                [(ngModel)]="productCategoryId"
+              >
+
+                <option
+                  [ngValue]="null"
+                  disabled
+                >
+                  Select product category
+                </option>
+
+
+                @for (
+                  category of categories;
+                  track category.categoryId
+                ) {
+
+                  <option
+                    [ngValue]="category.categoryId"
+                  >
+                    {{ category.categoryName }}
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <!-- ADD CATEGORY -->
+
+            <button
+              type="button"
+              class="add-category-button"
+              (click)="goToCategories()"
+              aria-label="Add category"
+            >
+
+              <ion-icon
+                name="add-outline"
+              ></ion-icon>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT STATUS
+        ================================================== -->
+
+        <div class="form-field">
+
+          <label>
+            Product Status
+          </label>
+
+
+          <div
+            class="input-wrapper category-wrapper"
+          >
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+
+            <select
+              [(ngModel)]="productStatus"
+            >
+
+              <option value="ACTIVE">
+                Active
+              </option>
+
+              <option value="INACTIVE">
+                Inactive
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT IMAGE
+        ================================================= -->
+
+        <div class="form-field">
+
+
+          <div
+            class="upload-label-row"
+          >
+
+            <label>
+              Product Image
+            </label>
+
+
+            @if (
+              !isEditMode &&
+              selectedImages.length > 0
+            ) {
+
+              <span>
+                {{ selectedImages.length }}
+                selected
+              </span>
+
+            }
+
+          </div>
+
+
+          <!-- ADD MODE IMAGE UPLOAD -->
+
+          @if (!isEditMode) {
+
+            <label
+              class="upload-box"
+              for="productImages"
+            >
+
+              <div class="upload-icon">
+
+                <ion-icon
+                  name="cloud-upload-outline"
+                ></ion-icon>
+
+              </div>
+
+
+              <div class="upload-text">
+
+                <strong>
+                  Add product image
+                </strong>
+
+                <span>
+                  Choose an image
+                </span>
+
+              </div>
+
+
+              <div class="upload-plus">
+                +
+              </div>
+
+            </label>
+
+
+            <input
+              id="productImages"
+              type="file"
+              accept="image/*"
+              hidden
+              (change)="
+                onImagesSelected($event)
+              "
+            />
+
+          }
+
+
+          <!-- EXISTING / SELECTED IMAGE -->
+
+          @if (
+            imagePreviews.length > 0
+          ) {
+
+            <div
+              class="preview-section"
+            >
+
+              <div
+                class="preview-title"
+              >
+
+                {{
+                  isEditMode
+                    ? 'Current Image'
+                    : 'Selected Image'
+                }}
+
+              </div>
+
+
+              <div
+                class="preview-grid"
+              >
+
+
+                @for (
+                  preview of imagePreviews;
+                  track $index;
+                  let i = $index
+                ) {
+
+                  <div
+                    class="preview-card"
+                  >
+
+
+                    <img
+                      [src]="preview"
+                      alt="Product image"
+                    />
+
+
+                    @if (!isEditMode) {
+
+                      <button
+                        type="button"
+                        class="remove-image"
+                        (click)="
+                          removeImage(i)
+                        "
+                        aria-label="Remove image"
+                      >
+
+                        <ion-icon
+                          name="trash-outline"
+                        ></ion-icon>
+
+                      </button>
+
+                    }
+
+
+                    @if (i === 0) {
+
+                      <span
+                        class="main-image-badge"
+                      >
+                        Main
+                      </span>
+
+                    }
+
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <div class="modal-actions">
+
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeAddProduct()"
+            [disabled]="isAddingProduct"
+          >
+            Cancel
+          </button>
+
+
+          <button
+            type="button"
+            class="save-button"
+            [disabled]="
+              !productName.trim() ||
+              productCategoryId === null ||
+              isAddingProduct ||
+              (!isEditMode &&
+                selectedImages.length === 0)
+            "
+            (click)="addProduct()"
+          >
+
+
+            @if (isAddingProduct) {
+
+              <span
+                class="button-loader"
+              ></span>
+
+            } @else {
+
+              <ion-icon
+                [name]="
+                  isEditMode
+                    ? 'cube-outline'
+                    : 'add-outline'
+                "
+              ></ion-icon>
+
+            }
+
+
+            <span>
+
+              {{
+                isAddingProduct
+                  ? (
+                    isEditMode
+                      ? 'Updating...'
+                      : 'Adding...'
+                  )
+                  : (
+                    isEditMode
+                      ? 'Update Product'
+                      : 'Add Product'
+                  )
+              }}
+
+            </span>
+
+          </button>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  }
+
+</ion-content>
+
+
+<!-- =========================================================
+     FLOATING ADD PRODUCT BUTTON
+========================================================== -->
+
+<button
+  type="button"
+  class="add-product-button"
+  (click)="openAddProduct()"
+  aria-label="Add product"
+>
+
+  <ion-icon
+    name="add-outline"
+  ></ion-icon>
+
+</button>

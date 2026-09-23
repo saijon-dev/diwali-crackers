@@ -1,0 +1,510 @@
+<ion-content
+  [fullscreen]="true"
+  class="cart-content"
+>
+
+  <div class="cart-page">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header class="cart-header">
+
+
+      <!-- BACK -->
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+        aria-label="Back"
+      >
+
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
+
+      </button>
+
+
+      <!-- TITLE -->
+
+      <div class="header-title">
+
+        <h1>
+          Cart
+        </h1>
+
+        <p>
+          Review your selected crackers
+        </p>
+
+      </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================
+         CART CONTENT
+    ====================================== -->
+
+    <main class="cart-container">
+
+
+      <!-- =================================
+           CART HEADER / COUNT
+      ================================== -->
+
+      @if (cartItems.length > 0) {
+
+        <div class="cart-summary-heading">
+
+          <div class="cart-heading-left">
+
+            <div class="cart-icon">
+
+              <ion-icon
+                name="cart-outline"
+              ></ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <h2>
+                Your Cart
+              </h2>
+
+              <p>
+                {{ totalItems }}
+                {{ totalItems === 1 ? 'item' : 'items' }}
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================
+             CART ITEMS
+        ================================== -->
+
+        <section class="cart-items-section">
+
+
+          @for (
+            item of cartItems;
+            track item.cartItemId
+          ) {
+
+
+            <article
+              class="cart-item"
+            >
+
+
+              <!-- IMAGE -->
+
+              <div class="cart-item-image">
+
+                @if (item.imageUrl) {
+
+                  <img
+                    [src]="item.imageUrl"
+                    [alt]="item.productName"
+                  />
+
+                } @else {
+
+                  <div class="image-placeholder">
+
+                    <ion-icon
+                      name="image-outline"
+                    ></ion-icon>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+
+              <!-- INFORMATION -->
+
+              <div class="cart-item-details">
+
+
+                <div class="cart-item-top">
+
+                  <div class="cart-item-title">
+
+                    <span class="item-category">
+                      {{ item.categoryName }}
+                    </span>
+
+                    <h3>
+                      {{ item.productName }}
+                    </h3>
+
+                    <p class="pack-details">
+
+                      {{ item.packQuantity }}
+                      {{ item.packUnit }}
+
+                    </p>
+
+                  </div>
+
+
+                  <!-- REMOVE -->
+
+                  <button
+                    type="button"
+                    class="remove-button"
+                    (click)="removeItem(item)"
+                    aria-label="Remove item"
+                  >
+
+                    <ion-icon
+                      name="trash-outline"
+                    ></ion-icon>
+
+                  </button>
+
+                </div>
+
+
+
+                <!-- PRICE -->
+
+                <div class="cart-item-bottom">
+
+
+                  <div class="item-price">
+
+                    <span class="price-label">
+                      Price
+                    </span>
+
+                    <strong>
+                      ₹{{ item.sellingPrice }}
+                    </strong>
+
+                  </div>
+
+
+
+                  <!-- QUANTITY -->
+
+                  <div class="quantity-control">
+
+
+                    <button
+                      type="button"
+                      class="quantity-button"
+                      [disabled]="item.quantity <= 1"
+                      (click)="decreaseQuantity(item)"
+                    >
+
+                      <ion-icon
+                        name="remove-outline"
+                      ></ion-icon>
+
+                    </button>
+
+
+                    <span class="quantity-value">
+                      {{ item.quantity }}
+                    </span>
+
+
+                    <button
+                      type="button"
+                      class="quantity-button"
+                      [disabled]="
+                        item.quantity >=
+                        item.availableStock
+                      "
+                      (click)="increaseQuantity(item)"
+                    >
+
+                      <ion-icon
+                        name="add-outline"
+                      ></ion-icon>
+
+                    </button>
+
+
+                  </div>
+
+
+                </div>
+
+
+
+                <!-- ITEM TOTAL -->
+
+                <div class="item-total-row">
+
+                  <span>
+                    Item Total
+                  </span>
+
+                  <strong>
+                    ₹{{ getItemTotal(item) }}
+                  </strong>
+
+                </div>
+
+
+              </div>
+
+
+            </article>
+
+
+          }
+
+
+        </section>
+
+
+
+        <!-- =================================
+             BILLING SUMMARY
+        ================================== -->
+
+        <section class="billing-card">
+
+
+          <div class="billing-heading">
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+            <h2>
+              Bill Summary
+            </h2>
+
+            <span class="heading-decoration">
+              ✦
+            </span>
+
+          </div>
+
+
+
+          <!-- SUBTOTAL -->
+
+          <div class="billing-row">
+
+            <span>
+              Items Total
+            </span>
+
+            <strong>
+              ₹{{ calculatedSubtotal }}
+            </strong>
+
+          </div>
+
+
+
+          <!-- DISCOUNT -->
+
+          <div class="billing-row">
+
+            <span>
+              Discount
+            </span>
+
+            <strong class="discount-value">
+              - ₹{{ discount }}
+            </strong>
+
+          </div>
+
+
+
+          <!-- DELIVERY -->
+
+          <div class="billing-row">
+
+            <span>
+              Delivery
+            </span>
+
+            @if (deliveryCharge === 0) {
+
+              <strong class="free-value">
+                FREE
+              </strong>
+
+            } @else {
+
+              <strong>
+                ₹{{ deliveryCharge }}
+              </strong>
+
+            }
+
+          </div>
+
+
+
+          <!-- DIVIDER -->
+
+          <div class="billing-divider"></div>
+
+
+
+          <!-- GRAND TOTAL -->
+
+          <div class="grand-total-row">
+
+            <div>
+
+              <span>
+                Grand Total
+              </span>
+
+              <small>
+                {{ totalItems }} items
+              </small>
+
+            </div>
+
+
+            <strong>
+              ₹{{ grandTotal }}
+            </strong>
+
+          </div>
+
+
+        </section>
+
+
+
+        <!-- =================================
+             CONTINUE BUTTON
+        ================================== -->
+
+        <section class="checkout-section">
+
+
+          <button
+            type="button"
+            class="continue-button"
+            (click)="continueToCheckout()"
+          >
+
+            <span>
+              Continue to Checkout
+            </span>
+
+            <ion-icon
+              name="chevron-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="continue-shopping-button"
+            (click)="continueShopping()"
+          >
+
+            Continue Shopping
+
+          </button>
+
+
+        </section>
+
+
+      }
+
+
+      <!-- =================================
+           EMPTY CART
+      ================================== -->
+
+      @else {
+
+
+        <section class="empty-cart">
+
+
+          <div class="empty-cart-icon">
+
+            <ion-icon
+              name="cart-outline"
+            ></ion-icon>
+
+          </div>
+
+
+          <h2>
+            Your Cart is Empty
+          </h2>
+
+
+          <p>
+            Add some crackers to your cart
+            and they will appear here.
+          </p>
+
+
+          <button
+            type="button"
+            class="shop-button"
+            (click)="continueShopping()"
+          >
+
+            Start Shopping
+
+          </button>
+
+
+        </section>
+
+
+      }
+
+
+    </main>
+
+
+
+    <!-- =====================================
+         DECORATIONS
+    ====================================== -->
+
+    <img
+      src="assets/images/top-rightdesign.png"
+      alt=""
+      class="top-right-decoration"
+    />
+
+
+    <img
+      src="assets/images/bottom-leftdesign.png"
+      alt=""
+      class="bottom-left-decoration"
+    />
+
+
+  </div>
+
+</ion-content>

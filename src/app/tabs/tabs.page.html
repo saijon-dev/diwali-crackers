@@ -1,12 +1,4 @@
-<div class="tabs-container">
-
-  <!-- ================================= -->
-  <!-- PAGE CONTENT -->
-  <!-- ================================= -->
-
-<main class="tabs-content">
-  <ion-router-outlet></ion-router-outlet>
-</main>
+<ion-tabs>
 
 
   <!-- ================================= -->
@@ -15,31 +7,28 @@
 
   @if (role === null) {
 
-    <nav
-      class="bottom-navigation customer-navigation"
-      aria-label="Customer navigation">
+    <ion-tab-bar
+      slot="bottom"
+      class="bottom-navigation customer-navigation">
 
       @for (tab of customerTabs; track tab.route) {
 
-        <button
-          type="button"
-          class="nav-item"
-          [class.active]="isActive(tab.route)"
-          (click)="navigateTo(tab.route)">
+        <ion-tab-button
+          [tab]="tab.route">
 
           <ion-icon
             [name]="tab.icon">
           </ion-icon>
 
-          <span class="nav-label">
+          <ion-label>
             {{ tab.label }}
-          </span>
+          </ion-label>
 
-        </button>
+        </ion-tab-button>
 
       }
 
-    </nav>
+    </ion-tab-bar>
 
   }
 
@@ -50,31 +39,28 @@
 
   @if (role === 'VENDOR') {
 
-    <nav
-      class="bottom-navigation vendor-navigation"
-      aria-label="Vendor navigation">
+    <ion-tab-bar
+      slot="bottom"
+      class="bottom-navigation vendor-navigation">
 
       @for (tab of vendorTabs; track tab.route) {
 
-        <button
-          type="button"
-          class="nav-item"
-          [class.active]="isActive(tab.route)"
-          (click)="navigateTo(tab.route)">
+        <ion-tab-button
+          [tab]="tab.route">
 
           <ion-icon
             [name]="tab.icon">
           </ion-icon>
 
-          <span class="nav-label">
+          <ion-label>
             {{ tab.label }}
-          </span>
+          </ion-label>
 
-        </button>
+        </ion-tab-button>
 
       }
 
-    </nav>
+    </ion-tab-bar>
 
   }
 
@@ -85,32 +71,29 @@
 
   @if (role === 'ADMIN') {
 
-    <nav
-      class="bottom-navigation admin-navigation"
-      aria-label="Admin navigation">
+    <ion-tab-bar
+      slot="bottom"
+      class="bottom-navigation admin-navigation">
 
       @for (tab of adminTabs; track tab.route) {
 
-        <button
-          type="button"
-          class="nav-item"
-          [class.active]="isActive(tab.route)"
-          (click)="navigateTo(tab.route)">
+        <ion-tab-button
+          [tab]="tab.route">
 
           <ion-icon
             [name]="tab.icon">
           </ion-icon>
 
-          <span class="nav-label">
+          <ion-label>
             {{ tab.label }}
-          </span>
+          </ion-label>
 
-        </button>
+        </ion-tab-button>
 
       }
 
-    </nav>
+    </ion-tab-bar>
 
   }
 
-</div>
+</ion-tabs>

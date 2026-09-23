@@ -12,10 +12,7 @@
 
     <header class="home-header">
 
-
-      <!-- ================================
-           HAMBURGER MENU
-           ================================ -->
+      <!-- HAMBURGER MENU -->
 
       <button
         type="button"
@@ -31,9 +28,8 @@
       </button>
 
 
-      <!-- ================================
-           BRAND
-           ================================ -->
+
+      <!-- BRAND -->
 
       <div class="brand">
 
@@ -46,6 +42,7 @@
     </header>
 
 
+
     <!-- =====================================
          SEARCH
          ===================================== -->
@@ -54,13 +51,13 @@
 
       <ion-searchbar
         placeholder="Search for crackers, categories..."
-        [(ngModel)]="searchText"
-        mode="ios"
+        (click)="openSearch()"
         class="custom-search"
       >
       </ion-searchbar>
 
     </div>
+
 
 
     <!-- =====================================
@@ -78,8 +75,9 @@
     </section>
 
 
+
     <!-- =====================================
-         CATEGORIES HEADER
+         CATEGORIES
          ===================================== -->
 
     <section class="categories-section">
@@ -89,18 +87,21 @@
         <h2>
           Categories
         </h2>
-<button
-  type="button"
-  class="view-all"
-  (click)="openCategories()"
->
-  View All
-</button>
+
+
+        <button
+          type="button"
+          class="view-all"
+          (click)="openCategories()"
+        >
+          View All
+        </button>
 
       </div>
 
 
-      <!-- Categories -->
+
+      <!-- CATEGORY GRID -->
 
       <div class="category-grid">
 
@@ -125,6 +126,7 @@
 
             </div>
 
+
             <span class="category-name">
               {{ category.name }}
             </span>
@@ -138,11 +140,15 @@
     </section>
 
 
+
     <!-- =====================================
          NEW ARRIVALS
          ===================================== -->
 
     <section class="new-arrivals-section">
+
+
+      <!-- NEW ARRIVALS HEADER -->
 
       <div class="new-arrivals-header">
 
@@ -153,6 +159,7 @@
         />
 
       </div>
+
 
 
       <!-- ===================================
@@ -172,6 +179,7 @@
       }
 
 
+
       <!-- ===================================
            ERROR
            =================================== -->
@@ -187,6 +195,7 @@
             {{ productErrorMessage }}
           </p>
 
+
           <button
             type="button"
             (click)="loadProducts()"
@@ -197,6 +206,7 @@
         </div>
 
       }
+
 
 
       <!-- ===================================
@@ -210,10 +220,12 @@
 
         <div class="product-grid">
 
+
           @for (
             product of products;
             track product.productStoreId
           ) {
+
 
             <article
               class="product-card"
@@ -223,27 +235,30 @@
 
               <!-- =========================
                    PRODUCT IMAGE
-              ========================== -->
+                   ========================= -->
 
               <div class="product-image-container">
 
                 @if (
-                  product.imageUrls &&
-                  product.imageUrls.length > 0
+                  product.images &&
+                  product.images.length > 0
                 ) {
 
                   <img
-                    [src]="product.imageUrls[0]"
+                    [src]="product.images[0].imageUrl"
                     [alt]="product.productName"
                     class="product-image"
                   />
 
                 } @else {
 
-                  <div class="product-image-placeholder">
+                  <div
+                    class="product-image-placeholder"
+                  >
 
                     <ion-icon
-                      name="image-outline">
+                      name="image-outline"
+                    >
                     </ion-icon>
 
                   </div>
@@ -253,50 +268,69 @@
               </div>
 
 
+
               <!-- =========================
                    PRODUCT INFORMATION
-              ========================== -->
+                   ========================= -->
 
               <div class="product-information">
 
 
-                <!-- Category -->
+                <!-- CATEGORY -->
 
                 <span class="product-category">
+
                   {{ product.categoryName }}
+
                 </span>
 
 
-                <!-- Product Name -->
+
+                <!-- PRODUCT NAME -->
 
                 <h3>
+
                   {{ product.productName }}
+
                 </h3>
 
 
-                <!-- Price -->
+
+                <!-- PRICE -->
 
                 <div class="price-row">
+
 
                   @if (
                     product.mrp >
                     product.sellingPrice
                   ) {
 
-                    <span class="original-price">
+                    <span
+                      class="original-price"
+                    >
+
                       Rs.{{ product.mrp }}
+
                     </span>
 
                   }
 
-                  <span class="sale-price">
+
+                  <span
+                    class="sale-price"
+                  >
+
                     Rs.{{ product.sellingPrice }}
+
                   </span>
+
 
                 </div>
 
 
-                <!-- Stock -->
+
+                <!-- STOCK -->
 
                 @if (
                   product.isAvailable &&
@@ -304,19 +338,26 @@
                 ) {
 
                   <div class="product-stock">
+
                     In Stock
+
                   </div>
 
                 } @else {
 
-                  <div class="product-stock out-of-stock">
+                  <div
+                    class="product-stock out-of-stock"
+                  >
+
                     Out of Stock
+
                   </div>
 
                 }
 
 
-                <!-- Add To Cart -->
+
+                <!-- ADD TO CART -->
 
                 <button
                   type="button"
@@ -335,11 +376,15 @@
 
                 </button>
 
+
               </div>
+
 
             </article>
 
+
           }
+
 
 
           <!-- =================================
@@ -351,8 +396,10 @@
             <div class="no-products">
 
               <ion-icon
-                name="image-outline">
+                name="image-outline"
+              >
               </ion-icon>
+
 
               <p>
                 No products available.
@@ -362,15 +409,18 @@
 
           }
 
+
         </div>
 
       }
 
+
     </section>
 
 
+
     <!-- =====================================
-         BOTTOM DECORATION
+         DECORATIONS
          ===================================== -->
 
     <img
@@ -386,77 +436,88 @@
       class="top-right-decoration"
     />
 
+
   </div>
 
+</ion-content>
 
-  <!-- =====================================
-       SIDE MENU OVERLAY
-       ===================================== -->
 
-  @if (menuOpen) {
 
-    <div
-      class="menu-overlay"
-      (click)="closeMenu()"
+<!-- =================================================
+     SIDE MENU
+
+     IMPORTANT:
+     This is intentionally OUTSIDE ion-content.
+     This prevents ion-content / ion-tabs from
+     interfering with the menu positioning.
+     ================================================= -->
+
+@if (menuOpen) {
+
+  <div
+    class="menu-overlay"
+    (click)="closeMenu()"
+  >
+
+    <aside
+      class="side-menu"
+      (click)="$event.stopPropagation()"
     >
 
-      <aside
-        class="side-menu"
-        (click)="$event.stopPropagation()"
-      >
 
+      <!-- =================================
+           MENU HEADER
+           ================================= -->
 
-        <!-- ===============================
-             MENU HEADER
-             =============================== -->
-
-        <div class="side-menu-header">
-
-          <button
-            type="button"
-            class="close-menu-button"
-            (click)="closeMenu()"
-            aria-label="Close menu"
-          >
-
-            <ion-icon
-              name="close-outline"
-            ></ion-icon>
-
-          </button>
-
-        </div>
-
-
-        <!-- ===============================
-             ADMIN LOGIN
-             =============================== -->
+      <div class="side-menu-header">
 
         <button
           type="button"
-          class="admin-login-area"
-          (click)="goToAdminLogin()"
+          class="close-menu-button"
+          (click)="closeMenu()"
+          aria-label="Close menu"
         >
 
-          <span class="admin-decoration">
-            ✦
-          </span>
-
-          <span class="admin-login-text">
-            Admin Login
-          </span>
-
-          <span class="admin-decoration">
-            ✦
-          </span>
+          <ion-icon
+            name="close-outline"
+          >
+          </ion-icon>
 
         </button>
 
+      </div>
 
-      </aside>
 
-    </div>
 
-  }
+      <!-- =================================
+           ADMIN LOGIN
+           ================================= -->
 
-</ion-content>
+      <button
+        type="button"
+        class="admin-login-area"
+        (click)="goToAdminLogin()"
+      >
+
+        <span class="admin-decoration">
+          ✦
+        </span>
+
+
+        <span class="admin-login-text">
+           Login
+        </span>
+
+
+        <span class="admin-decoration">
+          ✦
+        </span>
+
+      </button>
+
+
+    </aside>
+
+  </div>
+
+}

@@ -1,0 +1,747 @@
+<ion-content
+  [fullscreen]="true"
+  class="adm-home-content"
+>
+
+  <div class="adm-home-page">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="dashboard-header">
+
+      <div class="header-content">
+
+        <div class="header-text">
+
+          <span class="header-kicker">
+            ADMIN DASHBOARD
+          </span>
+
+          <h1>
+            Welcome, {{ adminName }}
+          </h1>
+
+          <p>
+            Manage your crackers marketplace
+          </p>
+
+        </div>
+
+
+        <div class="header-icon">
+
+          <ion-icon
+            name="grid-outline"
+          ></ion-icon>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =================================================
+         MAIN
+    ================================================== -->
+
+    <main class="dashboard-main">
+
+
+      <!-- =================================================
+           WELCOME SECTION
+      ================================================== -->
+
+      <section class="welcome-section">
+
+        <div>
+
+          <span class="section-kicker">
+            OVERVIEW
+          </span>
+
+          <h2>
+            Today's Dashboard
+          </h2>
+
+        </div>
+
+
+        <div class="overview-decoration">
+          ✦
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           STAT CARDS
+      ================================================== -->
+
+      <section class="stats-grid">
+
+
+        @for (
+          stat of dashboardStats;
+          track stat.label
+        ) {
+
+          <article
+            class="stat-card"
+            (click)="
+              stat.route
+                ? openRoute(stat.route)
+                : null
+            "
+            [class.clickable]="!!stat.route"
+          >
+
+
+            <div class="stat-icon">
+
+              <ion-icon
+                [name]="stat.icon"
+              ></ion-icon>
+
+            </div>
+
+
+            <div class="stat-content">
+
+              <span class="stat-label">
+                {{ stat.label }}
+              </span>
+
+              <strong class="stat-value">
+                {{ stat.value }}
+              </strong>
+
+              <span class="stat-description">
+                {{ stat.description }}
+              </span>
+
+            </div>
+
+
+            @if (stat.route) {
+
+              <div class="stat-arrow">
+
+                <ion-icon
+                  name="arrow-forward-outline"
+                ></ion-icon>
+
+              </div>
+
+            }
+
+          </article>
+
+        }
+
+      </section>
+
+
+      <!-- =================================================
+           ORDER SUMMARY
+      ================================================== -->
+
+      <section class="summary-section">
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              ORDERS
+            </span>
+
+            <h2>
+              Order Summary
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="view-all-button"
+            (click)="openOrders()"
+          >
+
+            View All
+
+            <ion-icon
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <div class="summary-grid">
+
+
+          <!-- PENDING -->
+
+          <article class="summary-card pending">
+
+            <div class="summary-icon">
+
+              <ion-icon
+                name="time-outline"
+              ></ion-icon>
+
+            </div>
+
+            <div>
+
+              <strong>
+                {{ pendingOrders }}
+              </strong>
+
+              <span>
+                Pending Orders
+              </span>
+
+            </div>
+
+          </article>
+
+
+          <!-- DELIVERED -->
+
+          <article class="summary-card delivered">
+
+            <div class="summary-icon">
+
+              <ion-icon
+                name="checkmark-circle-outline"
+              ></ion-icon>
+
+            </div>
+
+            <div>
+
+              <strong>
+                86
+              </strong>
+
+              <span>
+                Delivered
+              </span>
+
+            </div>
+
+          </article>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           VENDOR SUMMARY
+      ================================================== -->
+
+      <section class="summary-section">
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              VENDORS
+            </span>
+
+            <h2>
+              Vendor Overview
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="view-all-button"
+            (click)="openVendors()"
+          >
+
+            Manage
+
+            <ion-icon
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <div class="vendor-summary-card">
+
+
+          <div class="vendor-summary-main">
+
+            <div class="vendor-main-icon">
+
+              <ion-icon
+                name="people-outline"
+              ></ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Total Vendors
+              </span>
+
+              <strong>
+                {{ dashboardStats[0].value }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="vendor-status-list">
+
+
+            <div class="vendor-status">
+
+              <span
+                class="status-dot active"
+              ></span>
+
+              <span>
+                Active
+              </span>
+
+              <strong>
+                {{ activeVendors }}
+              </strong>
+
+            </div>
+
+
+            <div class="vendor-status">
+
+              <span
+                class="status-dot inactive"
+              ></span>
+
+              <span>
+                Inactive
+              </span>
+
+              <strong>
+                {{ inactiveVendors }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           PRODUCT SUMMARY
+      ================================================== -->
+
+      <section class="summary-section">
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              PRODUCTS
+            </span>
+
+            <h2>
+              Product Overview
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="view-all-button"
+            (click)="openProducts()"
+          >
+
+            Manage
+
+            <ion-icon
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <div class="product-summary-card">
+
+
+          <div class="product-summary-main">
+
+            <div class="product-main-icon">
+
+              <ion-icon
+                name="cube-outline"
+              ></ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                Admin Products
+              </span>
+
+              <strong>
+                {{ dashboardStats[1].value }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="product-status-list">
+
+
+            <div class="product-status-item">
+
+              <span
+                class="status-dot active"
+              ></span>
+
+              <span>
+                Active
+              </span>
+
+              <strong>
+                {{ activeProducts }}
+              </strong>
+
+            </div>
+
+
+            <div class="product-status-item">
+
+              <span
+                class="status-dot inactive"
+              ></span>
+
+              <span>
+                Inactive
+              </span>
+
+              <strong>
+                {{ inactiveProducts }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           RECENT ORDERS
+      ================================================== -->
+
+      <section class="recent-orders-section">
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              RECENT ACTIVITY
+            </span>
+
+            <h2>
+              Recent Orders
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="view-all-button"
+            (click)="openOrders()"
+          >
+
+            View All
+
+            <ion-icon
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <div class="recent-orders-list">
+
+
+          @for (
+            order of recentOrders;
+            track order.orderId
+          ) {
+
+            <article
+              class="recent-order-card"
+            >
+
+
+              <div class="order-icon">
+
+                <ion-icon
+                  name="receipt-outline"
+                ></ion-icon>
+
+              </div>
+
+
+              <div class="order-details">
+
+                <strong>
+                  {{ order.orderId }}
+                </strong>
+
+                <span>
+                  {{ order.customerName }}
+                </span>
+
+              </div>
+
+
+              <div class="order-right">
+
+
+                <strong class="order-amount">
+                  {{ formatAmount(order.amount) }}
+                </strong>
+
+
+                <span
+                  class="order-status"
+                  [class.pending]="
+                    order.status === 'PENDING'
+                  "
+                  [class.confirmed]="
+                    order.status === 'CONFIRMED'
+                  "
+                  [class.delivered]="
+                    order.status === 'DELIVERED'
+                  "
+                  [class.cancelled]="
+                    order.status === 'CANCELLED'
+                  "
+                >
+                  {{ order.status }}
+                </span>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- =================================================
+           QUICK ACTIONS
+      ================================================== -->
+
+      <section class="quick-actions-section">
+
+
+        <div class="section-heading">
+
+          <div>
+
+            <span class="section-kicker">
+              QUICK ACTIONS
+            </span>
+
+            <h2>
+              Manage
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div class="quick-actions-grid">
+
+
+          <button
+            type="button"
+            class="quick-action"
+            (click)="addVendor()"
+          >
+
+            <div class="quick-action-icon">
+
+              <ion-icon
+                name="add-outline"
+              ></ion-icon>
+
+            </div>
+
+            <span>
+              Add Vendor
+            </span>
+
+            <ion-icon
+              class="quick-action-arrow"
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="quick-action"
+            (click)="openProducts()"
+          >
+
+            <div class="quick-action-icon">
+
+              <ion-icon
+                name="cube-outline"
+              ></ion-icon>
+
+            </div>
+
+            <span>
+              Products
+            </span>
+
+            <ion-icon
+              class="quick-action-arrow"
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="quick-action"
+            (click)="openOrders()"
+          >
+
+            <div class="quick-action-icon">
+
+              <ion-icon
+                name="receipt-outline"
+              ></ion-icon>
+
+            </div>
+
+            <span>
+              Orders
+            </span>
+
+            <ion-icon
+              class="quick-action-arrow"
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="quick-action"
+            (click)="openVendors()"
+          >
+
+            <div class="quick-action-icon">
+
+              <ion-icon
+                name="people-outline"
+              ></ion-icon>
+
+            </div>
+
+            <span>
+              Vendors
+            </span>
+
+            <ion-icon
+              class="quick-action-arrow"
+              name="arrow-forward-outline"
+            ></ion-icon>
+
+          </button>
+
+          <button
+  type="button"
+  class="quick-action"
+  (click)="openCategories()"
+>
+
+  <div class="quick-action-icon">
+
+    <ion-icon
+      name="grid-outline"
+    ></ion-icon>
+
+  </div>
+
+  <span>
+    Categories
+  </span>
+
+  <ion-icon
+    class="quick-action-arrow"
+    name="arrow-forward-outline"
+  ></ion-icon>
+
+</button>
+
+
+        </div>
+
+      </section>
+
+
+    </main>
+
+  </div>
+
+</ion-content>

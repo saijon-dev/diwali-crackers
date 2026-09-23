@@ -1,0 +1,1322 @@
+/* =========================================
+   PAGE
+========================================= */
+
+ion-content {
+  --background: var(--diwali-background);
+}
+
+
+.edit-page {
+  min-height: 100%;
+
+  background: var(--diwali-background);
+
+  color: var(--diwali-text);
+
+  font-family: var(--diwali-font-body);
+
+  padding-bottom: 35px;
+}
+
+
+/* =========================================
+   DIWALI TOP HEADER
+========================================= */
+
+.page-header {
+  position: relative;
+
+  height: var(--diwali-header-height);
+
+  background-image:
+    linear-gradient(
+      var(--diwali-header-overlay),
+      var(--diwali-header-overlay)
+    ),
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+
+  background-position: center;
+
+  border-bottom-left-radius:
+    var(--diwali-header-radius);
+
+  border-bottom-right-radius:
+    var(--diwali-header-radius);
+
+  overflow: hidden;
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  color: var(--diwali-cream);
+}
+
+
+/* =========================================
+   HEADER DECORATIONS
+========================================= */
+
+.header-decoration {
+  position: absolute;
+
+  pointer-events: none;
+
+  user-select: none;
+
+  opacity: var(--diwali-decoration-opacity);
+
+  z-index: 1;
+}
+
+
+.header-decoration-left {
+  left: -15px;
+  top: -12px;
+
+  width:
+    clamp(
+      var(--diwali-decoration-min-width),
+      var(--diwali-decoration-fluid-width),
+      var(--diwali-decoration-max-width)
+    );
+}
+
+
+.header-decoration-right {
+  right: -15px;
+  bottom: -18px;
+
+  width:
+    clamp(
+      var(--diwali-decoration-min-width),
+      var(--diwali-decoration-fluid-width),
+      var(--diwali-decoration-max-width)
+    );
+}
+
+
+/* =========================================
+   HEADER CONTENT
+========================================= */
+
+.header-content {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 3;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 8px 55px 8px;
+}
+
+
+.header-brand {
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 11px;
+
+  letter-spacing: 4px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color: var(--diwali-gold);
+
+  text-shadow:
+    var(--diwali-header-text-shadow);
+}
+
+
+.header-content h1 {
+  margin: 1px 0 0;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size:
+    var(--diwali-title-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  line-height: 1.15;
+
+  color: var(--diwali-cream);
+
+  text-align: center;
+
+  text-shadow:
+    var(--diwali-header-text-shadow);
+}
+
+
+.product-id {
+  margin-top: 3px;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 9px;
+
+  color: rgba(255, 248, 220, 0.78);
+
+  letter-spacing: 0.3px;
+}
+
+
+/* =========================================
+   BACK BUTTON
+========================================= */
+
+.back-button {
+  position: absolute;
+
+  left: 10px;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  z-index: 10;
+
+  width:
+    var(--diwali-back-button-size);
+
+  height:
+    var(--diwali-back-button-size);
+
+  margin: 0;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-circle-radius);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: rgba(255, 248, 220, 0.13);
+
+  color: var(--diwali-cream);
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.back-button ion-icon {
+  font-size:
+    var(--diwali-back-button-icon-size);
+}
+
+
+.back-button:active {
+  background: rgba(255, 248, 220, 0.22);
+
+  transform:
+    translateY(-50%) scale(0.94);
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.edit-container {
+  width: min(100%, 760px);
+
+  margin: 0 auto;
+
+  padding:
+    var(--diwali-space-18)
+    var(--diwali-page-padding-mobile)
+    30px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   IMAGE CARD
+========================================= */
+
+.image-card {
+  margin-bottom: var(--diwali-space-14);
+
+  padding: var(--diwali-space-14);
+
+  background: var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+}
+
+
+/* =========================================
+   NORMAL EDIT CARDS
+========================================= */
+
+.edit-card {
+  margin-bottom: var(--diwali-space-14);
+
+  padding: var(--diwali-space-14);
+
+  background: var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+}
+
+
+/* =========================================
+   SECTION HEADING
+========================================= */
+
+.section-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-bottom: 14px;
+
+  min-height: 26px;
+}
+
+
+.section-heading h2 {
+  margin: 0;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size:
+    clamp(
+      var(--diwali-section-heading-min),
+      var(--diwali-section-heading-fluid),
+      var(--diwali-section-heading-max)
+    );
+
+  line-height: 1.1;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color: var(--diwali-text);
+
+  text-align: center;
+}
+
+
+.heading-decoration {
+  color: var(--diwali-dark-red);
+
+  font-size: 11px;
+
+  opacity: 0.8;
+}
+
+
+/* =========================================
+   PRODUCT IMAGE
+========================================= */
+
+.main-image-wrapper {
+  width: 100%;
+
+  aspect-ratio: 1 / 0.82;
+
+  max-height: 310px;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background:
+    var(--diwali-product-image-background);
+
+  border-radius:
+    var(--diwali-card-radius);
+
+  border:
+    1px solid var(--diwali-divider);
+}
+
+
+.main-product-image {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+  padding:
+    var(--diwali-product-image-padding);
+
+  box-sizing: border-box;
+}
+
+
+.no-image {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  color:
+    var(--diwali-image-placeholder-color);
+
+  font-size: 11px;
+}
+
+
+.no-image ion-icon {
+  font-size: 40px;
+}
+
+
+/* =========================================
+   THUMBNAILS
+========================================= */
+
+.thumbnail-row {
+  display: flex;
+
+  gap: 8px;
+
+  margin-top: 10px;
+
+  overflow-x: auto;
+
+  padding: 2px 1px 4px;
+
+  scrollbar-width: none;
+}
+
+
+.thumbnail-row::-webkit-scrollbar {
+  display: none;
+}
+
+
+.thumbnail-button {
+  flex: 0 0 58px;
+
+  width: 58px;
+
+  height: 58px;
+
+  padding: 2px;
+
+  border:
+    1.5px solid transparent;
+
+  border-radius:
+    var(--diwali-card-radius);
+
+  background:
+    var(--diwali-card-light);
+
+  overflow: hidden;
+
+  cursor: pointer;
+}
+
+
+.thumbnail-button.selected {
+  border-color:
+    var(--diwali-red);
+
+  box-shadow:
+    0 0 0 2px rgba(239, 11, 28, 0.10);
+}
+
+
+.thumbnail-button img {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  border-radius: 9px;
+}
+
+
+
+
+
+/* =========================================
+   IMAGE UPLOAD SECTION
+========================================= */
+
+.image-upload-section {
+
+  margin-top: 14px;
+
+  padding-top: 14px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.upload-heading {
+
+  margin-bottom: 8px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+/* =========================================
+   CHOOSE IMAGE BUTTON
+========================================= */
+
+.image-upload-button {
+
+  width: 100%;
+
+  min-height: 44px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  box-sizing: border-box;
+
+  border:
+    1px dashed var(--diwali-red);
+
+  border-radius:
+    var(--diwali-input-radius);
+
+  background:
+    rgba(239, 11, 28, 0.04);
+
+  color:
+    var(--diwali-dark-red);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 11px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.image-upload-button ion-icon {
+
+  font-size: 20px;
+
+  color:
+    var(--diwali-red);
+}
+
+
+.image-upload-button:active {
+
+  transform: scale(0.98);
+
+  background:
+    rgba(239, 11, 28, 0.08);
+}
+
+
+/*
+ * Hide the actual file input.
+ */
+
+.image-upload-button input[type="file"] {
+
+  display: none;
+
+}
+
+
+/* =========================================
+   UPLOAD HINT
+========================================= */
+
+.upload-hint {
+
+  margin:
+    6px 0 0;
+
+  text-align: center;
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================
+   NEW IMAGES
+========================================= */
+
+.new-images-section {
+
+  margin-top: 14px;
+}
+
+
+.new-images-heading {
+
+  margin-bottom: 8px;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+/* =========================================
+   NEW IMAGE GRID
+========================================= */
+
+.new-image-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+
+/* =========================================
+   NEW IMAGE
+========================================= */
+
+.new-image-item {
+
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 1 / 1;
+
+  border-radius:
+    var(--diwali-card-radius);
+
+  overflow: hidden;
+
+  background:
+    var(--diwali-product-image-background);
+
+  border:
+    1px solid var(--diwali-divider);
+}
+
+
+.new-image-item img {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+/* =========================================
+   REMOVE NEW IMAGE
+========================================= */
+
+.remove-image-button {
+
+  position: absolute;
+
+  top: 4px;
+
+  right: 4px;
+
+  width: 23px;
+
+  height: 23px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    rgba(23, 35, 60, 0.78);
+
+  color:
+    var(--diwali-cream);
+
+  cursor: pointer;
+}
+
+
+.remove-image-button ion-icon {
+
+  font-size: 14px;
+}
+
+
+/* =========================================
+   CLEAR IMAGES
+========================================= */
+
+.clear-images-button {
+
+  margin-top: 9px;
+
+  min-height: 30px;
+
+  padding:
+    0 11px;
+
+  border:
+    1px solid var(--diwali-divider);
+
+  border-radius:
+    var(--diwali-button-radius);
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-dark-red);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  cursor: pointer;
+}
+
+
+/* =========================================
+   FORM GRID
+========================================= */
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 11px;
+}
+
+
+.form-field {
+  min-width: 0;
+}
+
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   LABEL
+========================================= */
+
+.form-field label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  letter-spacing: 0.1px;
+}
+
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+
+  min-height: 40px;
+
+  box-sizing: border-box;
+
+  padding: 9px 10px;
+
+  border:
+    1px solid var(--diwali-divider);
+
+  border-radius:
+    var(--diwali-input-radius);
+
+  outline: none;
+
+  background:
+    var(--diwali-card-light);
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 12px;
+
+  font-weight:
+    var(--diwali-weight-medium);
+
+  box-shadow:
+    var(--diwali-input-shadow);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.form-field textarea {
+  min-height: 90px;
+
+  resize: vertical;
+
+  line-height: 1.45;
+}
+
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color:
+    var(--diwali-placeholder-text);
+
+  opacity: 0.75;
+}
+
+
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus {
+  border-color:
+    var(--diwali-red);
+
+  box-shadow:
+    0 0 0 3px rgba(239, 11, 28, 0.07);
+}
+
+
+/* =========================================
+   READONLY
+========================================= */
+
+.form-field input[readonly] {
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-muted-text);
+
+  box-shadow: none;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   CURRENCY
+========================================= */
+
+.currency-input {
+  display: flex;
+
+  align-items: center;
+
+  min-height: 40px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid var(--diwali-divider);
+
+  border-radius:
+    var(--diwali-input-radius);
+
+  background:
+    var(--diwali-card-light);
+
+  box-shadow:
+    var(--diwali-input-shadow);
+
+  overflow: hidden;
+}
+
+
+.currency-input span {
+  padding-left: 10px;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 12px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.currency-input input {
+  min-height: 38px;
+
+  border: none;
+
+  box-shadow: none;
+
+  background: transparent;
+}
+
+
+.currency-input input:focus {
+  border: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================
+   SYSTEM CARD
+========================================= */
+
+.system-card {
+  background:
+    rgba(247, 233, 189, 0.55);
+}
+
+
+.system-card .section-heading {
+  margin-bottom: 11px;
+}
+
+
+/* =========================================
+   UPDATE SECTION
+========================================= */
+
+.update-section {
+  padding:
+    5px 0 15px;
+
+  text-align: center;
+}
+
+
+.update-decoration {
+  margin-bottom: 8px;
+
+  color:
+    var(--diwali-dark-red);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 11px;
+
+  letter-spacing: 1px;
+
+  opacity: 0.65;
+}
+
+
+/* =========================================
+   UPDATE BUTTON
+========================================= */
+
+.update-button {
+  width: 100%;
+
+  min-height:
+    var(--diwali-main-button-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-main-button-radius);
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+
+.update-button ion-icon {
+  font-size: 19px;
+}
+
+
+.update-button:active {
+  transform: scale(0.98);
+}
+
+
+.update-button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.state-container {
+  min-height: 65vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  text-align: center;
+}
+
+
+.state-container p {
+  margin: 0;
+
+  font-size: 12px;
+
+  color:
+    var(--diwali-secondary-text);
+}
+
+
+.loading-spinner {
+  width: 30px;
+
+  height: 30px;
+
+  border:
+    3px solid rgba(23, 35, 60, 0.12);
+
+  border-top-color:
+    var(--diwali-red);
+
+  border-radius:
+    var(--diwali-circle-radius);
+
+  animation:
+    editSpin 0.8s linear infinite;
+}
+
+
+@keyframes editSpin {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.error-state ion-icon {
+  width: 42px;
+
+  height: 42px;
+
+  padding: 9px;
+
+  box-sizing: border-box;
+
+  border-radius:
+    var(--diwali-circle-radius);
+
+  background:
+    rgba(239, 11, 28, 0.09);
+
+  color:
+    var(--diwali-red);
+}
+
+
+.retry-button {
+  margin-top: 4px;
+
+  padding: 9px 17px;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-button-radius);
+
+  background:
+    var(--diwali-text);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 11px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 360px) {
+
+  .page-header {
+    height:
+      var(--diwali-header-height);
+  }
+
+
+  .header-content h1 {
+    font-size:
+      var(--diwali-title-size-mobile);
+  }
+
+
+  .edit-container {
+    padding-left: 12px;
+
+    padding-right: 12px;
+  }
+
+
+  .edit-card,
+  .image-card {
+    padding: 12px;
+
+    border-radius: 17px;
+  }
+
+
+  .form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 10px;
+  }
+
+
+  .full-width {
+    grid-column: auto;
+  }
+
+
+  .main-image-wrapper {
+    max-height: 245px;
+  }
+
+}
+
+
+/* =========================================
+   NORMAL MOBILE
+========================================= */
+
+@media (min-width: 361px) and (max-width: 429px) {
+
+  .form-field label {
+    font-size: 10px;
+  }
+
+
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    font-size: 12px;
+  }
+
+}
+
+
+/* =========================================
+   LARGE MOBILE / TABLET
+========================================= */
+
+@media (min-width: 430px) {
+
+  .edit-container {
+    padding-left:
+      var(--diwali-page-padding);
+
+    padding-right:
+      var(--diwali-page-padding);
+  }
+
+
+  .edit-card,
+  .image-card {
+    padding: 18px;
+  }
+
+
+  .main-image-wrapper {
+    max-height: 340px;
+  }
+
+}
+
+
+/* =========================================
+   TABLET / DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+  .edit-container {
+    padding-left: 20px;
+
+    padding-right: 20px;
+  }
+
+
+  .page-header {
+    height: 82px;
+  }
+
+
+  .header-content h1 {
+    font-size: 24px;
+  }
+
+
+  .edit-card,
+  .image-card {
+    border-radius:
+      var(--diwali-main-card-radius);
+  }
+
+}

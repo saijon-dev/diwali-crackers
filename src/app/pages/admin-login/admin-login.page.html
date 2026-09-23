@@ -26,7 +26,9 @@
 
     <div class="back-button-container">
 
-      <app-back-button></app-back-button>
+     <ion-button fill="clear" (click)="goToHome()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </ion-button>
 
     </div>
 
@@ -53,7 +55,7 @@
 
         <div class="brand-title">
 
-          Admin Portal
+          Login Portal
 
         </div>
 
@@ -82,7 +84,7 @@
 
           @if (!isOtpStep) {
 
-            Admin Login
+            Login
 
           }
 

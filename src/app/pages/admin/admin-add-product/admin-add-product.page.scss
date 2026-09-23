@@ -1,5 +1,6 @@
 .add-product-content {
-  --background: #ffefad;
+ --background:
+    var(--diwali-background);
 }
 
 .add-product-page {
@@ -645,6 +646,140 @@
 
 
 
+/* =========================
+   PRODUCT TYPE
+========================= */
+
+.product-type-options {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+.radio-option {
+  position: relative;
+
+  flex: 1;
+
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  box-sizing: border-box;
+
+  padding: 0 13px;
+
+  background: #fffef8;
+
+  border: 1px solid #ddd3b5;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.radio-option:hover {
+  border-color: #ef0b1c;
+  background: #fff9df;
+}
+
+.radio-option input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+}
+
+.radio-custom {
+  position: relative;
+
+  width: 18px;
+  height: 18px;
+
+  flex: 0 0 18px;
+
+  box-sizing: border-box;
+
+  border: 2px solid #c8b98f;
+
+  border-radius: 50%;
+
+  background: #fffef8;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.radio-custom::after {
+  content: '';
+
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  top: 50%;
+  left: 50%;
+
+  transform:
+    translate(-50%, -50%)
+    scale(0);
+
+  border-radius: 50%;
+
+  background: #fff8dc;
+
+  transition: transform 0.18s ease;
+}
+
+.radio-option input:checked + .radio-custom {
+  border-color: #ef0b1c;
+
+  background: #ef0b1c;
+}
+
+.radio-option input:checked + .radio-custom::after {
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+.radio-text {
+  color: #29334b;
+
+  font-family: 'Poppins', sans-serif;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.radio-option:has(input:checked) {
+  border-color: #ef0b1c;
+
+  background: #fff9df;
+
+  box-shadow:
+    0 0 0 3px rgba(239, 11, 28, 0.06);
+}
+
+
+
 
 /* =========================
    CATEGORY IMAGE UPLOAD
@@ -1091,6 +1226,38 @@
 ========================= */
 
 @media (max-width: 360px) {
+
+
+
+  .product-type-options {
+  gap: 7px;
+}
+
+.radio-option {
+  min-height: 44px;
+
+  padding: 0 9px;
+
+  gap: 7px;
+
+  border-radius: 11px;
+}
+
+.radio-custom {
+  width: 16px;
+  height: 16px;
+
+  flex-basis: 16px;
+}
+
+.radio-custom::after {
+  width: 7px;
+  height: 7px;
+}
+
+.radio-text {
+  font-size: 10px;
+}
 
   .product-header {
     height: 70px;

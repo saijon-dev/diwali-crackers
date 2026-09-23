@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+
 import {
+  IonTabs,
+  IonTabBar,
+  IonTabButton,
   IonIcon,
-  IonRouterOutlet
+  IonLabel
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -19,53 +22,89 @@ import {
   ellipsisHorizontalOutline
 } from 'ionicons/icons';
 
-import { filter } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
 
 interface TabItem {
+
   label: string;
+
   route: string;
+
   icon: string;
+
 }
 
-@Component({
-  selector: 'app-tabs',
-  standalone: true,
-  templateUrl: './tabs.page.html',
-  styleUrls: ['./tabs.page.scss'],
-  imports: [
-    IonRouterOutlet,
-    IonIcon
-  ]
-})
 
+@Component({
+
+  selector: 'app-tabs',
+
+  standalone: true,
+
+  templateUrl: './tabs.page.html',
+
+  styleUrls: ['./tabs.page.scss'],
+
+  imports: [
+
+    IonTabs,
+
+    IonTabBar,
+
+    IonTabButton,
+
+    IonIcon,
+
+    IonLabel
+
+  ]
+
+})
 
 
 export class TabsPage {
 
+
   role: string | null = null;
+
 
   // =========================================
   // CUSTOMER TABS
   // =========================================
 
   customerTabs: TabItem[] = [
+
     {
+
       label: 'Home',
-      route: '/tabs/home',
+
+      route: 'home',
+
       icon: 'home-outline'
+
     },
+
     {
+
       label: 'Categories',
-      route: '/tabs/categories',
+
+      route: 'categories',
+
       icon: 'grid-outline'
+
     },
+
     {
+
       label: 'Cart',
-      route: '/tabs/cart',
+
+      route: 'cart',
+
       icon: 'cart-outline'
+
     }
+
   ];
 
 
@@ -74,26 +113,47 @@ export class TabsPage {
   // =========================================
 
   vendorTabs: TabItem[] = [
+
     {
+
       label: 'Products',
-      route: '/tabs/products',
+
+      route: 'products',
+
       icon: 'cube-outline'
+
     },
+
     {
-      label: 'Categories',
-      route: '/tabs/categories',
+
+      label: 'My Products',
+
+      route: 'vend-products',
+
       icon: 'grid-outline'
+
     },
+
     {
+
       label: 'Requests',
-      route: '/tabs/requests',
+
+      route: 'requests',
+
       icon: 'sync-outline'
+
     },
+
     {
+
       label: 'Shop',
-      route: '/tabs/shop',
+
+      route: 'shop',
+
       icon: 'storefront-outline'
+
     }
+
   ];
 
 
@@ -102,90 +162,93 @@ export class TabsPage {
   // =========================================
 
   adminTabs: TabItem[] = [
+
     {
+
       label: 'Home',
-      route: '/tabs/adm-home',
+
+      route: 'adm-home',
+
       icon: 'home-outline'
+
     },
+
     {
+
       label: 'Vendors',
-      route: '/tabs/adm-vendors',
+
+      route: 'adm-vendors',
+
       icon: 'people-outline'
+
     },
+
     {
+
       label: 'Orders',
-      route: '/tabs/adm-orders',
+
+      route: 'adm-orders',
+
       icon: 'receipt-outline'
+
     },
-    {
-      label: 'More',
-      route: '/tabs/adm-profile',
-      icon: 'ellipsis-horizontal-outline'
+
+  {
+
+      label: 'Products',
+
+      route: 'adm-products',
+
+      icon: 'cube-outline'
+
     }
+
   ];
 
 
   constructor(
-    private router: Router,
+
     private authService: AuthService
+
   ) {
 
+
     addIcons({
+
       homeOutline,
+
       gridOutline,
+
       cartOutline,
+
       cubeOutline,
+
       syncOutline,
+
       storefrontOutline,
+
       peopleOutline,
+
       receiptOutline,
+
       ellipsisHorizontalOutline
-    });
+
+    });}
+
 
     // Get role when TabsPage loads
-    this.role = this.authService.getRole();
+ ionViewWillEnter(): void {
 
-    console.log('Tabs Page Role:', this.role);
+    this.role =
+      this.authService.getRole();
 
-
-    // Update role whenever navigation happens
-    this.router.events
-      .pipe(
-        filter(
-          event => event instanceof NavigationEnd
-        )
-      )
-      .subscribe(() => {
-
-        this.role = this.authService.getRole();
-
-        console.log(
-          'Current Tabs Role:',
-          this.role
-        );
-
-      });
-  }
-
-
-  // =========================================
-  // NAVIGATION
-  // =========================================
-
-  navigateTo(route: string): void {
-
-    this.router.navigateByUrl(route);
+    console.log(
+      'Tabs Page Role:',
+      this.role
+    );
 
   }
 
+  
 
-  // =========================================
-  // ACTIVE TAB
-  // =========================================
-
-  isActive(route: string): boolean {
-
-    return this.router.url === route;
-
-  }
 }

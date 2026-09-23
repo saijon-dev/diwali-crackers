@@ -375,6 +375,55 @@
         </div>
 
 
+
+        <!-- Product Type -->
+
+<div class="form-group">
+
+  <label>
+    Product Type
+  </label>
+
+  <div class="product-type-options">
+
+    <label class="radio-option">
+
+      <input
+        type="radio"
+        name="productType"
+        [(ngModel)]="isKidsSpecial"
+        [value]="true">
+
+      <span class="radio-custom"></span>
+
+      <span class="radio-text">
+        Kids Special
+      </span>
+
+    </label>
+
+
+    <label class="radio-option">
+
+      <input
+        type="radio"
+        name="productType"
+        [(ngModel)]="isKidsSpecial"
+        [value]="false">
+
+      <span class="radio-custom"></span>
+
+      <span class="radio-text">
+        Regular
+      </span>
+
+    </label>
+
+  </div>
+
+</div>
+
+
         <!-- Size -->
 
         <div class="form-group">
@@ -403,12 +452,13 @@
               Pack Quantity
             </label>
 
-            <input
-              id="packQuantity"
-              type="number"
-              [(ngModel)]="packQuantity"
-              min="1"
-              placeholder="10">
+        <input
+  id="packQuantity"
+  type="number"
+  [(ngModel)]="packQuantity"
+  min="1"
+  step="1"
+  placeholder="10">
 
           </div>
 
@@ -532,12 +582,13 @@
             Stock Quantity
           </label>
 
-          <input
-            id="stockQuantity"
-            type="number"
-            [(ngModel)]="stockQuantity"
-            min="0"
-            placeholder="Enter available quantity">
+      <input
+  id="stockQuantity"
+  type="number"
+  [(ngModel)]="stockQuantity"
+  min="1"
+  step="1"
+  placeholder="Enter available quantity">
 
         </div>
 

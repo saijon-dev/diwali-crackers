@@ -1,326 +1,262 @@
 <ion-content
   [fullscreen]="true"
-  class="admin-products-content"
+  class="products-content"
 >
 
-  <div class="admin-products-page">
+  <div class="products-page">
 
 
     <!-- =====================================
          HEADER
          ===================================== -->
 
- <header class="vendor-header">
+    <header class="products-header">
+
+      <button
+        type="button"
+        class="menu-button"
+        aria-label="Open menu"
+        (click)="toggleMenu()"
+      >
+
+        <ion-icon
+          name="menu-outline"
+        ></ion-icon>
+
+      </button>
 
 
-  <!-- ================================
-       HAMBURGER MENU
-       ================================ -->
+      <div class="header-title">
 
-  <button
-    type="button"
-    class="menu-button"
-    (click)="toggleMenu()"
-    aria-label="Open menu"
-  >
+        <h1>
+          Products
+        </h1>
 
-    <ion-icon
-      name="menu-outline">
-    </ion-icon>
+        <p>
+          Choose a product for your store
+        </p>
 
-  </button>
+      </div>
 
+    </header>
 
-  <!-- ================================
-       TITLE
-       ================================ -->
-
-  <div class="vendor-title">
-
-    <h1>
-      Vendor Products
-    </h1>
-
-    <p>
-      Manage Your Crackers, Spread the Festive Joy!
-    </p>
-
-  </div>
-
-
-</header>
 
 
     <!-- =====================================
-         SEARCH + ADD
+         SEARCH + ADD PRODUCT
          ===================================== -->
 
-    <section class="search-section">
+    <section class="search-action-row">
+
+
+      <!-- SEARCH -->
 
       <div class="search-box">
 
         <ion-icon
           name="search-outline"
           class="search-icon"
-        >
-        </ion-icon>
+        ></ion-icon>
+
 
         <input
           type="text"
-          placeholder="Search your products..."
-          [(ngModel)]="searchText"
-          autocomplete="off"
+          placeholder="Search products..."
+          [value]="searchText"
+          (input)="onSearchChange($event)"
         />
 
+
+        @if (searchText) {
+
+          <button
+            type="button"
+            class="clear-search"
+            aria-label="Clear search"
+            (click)="clearSearch()"
+          >
+
+            <ion-icon
+              name="close-outline"
+            ></ion-icon>
+
+          </button>
+
+        }
+
       </div>
+
 
 
       <!-- ADD PRODUCT -->
 
-      <button
-        type="button"
-        class="add-product-button"
-        (click)="addProduct()"
-        aria-label="Add product"
-      >
+     
 
-        <ion-icon
-          name="add-outline"
-        >
-        </ion-icon>
-
-      </button>
 
     </section>
 
 
+
     <!-- =====================================
-         PRODUCT CONTROLS
+         AVAILABLE PRODUCTS
          ===================================== -->
 
-    <section class="product-controls">
+    <div class="result-row">
 
+      <div class="result-title">
 
-      <!-- TOTAL PRODUCTS -->
+        <span>
+          Available Products
+        </span>
 
-      <div class="total-products">
-
-        Total Products:
-        {{ filteredProducts.length }}
+        <span class="result-count">
+          {{ filteredProducts.length }}
+        </span>
 
       </div>
 
+    </div>
 
-      <!-- CATEGORY FILTER -->
 
-      <div class="category-filter-box">
 
-        <select
-          [(ngModel)]="selectedCategory"
-        >
+    <!-- =====================================
+         PRODUCTS
+         ===================================== -->
+
+    <main class="products-container">
+
+
+      @if (filteredProducts.length > 0) {
+
+
+        <div class="products-grid">
+
 
           @for (
-            category of categories;
-            track category
+            product of filteredProducts;
+            track product.productId
           ) {
 
-            <option
-              [value]="category"
+
+            <article
+              class="product-card"
+              (click)="openProduct(product)"
             >
 
-              @if (category === 'all') {
 
-                All Categories
+              <!-- IMAGE -->
 
-              }
+              <div class="product-image-wrapper">
 
-              @else {
+                <img
+                  class="product-image"
+                  [src]="getProductImage(product)"
+                  [alt]="product.productName"
+                />
 
-                {{ category }}
+              </div>
 
-              }
 
-            </option>
+
+              <!-- INFORMATION -->
+
+              <div class="product-info">
+
+
+                <!-- CATEGORY -->
+
+                <div class="category-label">
+
+                  <ion-icon
+                    name="grid-outline"
+                  ></ion-icon>
+
+                  <span>
+                    {{ product.categoryName }}
+                  </span>
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <h2>
+                  {{ product.productName }}
+                </h2>
+
+
+                <!-- SELECT -->
+
+                <div class="select-product-row">
+
+                  <span>
+                    Select product
+                  </span>
+
+                  <span class="select-arrow">
+                    →
+                  </span>
+
+                </div>
+
+
+              </div>
+
+
+            </article>
+
 
           }
 
-        </select>
 
+        </div>
 
-        <ion-icon
-          name="chevron-down-outline"
-        >
-        </ion-icon>
-
-      </div>
-
-    </section>
-
-
-    <!-- =====================================
-         PRODUCT GRID
-         ===================================== -->
-
-    <section class="product-grid">
-
-      @for (
-        product of filteredProducts;
-        track product.id
-      ) {
-
-        <article
-          class="product-card"
-        >
-
-
-          <!-- PRODUCT IMAGE -->
-
-          <div class="product-image-container">
-
-            <img
-              [src]="product.image"
-              [alt]="product.name"
-              class="product-image"
-            />
-
-          </div>
-
-
-          <!-- PRODUCT INFORMATION -->
-
-          <div class="product-information">
-
-
-            <!-- CATEGORY -->
-
-            <div class="product-category">
-
-              {{ product.category }}
-
-            </div>
-
-
-            <!-- PRODUCT NAME -->
-
-            <h3>
-
-              {{ product.name }}
-
-            </h3>
-
-
-            <!-- PRICE -->
-
-            <div class="price">
-
-              ₹{{ product.price.toFixed(2) }}
-
-            </div>
-
-
-            <!-- STOCK -->
-
-            @if (product.stock > 0) {
-
-              <div class="stock">
-
-                <span class="stock-dot"></span>
-
-                <span>
-                  In Stock ({{ product.stock }})
-                </span>
-
-              </div>
-
-            }
-
-            @else {
-
-              <div
-                class="stock out-of-stock"
-              >
-
-                <span class="stock-dot"></span>
-
-                <span>
-                  Out of Stock
-                </span>
-
-              </div>
-
-            }
-
-
-            <!-- THREE DOT MENU -->
-
-            <button
-              type="button"
-              class="product-menu-button"
-              (click)="openProductMenu(product)"
-              aria-label="Product options"
-            >
-
-              <ion-icon
-                name="ellipsis-vertical-outline"
-              >
-              </ion-icon>
-
-            </button>
-
-
-          </div>
-
-        </article>
 
       }
 
 
-      <!-- ===================================
-           NO PRODUCTS
-           =================================== -->
+      @else {
 
-      @if (filteredProducts.length === 0) {
 
-        <div class="no-products">
+        <div class="empty-state">
 
-          <ion-icon
-            name="cube-outline"
-          >
-          </ion-icon>
+          <h2>
+            No products found
+          </h2>
 
           <p>
-            No products found
+            Try searching with a different product name.
           </p>
+
+          <button
+            type="button"
+            (click)="clearSearch()"
+          >
+            Show all products
+          </button>
 
         </div>
 
       }
 
-    </section>
+
+    </main>
+
 
 
     <!-- =====================================
-         TOP CORNER DECORATION
+         SIDE MENU
+         ONLY LOGOUT
          ===================================== -->
 
-    <img
-      src="assets/images/top-rightdesign.png"
-      alt=""
-      class="top-decoration"
-    />
+    @if (isMenuOpen) {
 
-  </div>
 
-  @if (menuOpen) {
+      <div
+        class="menu-overlay"
+        (click)="closeMenu()"
+      ></div>
 
-    <div
-      class="menu-overlay"
-      (click)="closeMenu()"
-    >
-
-      <!-- =================================
-           SIDE MENU
-           ================================= -->
 
       <aside
         class="side-menu"
@@ -328,57 +264,69 @@
       >
 
 
-        <!-- ===============================
-             MENU HEADER
-             =============================== -->
+        <!-- CLOSE -->
 
-        <div class="side-menu-header">
+        <button
+          type="button"
+          class="close-menu-button"
+          aria-label="Close menu"
+          (click)="closeMenu()"
+        >
+
+          <ion-icon
+            name="close-outline"
+          ></ion-icon>
+
+        </button>
+
+
+        <!-- LOGOUT -->
+
+        <div class="side-menu-content">
 
           <button
             type="button"
-            class="close-menu-button"
-            (click)="closeMenu()"
-            aria-label="Close menu"
+            class="logout-button"
+            (click)="logout()"
           >
 
-            <ion-icon
-              name="close-outline">
-            </ion-icon>
+            <span class="logout-decoration">
+              ✦
+            </span>
+
+            <span class="logout-text">
+              Logout
+            </span>
+
+            <span class="logout-decoration">
+              ✦
+            </span>
 
           </button>
 
         </div>
 
 
-        <!-- ===============================
-             LOGOUT
-             =============================== -->
-
-        <button
-          type="button"
-          class="logout-area"
-          (click)="logout()"
-        >
-
-          <span class="menu-decoration">
-            ✦
-          </span>
-
-          <span class="logout-text">
-            Logout
-          </span>
-
-          <span class="menu-decoration">
-            ✦
-          </span>
-
-        </button>
-
-
       </aside>
 
-    </div>
 
-  }
+    }
+
+
+  </div>
 
 </ion-content>
+
+
+ <button
+        type="button"
+        class="add-product-button"
+        aria-label="Add product"
+        (click)="addProduct()"
+      >
+
+        <ion-icon
+          name="add-outline"
+        ></ion-icon>
+
+      </button>

@@ -1,0 +1,630 @@
+<ion-content
+  [fullscreen]="true"
+  class="adm-categories-content"
+>
+
+  <div class="adm-categories-page">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="categories-header">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="goBack()"
+        aria-label="Go back"
+      >
+
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
+
+      </button>
+
+
+      <div class="header-title">
+
+        <h1>
+          Categories
+        </h1>
+
+        <span>
+          Manage cracker categories
+        </span>
+
+      </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="categories-main">
+
+
+      <!-- ===================================================
+           SEARCH
+      ==================================================== -->
+
+      <div class="search-box">
+
+        <ion-icon
+          name="search-outline"
+          class="search-icon"
+        ></ion-icon>
+
+
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Search categories"
+          autocomplete="off"
+        />
+
+
+        @if (searchText) {
+
+          <button
+            type="button"
+            class="clear-search"
+            (click)="searchText = ''"
+            aria-label="Clear search"
+          >
+
+            <ion-icon
+              name="close-outline"
+            ></ion-icon>
+
+          </button>
+
+        }
+
+      </div>
+
+
+      <!-- ===================================================
+           SECTION HEADING
+      ==================================================== -->
+
+      <div class="categories-heading">
+
+        <div>
+
+          <span class="section-kicker">
+            COLLECTION
+          </span>
+
+          <h2>
+            All Categories
+          </h2>
+
+        </div>
+
+
+        <span class="category-count">
+          {{ filteredCategories.length }}
+        </span>
+
+      </div>
+
+
+      <!-- ===================================================
+           CATEGORY LIST
+      ==================================================== -->
+
+      @if (
+        filteredCategories.length > 0
+      ) {
+
+        <section class="category-list">
+
+
+          @for (
+            category of filteredCategories;
+            track category.categoryId
+          ) {
+
+            <article
+              class="category-card"
+              (click)="
+                openEditCategory(category)
+              "
+            >
+
+
+              <!-- IMAGE -->
+
+              <div class="category-image">
+
+                @if (category.imageUrl) {
+
+                  <img
+                    [src]="category.imageUrl"
+                    [alt]="category.categoryName"
+                  />
+
+                } @else {
+
+                  <div
+                    class="category-placeholder"
+                  >
+
+                    <ion-icon
+                      name="grid-outline"
+                    ></ion-icon>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- INFORMATION -->
+
+              <div class="category-info">
+
+                <span class="category-label">
+                  CATEGORY
+                </span>
+
+                <h3>
+                  {{ category.categoryName }}
+                </h3>
+
+                @if (category.description) {
+
+                  <p>
+                    {{ category.description }}
+                  </p>
+
+                }
+
+              </div>
+
+
+              <!-- ARROW -->
+
+              <div class="category-arrow">
+
+                <span>
+                  ›
+                </span>
+
+              </div>
+
+            </article>
+
+          }
+
+        </section>
+
+
+      } @else {
+
+
+        <!-- =================================================
+             EMPTY
+        ================================================== -->
+
+        <section class="empty-categories">
+
+          <div class="empty-icon">
+
+            <ion-icon
+              name="grid-outline"
+            ></ion-icon>
+
+          </div>
+
+
+          <h3>
+            No categories found
+          </h3>
+
+
+          <p>
+            Try a different search or create
+            a new category.
+          </p>
+
+
+          <button
+            type="button"
+            (click)="openAddCategory()"
+          >
+
+            <ion-icon
+              name="add-outline"
+            ></ion-icon>
+
+            Add Category
+
+          </button>
+
+        </section>
+
+      }
+
+    </main>
+
+  </div>
+
+
+  <!-- =====================================================
+       ADD / UPDATE CATEGORY MODAL
+  ====================================================== -->
+
+  @if (isCategoryModalOpen) {
+
+    <div
+      class="modal-layer"
+      (click)="closeCategoryModal()"
+    >
+
+
+      <div
+        class="category-modal"
+        (click)="$event.stopPropagation()"
+      >
+
+
+        <!-- =================================================
+             MODAL HEADER
+        ================================================== -->
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-kicker">
+
+              {{
+                isEditMode
+                  ? 'EDIT CATEGORY'
+                  : 'NEW CATEGORY'
+              }}
+
+            </span>
+
+
+            <h2>
+
+              {{
+                isEditMode
+                  ? 'Update Category'
+                  : 'Add Category'
+              }}
+
+            </h2>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="modal-close"
+            (click)="closeCategoryModal()"
+            [disabled]="isSaving"
+            aria-label="Close"
+          >
+
+            <ion-icon
+              name="close-outline"
+            ></ion-icon>
+
+          </button>
+
+        </div>
+
+
+        <!-- =================================================
+             DECORATION
+        ================================================== -->
+
+        <div class="modal-decoration">
+
+          <span>
+            ✦
+          </span>
+
+          <div></div>
+
+          <span>
+            ✦
+          </span>
+
+        </div>
+
+
+        <!-- =================================================
+             CATEGORY NAME
+        ================================================== -->
+
+        <div class="form-field">
+
+          <label>
+            Category Name
+          </label>
+
+
+          <div class="input-wrapper">
+
+            <ion-icon
+              name="grid-outline"
+            ></ion-icon>
+
+
+            <input
+              type="text"
+              [(ngModel)]="categoryName"
+              placeholder="Enter category name"
+              maxlength="100"
+              autocomplete="off"
+            />
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             DESCRIPTION
+        ================================================== -->
+
+        <div class="form-field">
+
+          <label>
+            Description
+          </label>
+
+
+          <div
+            class="textarea-wrapper"
+          >
+
+            <textarea
+              [(ngModel)]="categoryDescription"
+              placeholder="Enter category description"
+              maxlength="250"
+              rows="3"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <!-- =================================================
+             IMAGE
+        ================================================== -->
+
+        <div class="form-field">
+
+          <div
+            class="upload-label-row"
+          >
+
+            <label>
+              Category Image
+            </label>
+
+            @if (selectedImage) {
+
+              <span>
+                New image selected
+              </span>
+
+            }
+
+          </div>
+
+
+          <label
+            class="upload-box"
+            for="categoryImage"
+          >
+
+            <div class="upload-icon">
+
+              <ion-icon
+                name="cloud-upload-outline"
+              ></ion-icon>
+
+            </div>
+
+
+            <div class="upload-text">
+
+              <strong>
+
+                {{
+                  isEditMode
+                    ? 'Replace category image'
+                    : 'Add category image'
+                }}
+
+              </strong>
+
+              <span>
+                Choose an image
+              </span>
+
+            </div>
+
+
+            <div class="upload-plus">
+              +
+            </div>
+
+          </label>
+
+
+          <input
+            id="categoryImage"
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="
+              onImageSelected($event)
+            "
+          />
+
+
+          <!-- IMAGE PREVIEW -->
+
+          @if (imagePreview) {
+
+            <div
+              class="preview-section"
+            >
+
+              <div
+                class="preview-title"
+              >
+                {{
+                  isEditMode && !selectedImage
+                    ? 'Current Image'
+                    : 'Selected Image'
+                }}
+              </div>
+
+
+              <div
+                class="preview-card"
+              >
+
+                <img
+                  [src]="imagePreview"
+                  [alt]="categoryName"
+                />
+
+
+                <button
+                  type="button"
+                  class="remove-image"
+                  (click)="
+                    removeSelectedImage()
+                  "
+                  aria-label="Remove image"
+                >
+
+                  <ion-icon
+                    name="trash-outline"
+                  ></ion-icon>
+
+                </button>
+
+
+                <span
+                  class="main-image-badge"
+                >
+                  Main
+                </span>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <div class="modal-actions">
+
+
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="closeCategoryModal()"
+            [disabled]="isSaving"
+          >
+            Cancel
+          </button>
+
+
+          <button
+            type="button"
+            class="save-button"
+          [disabled]="!hasCategoryChanges() || isSaving"
+            (click)="saveCategory()"
+          >
+
+            @if (isSaving) {
+
+              <span
+                class="button-loader"
+              ></span>
+
+            } @else {
+
+              <ion-icon
+                [name]="
+                  isEditMode
+                    ? 'grid-outline'
+                    : 'add-outline'
+                "
+              ></ion-icon>
+
+            }
+
+
+            <span>
+
+              {{
+                isSaving
+                  ? (
+                    isEditMode
+                      ? 'Updating...'
+                      : 'Adding...'
+                  )
+                  : (
+                    isEditMode
+                      ? 'Update Category'
+                      : 'Add Category'
+                  )
+              }}
+
+            </span>
+
+          </button>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  }
+
+</ion-content>
+
+
+<!-- =========================================================
+     FLOATING ADD CATEGORY BUTTON
+========================================================== -->
+
+<button
+  type="button"
+  class="add-category-button"
+  (click)="openAddCategory()"
+  aria-label="Add category"
+>
+
+  <ion-icon
+    name="add-outline"
+  ></ion-icon>
+
+</button>
