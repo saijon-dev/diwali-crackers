@@ -1,9 +1,17 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
+
 import {
   IonContent,
   IonIcon,
-  IonBackButton
+  IonBackButton,
+  IonSelect,
+  IonSelectOption
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -19,8 +27,10 @@ import {
 import {
   ProductService,
   ProductData,
-  Category
+  Category,
+  AdminProduct
 } from '../../../services/product.service';
+
 
 @Component({
   selector: 'app-admin-add-product',
@@ -31,10 +41,26 @@ import {
     IonContent,
     IonIcon,
     IonBackButton,
-    FormsModule
+    FormsModule,
+    IonSelect,
+    IonSelectOption
   ]
 })
 export class AdminAddProductPage implements OnInit {
+
+
+  /*
+   * =========================
+   * ADMIN PRODUCT
+   * =========================
+   */
+
+  selectedAdminProduct: AdminProduct | null = null;
+
+  isAdminProductSelected = false;
+
+  existingProductImages: string[] = [];
+
 
   /*
    * =========================
@@ -99,17 +125,17 @@ export class AdminAddProductPage implements OnInit {
 
   newCategoryName = '';
 
-newCategoryDescription = '';
+  newCategoryDescription = '';
 
-newCategoryImage: File | null = null;
+  newCategoryImage: File | null = null;
 
-newCategoryImagePreview = '';
+  newCategoryImagePreview = '';
 
-isAddingCategory = false;
+  isAddingCategory = false;
 
-categorySuccessMessage = '';
+  categorySuccessMessage = '';
 
-categoryAddErrorMessage = '';
+  categoryAddErrorMessage = '';
 
 
   /*
@@ -127,7 +153,7 @@ categoryAddErrorMessage = '';
 
   constructor(
     private productService: ProductService,
-     private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) {
 
     addIcons({
@@ -137,12 +163,84 @@ categoryAddErrorMessage = '';
       cloudUploadOutline,
       chevronDownOutline
     });
+
   }
 
 
   ngOnInit(): void {
 
+    this.readSelectedAdminProduct();
+
     this.loadCategories();
+
+  }
+
+
+  /*
+   * =========================
+   * READ ADMIN PRODUCT
+   * =========================
+   *
+   * The Admin Products page sends
+   * the selected AdminProduct through
+   * router state.
+   */
+
+  private readSelectedAdminProduct(): void {
+
+    const navigation =
+      window.history.state;
+
+    const adminProduct =
+      navigation?.adminProduct as
+      AdminProduct | undefined;
+
+
+    if (!adminProduct) {
+      return;
+    }
+
+
+    this.selectedAdminProduct =
+      adminProduct;
+
+    this.isAdminProductSelected =
+      true;
+
+
+    /*
+     * =========================
+     * PREFILL ADMIN PRODUCT DATA
+     * =========================
+     */
+
+    this.productName =
+      adminProduct.productName || '';
+
+    this.categoryId =
+      adminProduct.categoryId ?? null;
+
+
+    /*
+     * Existing admin product images
+     * are URLs, not File objects.
+     */
+
+    this.existingProductImages =
+      adminProduct.images || [];
+
+
+    /*
+     * Do not automatically put
+     * existing URL images into
+     * selectedImages because
+     * selectedImages contains File objects
+     * required by FormData.
+     */
+
+    this.imagePreviews = [];
+
+    this.cdr.detectChanges();
 
   }
 
@@ -152,54 +250,82 @@ categoryAddErrorMessage = '';
    * LOAD CATEGORIES
    * =========================
    */
-loadCategories(): void {
 
-  this.isLoadingCategories = true;
+  loadCategories(): void {
 
-  this.categoryErrorMessage = '';
+    this.isLoadingCategories = true;
 
-  this.cdr.detectChanges();
+    this.categoryErrorMessage = '';
+
+    this.cdr.detectChanges();
 
 
-  this.productService
-    .getCategories()
-    .subscribe({
+    this.productService
+      .getCategories()
+      .subscribe({
 
-      next: (categories) => {
+        next: (categories) => {
 
-        console.log(
-          'Categories Loaded:',
-          categories
-        );
+          console.log(
+            'Categories Loaded:',
+            categories
+          );
 
-        this.categories =
-          categories || [];
 
-        this.isLoadingCategories = false;
+          this.categories =
+            categories || [];
 
-        this.cdr.detectChanges();
+          this.isLoadingCategories =
+            false;
 
-      },
+          this.cdr.detectChanges();
 
-      error: (error) => {
+        },
 
-        console.error(
-          'Load Categories Error:',
-          error
-        );
 
-        this.isLoadingCategories = false;
+        error: (error) => {
 
-        this.categoryErrorMessage =
-          error?.error?.message ||
-          'Unable to load categories.';
+          console.error(
+            'Load Categories Error:',
+            error
+          );
 
-        this.cdr.detectChanges();
 
-      }
+          this.isLoadingCategories =
+            false;
 
-    });
-}
+          this.categoryErrorMessage =
+            error?.error?.message ||
+            'Unable to load categories.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * =========================
+   * PRODUCT TYPE
+   * =========================
+   *
+   * Kids Special = true
+   * Regular      = false
+   */
+
+  selectProductType(
+    value: boolean
+  ): void {
+
+    this.isKidsSpecial = value;
+
+    this.cdr.detectChanges();
+
+  }
+
 
   /*
    * =========================
@@ -207,22 +333,24 @@ loadCategories(): void {
    * =========================
    */
 
-openCategoryBox(): void {
+  openCategoryBox(): void {
 
-  this.showCategoryBox = true;
+    this.showCategoryBox = true;
 
-  this.newCategoryName = '';
+    this.newCategoryName = '';
 
-  this.newCategoryDescription = '';
+    this.newCategoryDescription = '';
 
-  this.newCategoryImage = null;
+    this.newCategoryImage = null;
 
-  this.newCategoryImagePreview = '';
+    this.newCategoryImagePreview = '';
 
-  this.categorySuccessMessage = '';
+    this.categorySuccessMessage = '';
 
-  this.categoryAddErrorMessage = '';
-}
+    this.categoryAddErrorMessage = '';
+
+  }
+
 
   /*
    * =========================
@@ -230,28 +358,30 @@ openCategoryBox(): void {
    * =========================
    */
 
-closeCategoryBox(): void {
+  closeCategoryBox(): void {
 
-  if (this.isAddingCategory) {
-    return;
+    if (this.isAddingCategory) {
+      return;
+    }
+
+
+    this.showCategoryBox = false;
+
+    this.newCategoryName = '';
+
+    this.newCategoryDescription = '';
+
+    this.newCategoryImage = null;
+
+    this.newCategoryImagePreview = '';
+
+    this.categorySuccessMessage = '';
+
+    this.categoryAddErrorMessage = '';
+
+    this.cdr.detectChanges();
+
   }
-
-  this.showCategoryBox = false;
-
-  this.newCategoryName = '';
-
-  this.newCategoryDescription = '';
-
-  this.newCategoryImage = null;
-
-  this.newCategoryImagePreview = '';
-
-  this.categorySuccessMessage = '';
-
-  this.categoryAddErrorMessage = '';
-
-  this.cdr.detectChanges();
-}
 
 
   /*
@@ -260,335 +390,342 @@ closeCategoryBox(): void {
    * =========================
    */
 
-addCategory(): void {
+  addCategory(): void {
 
-  this.categorySuccessMessage = '';
-  this.categoryAddErrorMessage = '';
+    this.categorySuccessMessage = '';
 
-  /*
-   * =========================
-   * VALIDATION
-   * =========================
-   */
-
-  if (!this.newCategoryName.trim()) {
-
-    this.categoryAddErrorMessage =
-      'Please enter category name.';
-
-    this.cdr.detectChanges();
-
-    return;
-  }
+    this.categoryAddErrorMessage = '';
 
 
-  if (!this.newCategoryDescription.trim()) {
+    /*
+     * =========================
+     * VALIDATION
+     * =========================
+     */
 
-    this.categoryAddErrorMessage =
-      'Please enter category description.';
+    if (!this.newCategoryName.trim()) {
 
-    this.cdr.detectChanges();
+      this.categoryAddErrorMessage =
+        'Please enter category name.';
 
-    return;
-  }
+      this.cdr.detectChanges();
 
+      return;
 
-  if (!this.newCategoryImage) {
-
-    this.categoryAddErrorMessage =
-      'Please select a category image.';
-
-    this.cdr.detectChanges();
-
-    return;
-  }
+    }
 
 
-  /*
-   * =========================
-   * CATEGORY DATA
-   * =========================
-   */
+    if (!this.newCategoryDescription.trim()) {
 
-  const categoryData = {
+      this.categoryAddErrorMessage =
+        'Please enter category description.';
 
-    categoryName:
-      this.newCategoryName.trim(),
+      this.cdr.detectChanges();
 
-    description:
-      this.newCategoryDescription.trim()
+      return;
 
-  };
+    }
 
 
-  console.log(
-    'Category Data:',
-    categoryData
-  );
+    if (!this.newCategoryImage) {
 
-  console.log(
-    'Category Image:',
-    this.newCategoryImage
-  );
+      this.categoryAddErrorMessage =
+        'Please select a category image.';
 
+      this.cdr.detectChanges();
 
-  /*
-   * Show loading state
-   */
+      return;
 
-  this.isAddingCategory = true;
-
-  this.cdr.detectChanges();
+    }
 
 
-  /*
-   * =========================
-   * POST CATEGORY
-   * =========================
-   */
+    /*
+     * =========================
+     * CATEGORY DATA
+     * =========================
+     */
 
-  this.productService
-    .addCategory(
-      categoryData,
+    const categoryData = {
+
+      categoryName:
+        this.newCategoryName.trim(),
+
+      description:
+        this.newCategoryDescription.trim()
+
+    };
+
+
+    console.log(
+      'Category Data:',
+      categoryData
+    );
+
+    console.log(
+      'Category Image:',
       this.newCategoryImage
-    )
-    .subscribe({
-
-      next: (response) => {
-
-        console.log(
-          'Add Category Response:',
-          response
-        );
+    );
 
 
-        /*
-         * API has succeeded.
-         *
-         * Stop the Adding... state immediately.
-         */
+    /*
+     * Show loading state
+     */
 
-        this.isAddingCategory = false;
+    this.isAddingCategory = true;
 
-        this.categorySuccessMessage =
-          response?.message ||
-          'Category added successfully.';
-
-        this.cdr.detectChanges();
+    this.cdr.detectChanges();
 
 
-        /*
-         * =========================
-         * RELOAD CATEGORIES
-         * =========================
-         */
+    /*
+     * =========================
+     * POST CATEGORY
+     * =========================
+     */
 
-        this.productService
-          .getCategories()
-          .subscribe({
+    this.productService
+      .addCategory(
+        categoryData,
+        this.newCategoryImage
+      )
+      .subscribe({
 
-            next: (categories) => {
+        next: (response) => {
 
-              console.log(
-                'Updated Categories:',
-                categories
-              );
-
-
-              /*
-               * Replace category list
-               */
-
-              this.categories =
-                categories || [];
+          console.log(
+            'Add Category Response:',
+            response
+          );
 
 
-              /*
-               * Find newly created category
-               */
+          this.isAddingCategory = false;
 
-              const createdCategory =
-                this.categories.find(
-                  category =>
-                    category.categoryName
-                      .trim()
-                      .toLowerCase() ===
-                    categoryData.categoryName
-                      .trim()
-                      .toLowerCase()
-                );
+          this.categorySuccessMessage =
+            response?.message ||
+            'Category added successfully.';
+
+          this.cdr.detectChanges();
 
 
-              /*
-               * Automatically select it
-               */
+          /*
+           * =========================
+           * RELOAD CATEGORIES
+           * =========================
+           */
 
-              if (createdCategory) {
+          this.productService
+            .getCategories()
+            .subscribe({
 
-                this.categoryId =
-                  createdCategory.categoryId;
+              next: (categories) => {
 
                 console.log(
-                  'New Category Selected:',
-                  createdCategory
+                  'Updated Categories:',
+                  categories
                 );
-              }
 
 
-              /*
-               * Clear category form
-               */
-
-              this.newCategoryName = '';
-
-              this.newCategoryDescription = '';
-
-              this.newCategoryImage = null;
-
-              this.newCategoryImagePreview = '';
+                this.categories =
+                  categories || [];
 
 
-              /*
-               * IMPORTANT
-               *
-               * Tell Angular to update the screen.
-               */
+                /*
+                 * Find newly created category
+                 */
 
-              this.cdr.detectChanges();
+                const createdCategory =
+                  this.categories.find(
+                    category =>
+                      category.categoryName
+                        .trim()
+                        .toLowerCase() ===
+                      categoryData.categoryName
+                        .trim()
+                        .toLowerCase()
+                  );
 
 
-              /*
-               * Give the user a very short
-               * success indication.
-               */
+                /*
+                 * Automatically select it
+                 */
 
-              setTimeout(() => {
+                if (createdCategory) {
 
-                this.showCategoryBox = false;
+                  this.categoryId =
+                    createdCategory.categoryId;
 
-                this.categorySuccessMessage = '';
+                  console.log(
+                    'New Category Selected:',
+                    createdCategory
+                  );
+
+                }
+
+
+                /*
+                 * Clear category form
+                 */
+
+                this.newCategoryName = '';
+
+                this.newCategoryDescription = '';
+
+                this.newCategoryImage = null;
+
+                this.newCategoryImagePreview = '';
+
 
                 this.cdr.detectChanges();
 
-              }, 700);
 
-            },
+                /*
+                 * Give the user a very short
+                 * success indication.
+                 */
 
+                setTimeout(() => {
 
-            error: (error) => {
+                  this.showCategoryBox = false;
 
-              console.error(
-                'Refresh Categories Error:',
-                error
-              );
+                  this.categorySuccessMessage = '';
 
+                  this.cdr.detectChanges();
 
-              /*
-               * The category POST succeeded.
-               * Only refreshing the dropdown failed.
-               */
+                }, 700);
 
-              this.categorySuccessMessage =
-                'Category added successfully.';
-
-              this.isAddingCategory = false;
-
-              this.cdr.detectChanges();
-
-            }
-
-          });
-
-      },
+              },
 
 
-      error: (error) => {
+              error: (error) => {
 
-        console.error(
-          'Add Category Error:',
-          error
-        );
+                console.error(
+                  'Refresh Categories Error:',
+                  error
+                );
 
 
-        /*
-         * IMPORTANT:
-         * Always restore the button when API fails.
-         */
+                this.categorySuccessMessage =
+                  'Category added successfully.';
 
-        this.isAddingCategory = false;
+                this.isAddingCategory = false;
 
-        this.categoryAddErrorMessage =
-          error?.error?.message ||
-          error?.message ||
-          'Unable to add category.';
+                this.cdr.detectChanges();
 
-        this.cdr.detectChanges();
+              }
+
+            });
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Add Category Error:',
+            error
+          );
+
+
+          this.isAddingCategory = false;
+
+          this.categoryAddErrorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to add category.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * =========================
+   * CATEGORY IMAGE
+   * =========================
+   */
+
+  onCategoryImageSelected(
+    event: Event
+  ): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+
+    if (
+      !input.files ||
+      input.files.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const file =
+      input.files[0];
+
+
+    this.categoryAddErrorMessage = '';
+
+
+    /*
+     * Only allow images.
+     */
+
+    if (!file.type.startsWith('image/')) {
+
+      this.categoryAddErrorMessage =
+        'Please select a valid image file.';
+
+      input.value = '';
+
+      return;
+
+    }
+
+
+    this.newCategoryImage = file;
+
+
+    /*
+     * Preview
+     */
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload = () => {
+
+      if (
+        typeof reader.result ===
+        'string'
+      ) {
+
+        this.newCategoryImagePreview =
+          reader.result;
 
       }
 
-    });
-}
+      this.cdr.detectChanges();
+
+    };
 
 
-onCategoryImageSelected(event: Event): void {
+    reader.readAsDataURL(file);
 
-  const input =
-    event.target as HTMLInputElement;
 
-  if (
-    !input.files ||
-    input.files.length === 0
-  ) {
-    return;
-  }
-
-  const file = input.files[0];
-
-  this.categoryAddErrorMessage = '';
-
-  /*
-   * Only allow images.
-   */
-
-  if (!file.type.startsWith('image/')) {
-
-    this.categoryAddErrorMessage =
-      'Please select a valid image file.';
+    /*
+     * Allows selecting the same image again.
+     */
 
     input.value = '';
 
-    return;
   }
-
-
-  this.newCategoryImage = file;
-
-
-  /*
-   * Preview
-   */
-
-  const reader = new FileReader();
-
-  reader.onload = () => {
-
-    if (typeof reader.result === 'string') {
-
-      this.newCategoryImagePreview =
-        reader.result;
-    }
-
-  };
-
-  reader.readAsDataURL(file);
-
-
-  /*
-   * Allows selecting the same image again.
-   */
-
-  input.value = '';
-}
 
 
   /*
@@ -597,49 +734,84 @@ onCategoryImageSelected(event: Event): void {
    * =========================
    */
 
-  onImagesSelected(event: Event): void {
+  onImagesSelected(
+    event: Event
+  ): void {
 
     const input =
       event.target as HTMLInputElement;
 
-    if (!input.files || input.files.length === 0) {
+
+    if (
+      !input.files ||
+      input.files.length === 0
+    ) {
+
       return;
+
     }
 
-    const files = Array.from(input.files);
+
+    const files =
+      Array.from(input.files);
+
 
     this.errorMessage = '';
 
+
     files.forEach((file) => {
 
+      /*
+       * Only allow image files.
+       */
+
       if (!file.type.startsWith('image/')) {
+
         return;
+
       }
+
 
       this.selectedImages.push(file);
 
-      const reader = new FileReader();
+
+      /*
+       * Create preview.
+       */
+
+      const reader =
+        new FileReader();
+
 
       reader.onload = () => {
 
-        if (typeof reader.result === 'string') {
+        if (
+          typeof reader.result ===
+          'string'
+        ) {
 
           this.imagePreviews.push(
             reader.result
           );
+
+          this.cdr.detectChanges();
+
         }
 
       };
 
+
       reader.readAsDataURL(file);
 
     });
+
 
     /*
      * Allows selecting the same image again.
      */
 
     input.value = '';
+
   }
 
 
@@ -649,7 +821,9 @@ onCategoryImageSelected(event: Event): void {
    * =========================
    */
 
-  removeImage(index: number): void {
+  removeImage(
+    index: number
+  ): void {
 
     this.selectedImages.splice(
       index,
@@ -660,6 +834,32 @@ onCategoryImageSelected(event: Event): void {
       index,
       1
     );
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /*
+   * =========================
+   * EXISTING ADMIN IMAGE
+   * =========================
+   */
+
+  getExistingProductImage():
+    string {
+
+    if (
+      this.existingProductImages.length >
+      0
+    ) {
+
+      return this.existingProductImages[0];
+
+    }
+
+    return '';
+
   }
 
 
@@ -677,7 +877,9 @@ onCategoryImageSelected(event: Event): void {
 
 
     /*
+     * =========================
      * PRODUCT NAME
+     * =========================
      */
 
     if (!this.productName.trim()) {
@@ -686,11 +888,14 @@ onCategoryImageSelected(event: Event): void {
         'Please enter product name.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * CATEGORY
+     * =========================
      */
 
     if (!this.categoryId) {
@@ -699,11 +904,14 @@ onCategoryImageSelected(event: Event): void {
         'Please select a category.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * DESCRIPTION
+     * =========================
      */
 
     if (!this.description.trim()) {
@@ -712,11 +920,14 @@ onCategoryImageSelected(event: Event): void {
         'Please enter product description.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * BRAND
+     * =========================
      */
 
     if (!this.brandName.trim()) {
@@ -725,11 +936,14 @@ onCategoryImageSelected(event: Event): void {
         'Please enter brand name.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * SIZE
+     * =========================
      */
 
     if (!this.size.trim()) {
@@ -738,31 +952,39 @@ onCategoryImageSelected(event: Event): void {
         'Please enter product size.';
 
       return;
+
     }
 
 
-/*
- * =========================
- * PACK QUANTITY
- * =========================
- */
+    /*
+     * =========================
+     * PACK QUANTITY
+     * =========================
+     */
 
-if (
-  this.packQuantity === null ||
-  !Number.isFinite(this.packQuantity) ||
-  this.packQuantity <= 0 ||
-  !Number.isInteger(this.packQuantity)
-) {
+    if (
+      this.packQuantity === null ||
+      !Number.isFinite(
+        this.packQuantity
+      ) ||
+      this.packQuantity <= 0 ||
+      !Number.isInteger(
+        this.packQuantity
+      )
+    ) {
 
-  this.errorMessage =
-    'Please enter a valid pack quantity greater than 0.';
+      this.errorMessage =
+        'Please enter a valid pack quantity greater than 0.';
 
-  return;
-}
+      return;
+
+    }
 
 
     /*
+     * =========================
      * PACK UNIT
+     * =========================
      */
 
     if (!this.packUnit.trim()) {
@@ -771,11 +993,14 @@ if (
         'Please select pack unit.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * MRP
+     * =========================
      */
 
     if (
@@ -787,11 +1012,14 @@ if (
         'Please enter a valid MRP.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * SELLING PRICE
+     * =========================
      */
 
     if (
@@ -803,35 +1031,49 @@ if (
         'Please enter a valid selling price.';
 
       return;
+
     }
 
 
     /*
+     * =========================
      * STOCK
+     * =========================
      */
 
- /*
- * =========================
- * STOCK
- * =========================
- */
+    if (
+      this.stockQuantity === null ||
+      !Number.isFinite(
+        this.stockQuantity
+      ) ||
+      this.stockQuantity <= 0 ||
+      !Number.isInteger(
+        this.stockQuantity
+      )
+    ) {
 
-if (
-  this.stockQuantity === null ||
-  !Number.isFinite(this.stockQuantity) ||
-  this.stockQuantity <= 0 ||
-  !Number.isInteger(this.stockQuantity)
-) {
+      this.errorMessage =
+        'Please enter a valid stock quantity greater than 0.';
 
-  this.errorMessage =
-    'Please enter a valid stock quantity greater than 0.';
+      return;
 
-  return;
-}
+    }
 
 
     /*
+     * =========================
      * IMAGES
+     * =========================
+     *
+     * The new bulk API requires
+     * actual File objects in the
+     * "images" multipart field.
+     *
+     * Existing admin image URLs
+     * cannot be sent as File objects.
+     *
+     * Therefore the vendor must
+     * select at least one image.
      */
 
     if (this.selectedImages.length === 0) {
@@ -840,16 +1082,40 @@ if (
         'Please select at least one product image.';
 
       return;
+
     }
+
+
+    /*
+     * =========================
+     * IMAGE INDEXES
+     * =========================
+     *
+     * The indexes correspond to
+     * the order of the images in
+     * FormData.
+     *
+     * Example:
+     *
+     * selectedImages[0]
+     * selectedImages[1]
+     * selectedImages[2]
+     *
+     * becomes:
+     *
+     * imageIndexes: [0, 1, 2]
+     */
+
+    const imageIndexes =
+      this.selectedImages.map(
+        (_, index) => index
+      );
 
 
     /*
      * =========================
      * PRODUCT REQUEST
      * =========================
-     *
-     * This now exactly follows
-     * the backend request structure.
      */
 
     const productData: ProductData = {
@@ -885,13 +1151,33 @@ if (
         Number(this.sellingPrice),
 
       stockQuantity:
-        Number(this.stockQuantity)
+        Number(this.stockQuantity),
+
+      imageIndexes:
+        imageIndexes
+
     };
 
+
+    /*
+     * =========================
+     * DEBUG
+     * =========================
+     */
 
     console.log(
       'Product Data:',
       productData
+    );
+
+    console.log(
+      'Selected Images:',
+      this.selectedImages
+    );
+
+    console.log(
+      'Image Indexes:',
+      imageIndexes
     );
 
 
@@ -899,13 +1185,33 @@ if (
      * =========================
      * API CALL
      * =========================
+     *
+     * NEW API:
+     *
+     * POST
+     * /api/vendor/products/bulk
+     *
+     * products -> JSON
+     * images   -> File[]
+     *
+     * The service receives an array
+     * because the backend now expects:
+     *
+     * {
+     *   "products": [
+     *      { ... }
+     *   ]
+     * }
      */
 
     this.isLoading = true;
 
+    this.cdr.detectChanges();
+
+
     this.productService
       .addProduct(
-        productData,
+        [productData],
         this.selectedImages
       )
       .subscribe({
@@ -914,19 +1220,25 @@ if (
 
           this.isLoading = false;
 
+
           console.log(
             'Add Product Response:',
             response
           );
 
 
-          if (response?.success === false) {
+          if (
+            response?.success === false
+          ) {
 
             this.errorMessage =
               response.message ||
               'Failed to add product.';
 
+            this.cdr.detectChanges();
+
             return;
+
           }
 
 
@@ -934,7 +1246,19 @@ if (
             response?.message ||
             'Product added successfully.';
 
-          this.clearForm(false);
+
+          /*
+           * Clear uploaded File objects
+           * and their previews.
+           */
+
+          this.selectedImages = [];
+
+          this.imagePreviews = [];
+
+
+          this.cdr.detectChanges();
+
         },
 
 
@@ -942,18 +1266,25 @@ if (
 
           this.isLoading = false;
 
+
           console.error(
             'Add Product Error:',
             error
           );
 
+
           this.errorMessage =
             error?.error?.message ||
             error?.message ||
             'Unable to add product. Please try again.';
+
+
+          this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
 
@@ -993,11 +1324,24 @@ if (
 
     this.imagePreviews = [];
 
+    this.existingProductImages = [];
+
+    this.selectedAdminProduct = null;
+
+    this.isAdminProductSelected = false;
+
     this.errorMessage = '';
 
+
     if (showMessage) {
+
       this.successMessage = '';
+
     }
+
+
+    this.cdr.detectChanges();
+
   }
 
 }

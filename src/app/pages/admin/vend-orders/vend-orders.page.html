@@ -1,0 +1,870 @@
+<ion-content
+  class="orders-content"
+  [fullscreen]="true">
+
+  <div class="orders-page">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================= -->
+
+    <header class="orders-header">
+
+      @if (showDetails) {
+
+        <button
+          type="button"
+          class="back-button"
+          (click)="backToOrders()">
+
+          <ion-icon
+            name="arrow-back-outline">
+          </ion-icon>
+
+        </button>
+
+      }
+
+
+      <div class="header-title">
+
+        <h1>
+
+          @if (showDetails) {
+
+            Order Details
+
+          } @else {
+
+            Orders
+
+          }
+
+        </h1>
+
+        <p>
+
+          @if (showDetails) {
+
+            View customer order details
+
+          } @else {
+
+            Manage your received orders
+
+          }
+
+        </p>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- =================================================
+         ORDER LIST
+    ================================================= -->
+
+    @if (!showDetails) {
+
+      <main class="orders-container">
+
+
+        <!-- =============================================
+             NEW / CONFIRMED OPTIONS
+        ============================================== -->
+
+        <div class="order-tabs">
+
+          <button
+            type="button"
+            class="order-tab"
+            [class.active]="currentView === 'new'"
+            (click)="changeView('new')">
+
+            New
+
+            <span class="tab-count">
+              {{ newOrders.length }}
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="order-tab"
+            [class.active]="currentView === 'confirmed'"
+            (click)="changeView('confirmed')">
+
+            Confirmed
+
+            <span class="tab-count">
+              {{ confirmedOrders.length }}
+            </span>
+
+          </button>
+
+        </div>
+
+
+
+        <!-- =============================================
+             ERROR
+        ============================================== -->
+
+        @if (errorMessage) {
+
+          <div class="error-box">
+
+            {{ errorMessage }}
+
+          </div>
+
+        }
+
+
+
+        <!-- =============================================
+             NO ORDERS
+        ============================================== -->
+
+        @if (
+          !isLoading &&
+          currentOrders.length === 0
+        ) {
+
+          <section class="empty-orders">
+
+            <div class="empty-orders-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <h2>
+
+              @if (currentView === 'new') {
+
+                No New Orders
+
+              } @else {
+
+                No Confirmed Orders
+
+              }
+
+            </h2>
+
+
+            <p>
+
+              @if (currentView === 'new') {
+
+                New customer orders received by your shop will appear here.
+
+              } @else {
+
+                Orders that you confirm will appear here.
+
+              }
+
+            </p>
+
+          </section>
+
+        }
+
+
+
+        <!-- =============================================
+             ORDER CARDS
+        ============================================== -->
+
+        @if (
+          !isLoading &&
+          currentOrders.length > 0
+        ) {
+
+          <section class="orders-list">
+
+            @for (
+              order of currentOrders;
+              track order.orderId
+            ) {
+
+              <article
+                class="order-card"
+                (click)="openOrder(order)">
+
+
+                <!-- =================================
+                     IMAGE
+                ================================== -->
+
+                <div class="order-image">
+
+                  @if (
+                    order.items.length > 0 &&
+                    order.items[0].storeImageUrl
+                  ) {
+
+                    <img
+                      [src]="order.items[0].storeImageUrl"
+                      [alt]="order.items[0].productName">
+
+                  } @else {
+
+                    <div class="image-placeholder">
+
+                      <ion-icon
+                        name="cube-outline">
+                      </ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+
+                <!-- =================================
+                     DETAILS
+                ================================== -->
+
+                <div class="order-details">
+
+
+                  <!-- TOP -->
+
+                  <div class="order-top">
+
+                    <div class="order-title">
+
+                      <span class="order-label">
+                        ORDER #{{ order.orderId }}
+                      </span>
+
+                      <h3>
+
+                        @if (
+                          order.items.length === 1
+                        ) {
+
+                          {{ order.items[0].productName }}
+
+                        } @else {
+
+                          {{ order.items.length }} Items
+
+                        }
+
+                      </h3>
+
+                    </div>
+
+
+                    <div
+                      class="status-badge"
+                      [class]="getStatusClass(order.vendorStatus)">
+
+                      <ion-icon
+                        [name]="getStatusIcon(order.vendorStatus)">
+                      </ion-icon>
+
+                      {{ order.vendorStatus }}
+
+                    </div>
+
+                  </div>
+
+
+
+                  <!-- PRODUCT INFO -->
+
+                  <div class="order-product-info">
+
+                    @if (
+                      order.items.length === 1
+                    ) {
+
+                      <span>
+
+                        {{ order.items[0].brandName }}
+
+                      </span>
+
+
+                      <small>
+
+                        {{ order.items[0].size }}
+
+                        @if (
+                          order.items[0].packQuantity
+                        ) {
+
+                          •
+                          {{ order.items[0].packQuantity }}
+                          {{ order.items[0].packUnit }}
+
+                        }
+
+                      </small>
+
+                    } @else {
+
+                      <span>
+                        Multiple products
+                      </span>
+
+                      <small>
+                        {{ order.items.length }} products in this order
+                      </small>
+
+                    }
+
+                  </div>
+
+
+
+                  <!-- CUSTOMER -->
+
+                  <div class="customer-row">
+
+                    <div>
+
+                      <span>
+                        Customer
+                      </span>
+
+                      <strong>
+                        {{ order.customerName }}
+                      </strong>
+
+                    </div>
+
+
+                    <div>
+
+                      <span>
+                        Order Date
+                      </span>
+
+                      <strong>
+                        {{ formatDate(order.createdAt) }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+
+                  <!-- BOTTOM -->
+
+                  <div class="order-bottom">
+
+                    <div class="order-total">
+
+                      <span>
+                        Your Total
+                      </span>
+
+                      <strong>
+                        ₹{{ order.vendorTotalAmount | number:'1.2-2' }}
+                      </strong>
+
+                    </div>
+
+
+                    @if (
+                      currentView === 'new'
+                    ) {
+
+                      <button
+                        type="button"
+                        class="confirm-button"
+                        [disabled]="
+                          confirmingOrderId === order.orderId
+                        "
+                        (click)="
+                          confirmOrder($event, order)
+                        ">
+
+                        <ion-icon
+                          name="checkmark-circle-outline">
+                        </ion-icon>
+
+                        @if (
+                          confirmingOrderId === order.orderId
+                        ) {
+
+                          Confirming...
+
+                        } @else {
+
+                          Confirm Order
+
+                        }
+
+                      </button>
+
+                    } @else {
+
+                      <div class="view-details">
+
+                        View Details
+
+                        <ion-icon
+                          name="chevron-forward-outline">
+                        </ion-icon>
+
+                      </div>
+
+                    }
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            }
+
+          </section>
+
+        }
+
+      </main>
+
+    }
+
+
+
+    <!-- =================================================
+         ORDER DETAILS
+    ================================================= -->
+
+    @if (
+      showDetails &&
+      selectedOrder
+    ) {
+
+      <main class="orders-container details-container">
+
+
+        <!-- =============================================
+             ORDER SUMMARY
+        ============================================== -->
+
+        <section class="detail-card summary-card">
+
+          <div class="summary-top">
+
+            <div>
+
+              <span class="order-label">
+                ORDER #{{ selectedOrder.orderId }}
+              </span>
+
+              <h2>
+                Order Summary
+              </h2>
+
+            </div>
+
+
+            <div
+              class="status-badge large-status"
+              [class]="
+                getStatusClass(
+                  selectedOrder.vendorStatus
+                )
+              ">
+
+              <ion-icon
+                [name]="
+                  getStatusIcon(
+                    selectedOrder.vendorStatus
+                  )
+                ">
+              </ion-icon>
+
+              {{ selectedOrder.vendorStatus }}
+
+            </div>
+
+          </div>
+
+
+          <div class="summary-total">
+
+            <span>
+              Your Total
+            </span>
+
+            <strong>
+              ₹{{ selectedOrder.vendorTotalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =============================================
+             CUSTOMER
+        ============================================== -->
+
+        <section class="detail-card">
+
+          <div class="detail-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="call-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Customer Details
+            </h2>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Name
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerName }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Mobile
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerMobile }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row address-row">
+
+            <span>
+              Delivery Address
+            </span>
+
+            <strong>
+              {{ selectedOrder.deliveryAddress }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =============================================
+             ORDER INFORMATION
+        ============================================== -->
+
+        <section class="detail-card">
+
+          <div class="detail-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Order Information
+            </h2>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Order Date
+            </span>
+
+            <strong>
+              {{ formatDateTime(selectedOrder.createdAt) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Expected Delivery
+            </span>
+
+            <strong>
+              {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Payment
+            </span>
+
+            <strong>
+              {{ selectedOrder.paymentMethod }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Order Status
+            </span>
+
+            <strong>
+              {{ selectedOrder.status }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Vendor Status
+            </span>
+
+            <strong>
+              {{ selectedOrder.vendorStatus }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =============================================
+             ITEMS
+        ============================================== -->
+
+        <section class="detail-card">
+
+          <div class="detail-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="cube-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Ordered Items
+            </h2>
+
+          </div>
+
+
+          <div class="detail-items">
+
+            @for (
+              item of selectedOrder.items;
+              track item.orderItemId
+            ) {
+
+              <div class="detail-item">
+
+
+                <div class="detail-item-image">
+
+                  @if (
+                    item.storeImageUrl
+                  ) {
+
+                    <img
+                      [src]="item.storeImageUrl"
+                      [alt]="item.productName">
+
+                  } @else {
+
+                    <div class="detail-image-placeholder">
+
+                      <ion-icon
+                        name="cube-outline">
+                      </ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="detail-item-info">
+
+                  <h3>
+                    {{ item.productName }}
+                  </h3>
+
+                  @if (item.brandName) {
+
+                    <p>
+                      {{ item.brandName }}
+                    </p>
+
+                  }
+
+                  <span>
+
+                    {{ item.size }}
+
+                    @if (
+                      item.packQuantity
+                    ) {
+
+                      •
+                      {{ item.packQuantity }}
+                      {{ item.packUnit }}
+
+                    }
+
+                  </span>
+
+                </div>
+
+
+                <div class="detail-item-price">
+
+                  <span>
+                    Qty: {{ item.quantity }}
+                  </span>
+
+                  <strong>
+                    ₹{{ item.subtotal | number:'1.2-2' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <div class="items-total">
+
+            <span>
+              Your Total
+            </span>
+
+            <strong>
+              ₹{{ selectedOrder.vendorTotalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- =============================================
+             VENDOR STATUS
+        ============================================== -->
+
+        <section class="detail-card status-update-card">
+
+          <div class="detail-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="time-outline">
+              </ion-icon>
+
+            </div>
+
+            <div>
+
+              <h2>
+                Update Order Status
+              </h2>
+
+              <p>
+                Vendor order status
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="status-placeholder">
+
+            <ion-icon
+              name="alert-circle-outline">
+            </ion-icon>
+
+            <p>
+              Status options will be connected here once the vendor status API is provided.
+            </p>
+
+          </div>
+
+        </section>
+
+
+
+        <button
+          type="button"
+          class="back-orders-button"
+          (click)="backToOrders()">
+
+          <ion-icon
+            name="arrow-back-outline">
+          </ion-icon>
+
+          Back to Orders
+
+        </button>
+
+      </main>
+
+    }
+
+  </div>
+
+</ion-content>

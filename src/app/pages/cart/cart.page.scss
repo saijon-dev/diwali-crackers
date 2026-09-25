@@ -556,6 +556,82 @@
 
 
 /* ======================================================
+   CLEAR CART BUTTON
+====================================================== */
+
+.cart-summary-heading {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+
+.clear-cart-button {
+
+  flex: 0 0 auto;
+
+  min-height: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  padding: 0 9px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background:
+    rgba(239, 11, 28, 0.07);
+
+  color:
+    var(--diwali-red);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  cursor: pointer;
+}
+
+
+.clear-cart-button ion-icon {
+
+  font-size: 14px;
+
+}
+
+
+.clear-cart-button:active {
+
+  transform: scale(0.96);
+
+}
+
+
+.clear-cart-button:disabled {
+
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+}
+
+
+/* ======================================================
    REMOVE
 ====================================================== */
 
@@ -1399,6 +1475,782 @@
   .grand-total-row > strong {
 
     font-size: 21px;
+  }
+
+}
+
+/* ======================================================
+   CHECKOUT CARD
+====================================================== */
+
+.checkout-card {
+
+  width: 100%;
+
+  margin-top: 14px;
+
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+}
+
+
+/* ======================================================
+   CHECKOUT HEADER
+====================================================== */
+
+.checkout-header {
+
+  margin-bottom: 16px;
+
+}
+
+
+.checkout-eyebrow {
+
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    var(--diwali-red);
+
+  font-size: 8px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  letter-spacing: 1.2px;
+
+}
+
+
+.checkout-header h2 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 18px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+}
+
+
+.checkout-header p {
+
+  margin:
+    4px 0 0;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+
+}
+
+
+/* ======================================================
+   CHECKOUT FORM
+====================================================== */
+
+.checkout-form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 13px;
+
+}
+
+
+/* ======================================================
+   FORM FIELD
+====================================================== */
+
+.form-field {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+
+}
+
+
+.form-field label {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 9px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+}
+
+
+.form-field input,
+.form-field textarea {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius:
+    11px;
+
+  outline: none;
+
+  background:
+    #fffef8;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 11px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+.form-field input {
+
+  height: 43px;
+
+  padding:
+    0 12px;
+
+}
+
+
+.form-field textarea {
+
+  min-height: 88px;
+
+  padding:
+    11px 12px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+
+}
+
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+
+  color:
+    var(--diwali-muted-text);
+
+  opacity: 0.8;
+
+}
+
+
+.form-field input:focus,
+.form-field textarea:focus {
+
+  border-color:
+    var(--diwali-red);
+
+  box-shadow:
+    0 0 0 2px
+    rgba(239, 11, 28, 0.08);
+
+}
+
+
+/* ======================================================
+   MAKE ORDER BUTTON
+====================================================== */
+
+.make-order-button {
+
+  width: 100%;
+
+  min-height:
+    var(--diwali-main-button-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 3px;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-main-button-radius);
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+
+}
+
+
+.make-order-button:active {
+
+  transform:
+    scale(0.98);
+
+}
+
+
+.make-order-button:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+}
+
+
+/* ======================================================
+   CHECKOUT MOBILE
+====================================================== */
+
+@media (max-width: 360px) {
+
+  .checkout-card {
+
+    padding: 13px;
+
+  }
+
+
+  .checkout-header h2 {
+
+    font-size: 17px;
+
+  }
+
+
+  .form-field input {
+
+    height: 42px;
+
+  }
+
+
+  .form-field textarea {
+
+    min-height: 82px;
+
+  }
+
+}
+
+
+/* ======================================================
+   CHECKOUT LARGER MOBILE
+====================================================== */
+
+@media (min-width: 500px) {
+
+  .checkout-card {
+
+    padding: 18px;
+
+  }
+
+
+  .checkout-header h2 {
+
+    font-size: 20px;
+
+  }
+
+
+  .form-field input,
+  .form-field textarea {
+
+    font-size: 12px;
+
+  }
+
+}
+
+/* ======================================================
+   CHECKOUT MODAL
+====================================================== */
+
+.checkout-modal {
+
+  --width: min(92%, 430px);
+
+  --height: auto;
+
+  --max-height: 90vh;
+
+  --border-radius: 22px;
+
+  --background: #ffffff;
+
+  --box-shadow:
+    0 18px 50px rgba(23, 35, 60, 0.20);
+
+}
+
+
+/* ======================================================
+   MODAL CONTENT
+====================================================== */
+
+.checkout-modal-content {
+
+  width: 100%;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-background);
+
+  color:
+    var(--diwali-text);
+
+}
+
+
+/* ======================================================
+   MODAL HEADER
+====================================================== */
+
+.checkout-modal-header {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+
+}
+
+
+.checkout-eyebrow {
+
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    var(--diwali-red);
+
+  font-size: 8px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  letter-spacing: 1.3px;
+
+}
+
+
+.checkout-modal-header h2 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 20px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+}
+
+
+.checkout-modal-header p {
+
+  margin:
+    5px 0 0;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+
+}
+
+
+/* ======================================================
+   CLOSE BUTTON
+====================================================== */
+
+.modal-close-button {
+
+  width: 34px;
+
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    rgba(239, 11, 28, 0.07);
+
+  color:
+    var(--diwali-red);
+
+  padding: 0;
+
+  cursor: pointer;
+
+}
+
+
+.modal-close-button ion-icon {
+
+  font-size: 18px;
+
+}
+
+
+.modal-close-button:active {
+
+  transform:
+    scale(0.94);
+
+}
+
+
+.modal-close-button:disabled {
+
+  opacity: 0.45;
+
+}
+
+
+/* ======================================================
+   CHECKOUT FORM
+====================================================== */
+
+.checkout-form {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
+
+}
+
+
+/* ======================================================
+   FORM FIELD
+====================================================== */
+
+.form-field {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+
+}
+
+
+.form-field label {
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 10px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+}
+
+
+/* ======================================================
+   IONIC INPUT
+====================================================== */
+
+.checkout-input {
+
+  --background:
+    #fffef8;
+
+  --color:
+    var(--diwali-text);
+
+  --placeholder-color:
+    var(--diwali-muted-text);
+
+  --placeholder-opacity:
+    0.8;
+
+  --padding-start:
+    13px;
+
+  --padding-end:
+    13px;
+
+  --padding-top:
+    0;
+
+  --padding-bottom:
+    0;
+
+  width: 100%;
+
+  height: 45px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius:
+    11px;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 12px;
+
+}
+
+
+/* ======================================================
+   IONIC TEXTAREA
+====================================================== */
+
+.checkout-textarea {
+
+  --background:
+    #fffef8;
+
+  --color:
+    var(--diwali-text);
+
+  --placeholder-color:
+    var(--diwali-muted-text);
+
+  --placeholder-opacity:
+    0.8;
+
+  --padding-start:
+    13px;
+
+  --padding-end:
+    13px;
+
+  --padding-top:
+    11px;
+
+  --padding-bottom:
+    11px;
+
+  width: 100%;
+
+  min-height: 100px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius:
+    11px;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 12px;
+
+}
+
+
+/* ======================================================
+   MAKE ORDER
+====================================================== */
+
+.make-order-button {
+
+  --background:
+    var(--diwali-red);
+
+  --background-activated:
+    var(--diwali-dark-red);
+
+  --background-focused:
+    var(--diwali-red);
+
+  --color:
+    var(--diwali-cream);
+
+  --border-radius:
+    var(--diwali-main-button-radius);
+
+  --box-shadow:
+    var(--diwali-button-shadow);
+
+  width: 100%;
+
+  min-height:
+    var(--diwali-main-button-height);
+
+  margin:
+    5px 0 0;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  text-transform: none;
+
+}
+
+
+/* ======================================================
+   SMALL MOBILE
+====================================================== */
+
+@media (max-width: 360px) {
+
+  .checkout-modal-content {
+
+    padding: 16px;
+
+  }
+
+
+  .checkout-modal-header h2 {
+
+    font-size: 18px;
+
+  }
+
+
+  .checkout-input {
+
+    height: 43px;
+
+  }
+
+
+  .checkout-textarea {
+
+    min-height: 90px;
+
+  }
+
+}
+
+
+/* ======================================================
+   LARGER MOBILE
+====================================================== */
+
+@media (min-width: 500px) {
+
+  .checkout-modal-content {
+
+    padding: 22px;
+
   }
 
 }

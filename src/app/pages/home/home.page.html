@@ -1,40 +1,79 @@
 <ion-content
   [fullscreen]="true"
-  class="home-content"
+  class="!bg-white"
 >
 
-  <div class="home-page">
+  <!-- =====================================================
+       HOME PAGE
+       ===================================================== -->
 
+  <div
+    class="relative min-h-full overflow-visible bg-white px-3 sm:px-4"
+  >
 
-    <!-- =====================================
+    <!-- ===================================================
          HEADER
-         ===================================== -->
+         =================================================== -->
 
-    <header class="home-header">
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-visible bg-[#8f071f] px-10 shadow-none sm:-mx-4"
+    >
 
-      <!-- HAMBURGER MENU -->
+      <!-- LEFT DEEPAS -->
 
-      <button
-        type="button"
-        class="menu-button"
-        (click)="toggleMenu()"
-        aria-label="Open menu"
-      >
+      <img
+        src="assets/images/left-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
+      />
 
-        <ion-icon
-          name="menu-outline"
-        ></ion-icon>
 
-      </button>
+      <!-- RIGHT DEEPAS -->
 
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
+      />
 
 
       <!-- BRAND -->
 
-      <div class="brand">
+      <div
+        class="relative z-20 flex flex-col items-center justify-center leading-none"
+      >
 
-        <span class="brand-name">
-          Diwali Crackers
+        <div
+          class="flex items-center gap-2"
+        >
+
+          <span
+            class="font-serif text-[19px] font-bold text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+          <span
+            class="font-serif text-[22px] font-bold tracking-[0.5px] text-[#fff8dc] sm:text-[24px]"
+          >
+            DIWALI
+          </span>
+
+          <span
+            class="font-serif text-[19px] font-bold text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+        </div>
+
+
+        <span
+          class="mt-1 font-serif text-[9px] font-semibold tracking-[0.3px] text-[#fff8dc] sm:text-[10px]"
+        >
+          Light Up Your Celebrations
         </span>
 
       </div>
@@ -42,94 +81,562 @@
     </header>
 
 
+    <!-- ===================================================
+         SEARCH BAR
+         =================================================== -->
 
-    <!-- =====================================
-         SEARCH
-         ===================================== -->
-
-    <div class="search-container">
+    <div
+      class="sticky top-[68px] z-40 -mx-3 bg-[#8f071f] px-3 pb-3 pt-3 sm:-mx-4 sm:px-4"
+    >
 
       <ion-searchbar
         placeholder="Search for crackers, categories..."
         (click)="openSearch()"
-        class="custom-search"
+        class="!h-[44px] !p-0"
+        style="
+          --background: #fffdf5;
+          --color: #4a1820;
+          --placeholder-color: #a28d8d;
+          --icon-color: #8f071f;
+          --border-radius: 12px;
+          --box-shadow: 0 3px 12px rgba(80, 20, 20, 0.08);
+          --border-width: 0;
+          --border-style: none;
+        "
       >
       </ion-searchbar>
 
     </div>
 
 
+    <!-- ===================================================
+         CATEGORY FEATURE PANEL
+         =================================================== -->
 
-    <!-- =====================================
-         HERO BANNER
-         ===================================== -->
+    <section
+      class="relative -mx-3 mb-5 h-[330px] overflow-hidden rounded-b-[30px] bg-[#8f071f] px-4 pb-5 pt-4 sm:-mx-4 sm:px-6"
+    >
 
-    <section class="hero-section">
+      <!-- =================================================
+           BRIGHT LANTERN GLOW
+           ================================================= -->
+
+      <div
+        class="pointer-events-none absolute left-[8px] top-[-20px] z-0 h-[130px] w-[130px] rounded-full bg-[radial-gradient(circle,rgba(255,220,130,0)_0%,rgba(239,82,90,0.1)_35%,rgba(143,7,31,0)_5%)] blur-[3px]"
+      ></div>
+
+
+      <!-- =================================================
+           LEFT LANTERN DECORATION
+           ================================================= -->
 
       <img
-        src="assets/images/rectangle-image.png"
-        alt="Light Up Your Celebrations"
-        class="hero-banner"
+        src="assets/images/left-lantern.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute left-[10px] top-[25px] z-[5] h-[70px] w-auto select-none object-contain opacity-100"
       />
 
-    </section>
+
+      <!-- BRIGHTER CENTRAL AREA -->
+
+      <div
+        class="pointer-events-none absolute left-1/2 top-[45px] z-0 h-[210px] w-[82%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(211,52,72,0.48)_0%,rgba(181,28,53,0.28)_38%,rgba(143,7,31,0)_75%)]"
+      ></div>
 
 
+      <!-- ADDITIONAL SOFT LIGHT -->
 
-    <!-- =====================================
-         CATEGORIES
-         ===================================== -->
+      <div
+        class="pointer-events-none absolute left-[20%] top-[85px] z-0 h-[110px] w-[110px] rounded-full bg-[#d83b55]/20 blur-3xl"
+      ></div>
 
-    <section class="categories-section">
-
-      <div class="section-header">
-
-        <h2>
-          Categories
-        </h2>
+      <div
+        class="pointer-events-none absolute right-[10%] top-[70px] z-0 h-[120px] w-[120px] rounded-full bg-[#d83b55]/20 blur-3xl"
+      ></div>
 
 
-        <button
-          type="button"
-          class="view-all"
-          (click)="openCategories()"
+      <!-- =================================================
+           CATEGORY HEADER + QUOTE
+           ================================================= -->
+
+      <div
+        class="relative z-10 mb-4 h-[68px] w-full"
+      >
+
+        <!-- CATEGORY TITLE -->
+
+        <div
+          class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
         >
-          View All
-        </button>
+
+          <h2
+            class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
+          >
+            CATEGORIES
+          </h2>
+
+        </div>
+
+
+        <!-- CATEGORY QUOTE -->
+
+        <div
+          class="absolute left-0 top-[37px] flex w-full items-center justify-center"
+        >
+
+          <p
+            class="m-0 text-center font-serif text-[9px] font-semibold italic leading-none tracking-[0.15px] text-[#f7df9d] sm:text-[10px]"
+          >
+            Find the best there is!
+          </p>
+
+        </div>
 
       </div>
 
 
+      <!-- =================================================
+           CATEGORY HORIZONTAL SCROLLER
+           ================================================= -->
 
-      <!-- CATEGORY GRID -->
+      <div
+        class="relative z-10 w-full overflow-x-auto overflow-y-hidden pb-3 scrollbar-hide"
+      >
 
-      <div class="category-grid">
+        <div
+          class="flex w-max min-w-full items-stretch justify-center gap-5 px-2"
+        >
 
-        @for (
-          category of categories;
-          track category.name
-        ) {
+          <!-- CATEGORY LOADING -->
 
-          <div
-            class="category-item"
-            (click)="selectCategory(category.name)"
-          >
+          @if (isLoadingCategories) {
 
             <div
-              class="category-image"
-              [style.background]="category.background"
+              class="flex h-[155px] min-w-[300px] items-center justify-center"
             >
 
-              <span class="category-icon">
-                {{ category.icon }}
-              </span>
+              <div
+                class="h-7 w-7 animate-spin rounded-full border-2 border-[#d99532] border-t-[#fff8dc]"
+              ></div>
 
             </div>
 
+          }
 
-            <span class="category-name">
-              {{ category.name }}
-            </span>
+
+          <!-- CATEGORY ERROR -->
+
+          @else if (categoryErrorMessage) {
+
+            <div
+              class="flex h-[155px] min-w-[300px] flex-col items-center justify-center"
+            >
+
+              <p
+                class="mb-2 font-sans text-[11px] font-semibold text-[#fff8dc]"
+              >
+                {{ categoryErrorMessage }}
+              </p>
+
+              <button
+                type="button"
+                (click)="loadCategories()"
+                class="rounded-full border border-[#f7df9d] bg-transparent px-4 py-1.5 font-sans text-[10px] font-bold text-[#fff8dc]"
+              >
+                Try Again
+              </button>
+
+            </div>
+
+          }
+
+
+          <!-- CATEGORY CARDS -->
+
+          @else {
+
+            @for (
+              category of categories;
+              track category.categoryId
+            ) {
+
+              <button
+                type="button"
+                (click)="selectCategory(category.categoryId)"
+                class="!rounded-[16px] flex h-[150px] w-[105px] shrink-0 flex-col overflow-hidden border border-[#eadfcb] bg-[#fffdf7] p-1.5 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-150 active:scale-[0.98] sm:h-[160px] sm:w-[115px]"
+              >
+
+                <!-- CATEGORY IMAGE -->
+
+                <div
+                  class="h-[105px] w-full shrink-0 overflow-hidden !rounded-[20px] bg-[#fffaf0] sm:h-[112px]"
+                >
+
+                  @if (category.imageUrl) {
+
+                    <img
+                      [src]="category.imageUrl"
+                      [alt]="category.categoryName"
+                      class="block h-full w-full !rounded-[14px] object-cover"
+                    />
+
+                  } @else {
+
+                    <div
+                      class="flex h-full w-full items-center justify-center !rounded-[20px] bg-[#f8edd6] text-[#a58b82]"
+                    >
+
+                      <ion-icon
+                        name="image-outline"
+                        class="text-[26px]"
+                      ></ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- CATEGORY NAME -->
+
+                <div
+                  class="flex flex-1 items-center justify-center px-1"
+                >
+
+                  <span
+                    class="line-clamp-2 w-full text-center font-sans text-[10px] font-extrabold leading-[1.15] text-[#4a1820] sm:text-[11px]"
+                  >
+                    {{ category.categoryName }}
+                  </span>
+
+                </div>
+
+              </button>
+
+            }
+
+          }
+
+        </div>
+
+      </div>
+
+
+      <!-- SCROLL INDICATOR -->
+
+      @if (
+        !isLoadingCategories &&
+        !categoryErrorMessage &&
+        categories.length > 3
+      ) {
+
+        <div
+          class="pointer-events-none absolute right-2 top-[157px] z-30 flex h-7 w-7 items-center justify-center rounded-full bg-[#fff8dc] shadow-[0_2px_8px_rgba(40,0,10,0.25)]"
+        >
+
+          <span
+            class="font-sans text-[15px] font-extrabold text-[#8f071f]"
+          >
+            →
+          </span>
+
+        </div>
+
+      }
+
+
+      <!-- LOGIN -->
+
+      <div
+        class="absolute bottom-4 left-0 z-20 flex w-full items-center justify-center"
+      >
+
+        <button
+          type="button"
+          (click)="goToAdminLogin()"
+          class="flex items-center gap-2 border-0 bg-transparent px-3 py-1 font-serif text-[16px] font-bold text-[#fff8dc] transition-transform duration-150 active:scale-95 sm:text-[17px]"
+        >
+
+          <span
+            class="text-[9px] text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+          <span>
+            Login
+          </span>
+
+          <span
+            class="text-[9px] text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+<!-- =================================================
+     MAIN CONTENT
+     ================================================= -->
+
+<main
+  class="relative z-10 pb-32"
+>
+
+  <!-- =================================================
+       NEW ARRIVALS
+       ================================================= -->
+
+  <section
+    class="relative"
+  >
+
+    <!-- NEW ARRIVALS TITLE -->
+
+    <div
+      class="mb-3 flex w-full items-center justify-start"
+    >
+
+      <h2
+        class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#8f071f] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
+      >
+        NEW ARRIVALS
+      </h2>
+
+    </div>
+
+
+    <!-- =================================================
+         PRODUCT LOADING
+         ================================================= -->
+
+    @if (isLoadingProducts) {
+
+      <div
+        class="flex w-full flex-col items-center justify-center py-10 text-center"
+      >
+
+        <div
+          class="mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#ead8b9] border-t-[#8f071f]"
+        ></div>
+
+        <p
+          class="font-sans text-[12px] font-semibold text-[#806b68]"
+        >
+          Loading crackers...
+        </p>
+
+      </div>
+
+    }
+
+
+    <!-- =================================================
+         PRODUCT ERROR
+         ================================================= -->
+
+    @if (
+      !isLoadingProducts &&
+      productErrorMessage
+    ) {
+
+      <div
+        class="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
+      >
+
+        <p
+          class="mb-3 font-sans text-[12px] font-semibold text-[#806b68]"
+        >
+          {{ productErrorMessage }}
+        </p>
+
+        <button
+          type="button"
+          (click)="loadProducts()"
+          class="rounded-[12px] border-0 bg-[#8f071f] px-5 py-2.5 font-sans text-[11px] font-extrabold text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform active:scale-95"
+        >
+          Try Again
+        </button>
+
+      </div>
+
+    }
+
+
+    <!-- =================================================
+         PRODUCT GRID
+         ================================================= -->
+
+    @if (
+      !isLoadingProducts &&
+      !productErrorMessage
+    ) {
+
+      <div
+        class="grid grid-cols-2 items-stretch gap-2.5 sm:gap-3"
+      >
+
+        @for (
+          product of products;
+          track product.productStoreId
+        ) {
+
+          <!-- ===========================================
+               PRODUCT CARD
+               =========================================== -->
+
+          <article
+            class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_4px_12px_rgba(86,48,10,0.08)] transition-transform duration-150 active:scale-[0.98]"
+            (click)="openProduct(product)"
+          >
+
+            <!-- =========================================
+                 PRODUCT IMAGE
+                 ========================================= -->
+
+            <div
+              class="h-[155px] w-full shrink-0 overflow-hidden bg-[#f7f3df] sm:h-[190px]"
+            >
+
+              @if (
+                product.images &&
+                product.images.length > 0
+              ) {
+
+                <img
+                  [src]="product.images[0].imageUrl"
+                  [alt]="product.productName"
+                  class="block h-full w-full object-cover"
+                />
+
+              } @else {
+
+                <div
+                  class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#99917e]"
+                >
+
+                  <ion-icon
+                    name="image-outline"
+                    class="text-[32px]"
+                  ></ion-icon>
+
+                </div>
+
+              }
+
+            </div>
+
+<!-- =========================================
+     PRODUCT INFORMATION
+     ========================================= -->
+
+<div
+  class="flex flex-1 flex-col p-[10px]"
+>
+
+  <!-- CATEGORY -->
+
+  <span
+    class="block truncate font-sans text-[9px] font-bold uppercase tracking-[0.3px] text-[#9e2020]"
+  >
+    {{ product.categoryName }}
+  </span>
+
+
+  <!-- PRODUCT NAME -->
+
+<!-- PRODUCT NAME -->
+
+<h3
+  class="!m-[2px_0_6px] !min-h-[34px] !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c] !line-clamp-2 sm:!text-[13px]"
+>
+  {{ product.productName }}
+</h3>
+
+
+  <!-- PRICE -->
+
+  <div
+    class="mb-2 mt-1 flex items-center gap-1.5"
+  >
+
+    @if (
+      product.mrp >
+      product.sellingPrice
+    ) {
+
+      <span
+        class="font-sans text-[8px] font-normal text-[#99917e] line-through sm:text-[9px]"
+      >
+        ₹{{ product.mrp }}
+      </span>
+
+    }
+
+    <span
+      class="font-sans text-[12px] font-extrabold text-[#d51425] sm:text-[13px]"
+    >
+      ₹{{ product.sellingPrice }}
+    </span>
+
+  </div>
+
+<!-- ADD TO CART -->
+
+<button
+  type="button"
+  [disabled]="
+    !product.isAvailable ||
+    product.stockQuantity <= 0
+  "
+  (click)="
+    $event.stopPropagation();
+    addToCart(product)
+  "
+  class="mt-auto flex !h-[34px] !min-h-[34px] !w-full !items-center !justify-center !gap-[5px] !rounded-[14px] !border-0 !bg-[#8f071f] !px-2 !font-sans !text-[10px] !font-bold !text-[#fff8dc] !shadow-[0_3px_7px_rgba(100,0,20,0.14)] transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:!bg-[#d7c8c4] disabled:!text-[#8b7773] disabled:!shadow-none sm:!h-[36px] sm:!min-h-[36px] sm:!text-[11px]"
+>
+  <ion-icon
+    name="cart-outline"
+    class="text-[14px]"
+  ></ion-icon>
+
+  Add to Cart
+</button>
+
+</div>
+
+          </article>
+
+        }
+
+
+        <!-- =================================================
+             NO PRODUCTS
+             ================================================= -->
+
+        @if (products.length === 0) {
+
+          <div
+            class="col-span-2 flex flex-col items-center justify-center px-4 py-12 text-center"
+          >
+
+            <ion-icon
+              name="image-outline"
+              class="mb-2 text-[34px] text-[#b29d95]"
+            ></ion-icon>
+
+            <p
+              class="font-sans text-[12px] font-semibold text-[#806b68]"
+            >
+              No products available.
+            </p>
 
           </div>
 
@@ -137,387 +644,30 @@
 
       </div>
 
-    </section>
+    }
 
+  </section>
 
+</main>
 
-    <!-- =====================================
-         NEW ARRIVALS
-         ===================================== -->
 
-    <section class="new-arrivals-section">
+    <!-- ===================================================
+         END-OF-PAGE DIWALI DESIGN
+         =================================================== -->
 
+    <div
+      class="pointer-events-none relative z-0 -mx-3 mt-5 w-[calc(100%+24px)] overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+    >
 
-      <!-- NEW ARRIVALS HEADER -->
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        aria-hidden="true"
+        class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
 
-      <div class="new-arrivals-header">
-
-        <img
-          src="assets/images/new-arrival.png"
-          alt="New Arrivals"
-          class="new-arrivals-design"
-        />
-
-      </div>
-
-
-
-      <!-- ===================================
-           LOADING
-           =================================== -->
-
-      @if (isLoadingProducts) {
-
-        <div class="products-loading">
-
-          <p>
-            Loading crackers...
-          </p>
-
-        </div>
-
-      }
-
-
-
-      <!-- ===================================
-           ERROR
-           =================================== -->
-
-      @if (
-        !isLoadingProducts &&
-        productErrorMessage
-      ) {
-
-        <div class="products-error">
-
-          <p>
-            {{ productErrorMessage }}
-          </p>
-
-
-          <button
-            type="button"
-            (click)="loadProducts()"
-          >
-            Try Again
-          </button>
-
-        </div>
-
-      }
-
-
-
-      <!-- ===================================
-           PRODUCT GRID
-           =================================== -->
-
-      @if (
-        !isLoadingProducts &&
-        !productErrorMessage
-      ) {
-
-        <div class="product-grid">
-
-
-          @for (
-            product of products;
-            track product.productStoreId
-          ) {
-
-
-            <article
-              class="product-card"
-              (click)="openProduct(product)"
-            >
-
-
-              <!-- =========================
-                   PRODUCT IMAGE
-                   ========================= -->
-
-              <div class="product-image-container">
-
-                @if (
-                  product.images &&
-                  product.images.length > 0
-                ) {
-
-                  <img
-                    [src]="product.images[0].imageUrl"
-                    [alt]="product.productName"
-                    class="product-image"
-                  />
-
-                } @else {
-
-                  <div
-                    class="product-image-placeholder"
-                  >
-
-                    <ion-icon
-                      name="image-outline"
-                    >
-                    </ion-icon>
-
-                  </div>
-
-                }
-
-              </div>
-
-
-
-              <!-- =========================
-                   PRODUCT INFORMATION
-                   ========================= -->
-
-              <div class="product-information">
-
-
-                <!-- CATEGORY -->
-
-                <span class="product-category">
-
-                  {{ product.categoryName }}
-
-                </span>
-
-
-
-                <!-- PRODUCT NAME -->
-
-                <h3>
-
-                  {{ product.productName }}
-
-                </h3>
-
-
-
-                <!-- PRICE -->
-
-                <div class="price-row">
-
-
-                  @if (
-                    product.mrp >
-                    product.sellingPrice
-                  ) {
-
-                    <span
-                      class="original-price"
-                    >
-
-                      Rs.{{ product.mrp }}
-
-                    </span>
-
-                  }
-
-
-                  <span
-                    class="sale-price"
-                  >
-
-                    Rs.{{ product.sellingPrice }}
-
-                  </span>
-
-
-                </div>
-
-
-
-                <!-- STOCK -->
-
-                @if (
-                  product.isAvailable &&
-                  product.stockQuantity > 0
-                ) {
-
-                  <div class="product-stock">
-
-                    In Stock
-
-                  </div>
-
-                } @else {
-
-                  <div
-                    class="product-stock out-of-stock"
-                  >
-
-                    Out of Stock
-
-                  </div>
-
-                }
-
-
-
-                <!-- ADD TO CART -->
-
-                <button
-                  type="button"
-                  class="add-cart-button"
-                  [disabled]="
-                    !product.isAvailable ||
-                    product.stockQuantity <= 0
-                  "
-                  (click)="
-                    $event.stopPropagation();
-                    addToCart(product)
-                  "
-                >
-
-                  Add to Cart
-
-                </button>
-
-
-              </div>
-
-
-            </article>
-
-
-          }
-
-
-
-          <!-- =================================
-               NO PRODUCTS
-               ================================= -->
-
-          @if (products.length === 0) {
-
-            <div class="no-products">
-
-              <ion-icon
-                name="image-outline"
-              >
-              </ion-icon>
-
-
-              <p>
-                No products available.
-              </p>
-
-            </div>
-
-          }
-
-
-        </div>
-
-      }
-
-
-    </section>
-
-
-
-    <!-- =====================================
-         DECORATIONS
-         ===================================== -->
-
-    <img
-      src="assets/images/bottom-leftdesign.png"
-      alt=""
-      class="bottom-left-decoration"
-    />
-
-
-    <img
-      src="assets/images/top-rightdesign.png"
-      alt=""
-      class="top-right-decoration"
-    />
-
+    </div>
 
   </div>
 
 </ion-content>
-
-
-
-<!-- =================================================
-     SIDE MENU
-
-     IMPORTANT:
-     This is intentionally OUTSIDE ion-content.
-     This prevents ion-content / ion-tabs from
-     interfering with the menu positioning.
-     ================================================= -->
-
-@if (menuOpen) {
-
-  <div
-    class="menu-overlay"
-    (click)="closeMenu()"
-  >
-
-    <aside
-      class="side-menu"
-      (click)="$event.stopPropagation()"
-    >
-
-
-      <!-- =================================
-           MENU HEADER
-           ================================= -->
-
-      <div class="side-menu-header">
-
-        <button
-          type="button"
-          class="close-menu-button"
-          (click)="closeMenu()"
-          aria-label="Close menu"
-        >
-
-          <ion-icon
-            name="close-outline"
-          >
-          </ion-icon>
-
-        </button>
-
-      </div>
-
-
-
-      <!-- =================================
-           ADMIN LOGIN
-           ================================= -->
-
-      <button
-        type="button"
-        class="admin-login-area"
-        (click)="goToAdminLogin()"
-      >
-
-        <span class="admin-decoration">
-          ✦
-        </span>
-
-
-        <span class="admin-login-text">
-           Login
-        </span>
-
-
-        <span class="admin-decoration">
-          ✦
-        </span>
-
-      </button>
-
-
-    </aside>
-
-  </div>
-
-}

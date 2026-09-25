@@ -12,9 +12,7 @@ import {
 
 import { FormsModule } from '@angular/forms';
 
-import {
-  addIcons
-} from 'ionicons';
+import { addIcons } from 'ionicons';
 
 import {
   arrowBackOutline,
@@ -30,24 +28,10 @@ import {
 import { Router } from '@angular/router';
 
 import {
+  AdminProduct,
   Category,
   ProductService
 } from '../../../services/product.service';
-
-
-interface AdminProduct {
-
-  id: number;
-
-  productName: string;
-
-  categoryId: number;
-
-  status: 'ACTIVE' | 'INACTIVE';
-
-  images: string[];
-
-}
 
 
 @Component({
@@ -77,6 +61,17 @@ export class AdmProductsPage
 
 
   // =====================================================
+  // PRODUCTS
+  // =====================================================
+
+  products: AdminProduct[] = [];
+
+  isLoadingProducts = false;
+
+  productErrorMessage = '';
+
+
+  // =====================================================
   // SEARCH
   // =====================================================
 
@@ -91,7 +86,24 @@ export class AdmProductsPage
 
   productCategoryId: number | null = null;
 
-  productStatus: 'ACTIVE' | 'INACTIVE' = 'ACTIVE';
+  productStatus:
+    'ACTIVE' |
+    'INACTIVE' = 'ACTIVE';
+
+
+  // =====================================================
+  // ORIGINAL PRODUCT VALUES
+  // Used to detect changes during edit
+  // =====================================================
+
+  private originalProductName = '';
+
+  private originalProductCategoryId:
+    number | null = null;
+
+  private originalProductStatus:
+    'ACTIVE' |
+    'INACTIVE' = 'ACTIVE';
 
 
   // =====================================================
@@ -116,75 +128,6 @@ export class AdmProductsPage
   imagePreviews: string[] = [];
 
   private objectUrls: string[] = [];
-
-
-  // =====================================================
-  // TEMPORARY PRODUCTS
-  // =====================================================
-  //
-  // This will later be replaced with the Admin
-  // GET Products API.
-  //
-
-  products: AdminProduct[] = [
-
-    {
-      id: 1,
-
-      productName: 'Sparkler',
-
-      categoryId: 1,
-
-      status: 'ACTIVE',
-
-      images: [
-        'assets/images/rectangle-image.png'
-      ]
-    },
-
-    {
-      id: 2,
-
-      productName: 'Flower Pot',
-
-      categoryId: 2,
-
-      status: 'ACTIVE',
-
-      images: [
-        'assets/images/rectangle-image.png'
-      ]
-    },
-
-    {
-      id: 3,
-
-      productName: 'Ground Chakkar',
-
-      categoryId: 3,
-
-      status: 'ACTIVE',
-
-      images: [
-        'assets/images/rectangle-image.png'
-      ]
-    },
-
-    {
-      id: 4,
-
-      productName: 'Rockets',
-
-      categoryId: 4,
-
-      status: 'ACTIVE',
-
-      images: [
-        'assets/images/rectangle-image.png'
-      ]
-    }
-
-  ];
 
 
   // =====================================================
@@ -230,6 +173,8 @@ export class AdmProductsPage
 
     this.loadCategories();
 
+    this.loadAdminProducts();
+
   }
 
 
@@ -240,12 +185,69 @@ export class AdmProductsPage
   ngOnDestroy(): void {
 
     this.objectUrls.forEach(
-      url => URL.revokeObjectURL(url)
+      url =>
+        URL.revokeObjectURL(url)
     );
 
     document.body.classList.remove(
       'adm-modal-open'
     );
+
+  }
+
+
+  // =====================================================
+  // LOAD ADMIN PRODUCTS
+  // =====================================================
+
+  loadAdminProducts(): void {
+
+    this.isLoadingProducts = true;
+
+    this.productErrorMessage = '';
+
+    this.productService
+      .getAdminProducts()
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            'Admin Products API Response:',
+            response
+          );
+
+          this.products =
+            response?.products ?? [];
+
+          this.isLoadingProducts = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Admin Products API Error:',
+            error
+          );
+
+          this.products = [];
+
+          this.isLoadingProducts = false;
+
+          this.productErrorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load products.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
@@ -262,11 +264,13 @@ export class AdmProductsPage
 
         next: (categories) => {
 
-          this.categories = categories;
+          this.categories =
+            categories ?? [];
 
           this.cdr.detectChanges();
 
         },
+
 
         error: (error) => {
 
@@ -325,6 +329,7 @@ export class AdmProductsPage
           item.categoryId === categoryId
       );
 
+
     return (
       category?.categoryName ??
       'Unknown Category'
@@ -356,23 +361,36 @@ export class AdmProductsPage
 
     this.editingProductId = null;
 
+
     this.productName = '';
 
     this.productCategoryId = null;
 
     this.productStatus = 'ACTIVE';
 
+
+    this.originalProductName = '';
+
+    this.originalProductCategoryId = null;
+
+    this.originalProductStatus = 'ACTIVE';
+
+
     this.selectedImages = [];
 
     this.imagePreviews = [];
 
+
     this.revokePreviewUrls();
 
+
     this.isAddProductOpen = true;
+
 
     document.body.classList.add(
       'adm-modal-open'
     );
+
 
     this.cdr.detectChanges();
 
@@ -390,7 +408,12 @@ export class AdmProductsPage
     this.isEditMode = true;
 
     this.editingProductId =
-      product.id;
+      product.productId;
+
+
+    // ================================================
+    // CURRENT VALUES
+    // ================================================
 
     this.productName =
       product.productName;
@@ -401,29 +424,83 @@ export class AdmProductsPage
     this.productStatus =
       product.status;
 
+
+    // ================================================
+    // SAVE ORIGINAL VALUES
+    // ================================================
+
+    this.originalProductName =
+      product.productName;
+
+    this.originalProductCategoryId =
+      product.categoryId;
+
+    this.originalProductStatus =
+      product.status;
+
+
+    // ================================================
+    // IMAGE STATE
+    // ================================================
+
     this.selectedImages = [];
 
     this.revokePreviewUrls();
 
-    /*
-     * Existing image is displayed.
-     *
-     * The current PUT API does not provide
-     * image update functionality, so we don't
-     * send a new image during update.
-     */
+
     this.imagePreviews =
       product.images?.length
         ? [...product.images]
         : [];
 
+
     this.isAddProductOpen = true;
+
 
     document.body.classList.add(
       'adm-modal-open'
     );
 
+
     this.cdr.detectChanges();
+
+  }
+
+
+  // =====================================================
+  // CHECK WHETHER PRODUCT DATA CHANGED
+  // =====================================================
+
+  get hasProductDataChanged(): boolean {
+
+    if (!this.isEditMode) {
+
+      return true;
+
+    }
+
+
+    const currentName =
+      this.productName.trim();
+
+
+    const originalName =
+      this.originalProductName.trim();
+
+
+    return (
+
+      currentName !== originalName ||
+
+      this.productCategoryId !==
+        this.originalProductCategoryId ||
+
+      this.productStatus !==
+        this.originalProductStatus ||
+
+      this.selectedImages.length > 0
+
+    );
 
   }
 
@@ -447,21 +524,33 @@ export class AdmProductsPage
 
     this.editingProductId = null;
 
+
     this.productName = '';
 
     this.productCategoryId = null;
 
     this.productStatus = 'ACTIVE';
 
+
+    this.originalProductName = '';
+
+    this.originalProductCategoryId = null;
+
+    this.originalProductStatus = 'ACTIVE';
+
+
     this.selectedImages = [];
 
     this.imagePreviews = [];
 
+
     this.revokePreviewUrls();
+
 
     document.body.classList.remove(
       'adm-modal-open'
     );
+
 
     this.cdr.detectChanges();
 
@@ -490,10 +579,6 @@ export class AdmProductsPage
     }
 
 
-    /*
-     * Admin Add Product API currently
-     * accepts one image.
-     */
     const file =
       input.files[0];
 
@@ -607,6 +692,10 @@ export class AdmProductsPage
       this.productName.trim();
 
 
+    // =================================================
+    // BASIC VALIDATION
+    // =================================================
+
     if (!name) {
 
       return;
@@ -645,6 +734,18 @@ export class AdmProductsPage
       }
 
 
+      /*
+       * Do not send the request when
+       * nothing has changed.
+       */
+
+      if (!this.hasProductDataChanged) {
+
+        return;
+
+      }
+
+
       this.isAddingProduct = true;
 
 
@@ -661,42 +762,41 @@ export class AdmProductsPage
       };
 
 
+      const selectedImage =
+        this.selectedImages.length > 0
+          ? this.selectedImages[0]
+          : undefined;
+
+
       this.productService
         .updateAdminProduct(
           this.editingProductId,
-          productData
+          productData,
+          selectedImage
         )
         .subscribe({
 
-          next: () => {
+          next: (response) => {
 
-            const product =
-              this.products.find(
-                item =>
-                  item.id ===
-                  this.editingProductId
-              );
-
-
-            if (product) {
-
-              product.productName =
-                name;
-
-              product.categoryId =
-                this.productCategoryId!;
-
-              product.status =
-                this.productStatus;
-
-            }
+            console.log(
+              'Admin product updated:',
+              response
+            );
 
 
             this.isAddingProduct = false;
 
+
             this.closeAddProduct();
 
-            this.cdr.detectChanges();
+
+            /*
+             * Reload from backend so the
+             * screen always contains the
+             * actual server data.
+             */
+
+            this.loadAdminProducts();
 
           },
 
@@ -707,6 +807,7 @@ export class AdmProductsPage
               'Failed to update admin product:',
               error
             );
+
 
             this.isAddingProduct = false;
 
@@ -766,45 +867,19 @@ export class AdmProductsPage
           );
 
 
-          /*
-           * Temporary local update.
-           *
-           * Later, when the Admin GET Products
-           * API is available, we will refresh
-           * the product list from the backend.
-           */
-          const newProduct: AdminProduct = {
-
-            id:
-              response?.productId ??
-              Date.now(),
-
-            productName:
-              name,
-
-            categoryId:
-              this.productCategoryId!,
-
-            status:
-              this.productStatus,
-
-            images: [
-              this.imagePreviews[0]
-            ]
-
-          };
-
-
-          this.products.unshift(
-            newProduct
-          );
-
-
           this.isAddingProduct = false;
+
 
           this.closeAddProduct();
 
-          this.cdr.detectChanges();
+
+          /*
+           * Refresh the list from GET
+           * instead of creating a temporary
+           * frontend product.
+           */
+
+          this.loadAdminProducts();
 
         },
 
@@ -816,6 +891,7 @@ export class AdmProductsPage
             error
           );
 
+
           this.isAddingProduct = false;
 
           this.cdr.detectChanges();
@@ -826,13 +902,17 @@ export class AdmProductsPage
 
   }
 
-// =====================================================
-// GO TO CATEGORIES
-// =====================================================
 
-goToCategories(): void {
-  this.router.navigate(['/tabs/adm-categories']);
-}
+  // =====================================================
+  // GO TO CATEGORIES
+  // =====================================================
 
+  goToCategories(): void {
+
+    this.router.navigate([
+      '/tabs/adm-categories'
+    ]);
+
+  }
 
 }

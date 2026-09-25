@@ -9,6 +9,9 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+
+ @import "tailwindcss";
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -35,3 +38,159 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+
+
+/* ======================================================
+   DIWALI CONFIRM ALERT
+====================================================== */
+
+ion-alert.diwali-confirm-alert {
+
+  --width: min(88%, 360px);
+
+  --max-width: 360px;
+
+  --backdrop-opacity: 0.42;
+
+}
+
+
+/* ALERT BOX */
+
+ion-alert.diwali-confirm-alert::part(container) {
+
+  border-radius: 20px;
+
+}
+
+
+/* ALERT HEADER */
+
+ion-alert.diwali-confirm-alert .alert-head {
+
+  padding:
+    20px 20px 8px;
+
+}
+
+
+ion-alert.diwali-confirm-alert .alert-title {
+
+  color:
+    #17233c;
+
+  font-family:
+    Georgia, serif;
+
+  font-size: 19px;
+
+  font-weight: 700;
+
+}
+
+
+/* ALERT MESSAGE */
+
+ion-alert.diwali-confirm-alert .alert-message {
+
+  padding:
+    5px 20px 18px;
+
+  color:
+    #6e6a60;
+
+  font-family:
+    'Poppins', sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+
+}
+
+
+/* ALERT BUTTON AREA */
+
+ion-alert.diwali-confirm-alert .alert-button-group {
+
+  padding:
+    8px 12px 12px;
+
+  gap: 8px;
+
+}
+
+
+/* BOTH BUTTONS */
+
+ion-alert.diwali-confirm-alert .alert-button {
+
+  min-height: 40px;
+
+  margin: 0;
+
+  border-radius: 11px;
+
+  font-family:
+    'Poppins', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-transform: none;
+
+}
+
+
+/* CANCEL */
+
+ion-alert.diwali-confirm-alert .alert-button-role-cancel {
+
+  background:
+    #f1f1f1;
+
+  color:
+    #17233c;
+
+}
+
+
+/* ORDER */
+
+ion-alert.diwali-confirm-alert .alert-button:not(.alert-button-role-cancel) {
+
+  background:
+    #ef0b1c;
+
+  color:
+    #fff8dc;
+
+}
+
+
+/* ======================================================
+   DIWALI TOAST
+====================================================== */
+
+ion-toast.diwali-toast {
+
+  --border-radius: 14px;
+
+  --box-shadow:
+    0 8px 25px rgba(23, 35, 60, 0.16);
+
+  --start: 16px;
+
+  --end: 16px;
+
+  font-family:
+    'Poppins', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+}

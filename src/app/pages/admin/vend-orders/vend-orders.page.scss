@@ -1,0 +1,1739 @@
+/* ======================================================
+   ION CONTENT
+====================================================== */
+
+.orders-content {
+
+  --background:
+    var(--diwali-background);
+
+  --padding-top: 0;
+
+  --padding-bottom: 0;
+
+  --padding-start: 0;
+
+  --padding-end: 0;
+}
+
+
+/* ======================================================
+   PAGE
+====================================================== */
+
+:host {
+
+  display: block;
+
+  width: 100%;
+
+  height: 100%;
+
+  min-height: 0;
+}
+
+
+.orders-page {
+
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100%;
+
+  background:
+    var(--diwali-background);
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  padding-bottom: 30px;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.orders-header {
+
+  position: relative;
+
+  width: 100%;
+
+  height:
+    var(--diwali-header-height);
+
+  min-height:
+    var(--diwali-header-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    14px 55px 12px;
+
+  overflow: hidden;
+
+  border-radius:
+    0 0 var(--diwali-header-radius)
+    var(--diwali-header-radius);
+
+  background-image:
+
+    linear-gradient(
+      var(--diwali-header-overlay),
+      var(--diwali-header-overlay)
+    ),
+
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+
+  background-position: center;
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  z-index: 5;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   BACK BUTTON
+====================================================== */
+
+.back-button {
+
+  position: absolute;
+
+  left: 8px;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  width:
+    var(--diwali-back-button-size);
+
+  height:
+    var(--diwali-back-button-size);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-circle-radius);
+
+  background:
+    rgba(255, 248, 220, 0.13);
+
+  color:
+    var(--diwali-cream);
+
+  padding: 0;
+
+  cursor: pointer;
+}
+
+
+.back-button ion-icon {
+
+  font-size:
+    var(--diwali-back-button-icon-size);
+
+  color:
+    var(--diwali-cream);
+}
+
+
+/* ======================================================
+   HEADER TITLE
+====================================================== */
+
+.header-title {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.header-title h1 {
+
+  margin: 0;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size:
+    var(--diwali-title-size);
+
+  line-height: 1.1;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-cream);
+
+  text-shadow:
+    var(--diwali-header-text-shadow);
+}
+
+
+.header-title p {
+
+  margin:
+    4px 0 0;
+
+  font-size: 10px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-medium);
+
+  color:
+    var(--diwali-cream);
+
+  opacity: 0.9;
+}
+
+
+/* ======================================================
+   CONTAINER
+====================================================== */
+
+.orders-container {
+
+  width:
+    min(100%, 760px);
+
+  margin:
+    0 auto;
+
+  padding:
+    var(--diwali-space-14)
+    var(--diwali-page-padding-mobile)
+    25px;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   NEW / CONFIRMED TABS
+====================================================== */
+
+.order-tabs {
+
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-bottom: 14px;
+}
+
+
+.order-tab {
+
+  min-height: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  padding:
+    0 10px;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius: 20px;
+
+  background:
+    #fffdf7;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  cursor: pointer;
+
+  transition:
+    all 0.15s ease;
+}
+
+
+.order-tab.active {
+
+  border-color:
+    var(--diwali-red);
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+}
+
+
+.tab-count {
+
+  font-size: 8px;
+
+  opacity: 0.75;
+}
+
+
+.order-tab.active
+.tab-count {
+
+  opacity: 1;
+}
+
+
+/* ======================================================
+   ERROR
+====================================================== */
+
+.error-box {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  margin-bottom: 10px;
+
+  padding:
+    10px 12px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(239, 11, 28, 0.07);
+
+  color:
+    var(--diwali-red);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+
+  text-align: center;
+}
+
+
+/* ======================================================
+   ORDER LIST
+====================================================== */
+
+.orders-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+/* ======================================================
+   ORDER CARD
+====================================================== */
+
+.order-card {
+
+  width: 100%;
+
+  display: flex;
+
+  gap: 10px;
+
+  padding: 10px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease;
+}
+
+
+.order-card:active {
+
+  transform:
+    scale(0.985);
+}
+
+
+/* ======================================================
+   ORDER IMAGE
+====================================================== */
+
+.order-image {
+
+  width: 94px;
+
+  height: 112px;
+
+  flex: 0 0 94px;
+
+  overflow: hidden;
+
+  border-radius:
+    var(--diwali-card-radius);
+
+  background:
+    var(--diwali-product-image-background);
+}
+
+
+.order-image img {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+.image-placeholder {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color:
+    var(--diwali-image-placeholder-color);
+}
+
+
+.image-placeholder ion-icon {
+
+  font-size: 30px;
+}
+
+
+/* ======================================================
+   DETAILS
+====================================================== */
+
+.order-details {
+
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+/* ======================================================
+   TOP
+====================================================== */
+
+.order-top {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 5px;
+}
+
+
+.order-title {
+
+  min-width: 0;
+}
+
+
+.order-label {
+
+  display: block;
+
+  margin-bottom: 2px;
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 7px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  letter-spacing: 0.2px;
+}
+
+
+.order-title h3 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 13px;
+
+  line-height: 1.3;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  display: -webkit-box;
+
+  -webkit-line-clamp: 2;
+
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+
+/* ======================================================
+   STATUS
+====================================================== */
+
+.status-badge {
+
+  flex: 0 0 auto;
+
+  min-height: 24px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  padding:
+    0 7px;
+
+  border-radius: 12px;
+
+  font-size: 7px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  white-space: nowrap;
+}
+
+
+.status-badge ion-icon {
+
+  font-size: 11px;
+}
+
+
+.status-placed {
+
+  background:
+    rgba(247, 180, 40, 0.13);
+
+  color:
+    #9b6b00;
+}
+
+
+.status-confirmed {
+
+  background:
+    rgba(35, 150, 85, 0.12);
+
+  color:
+    #287347;
+}
+
+
+.status-processing {
+
+  background:
+    rgba(70, 110, 190, 0.12);
+
+  color:
+    #315b9b;
+}
+
+
+.status-shipped {
+
+  background:
+    rgba(100, 75, 170, 0.12);
+
+  color:
+    #60479b;
+}
+
+
+.status-delivered {
+
+  background:
+    rgba(35, 150, 85, 0.12);
+
+  color:
+    #287347;
+}
+
+
+.status-cancelled {
+
+  background:
+    rgba(239, 11, 28, 0.09);
+
+  color:
+    var(--diwali-red);
+}
+
+
+.status-default {
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-text);
+}
+
+
+/* ======================================================
+   PRODUCT INFO
+====================================================== */
+
+.order-product-info {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  margin-top: 4px;
+}
+
+
+.order-product-info span {
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 8px;
+
+  line-height: 1.3;
+}
+
+
+.order-product-info small {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+
+  line-height: 1.3;
+}
+
+
+/* ======================================================
+   CUSTOMER
+====================================================== */
+
+.customer-row {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin-top: auto;
+
+  padding-top: 7px;
+}
+
+
+.customer-row > div {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  min-width: 0;
+}
+
+
+.customer-row > div:last-child {
+
+  align-items: flex-end;
+}
+
+
+.customer-row span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.customer-row strong {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+/* ======================================================
+   BOTTOM
+====================================================== */
+
+.order-bottom {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  margin-top: 7px;
+
+  padding-top: 7px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.order-total {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 1px;
+}
+
+
+.order-total span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.order-total strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 14px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   CONFIRM BUTTON
+====================================================== */
+
+.confirm-button {
+
+  min-height: 31px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  padding:
+    0 9px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+
+  cursor: pointer;
+
+  white-space: nowrap;
+}
+
+
+.confirm-button ion-icon {
+
+  font-size: 13px;
+}
+
+
+.confirm-button:active {
+
+  transform:
+    scale(0.96);
+}
+
+
+.confirm-button:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* ======================================================
+   VIEW DETAILS
+====================================================== */
+
+.view-details {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 3px;
+
+  color:
+    var(--diwali-red);
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.view-details ion-icon {
+
+  font-size: 12px;
+}
+
+
+/* ======================================================
+   EMPTY
+====================================================== */
+
+.empty-orders {
+
+  min-height:
+    55vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding:
+    30px 20px;
+}
+
+
+.empty-orders-icon {
+
+  width: 76px;
+
+  height: 76px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-dark-red);
+
+  margin-bottom: 16px;
+}
+
+
+.empty-orders-icon ion-icon {
+
+  font-size: 36px;
+}
+
+
+.empty-orders h2 {
+
+  margin:
+    0 0 6px;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 20px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-text);
+}
+
+
+.empty-orders p {
+
+  max-width: 270px;
+
+  margin: 0;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+/* ======================================================
+   DETAILS
+====================================================== */
+
+.details-container {
+
+  padding-bottom: 35px;
+}
+
+
+.detail-card {
+
+  width: 100%;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  margin-bottom: 10px;
+}
+
+
+/* ======================================================
+   SUMMARY
+====================================================== */
+
+.summary-top {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+
+.summary-top h2 {
+
+  margin:
+    3px 0 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 18px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.large-status {
+
+  min-height: 28px;
+
+  font-size: 8px;
+}
+
+
+.summary-total {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 13px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.summary-total span {
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.summary-total strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 19px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   DETAIL HEADING
+====================================================== */
+
+.detail-heading {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 13px;
+}
+
+
+.detail-heading-icon {
+
+  width: 34px;
+
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(239, 11, 28, 0.08);
+
+  color:
+    var(--diwali-red);
+}
+
+
+.detail-heading-icon ion-icon {
+
+  font-size: 17px;
+}
+
+
+.detail-heading h2 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 16px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.detail-heading p {
+
+  margin:
+    2px 0 0;
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 8px;
+}
+
+
+/* ======================================================
+   DETAIL ROW
+====================================================== */
+
+.detail-row {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 10px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+
+.detail-row:last-child {
+
+  margin-bottom: 0;
+}
+
+
+.detail-row > span {
+
+  flex: 0 0 auto;
+
+  color:
+    var(--diwali-muted-text);
+}
+
+
+.detail-row > strong {
+
+  max-width: 65%;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+
+/* ======================================================
+   DETAIL ITEMS
+====================================================== */
+
+.detail-items {
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.detail-item {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding:
+    10px 0;
+
+  border-bottom:
+    1px solid var(--diwali-divider);
+}
+
+
+.detail-item:first-child {
+
+  padding-top: 0;
+}
+
+
+.detail-item:last-child {
+
+  border-bottom: none;
+
+  padding-bottom: 0;
+}
+
+
+.detail-item-image {
+
+  width: 58px;
+
+  height: 68px;
+
+  flex: 0 0 58px;
+
+  overflow: hidden;
+
+  border-radius:
+    var(--diwali-card-radius);
+
+  background:
+    var(--diwali-product-image-background);
+}
+
+
+.detail-item-image img {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+.detail-image-placeholder {
+
+  width: 100%;
+
+  height: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color:
+    var(--diwali-image-placeholder-color);
+}
+
+
+.detail-image-placeholder ion-icon {
+
+  font-size: 22px;
+}
+
+
+.detail-item-info {
+
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.detail-item-info h3 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 10px;
+
+  line-height: 1.3;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.detail-item-info p {
+
+  margin: 0;
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 7px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.detail-item-info span {
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 7px;
+}
+
+
+.detail-item-price {
+
+  flex: 0 0 auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 3px;
+}
+
+
+.detail-item-price span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.detail-item-price strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 11px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   TOTAL
+====================================================== */
+
+.items-total {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 11px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.items-total span {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.items-total strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 16px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   STATUS PLACEHOLDER
+====================================================== */
+
+.status-placeholder {
+
+  min-height: 75px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 12px;
+
+  border-radius: 11px;
+
+  background:
+    rgba(239, 11, 28, 0.04);
+
+  color:
+    var(--diwali-muted-text);
+
+  text-align: center;
+}
+
+
+.status-placeholder ion-icon {
+
+  font-size: 24px;
+
+  margin-bottom: 5px;
+
+  color:
+    var(--diwali-dark-red);
+}
+
+
+.status-placeholder p {
+
+  max-width: 280px;
+
+  margin: 0;
+
+  font-size: 8px;
+
+  line-height: 1.4;
+}
+
+
+/* ======================================================
+   BACK BUTTON
+====================================================== */
+
+.back-orders-button {
+
+  width: 100%;
+
+  min-height: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-main-button-radius);
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+}
+
+
+.back-orders-button ion-icon {
+
+  font-size: 16px;
+}
+
+
+/* ======================================================
+   SMALL MOBILE
+====================================================== */
+
+@media (max-width: 360px) {
+
+  .orders-header {
+
+    height:
+      var(--diwali-header-height-mobile);
+
+    min-height:
+      var(--diwali-header-height-mobile);
+
+    padding-left: 50px;
+
+    padding-right: 50px;
+  }
+
+
+  .header-title h1 {
+
+    font-size:
+      var(--diwali-title-size-mobile);
+  }
+
+
+  .header-title p {
+
+    font-size: 9px;
+  }
+
+
+  .back-button {
+
+    left: 7px;
+  }
+
+
+  .orders-container {
+
+    padding-left: 10px;
+
+    padding-right: 10px;
+  }
+
+
+  .order-card {
+
+    padding: 8px;
+
+    gap: 8px;
+  }
+
+
+  .order-image {
+
+    width: 82px;
+
+    height: 102px;
+
+    flex-basis: 82px;
+  }
+
+
+  .order-title h3 {
+
+    font-size: 12px;
+  }
+
+
+  .confirm-button {
+
+    padding:
+      0 7px;
+
+    font-size: 7px;
+  }
+
+
+  .detail-card {
+
+    padding: 12px;
+  }
+
+
+  .summary-top {
+
+    gap: 6px;
+  }
+
+}
+
+
+/* ======================================================
+   LARGER MOBILE
+====================================================== */
+
+@media (min-width: 500px) {
+
+  .orders-container {
+
+    padding-left:
+      var(--diwali-page-padding);
+
+    padding-right:
+      var(--diwali-page-padding);
+  }
+
+
+  .order-card {
+
+    padding: 12px;
+  }
+
+
+  .order-image {
+
+    width: 110px;
+
+    height: 125px;
+
+    flex-basis: 110px;
+  }
+
+
+  .order-title h3 {
+
+    font-size: 14px;
+  }
+
+
+  .detail-card {
+
+    padding: 18px;
+  }
+
+
+  .summary-total strong {
+
+    font-size: 21px;
+  }
+
+}

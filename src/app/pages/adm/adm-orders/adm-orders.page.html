@@ -1,0 +1,847 @@
+<ion-content
+  [fullscreen]="true"
+  class="admin-orders-content">
+
+
+  <!-- =====================================================
+       STATIC SIDE DECORATIONS
+  ====================================================== -->
+
+  <img
+    src="assets/images/left-bg.png"
+    alt=""
+    class="side-decoration side-decoration-left"
+  />
+
+  <img
+    src="assets/images/right-bg.png"
+    alt=""
+    class="side-decoration side-decoration-right"
+  />
+
+
+  <div class="admin-orders-page">
+
+
+    <!-- ===================================================
+         ORDER LIST
+    ==================================================== -->
+
+    @if (!showOrderDetails) {
+
+      <!-- HEADER -->
+
+      <header class="orders-header">
+
+        <div class="header-title">
+
+          <h1>
+            Orders
+          </h1>
+
+          <p>
+            Manage customer orders
+          </p>
+
+        </div>
+
+      </header>
+
+
+      <!-- MAIN -->
+
+      <main class="orders-container">
+
+
+        <!-- =================================================
+             FILTER
+        ================================================== -->
+
+        <section class="filter-card">
+
+          <div class="filter-heading">
+
+            <div class="filter-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <h2>
+                All Orders
+              </h2>
+
+              <p>
+                {{ filteredOrders.length }}
+                orders displayed
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="price-filter">
+
+            <label
+              for="priceRange">
+
+              Price Range
+
+            </label>
+
+
+            <ion-select
+              id="priceRange"
+              class="price-select"
+              interface="popover"
+              [(ngModel)]="selectedPriceRange"
+              (ionChange)="onPriceRangeChanged()"
+              placeholder="Select price range">
+
+              @for (
+                range of priceRanges;
+                track range.value
+              ) {
+
+                <ion-select-option
+                  [value]="range.value">
+
+                  {{ range.label }}
+
+                </ion-select-option>
+
+              }
+
+            </ion-select>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        @if (isLoading) {
+
+          <div class="orders-message">
+
+            <div class="message-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+            <h3>
+              Loading orders...
+            </h3>
+
+            <p>
+              Please wait while orders are loaded.
+            </p>
+
+          </div>
+
+        }
+
+
+        <!-- =================================================
+             ERROR
+        ================================================== -->
+
+        @if (!isLoading && errorMessage) {
+
+          <div class="orders-message error-state">
+
+            <div class="message-icon">
+
+              <ion-icon
+                name="close-outline">
+              </ion-icon>
+
+            </div>
+
+            <h3>
+              Unable to load orders
+            </h3>
+
+            <p>
+              {{ errorMessage }}
+            </p>
+
+          </div>
+
+        }
+
+
+        <!-- =================================================
+             EMPTY
+        ================================================== -->
+
+        @if (
+          !isLoading &&
+          !errorMessage &&
+          filteredOrders.length === 0
+        ) {
+
+          <div class="orders-message">
+
+            <div class="message-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+            <h3>
+              No orders found
+            </h3>
+
+            <p>
+              There are no orders in this price range.
+            </p>
+
+          </div>
+
+        }
+
+
+        <!-- =================================================
+             ORDER CARDS
+        ================================================== -->
+
+        @if (
+          !isLoading &&
+          !errorMessage &&
+          filteredOrders.length > 0
+        ) {
+
+          <section class="orders-list">
+
+            @for (
+              order of filteredOrders;
+              track order.orderId
+            ) {
+
+              <article
+                class="order-card"
+                (click)="openOrder(order)">
+
+
+                <!-- ORDER CARD TOP -->
+
+                <div class="order-card-top">
+
+                  <div class="order-number">
+
+                    <div class="order-icon">
+
+                      <ion-icon
+                        name="receipt-outline">
+                      </ion-icon>
+
+                    </div>
+
+
+                    <div>
+
+                      <span class="small-label">
+                        Order
+                      </span>
+
+                      <h3>
+                        #{{ order.orderId }}
+                      </h3>
+
+                    </div>
+
+                  </div>
+
+
+                  <span
+                    class="status-badge"
+                    [class]="getStatusClass(order.status)">
+
+                    {{ getStatusLabel(order.status) }}
+
+                  </span>
+
+                </div>
+
+
+                <!-- DIVIDER -->
+
+                <div class="card-divider"></div>
+
+
+                <!-- CUSTOMER -->
+
+                <div class="order-customer">
+
+                  <div class="customer-icon">
+
+                    <ion-icon
+                      name="person-outline">
+                    </ion-icon>
+
+                  </div>
+
+
+                  <div class="customer-info">
+
+                    <h4>
+                      {{ order.customerName }}
+                    </h4>
+
+                    <p>
+                      {{ order.customerMobile }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <!-- ORDER META -->
+
+                <div class="order-meta-grid">
+
+
+                  <div class="order-meta">
+
+                    <ion-icon
+                      name="cube-outline">
+                    </ion-icon>
+
+                    <div>
+
+                      <span>
+                        Items
+                      </span>
+
+                      <strong>
+                        {{ getProductCount(order) }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="order-meta">
+
+                    <ion-icon
+                      name="calendar-outline">
+                    </ion-icon>
+
+                    <div>
+
+                      <span>
+                        Ordered
+                      </span>
+
+                      <strong>
+                        {{ formatDate(order.createdAt) }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="order-meta">
+
+                    <ion-icon
+                      name="cash-outline">
+                    </ion-icon>
+
+                    <div>
+
+                      <span>
+                        Payment
+                      </span>
+
+                      <strong>
+                        {{ order.paymentMethod }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                </div>
+
+
+                <!-- ORDER TOTAL -->
+
+                <div class="order-total-row">
+
+                  <div>
+
+                    <span>
+                      Total Amount
+                    </span>
+
+                    <strong>
+                      ₹{{ order.totalAmount | number:'1.2-2' }}
+                    </strong>
+
+                  </div>
+
+
+                  <div class="view-order">
+
+                    <span>
+                      View Details
+                    </span>
+
+                    <span class="view-arrow">
+                      →
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            }
+
+          </section>
+
+        }
+
+      </main>
+
+    }
+
+
+    <!-- ===================================================
+         ORDER DETAILS
+    ==================================================== -->
+
+    @if (
+      showOrderDetails &&
+      selectedOrder
+    ) {
+
+      <header class="order-details-header">
+
+
+        <button
+          type="button"
+          class="details-back-button"
+          (click)="backToOrders()">
+
+          <ion-icon
+            name="chevron-back-outline">
+          </ion-icon>
+
+        </button>
+
+
+        <div class="details-header-title">
+
+          <h1>
+            Order #{{ selectedOrder.orderId }}
+          </h1>
+
+          <p>
+            Complete order details
+          </p>
+
+        </div>
+
+      </header>
+
+
+      <main class="order-details-container">
+
+
+        <!-- =================================================
+             ORDER STATUS
+        ================================================== -->
+
+        <section class="details-card status-card">
+
+          <div class="details-card-heading">
+
+            <div class="details-heading-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <h2>
+                Order Status
+              </h2>
+
+              <p>
+                Current order information
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="status-detail-row">
+
+            <span>
+              Status
+            </span>
+
+            <span
+              class="status-badge large-status"
+              [class]="getStatusClass(selectedOrder.status)">
+
+              {{ getStatusLabel(selectedOrder.status) }}
+
+            </span>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Order Date
+            </span>
+
+            <strong>
+              {{ formatDateTime(selectedOrder.createdAt) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Expected Delivery
+            </span>
+
+            <strong>
+              {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Payment Method
+            </span>
+
+            <strong>
+              {{ selectedOrder.paymentMethod }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             CUSTOMER DETAILS
+        ================================================== -->
+
+        <section class="details-card">
+
+          <div class="details-card-heading">
+
+            <div class="details-heading-icon">
+
+              <ion-icon
+                name="person-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <h2>
+                Customer Details
+              </h2>
+
+              <p>
+                Customer information
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="customer-detail">
+
+            <span>
+              Customer Name
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerName }}
+            </strong>
+
+          </div>
+
+
+          <div class="customer-detail">
+
+            <span>
+              Mobile Number
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerMobile }}
+            </strong>
+
+          </div>
+
+
+          <div class="customer-detail address-detail">
+
+            <span>
+              Delivery Address
+            </span>
+
+            <strong>
+              {{ selectedOrder.deliveryAddress }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ORDER ITEMS
+        ================================================== -->
+
+        <section class="details-card">
+
+          <div class="details-card-heading">
+
+            <div class="details-heading-icon">
+
+              <ion-icon
+                name="cube-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <div>
+
+              <h2>
+                Ordered Products
+              </h2>
+
+              <p>
+                {{ selectedOrder.items.length }}
+                product(s)
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="detail-items">
+
+            @for (
+              item of selectedOrder.items;
+              track item.orderItemId
+            ) {
+
+              <div class="detail-item">
+
+
+                <!-- IMAGE -->
+
+                <div class="detail-item-image">
+
+                  @if (hasProductImage(item)) {
+
+                    <img
+                      [src]="item.storeImageUrl!"
+                      [alt]="item.productName">
+
+                  } @else {
+
+                    <div class="detail-item-placeholder">
+
+                      <ion-icon
+                        name="cube-outline">
+                      </ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <div class="detail-item-info">
+
+                  <h3>
+                    {{ item.productName }}
+                  </h3>
+
+
+                  <p class="vendor-name">
+
+                    <ion-icon
+                      name="storefront-outline">
+                    </ion-icon>
+
+                    {{ item.vendorName }}
+
+                  </p>
+
+
+                  @if (item.brandName) {
+
+                    <p>
+                      Brand:
+                      {{ item.brandName }}
+                    </p>
+
+                  }
+
+
+                  @if (
+                    item.size ||
+                    item.packQuantity ||
+                    item.packUnit
+                  ) {
+
+                    <p class="pack-info">
+
+                      @if (item.size) {
+                        {{ item.size }}
+                      }
+
+                      @if (
+                        item.size &&
+                        item.packQuantity
+                      ) {
+                        ·
+                      }
+
+                      @if (item.packQuantity) {
+                        {{ item.packQuantity }}
+                      }
+
+                      @if (item.packUnit) {
+                        {{ item.packUnit }}
+                      }
+
+                    </p>
+
+                  }
+
+
+                  <div class="quantity-price">
+
+                    <span>
+                      Qty: {{ item.quantity }}
+                    </span>
+
+                    <span>
+                      ₹{{ item.price | number:'1.2-2' }}
+                      each
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <!-- SUBTOTAL -->
+
+                <div class="detail-item-total">
+
+                  <span>
+                    Subtotal
+                  </span>
+
+                  <strong>
+                    ₹{{ item.subtotal | number:'1.2-2' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             BILLING
+        ================================================== -->
+
+        <section class="details-card billing-card">
+
+          <div class="billing-row">
+
+            <span>
+              Items
+            </span>
+
+            <strong>
+              {{ getItemCount(selectedOrder) }}
+            </strong>
+
+          </div>
+
+
+          <div class="billing-divider"></div>
+
+
+          <div class="billing-total">
+
+            <span>
+              Order Total
+            </span>
+
+            <strong>
+              ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+      </main>
+
+    }
+
+  </div>
+
+</ion-content>

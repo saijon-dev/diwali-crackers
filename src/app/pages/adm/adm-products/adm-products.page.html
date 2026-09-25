@@ -5,6 +5,7 @@
 
   <div class="adm-products-page">
 
+
     <!-- =====================================================
          HEADER
     ====================================================== -->
@@ -17,9 +18,11 @@
         (click)="goBack()"
         aria-label="Go back"
       >
+
         <ion-icon
           name="arrow-back-outline"
         ></ion-icon>
+
       </button>
 
 
@@ -116,17 +119,88 @@
 
 
       <!-- ===================================================
+           LOADING
+      ==================================================== -->
+
+      @if (isLoadingProducts) {
+
+        <section
+          class="empty-products"
+        >
+
+          <div class="empty-icon">
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+          </div>
+
+          <h3>
+            Loading products
+          </h3>
+
+          <p>
+            Please wait while products are loaded.
+          </p>
+
+        </section>
+
+      }
+
+
+      <!-- ===================================================
+           ERROR
+      ==================================================== -->
+
+      @else if (productErrorMessage) {
+
+        <section
+          class="empty-products"
+        >
+
+          <div class="empty-icon">
+
+            <ion-icon
+              name="cube-outline"
+            ></ion-icon>
+
+          </div>
+
+          <h3>
+            Unable to load products
+          </h3>
+
+          <p>
+            {{ productErrorMessage }}
+          </p>
+
+          <button
+            type="button"
+            (click)="loadAdminProducts()"
+          >
+
+            Try Again
+
+          </button>
+
+        </section>
+
+      }
+
+
+      <!-- ===================================================
            PRODUCT LIST
       ==================================================== -->
 
-      @if (filteredProducts.length > 0) {
+      @else if (filteredProducts.length > 0) {
 
         <section class="product-list">
 
 
           @for (
             product of filteredProducts;
-            track product.id
+            track product.productId
           ) {
 
             <article
@@ -139,6 +213,7 @@
               <div class="product-image">
 
                 @if (
+                  product.images &&
                   product.images.length > 0
                 ) {
 
@@ -179,11 +254,14 @@
 
 
                 <span class="product-category">
+
                   {{
+                    product.categoryName ||
                     getCategoryName(
                       product.categoryId
                     )
                   }}
+
                 </span>
 
 
@@ -193,11 +271,14 @@
                     product.status === 'INACTIVE'
                   "
                 >
+
                   {{ product.status }}
+
                 </span>
 
 
                 @if (
+                  product.images &&
                   product.images.length > 1
                 ) {
 
@@ -253,13 +334,14 @@
 
         </section>
 
+      }
 
-      } @else {
 
+      <!-- ===================================================
+           EMPTY STATE
+      ==================================================== -->
 
-        <!-- =================================================
-             EMPTY STATE
-        ================================================== -->
+      @else {
 
         <section
           class="empty-products"
@@ -435,8 +517,6 @@
           </label>
 
 
-          <!-- CATEGORY SELECT + ADD CATEGORY BUTTON -->
-
           <div class="category-select-row">
 
             <div
@@ -539,10 +619,9 @@
 
         <!-- =================================================
              PRODUCT IMAGE
-        ================================================= -->
+        ================================================== -->
 
         <div class="form-field">
-
 
           <div
             class="upload-label-row"
@@ -568,55 +647,55 @@
           </div>
 
 
-          <!-- ADD MODE IMAGE UPLOAD -->
+          <!-- IMAGE UPLOAD -->
 
-          @if (!isEditMode) {
+          <label
+            class="upload-box"
+            for="productImages"
+          >
 
-            <label
-              class="upload-box"
-              for="productImages"
-            >
+            <div class="upload-icon">
 
-              <div class="upload-icon">
+              <ion-icon
+                name="cloud-upload-outline"
+              ></ion-icon>
 
-                <ion-icon
-                  name="cloud-upload-outline"
-                ></ion-icon>
-
-              </div>
+            </div>
 
 
-              <div class="upload-text">
+            <div class="upload-text">
 
-                <strong>
-                  Add product image
-                </strong>
+              <strong>
+                {{
+                  isEditMode
+                    ? 'Replace product image'
+                    : 'Add product image'
+                }}
+              </strong>
 
-                <span>
-                  Choose an image
-                </span>
+              <span>
+                Choose an image
+              </span>
 
-              </div>
-
-
-              <div class="upload-plus">
-                +
-              </div>
-
-            </label>
+            </div>
 
 
-            <input
-              id="productImages"
-              type="file"
-              accept="image/*"
-              hidden
-              (change)="
-                onImagesSelected($event)
-              "
-            />
+            <div class="upload-plus">
+              +
+            </div>
 
-          }
+          </label>
+
+
+          <input
+            id="productImages"
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="
+              onImagesSelected($event)
+            "
+          />
 
 
           <!-- EXISTING / SELECTED IMAGE -->
@@ -635,7 +714,11 @@
 
                 {{
                   isEditMode
-                    ? 'Current Image'
+                    ? (
+                      selectedImages.length > 0
+                        ? 'New Image'
+                        : 'Current Image'
+                    )
                     : 'Selected Image'
                 }}
 
@@ -646,7 +729,6 @@
                 class="preview-grid"
               >
 
-
                 @for (
                   preview of imagePreviews;
                   track $index;
@@ -656,7 +738,6 @@
                   <div
                     class="preview-card"
                   >
-
 
                     <img
                       [src]="preview"
@@ -720,9 +801,15 @@
             (click)="closeAddProduct()"
             [disabled]="isAddingProduct"
           >
+
             Cancel
+
           </button>
 
+
+          <!-- =================================================
+               SAVE / UPDATE BUTTON
+          ================================================== -->
 
           <button
             type="button"
@@ -731,12 +818,17 @@
               !productName.trim() ||
               productCategoryId === null ||
               isAddingProduct ||
-              (!isEditMode &&
-                selectedImages.length === 0)
+              (
+                isEditMode &&
+                !hasProductDataChanged
+              ) ||
+              (
+                !isEditMode &&
+                selectedImages.length === 0
+              )
             "
             (click)="addProduct()"
           >
-
 
             @if (isAddingProduct) {
 
@@ -785,6 +877,7 @@
     </div>
 
   }
+
 
 </ion-content>
 

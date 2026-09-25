@@ -1,14 +1,19 @@
-import { Component } from '@angular/core';
+import { Component ,
+  ChangeDetectorRef } from '@angular/core';
 
 import {
   IonTabs,
   IonTabBar,
   IonTabButton,
   IonIcon,
-  IonLabel
+  IonLabel,
+  IonBadge
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
+import {
+  CartService
+} from '../services/cart.service';
 
 import {
   homeOutline,
@@ -56,7 +61,9 @@ interface TabItem {
 
     IonIcon,
 
-    IonLabel
+    IonLabel,
+
+    IonBadge
 
   ]
 
@@ -65,47 +72,36 @@ interface TabItem {
 
 export class TabsPage {
 
-
+cartCount = 0;
   role: string | null = null;
 
+customerTabs: TabItem[] = [
 
-  // =========================================
-  // CUSTOMER TABS
-  // =========================================
+  {
+    label: 'Home',
+    route: 'home',
+    icon: 'home-outline'
+  },
 
-  customerTabs: TabItem[] = [
+  {
+    label: 'Categories',
+    route: 'categories',
+    icon: 'grid-outline'
+  },
 
-    {
+  {
+    label: 'Cart',
+    route: 'cart',
+    icon: 'cart-outline'
+  },
 
-      label: 'Home',
+  {
+    label: 'My Orders',
+    route: 'orders',
+    icon: 'receipt-outline'
+  }
 
-      route: 'home',
-
-      icon: 'home-outline'
-
-    },
-
-    {
-
-      label: 'Categories',
-
-      route: 'categories',
-
-      icon: 'grid-outline'
-
-    },
-
-    {
-
-      label: 'Cart',
-
-      route: 'cart',
-
-      icon: 'cart-outline'
-
-    }
-
-  ];
+];
 
 
   // =========================================
@@ -136,9 +132,9 @@ export class TabsPage {
 
     {
 
-      label: 'Requests',
+      label: 'Orders',
 
-      route: 'requests',
+      route: 'vend-orders',
 
       icon: 'sync-outline'
 
@@ -208,7 +204,9 @@ export class TabsPage {
 
   constructor(
 
-    private authService: AuthService
+    private authService: AuthService,
+      private cartService: CartService,
+        private cdr: ChangeDetectorRef
 
   ) {
 
@@ -248,6 +246,25 @@ export class TabsPage {
     );
 
   }
+ngOnInit(): void {
+
+  this.cartService.cart$.subscribe(cart => {
+
+    console.log('TABS CART UPDATE:', cart);
+
+    this.cartCount =
+      cart?.totalItems ?? 0;
+
+    console.log(
+      'TABS CART COUNT:',
+      this.cartCount
+    );
+
+    this.cdr.detectChanges();
+
+  });
+
+}
 
   
 

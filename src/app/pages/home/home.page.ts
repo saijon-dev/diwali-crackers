@@ -4,17 +4,18 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
+import { LocationService } from '../../services/location.service';
+
 import { FormsModule } from '@angular/forms';
 
 import {
   IonContent,
   IonSearchbar,
-  IonIcon
+  IonIcon,
+  IonButton
 } from '@ionic/angular';
 
 import {
-  menuOutline,
-  closeOutline,
   imageOutline
 } from 'ionicons/icons';
 
@@ -24,23 +25,9 @@ import { Router } from '@angular/router';
 
 import {
   ProductService,
-  Product
+  Product,
+  Category
 } from '../../services/product.service';
-
-
-/* =====================================
-   CATEGORY
-   ===================================== */
-
-interface Category {
-
-  name: string;
-
-  icon: string;
-
-  background: string;
-
-}
 
 
 @Component({
@@ -48,15 +35,14 @@ interface Category {
 
   templateUrl: './home.page.html',
 
-  styleUrls: ['./home.page.scss'],
-
   standalone: true,
 
   imports: [
     IonContent,
     IonSearchbar,
     IonIcon,
-    FormsModule
+    FormsModule,
+    IonButton
   ]
 })
 export class HomePage implements OnInit {
@@ -70,67 +56,14 @@ export class HomePage implements OnInit {
 
 
   /* =====================================
-     SIDE MENU
-     ===================================== */
-
-  menuOpen = false;
-
-
-  /* =====================================
      CATEGORIES
      ===================================== */
 
-  categories: Category[] = [
+  categories: Category[] = [];
 
-    {
-      name: 'Sparklers',
-      icon: '✨',
-      background: '#f8d9ef'
-    },
+  isLoadingCategories = false;
 
-    {
-      name: 'Chakkers',
-      icon: '🔴',
-      background: '#ffe0c7'
-    },
-
-    {
-      name: 'Flower Pots',
-      icon: '🎆',
-      background: '#f8dec5'
-    },
-
-    {
-      name: 'Rockets',
-      icon: '🚀',
-      background: '#ccecff'
-    },
-
-    {
-      name: 'Gift Boxes',
-      icon: '🎁',
-      background: '#f7d9e8'
-    },
-
-    {
-      name: 'Launchers',
-      icon: '🚀',
-      background: '#d7efda'
-    },
-
-    {
-      name: 'Roman Candles',
-      icon: '🧨',
-      background: '#f5e2cc'
-    },
-
-    {
-      name: 'Others',
-      icon: '🎁',
-      background: '#ffe8a8'
-    }
-
-  ];
+  categoryErrorMessage = '';
 
 
   /* =====================================
@@ -147,17 +80,54 @@ export class HomePage implements OnInit {
   constructor(
     private router: Router,
     private productService: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private locationService: LocationService
   ) {
 
     addIcons({
-      menuOutline,
-      closeOutline,
       imageOutline
     });
 
   }
 
+
+async testLocation(): Promise<void> {
+
+  alert('BUTTON CLICKED');
+
+  console.log('BUTTON CLICKED');
+
+  try {
+
+    alert('Requesting location...');
+
+    const location =
+      await this.locationService.getCurrentLocation();
+
+    console.log(
+      'USER LOCATION:',
+      location
+    );
+
+    alert(
+      `Location received\n\nLatitude: ${location.latitude}\nLongitude: ${location.longitude}`
+    );
+
+  } catch (error) {
+
+    console.error(
+      'LOCATION ERROR:',
+      error
+    );
+
+    alert(
+      'Location Error:\n' +
+      JSON.stringify(error)
+    );
+
+  }
+
+}
 
   /* =====================================
      INITIAL LOAD
@@ -165,7 +135,91 @@ export class HomePage implements OnInit {
 
   ngOnInit(): void {
 
+    this.loadCategories();
+
     this.loadProducts();
+
+  }
+
+
+  /* =====================================
+     PAGE ENTER
+     ===================================== */
+
+  ionViewWillEnter(): void {
+
+    this.loadCategories();
+
+    this.loadProducts();
+
+  }
+
+
+  /* =====================================
+     GET ALL CATEGORIES
+     ===================================== */
+
+  loadCategories(): void {
+
+    this.isLoadingCategories = true;
+
+    this.categoryErrorMessage = '';
+
+    this.cdr.detectChanges();
+
+
+    this.productService
+      .getCategories()
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            'Categories API Response:',
+            response
+          );
+
+
+          this.categories =
+            response ?? [];
+
+
+          console.log(
+            'Categories Loaded:',
+            this.categories
+          );
+
+
+          this.isLoadingCategories = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Categories API Error:',
+            error
+          );
+
+
+          this.categories = [];
+
+          this.isLoadingCategories = false;
+
+          this.categoryErrorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load categories.';
+
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
@@ -248,31 +302,10 @@ export class HomePage implements OnInit {
 
 
   /* =====================================
-     OPEN / CLOSE MENU
-     ===================================== */
-
-  toggleMenu(): void {
-
-    this.menuOpen =
-      !this.menuOpen;
-
-  }
-
-
-  closeMenu(): void {
-
-    this.menuOpen = false;
-
-  }
-
-
-  /* =====================================
      ADMIN LOGIN
      ===================================== */
 
   goToAdminLogin(): void {
-
-    this.menuOpen = false;
 
     this.router.navigate([
       '/admin-login'
@@ -290,13 +323,8 @@ export class HomePage implements OnInit {
   ): void {
 
     /*
-     * IMPORTANT:
-     *
-     * productId can be the same for
-     * multiple vendors.
-     *
-     * productStoreId identifies the
-     * exact store-specific product.
+     * productStoreId identifies
+     * the exact store-specific product.
      */
 
     this.router.navigate([
@@ -311,27 +339,32 @@ export class HomePage implements OnInit {
      CATEGORY CLICK
      ===================================== */
 
-  selectCategory(
-    categoryName: string
-  ): void {
+selectCategory(categoryId: number): void {
 
-    console.log(
-      'Selected category:',
-      categoryName
-    );
+  this.router.navigate(
+    ['/tabs/categories'],
+    {
+      queryParams: {
+        categoryId: categoryId
+      }
+    }
+  );
 
-  }
+}
 
 
   /* =====================================
      ADD TO CART
-     * Temporary frontend action.
-     * Cart API will be connected later.
      ===================================== */
 
   addToCart(
     product: Product
   ): void {
+
+    /*
+     * Temporary frontend action.
+     * Cart API will be connected later.
+     */
 
     console.log(
       'Added to cart:',
@@ -340,16 +373,30 @@ export class HomePage implements OnInit {
 
   }
 
+
+  /* =====================================
+     OPEN ALL CATEGORIES
+     ===================================== */
+
   openCategories(): void {
 
-  this.router.navigate([
-    '/tabs/categories'
-  ]);
+    this.router.navigate([
+      '/tabs/categories'
+    ]);
 
-}
+  }
 
-openSearch(): void {
-  this.router.navigate(['/tabs/search']);
-}
+
+  /* =====================================
+     OPEN SEARCH
+     ===================================== */
+
+  openSearch(): void {
+
+    this.router.navigate([
+      '/tabs/search'
+    ]);
+
+  }
 
 }

@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { Router } from '@angular/router';
 
 import {
@@ -17,28 +21,10 @@ import {
   searchOutline
 } from 'ionicons/icons';
 
-
-/* ====================================================
-   PRODUCT IMAGE
-==================================================== */
-
-export interface AdminProductImage {
-  productImageId: number;
-  imageUrl: string;
-}
-
-
-/* ====================================================
-   ADMIN PRODUCT
-==================================================== */
-
-export interface AdminProduct {
-  productId: number;
-  productName: string;
-  categoryId: number;
-  categoryName: string;
-  images: AdminProductImage[];
-}
+import {
+  ProductService,
+  AdminProduct
+} from '../../../services/product.service';
 
 
 @Component({
@@ -51,183 +37,51 @@ export interface AdminProduct {
     IonIcon
   ]
 })
-export class AdminProductsPage {
+export class AdminProductsPage
+  implements OnInit {
+
+
+  /*
+   * =========================
+   * SEARCH
+   * =========================
+   */
 
   searchText = '';
+
+
+  /*
+   * =========================
+   * MENU
+   * =========================
+   */
 
   isMenuOpen = false;
 
 
-  /* ====================================================
-     TEMPORARY ADMIN PRODUCTS
+  /*
+   * =========================
+   * API STATE
+   * =========================
+   */
 
-     Later replace with:
-     GET /api/admin/products
-  ==================================================== */
+  isLoading = false;
 
-  adminProducts: AdminProduct[] = [
+  errorMessage = '';
 
-    {
-      productId: 1,
-      productName: 'Flower Pot',
-      categoryId: 1,
-      categoryName: 'Flower Pots',
-      images: [
-        {
-          productImageId: 1,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
 
-    {
-      productId: 2,
-      productName: 'Color Sparklers',
-      categoryId: 2,
-      categoryName: 'Sparklers',
-      images: [
-        {
-          productImageId: 2,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
+  /*
+   * =========================
+   * ADMIN PRODUCTS
+   * =========================
+   */
 
-    {
-      productId: 3,
-      productName: 'Rocket',
-      categoryId: 3,
-      categoryName: 'Rockets',
-      images: [
-        {
-          productImageId: 3,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 4,
-      productName: 'Chakkar',
-      categoryId: 4,
-      categoryName: 'Chakkars',
-      images: [
-        {
-          productImageId: 4,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 5,
-      productName: 'Atom Bomb',
-      categoryId: 5,
-      categoryName: 'Bombs',
-      images: [
-        {
-          productImageId: 5,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 6,
-      productName: 'Color Fountain',
-      categoryId: 6,
-      categoryName: 'Fountains',
-      images: [
-        {
-          productImageId: 6,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 7,
-      productName: 'Ground Spinner',
-      categoryId: 7,
-      categoryName: 'Ground Spinners',
-      images: [
-        {
-          productImageId: 7,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 8,
-      productName: 'Mini Flower Pot',
-      categoryId: 1,
-      categoryName: 'Flower Pots',
-      images: [
-        {
-          productImageId: 8,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 9,
-      productName: 'Electric Sparkler',
-      categoryId: 2,
-      categoryName: 'Sparklers',
-      images: [
-        {
-          productImageId: 9,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 10,
-      productName: 'Big Rocket',
-      categoryId: 3,
-      categoryName: 'Rockets',
-      images: [
-        {
-          productImageId: 10,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 11,
-      productName: 'Fancy Fountain',
-      categoryId: 6,
-      categoryName: 'Fountains',
-      images: [
-        {
-          productImageId: 11,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    },
-
-    {
-      productId: 12,
-      productName: 'Wheel Chakkar',
-      categoryId: 4,
-      categoryName: 'Chakkars',
-      images: [
-        {
-          productImageId: 12,
-          imageUrl: 'assets/images/rectangle-image.png'
-        }
-      ]
-    }
-
-  ];
+  adminProducts: AdminProduct[] = [];
 
 
   constructor(
-    private router: Router
+    private router: Router,
+    private productService: ProductService
   ) {
 
     addIcons({
@@ -242,9 +96,76 @@ export class AdminProductsPage {
   }
 
 
-  /* ====================================================
-     FILTER
-  ==================================================== */
+  ngOnInit(): void {
+
+    this.loadAdminProducts();
+
+  }
+
+
+  /*
+   * =========================
+   * LOAD ADMIN PRODUCTS
+   * =========================
+   */
+
+  loadAdminProducts(): void {
+
+    this.isLoading = true;
+
+    this.errorMessage = '';
+
+
+    this.productService
+      .getAdminProducts()
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            'Admin Products:',
+            response
+          );
+
+
+          this.adminProducts =
+            response?.products || [];
+
+
+          this.isLoading = false;
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Failed to load admin products:',
+            error
+          );
+
+
+          this.adminProducts = [];
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load products. Please try again.';
+
+          this.isLoading = false;
+
+        }
+
+      });
+
+  }
+
+
+  /*
+   * =========================
+   * FILTER PRODUCTS
+   * =========================
+   */
 
   get filteredProducts(): AdminProduct[] {
 
@@ -253,36 +174,62 @@ export class AdminProductsPage {
         .trim()
         .toLowerCase();
 
+
     if (!search) {
+
       return this.adminProducts;
+
     }
+
 
     return this.adminProducts.filter(
       product =>
+
         product.productName
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(search)
+
         ||
+
         product.categoryName
-          .toLowerCase()
+          ?.toLowerCase()
           .includes(search)
+
+        ||
+
+        product.productCode
+          ?.toLowerCase()
+          .includes(search)
+
     );
+
   }
 
 
-  /* ====================================================
-     SEARCH
-  ==================================================== */
+  /*
+   * =========================
+   * SEARCH CHANGE
+   * =========================
+   */
 
-  onSearchChange(event: Event): void {
+  onSearchChange(
+    event: Event
+  ): void {
 
     const input =
       event.target as HTMLInputElement;
 
-    this.searchText = input.value;
+    this.searchText =
+      input.value;
 
   }
 
+
+  /*
+   * =========================
+   * CLEAR SEARCH
+   * =========================
+   */
 
   clearSearch(): void {
 
@@ -291,26 +238,42 @@ export class AdminProductsPage {
   }
 
 
-  /* ====================================================
-     GET PRODUCT IMAGE
-  ==================================================== */
+  /*
+   * =========================
+   * PRODUCT IMAGE
+   * =========================
+   */
 
-  getProductImage(product: AdminProduct): string {
+  getProductImage(
+    product: AdminProduct
+  ): string {
 
     return (
-      product.images?.[0]?.imageUrl
-      ||
+      product.images?.[0] ||
       'assets/images/rectangle-image.png'
     );
 
   }
 
 
-  /* ====================================================
-     EXISTING ADMIN PRODUCT
-  ==================================================== */
+  /*
+   * =========================
+   * OPEN PRODUCT
+   * =========================
+   *
+   * Send the complete AdminProduct
+   * to Add Product page.
+   */
 
-  openProduct(product: AdminProduct): void {
+  openProduct(
+    product: AdminProduct
+  ): void {
+
+    console.log(
+      'Selected Admin Product:',
+      product
+    );
+
 
     this.router.navigate(
       ['/tabs/add-product'],
@@ -324,22 +287,29 @@ export class AdminProductsPage {
   }
 
 
-  /* ====================================================
-     ADD FROM SCRATCH
-  ==================================================== */
+  /*
+   * =========================
+   * ADD NEW PRODUCT
+   * =========================
+   *
+   * Opens Add Product without
+   * an AdminProduct.
+   */
 
   addProduct(): void {
 
-    this.router.navigate([
-      '/tabs/add-product'
-    ]);
+    this.router.navigate(
+      ['/tabs/add-product']
+    );
 
   }
 
 
-  /* ====================================================
-     SIDE MENU
-  ==================================================== */
+  /*
+   * =========================
+   * MENU
+   * =========================
+   */
 
   toggleMenu(): void {
 
@@ -356,26 +326,49 @@ export class AdminProductsPage {
   }
 
 
-  /* ====================================================
-     LOGOUT
-  ==================================================== */
+  /*
+   * =========================
+   * LOGOUT
+   * =========================
+   */
 
   logout(): void {
 
     this.closeMenu();
 
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('role');
 
-    localStorage.removeItem('smartlearn_token');
-    localStorage.removeItem('smartlearn_refresh_token');
-    localStorage.removeItem('smartlearn_role');
-    localStorage.removeItem('smartlearn_user_id');
+    localStorage.removeItem(
+      'accessToken'
+    );
 
-    this.router.navigate([
-      '/admin-login'
-    ]);
+    localStorage.removeItem(
+      'refreshToken'
+    );
+
+    localStorage.removeItem(
+      'role'
+    );
+
+    localStorage.removeItem(
+      'smartlearn_token'
+    );
+
+    localStorage.removeItem(
+      'smartlearn_refresh_token'
+    );
+
+    localStorage.removeItem(
+      'smartlearn_role'
+    );
+
+    localStorage.removeItem(
+      'smartlearn_user_id'
+    );
+
+
+    this.router.navigate(
+      ['/admin-login']
+    );
 
   }
 

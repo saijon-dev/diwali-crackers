@@ -12,9 +12,6 @@
 
     <header class="cart-header">
 
-
-      <!-- BACK -->
-
       <button
         type="button"
         class="back-button"
@@ -29,8 +26,6 @@
       </button>
 
 
-      <!-- TITLE -->
-
       <div class="header-title">
 
         <h1>
@@ -43,7 +38,6 @@
 
       </div>
 
-
     </header>
 
 
@@ -55,11 +49,12 @@
     <main class="cart-container">
 
 
-      <!-- =================================
-           CART HEADER / COUNT
-      ================================== -->
-
       @if (cartItems.length > 0) {
+
+
+        <!-- =================================
+             CART HEADER / COUNT
+        ================================== -->
 
         <div class="cart-summary-heading">
 
@@ -81,15 +76,40 @@
               </h2>
 
               <p>
+
                 {{ totalItems }}
+
                 {{ totalItems === 1 ? 'item' : 'items' }}
+
               </p>
 
             </div>
 
           </div>
 
+
+
+          <!-- CLEAR CART -->
+
+          <button
+            type="button"
+            class="clear-cart-button"
+            [disabled]="isClearingCart"
+            (click)="clearCart()"
+          >
+
+            <ion-icon
+              name="trash-outline"
+            ></ion-icon>
+
+            <span>
+              Clear
+            </span>
+
+          </button>
+
         </div>
+
 
 
         <!-- =================================
@@ -157,11 +177,13 @@
                     <p class="pack-details">
 
                       {{ item.packQuantity }}
+
                       {{ item.packUnit }}
 
                     </p>
 
                   </div>
+
 
 
                   <!-- REMOVE -->
@@ -245,7 +267,6 @@
 
                   </div>
 
-
                 </div>
 
 
@@ -266,7 +287,6 @@
 
 
               </div>
-
 
             </article>
 
@@ -396,11 +416,10 @@
 
 
         <!-- =================================
-             CONTINUE BUTTON
+             CHECKOUT BUTTON
         ================================== -->
 
         <section class="checkout-section">
-
 
           <button
             type="button"
@@ -429,11 +448,11 @@
 
           </button>
 
-
         </section>
 
 
       }
+
 
 
       <!-- =================================
@@ -508,3 +527,182 @@
   </div>
 
 </ion-content>
+
+
+
+<!-- ====================================================
+     CHECKOUT MODAL
+===================================================== -->
+
+<ion-modal
+  [isOpen]="isCheckoutModalOpen"
+  [backdropDismiss]="!isCreatingOrder"
+  class="checkout-modal"
+  (didDismiss)="isCheckoutModalOpen = false"
+>
+
+  <ng-template>
+
+    <div class="checkout-modal-content">
+
+
+      <!-- ==========================================
+           MODAL HEADER
+      =========================================== -->
+
+      <div class="checkout-modal-header">
+
+        <div>
+
+          <span class="checkout-eyebrow">
+            CHECKOUT
+          </span>
+
+          <h2>
+            Delivery Details
+          </h2>
+
+          <p>
+            Enter your details to place your order.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="modal-close-button"
+          [disabled]="isCreatingOrder"
+          (click)="closeCheckoutModal()"
+          aria-label="Close checkout"
+        >
+
+          <ion-icon
+            name="close-outline"
+          ></ion-icon>
+
+        </button>
+
+      </div>
+
+
+
+      <!-- ==========================================
+           CHECKOUT FORM
+      =========================================== -->
+
+      <div class="checkout-form">
+
+
+        <!-- NAME -->
+
+        <div class="form-field">
+
+          <label for="customerName">
+            Name
+          </label>
+
+          <ion-input
+            id="customerName"
+            class="checkout-input"
+            type="text"
+            [(ngModel)]="customerName"
+            placeholder="Enter your name"
+            autocomplete="name"
+          ></ion-input>
+
+        </div>
+
+
+
+        <!-- MOBILE -->
+
+        <div class="form-field">
+
+          <label for="customerMobile">
+            Mobile Number
+          </label>
+
+          <ion-input
+            id="customerMobile"
+            class="checkout-input"
+            type="tel"
+            [(ngModel)]="customerMobile"
+            placeholder="Enter mobile number"
+            maxlength="10"
+            inputmode="numeric"
+            autocomplete="tel"
+          ></ion-input>
+
+        </div>
+
+
+
+        <!-- ADDRESS -->
+
+        <div class="form-field">
+
+          <label for="deliveryAddress">
+            Delivery Address
+          </label>
+
+          <ion-textarea
+            id="deliveryAddress"
+            class="checkout-textarea"
+            [(ngModel)]="deliveryAddress"
+            placeholder="Enter your complete delivery address"
+            [rows]="4"
+            autoGrow="true"
+            autocomplete="street-address"
+          ></ion-textarea>
+
+        </div>
+
+
+
+        <!-- ORDER BUTTON -->
+
+        <ion-button
+          expand="block"
+          class="make-order-button"
+          [disabled]="isCreatingOrder"
+          (click)="makeOrder()"
+        >
+
+          @if (isCreatingOrder) {
+
+            Placing Order...
+
+          } @else {
+
+            Make Order
+
+          }
+
+        </ion-button>
+
+
+      </div>
+
+
+    </div>
+
+  </ng-template>
+
+</ion-modal>
+
+
+
+<!-- ====================================================
+     SUCCESS / ERROR TOAST
+===================================================== -->
+
+<ion-toast
+  [isOpen]="isToastOpen"
+  [message]="toastMessage"
+  [color]="toastColor"
+  [duration]="2200"
+  [position]="'bottom'"
+  cssClass="diwali-toast"
+  (didDismiss)="isToastOpen = false"
+></ion-toast>

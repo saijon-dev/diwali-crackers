@@ -3,6 +3,7 @@
   class="add-product-content">
 
   <!-- Static Side Decorations -->
+
   <img
     src="assets/images/left-bg.png"
     alt=""
@@ -15,7 +16,9 @@
     class="side-decoration side-decoration-right"
   />
 
+
   <div class="add-product-page">
+
 
     <!-- =========================
          HEADER
@@ -29,9 +32,15 @@
         text="">
       </ion-back-button>
 
+
       <div class="header-title">
+
         <h1>Add Product</h1>
-        <p>Add a new cracker to your shop</p>
+
+        <p>
+          Add a new cracker to your shop
+        </p>
+
       </div>
 
     </header>
@@ -53,12 +62,24 @@
         <div class="section-title">
 
           <div class="section-icon">
-            <ion-icon name="add-outline"></ion-icon>
+
+            <ion-icon
+              name="add-outline">
+            </ion-icon>
+
           </div>
 
+
           <div>
-            <h2>Product Information</h2>
-            <p>Enter the basic product details</p>
+
+            <h2>
+              Product Information
+            </h2>
+
+            <p>
+              Enter the basic product details
+            </p>
+
           </div>
 
         </div>
@@ -90,43 +111,36 @@
             Category
           </label>
 
+
           <div class="category-row">
 
-            <div class="category-select-wrapper">
+           <div class="category-select-wrapper">
 
-              <select
-                id="category"
-                [(ngModel)]="categoryId">
+  <ion-select
+    id="category"
+    [(ngModel)]="categoryId"
+    interface="popover"
+    placeholder="Select category"
+    [disabled]="isLoadingCategories"
+    class="category-select">
 
-                <option [ngValue]="null">
-                  @if (isLoadingCategories) {
-                    Loading categories...
-                  } @else {
-                    Select category
-                  }
-                </option>
+    @for (
+      category of categories;
+      track category.categoryId
+    ) {
 
-                @for (
-                  category of categories;
-                  track category.categoryId
-                ) {
+      <ion-select-option
+        [value]="category.categoryId">
 
-                  <option
-                    [ngValue]="category.categoryId">
+        {{ category.categoryName }}
 
-                    {{ category.categoryName }}
+      </ion-select-option>
 
-                  </option>
+    }
 
-                }
+  </ion-select>
 
-              </select>
-
-              <ion-icon
-                name="chevron-down-outline">
-              </ion-icon>
-
-            </div>
+</div>
 
 
             <!-- Add Category -->
@@ -137,7 +151,9 @@
               aria-label="Add category"
               (click)="openCategoryBox()">
 
-              <ion-icon name="add-outline"></ion-icon>
+              <ion-icon
+                name="add-outline">
+              </ion-icon>
 
             </button>
 
@@ -147,7 +163,9 @@
           @if (categoryErrorMessage) {
 
             <div class="category-load-error">
+
               {{ categoryErrorMessage }}
+
             </div>
 
           }
@@ -159,180 +177,202 @@
 
           @if (showCategoryBox) {
 
-         <div class="category-add-box">
+            <div class="category-add-box">
 
-  <div class="category-add-header">
+              <div class="category-add-header">
 
-    <div>
-      <h3>Add Category</h3>
-      <p>Create a new cracker category</p>
-    </div>
+                <div>
 
-    <button
-      type="button"
-      class="close-category-button"
-      aria-label="Close"
-      [disabled]="isAddingCategory"
-      (click)="closeCategoryBox()">
+                  <h3>
+                    Add Category
+                  </h3>
 
-      <ion-icon name="close-outline"></ion-icon>
+                  <p>
+                    Create a new cracker category
+                  </p>
 
-    </button>
-
-  </div>
+                </div>
 
 
-  <!-- =========================
-       CATEGORY NAME
-  ========================== -->
+                <button
+                  type="button"
+                  class="close-category-button"
+                  aria-label="Close"
+                  [disabled]="isAddingCategory"
+                  (click)="closeCategoryBox()">
 
-  <div class="category-add-field">
+                  <ion-icon
+                    name="close-outline">
+                  </ion-icon>
 
-    <label for="newCategoryName">
-      Category Name
-    </label>
+                </button>
 
-    <input
-      id="newCategoryName"
-      type="text"
-      [(ngModel)]="newCategoryName"
-      placeholder="Example: Rockets"
-      autocomplete="off">
-
-  </div>
+              </div>
 
 
-  <!-- =========================
-       DESCRIPTION
-  ========================== -->
+              <!-- CATEGORY NAME -->
 
-  <div class="category-add-field">
+              <div class="category-add-field">
 
-    <label for="newCategoryDescription">
-      Description
-    </label>
+                <label for="newCategoryName">
+                  Category Name
+                </label>
 
-    <textarea
-      id="newCategoryDescription"
-      [(ngModel)]="newCategoryDescription"
-      rows="3"
-      placeholder="Enter category description">
-    </textarea>
+                <input
+                  id="newCategoryName"
+                  type="text"
+                  [(ngModel)]="newCategoryName"
+                  placeholder="Example: Rockets"
+                  autocomplete="off">
 
-  </div>
+              </div>
 
 
-  <!-- =========================
-       CATEGORY IMAGE
-  ========================== -->
+              <!-- DESCRIPTION -->
 
-  <div class="category-add-field">
+              <div class="category-add-field">
 
-    <label>
-      Category Image
-    </label>
+                <label for="newCategoryDescription">
+                  Description
+                </label>
 
-    <label class="category-image-upload">
+                <textarea
+                  id="newCategoryDescription"
+                  [(ngModel)]="newCategoryDescription"
+                  rows="3"
+                  placeholder="Enter category description">
+                </textarea>
 
-      <input
-        type="file"
-        accept="image/*"
-        (change)="onCategoryImageSelected($event)">
-
-      @if (newCategoryImagePreview) {
-
-        <img
-          [src]="newCategoryImagePreview"
-          alt="Category preview"
-          class="category-image-preview">
-
-      } @else {
-
-        <div class="category-upload-icon">
-
-          <ion-icon
-            name="image-outline">
-          </ion-icon>
-
-        </div>
-
-        <span class="category-upload-title">
-          Select Category Image
-        </span>
-
-        <span class="category-upload-text">
-          JPG, PNG or WEBP
-        </span>
-
-      }
-
-    </label>
-
-  </div>
+              </div>
 
 
-  <!-- =========================
-       MESSAGES
-  ========================== -->
+              <!-- CATEGORY IMAGE -->
 
-  @if (categoryAddErrorMessage) {
+              <div class="category-add-field">
 
-    <div class="category-error-message">
-      {{ categoryAddErrorMessage }}
-    </div>
-
-  }
+                <label>
+                  Category Image
+                </label>
 
 
-  @if (categorySuccessMessage) {
+                <label
+                  class="category-image-upload">
 
-    <div class="category-success-message">
-      {{ categorySuccessMessage }}
-    </div>
-
-  }
-
-
-  <!-- =========================
-       ACTIONS
-  ========================== -->
-
-  <div class="category-add-actions">
-
-    <button
-      type="button"
-      class="category-cancel-button"
-      [disabled]="isAddingCategory"
-      (click)="closeCategoryBox()">
-
-      Cancel
-
-    </button>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    (change)="onCategoryImageSelected($event)">
 
 
-    <button
-      type="button"
-      class="category-save-button"
-      [disabled]="isAddingCategory"
-      (click)="addCategory()">
+                  @if (newCategoryImagePreview) {
 
-      @if (isAddingCategory) {
+                    <img
+                      [src]="newCategoryImagePreview"
+                      alt="Category preview"
+                      class="category-image-preview">
 
-        <span>Adding...</span>
+                  } @else {
 
-      } @else {
+                    <div
+                      class="category-upload-icon">
 
-        <ion-icon name="add-outline"></ion-icon>
+                      <ion-icon
+                        name="image-outline">
+                      </ion-icon>
 
-        <span>Add</span>
+                    </div>
 
-      }
+                    <span
+                      class="category-upload-title">
 
-    </button>
+                      Select Category Image
 
-  </div>
+                    </span>
 
-</div>
+                    <span
+                      class="category-upload-text">
+
+                      JPG, PNG or WEBP
+
+                    </span>
+
+                  }
+
+                </label>
+
+              </div>
+
+
+              <!-- MESSAGES -->
+
+              @if (categoryAddErrorMessage) {
+
+                <div
+                  class="category-error-message">
+
+                  {{ categoryAddErrorMessage }}
+
+                </div>
+
+              }
+
+
+              @if (categorySuccessMessage) {
+
+                <div
+                  class="category-success-message">
+
+                  {{ categorySuccessMessage }}
+
+                </div>
+
+              }
+
+
+              <!-- ACTIONS -->
+
+              <div class="category-add-actions">
+
+                <button
+                  type="button"
+                  class="category-cancel-button"
+                  [disabled]="isAddingCategory"
+                  (click)="closeCategoryBox()">
+
+                  Cancel
+
+                </button>
+
+
+                <button
+                  type="button"
+                  class="category-save-button"
+                  [disabled]="isAddingCategory"
+                  (click)="addCategory()">
+
+                  @if (isAddingCategory) {
+
+                    <span>
+                      Adding...
+                    </span>
+
+                  } @else {
+
+                    <ion-icon
+                      name="add-outline">
+                    </ion-icon>
+
+                    <span>
+                      Add
+                    </span>
+
+                  }
+
+                </button>
+
+              </div>
+
+            </div>
 
           }
 
@@ -375,24 +415,30 @@
         </div>
 
 
-
-        <!-- Product Type -->
+     <!-- =========================
+     PRODUCT TYPE
+========================== -->
 
 <div class="form-group">
 
-  <label>
+  <label class="product-type-label">
     Product Type
   </label>
 
   <div class="product-type-options">
 
-    <label class="radio-option">
+    <!-- KIDS SPECIAL -->
+
+    <label
+      class="radio-option"
+      [class.radio-option-selected]="isKidsSpecial === true">
 
       <input
         type="radio"
         name="productType"
-        [(ngModel)]="isKidsSpecial"
-        [value]="true">
+        [checked]="isKidsSpecial === true"
+        (change)="selectProductType(true)"
+      />
 
       <span class="radio-custom"></span>
 
@@ -403,13 +449,18 @@
     </label>
 
 
-    <label class="radio-option">
+    <!-- REGULAR -->
+
+    <label
+      class="radio-option"
+      [class.radio-option-selected]="isKidsSpecial === false">
 
       <input
         type="radio"
         name="productType"
-        [(ngModel)]="isKidsSpecial"
-        [value]="false">
+        [checked]="isKidsSpecial === false"
+        (change)="selectProductType(false)"
+      />
 
       <span class="radio-custom"></span>
 
@@ -422,7 +473,6 @@
   </div>
 
 </div>
-
 
         <!-- Size -->
 
@@ -446,19 +496,20 @@
 
         <div class="two-column">
 
+
           <div class="form-group">
 
             <label for="packQuantity">
               Pack Quantity
             </label>
 
-        <input
-  id="packQuantity"
-  type="number"
-  [(ngModel)]="packQuantity"
-  min="1"
-  step="1"
-  placeholder="10">
+            <input
+              id="packQuantity"
+              type="number"
+              [(ngModel)]="packQuantity"
+              min="1"
+              step="1"
+              placeholder="10">
 
           </div>
 
@@ -515,14 +566,22 @@
           </div>
 
           <div>
-            <h2>Pricing & Stock</h2>
-            <p>Set product price and availability</p>
+
+            <h2>
+              Pricing & Stock
+            </h2>
+
+            <p>
+              Set product price and availability
+            </p>
+
           </div>
 
         </div>
 
 
         <div class="two-column">
+
 
           <!-- MRP -->
 
@@ -582,13 +641,13 @@
             Stock Quantity
           </label>
 
-      <input
-  id="stockQuantity"
-  type="number"
-  [(ngModel)]="stockQuantity"
-  min="1"
-  step="1"
-  placeholder="Enter available quantity">
+          <input
+            id="stockQuantity"
+            type="number"
+            [(ngModel)]="stockQuantity"
+            min="1"
+            step="1"
+            placeholder="Enter available quantity">
 
         </div>
 
@@ -604,18 +663,71 @@
         <div class="section-title">
 
           <div class="section-icon">
-            <ion-icon name="image-outline"></ion-icon>
+
+            <ion-icon
+              name="image-outline">
+            </ion-icon>
+
           </div>
 
           <div>
-            <h2>Product Images</h2>
-            <p>Select one or more product images</p>
+
+            <h2>
+              Product Images
+            </h2>
+
+            <p>
+              Select one or more product images
+            </p>
+
           </div>
 
         </div>
 
 
-        <label class="upload-area">
+        <!-- Existing Admin Product Image -->
+
+        @if (
+          existingProductImages.length > 0
+        ) {
+
+          <div
+            class="image-preview-section">
+
+            <h3>
+              Existing Product Image
+            </h3>
+
+            <div
+              class="image-grid">
+
+              @for (
+                image of existingProductImages;
+                track image
+              ) {
+
+                <div
+                  class="image-preview">
+
+                  <img
+                    [src]="image"
+                    alt="Existing product image">
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <!-- Upload -->
+
+        <label
+          class="upload-area">
 
           <input
             type="file"
@@ -623,8 +735,13 @@
             multiple
             (change)="onImagesSelected($event)">
 
-          <div class="upload-icon">
-            <ion-icon name="cloud-upload-outline"></ion-icon>
+          <div
+            class="upload-icon">
+
+            <ion-icon
+              name="cloud-upload-outline">
+            </ion-icon>
+
           </div>
 
           <h3>
@@ -642,29 +759,39 @@
         </label>
 
 
-        @if (imagePreviews.length > 0) {
+        @if (
+          imagePreviews.length > 0
+        ) {
 
-          <div class="image-preview-section">
+          <div
+            class="image-preview-section">
 
             <h3>
+
               Selected Images
+
               <span>
                 ({{ imagePreviews.length }})
               </span>
+
             </h3>
 
-            <div class="image-grid">
+
+            <div
+              class="image-grid">
 
               @for (
                 image of imagePreviews;
                 track $index
               ) {
 
-                <div class="image-preview">
+                <div
+                  class="image-preview">
 
                   <img
                     [src]="image"
                     alt="Product preview">
+
 
                   <button
                     type="button"
@@ -672,7 +799,9 @@
                     aria-label="Remove image"
                     (click)="removeImage($index)">
 
-                    <ion-icon name="close-outline"></ion-icon>
+                    <ion-icon
+                      name="close-outline">
+                    </ion-icon>
 
                   </button>
 
@@ -695,8 +824,11 @@
 
       @if (successMessage) {
 
-        <div class="success-message">
+        <div
+          class="success-message">
+
           {{ successMessage }}
+
         </div>
 
       }
@@ -704,18 +836,22 @@
 
       @if (errorMessage) {
 
-        <div class="error-message">
+        <div
+          class="error-message">
+
           {{ errorMessage }}
+
         </div>
 
       }
 
 
       <!-- =========================
-           ACTIONS
+           ACTION BUTTONS
       ========================== -->
 
-      <section class="action-buttons">
+      <section
+        class="action-buttons">
 
         <button
           type="button"
@@ -736,13 +872,19 @@
 
           @if (isLoading) {
 
-            <span>Adding...</span>
+            <span>
+              Adding...
+            </span>
 
           } @else {
 
-            <ion-icon name="add-outline"></ion-icon>
+            <ion-icon
+              name="add-outline">
+            </ion-icon>
 
-            <span>Add Product</span>
+            <span>
+              Add Product
+            </span>
 
           }
 

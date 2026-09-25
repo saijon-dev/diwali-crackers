@@ -1,14 +1,29 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import {
+  HttpClient,
+  HttpParams
+} from '@angular/common/http';
 
+import { Observable, from } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+
+import { environment } from '../../environments/environment';
+import { LocationStateService } from './location-state.service';
+
+
+/* =========================================================
+   PRODUCT IMAGE
+========================================================= */
 
 export interface ProductImage {
   productImageId: number;
   imageUrl: string;
 }
 
+
+/* =========================================================
+   CUSTOMER PRODUCT
+========================================================= */
 
 export interface Product {
   productId: number;
@@ -33,11 +48,15 @@ export interface Product {
   state: string;
   pincode: string;
   contactNumber: string;
-images: ProductImage[];
+  images: ProductImage[];
   badge: string | null;
-
   alreadyAdded: boolean;
 }
+
+
+/* =========================================================
+   CUSTOMER PRODUCT PAGE RESPONSE
+========================================================= */
 
 export interface ProductPageResponse {
   content: Product[];
@@ -51,19 +70,30 @@ export interface ProductPageResponse {
   totalPages: number;
 }
 
+
+/* =========================================================
+   PRODUCT DATA
+========================================================= */
+
 export interface ProductData {
   productName: string;
   categoryId: number;
   description: string;
   brandName: string;
-  isKidsSpecial: Boolean;
+  isKidsSpecial: boolean;
   size: string;
   packQuantity: number;
   packUnit: string;
   mrp: number;
   sellingPrice: number;
   stockQuantity: number;
+  imageIndexes: number[];
 }
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
 
 export interface Category {
   categoryId: number;
@@ -77,28 +107,28 @@ export interface CategoryData {
   description: string;
 }
 
+
+/* =========================================================
+   VENDOR PRODUCT
+========================================================= */
+
 export interface VendorProduct {
   productId: number;
   productStoreId: number;
   productCode: string;
   productName: string;
-
   categoryId: number;
   categoryName: string;
-
   brandName: string;
   description: string;
   isKidsSpecial: boolean;
-
   size: string;
   packQuantity: number;
   packUnit: string;
-
   mrp: number;
   sellingPrice: number;
   stockQuantity: number;
   isAvailable: boolean;
-
   storeName: string;
   storeImageUrl: string | null;
   storeAddress: string;
@@ -106,16 +136,18 @@ export interface VendorProduct {
   state: string;
   pincode: string;
   contactNumber: string;
-
   images: ProductImage[];
-
   badge: string | null;
   alreadyAdded: boolean;
 }
 
+
+/* =========================================================
+   VENDOR PRODUCT PAGE
+========================================================= */
+
 export interface VendorProductPage {
   content: VendorProduct[];
-
   empty: boolean;
   first: boolean;
   last: boolean;
@@ -137,9 +169,61 @@ export interface VendorProductPage {
     empty: boolean;
     sorted: boolean;
     unsorted: boolean;
-};
+  };
 }
 
+
+/* =========================================================
+   ADMIN VENDOR LISTING
+========================================================= */
+
+export interface AdminVendorListing {
+  productStoreId: number;
+  vendorId: number;
+  storeName: string;
+  brandName: string;
+  size: string;
+  packQuantity: number;
+  packUnit: string;
+  mrp: number;
+  sellingPrice: number;
+  stockQuantity: number;
+  isAvailable: boolean;
+}
+
+
+/* =========================================================
+   ADMIN PRODUCT
+========================================================= */
+
+export interface AdminProduct {
+  productId: number;
+  productCode: string;
+  productName: string;
+  categoryId: number;
+  categoryName: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdByType: string;
+  createdByUserId: number;
+  createdByUserName: string;
+  createdByStoreName: string;
+  vendorListings: AdminVendorListing[];
+  images: string[];
+}
+
+
+/* =========================================================
+   ADMIN PRODUCT RESPONSE
+========================================================= */
+
+export interface AdminProductResponse {
+  products: AdminProduct[];
+}
+
+
+/* =========================================================
+   PRODUCT SERVICE
+========================================================= */
 
 @Injectable({
   providedIn: 'root'
@@ -148,154 +232,287 @@ export class ProductService {
 
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private locationStateService: LocationStateService
+  ) {}
 
 
+  /* =========================================================
+     CUSTOMER PRODUCTS
+
+     Location filtering is centralized here.
+
+     Flow:
+
+     GPS Location
+          ↓
+     Nearby Stores API
+          ↓
+     Stores where deliversToCustomer = true
+          ↓
+     Product API
+          ↓
+     Filter products by storeName
+          ↓
+     Customer pages receive only allowed products
+  ========================================================= */
 
   getProducts(): Observable<ProductPageResponse> {
 
-  return this.http.get<ProductPageResponse>(
-    `${this.apiUrl}/products`
-  );
-}
+    return from(
+      this.locationStateService.initializeLocation()
+    ).pipe(
 
+      switchMap(() =>
+        this.http.get<ProductPageResponse>(
+          `${this.apiUrl}/products`
+        )
+      ),
 
+      map(response => {
 
+        const products =
+          this.locationStateService.filterProductsByNearbyStores(
+            response?.content || []
+          );
 
-searchProducts(
-  search: string,
-  page: number = 0,
-  size: number = 10
-): Observable<VendorProductPage> {
+        return {
+          ...response,
 
-  let params = new HttpParams()
-    .set('page', page)
-    .set('size', size);
+          content: products,
 
-  if (search.trim()) {
+          numberOfElements: products.length,
 
-    params = params.set(
-      'search',
-      search.trim()
+          empty: products.length === 0
+        };
+      })
     );
-
   }
 
-  return this.http.get<VendorProductPage>(
-    `${environment.apiUrl}/products`,
-    {
-      params
-    }
-  );
 
-}
-  /*
-   * =========================
-   * GET CATEGORIES
-   * =========================
-   */
+  /* =========================================================
+     SEARCH PRODUCTS
+
+     Search also uses the same nearby-store filtering.
+
+     Therefore a customer cannot search and get products
+     from a store that does not deliver to their location.
+  ========================================================= */
+
+  searchProducts(
+    search: string,
+    page: number = 0,
+    size: number = 10
+  ): Observable<VendorProductPage> {
+
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    if (search.trim()) {
+      params = params.set(
+        'search',
+        search.trim()
+      );
+    }
+
+    return from(
+      this.locationStateService.initializeLocation()
+    ).pipe(
+
+      switchMap(() =>
+        this.http.get<VendorProductPage>(
+          `${this.apiUrl}/products`,
+          { params }
+        )
+      ),
+
+      map(response => {
+
+        const products =
+          this.locationStateService.filterProductsByNearbyStores(
+            response?.content || []
+          );
+
+        return {
+          ...response,
+
+          content: products,
+
+          numberOfElements: products.length,
+
+          empty: products.length === 0
+        };
+      })
+    );
+  }
+
+
+  /* =========================================================
+     CATEGORIES
+
+     Categories are still returned normally.
+
+     We are NOT filtering categories here because category
+     filtering was not part of the nearby-store requirement.
+  ========================================================= */
 
   getCategories(): Observable<Category[]> {
+
     return this.http.get<Category[]>(
       `${this.apiUrl}/categories`
     );
   }
 
-  /*
-   * =========================
-   * ADD CATEGORY
-   * =========================
-   */
 
-addCategory(
-  categoryData: CategoryData,
-  image: File
-): Observable<any> {
+  /* =========================================================
+     ADD CATEGORY
+  ========================================================= */
 
-  const formData = new FormData();
+  addCategory(
+    categoryData: CategoryData,
+    image: File
+  ): Observable<any> {
 
-  const categoryBlob = new Blob(
-    [JSON.stringify(categoryData)],
-    {
-      type: 'application/json'
-    }
-  );
+    const formData = new FormData();
 
-  formData.append(
-    'categoryData',
-    categoryBlob
-  );
+    const categoryBlob = new Blob(
+      [JSON.stringify(categoryData)],
+      {
+        type: 'application/json'
+      }
+    );
 
-  formData.append(
-    'image',
-    image,
-    image.name
-  );
+    formData.append(
+      'categoryData',
+      categoryBlob
+    );
 
-  return this.http.post(
-    `${this.apiUrl}/categories`,
-    formData
-  );
-}
+    formData.append(
+      'image',
+      image,
+      image.name
+    );
 
+    return this.http.post(
+      `${this.apiUrl}/categories`,
+      formData
+    );
+  }
 
 
-updateCategory(
-  categoryId: number,
-  categoryData: CategoryData,
-  image: File
-): Observable<any> {
+  /* =========================================================
+     UPDATE CATEGORY
+  ========================================================= */
 
-  const formData = new FormData();
+  updateCategory(
+    categoryId: number,
+    categoryData: CategoryData,
+    image: File
+  ): Observable<any> {
 
-  const categoryDataBlob = new Blob(
-    [JSON.stringify(categoryData)],
-    {
-      type: 'application/json'
-    }
-  );
+    const formData = new FormData();
 
-  formData.append(
-    'categoryData',
-    categoryDataBlob
-  );
+    const categoryDataBlob = new Blob(
+      [JSON.stringify(categoryData)],
+      {
+        type: 'application/json'
+      }
+    );
 
-  formData.append(
-    'image',
-    image,
-    image.name
-  );
+    formData.append(
+      'categoryData',
+      categoryDataBlob
+    );
 
-  return this.http.put(
-    `${this.apiUrl}/categories/${categoryId}`,
-    formData
-  );
-}
+    formData.append(
+      'image',
+      image,
+      image.name
+    );
+
+    return this.http.put(
+      `${this.apiUrl}/categories/${categoryId}`,
+      formData
+    );
+  }
 
 
+  /* =========================================================
+     VENDOR PRODUCTS
+     
+     IMPORTANT:
+     Vendor products are NOT filtered by customer location.
 
-getVendorProducts(): Observable<VendorProductPage> {
-  return this.http.get<VendorProductPage>(
-    `${environment.apiUrl}/vendor/products`
-  );
-}
-  /*
-   * =========================
-   * ADD PRODUCT
-   * =========================
-   *
-   * productData -> JSON part
-   * images      -> multiple image files
-   */
+     Vendor should see their own products.
+  ========================================================= */
+
+  getVendorProducts(): Observable<VendorProductPage> {
+
+    return this.http.get<VendorProductPage>(
+      `${this.apiUrl}/vendor/products`
+    );
+  }
+
+
+  /* =========================================================
+     ADD VENDOR PRODUCTS
+  ========================================================= */
 
   addProduct(
-    productData: ProductData,
+    products: ProductData[],
     images: File[]
   ): Observable<any> {
 
     const formData = new FormData();
 
-    const productBlob = new Blob(
+    const productsBlob = new Blob(
+      [
+        JSON.stringify({
+          products: products
+        })
+      ],
+      {
+        type: 'application/json'
+      }
+    );
+
+    formData.append(
+      'products',
+      productsBlob
+    );
+
+    images.forEach(image => {
+
+      formData.append(
+        'images',
+        image,
+        image.name
+      );
+
+    });
+
+    return this.http.post(
+      `${this.apiUrl}/vendor/products/bulk`,
+      formData
+    );
+  }
+
+
+  /* =========================================================
+     UPDATE VENDOR PRODUCT
+  ========================================================= */
+
+  updateVendorProduct(
+    productId: number,
+    productData: any,
+    images: File[] = []
+  ): Observable<any> {
+
+    const formData = new FormData();
+
+    const productDataBlob = new Blob(
       [JSON.stringify(productData)],
       {
         type: 'application/json'
@@ -304,94 +521,42 @@ getVendorProducts(): Observable<VendorProductPage> {
 
     formData.append(
       'productData',
-      productBlob
+      productDataBlob
     );
 
-    images.forEach((image) => {
+    images.forEach(image => {
+
       formData.append(
         'images',
         image,
         image.name
       );
+
     });
 
-    return this.http.post(
-      `${this.apiUrl}/vendor/products`,
+    return this.http.put(
+      `${this.apiUrl}/vendor/products/${productId}`,
       formData
     );
   }
 
 
+  /* =========================================================
+     ADMIN PRODUCTS
+  ========================================================= */
 
+  getAdminProducts(): Observable<AdminProductResponse> {
 
-updateVendorProduct(
-  productId: number,
-  productData: any,
-  images: File[] = []
-): Observable<any> {
-
-  const formData = new FormData();
-
-
-  /*
-   * productData must be sent as application/json
-   */
-
-  const productDataBlob = new Blob(
-    [
-      JSON.stringify(productData)
-    ],
-    {
-      type: 'application/json'
-    }
-  );
-
-
-  formData.append(
-    'productData',
-    productDataBlob
-  );
-
-
-  /*
-   * Add newly selected images.
-   */
-
-  images.forEach(image => {
-
-    formData.append(
-      'images',
-      image,
-      image.name
+    return this.http.get<AdminProductResponse>(
+      `${this.apiUrl}/admin/products`
     );
-
-  });
-
-
-  return this.http.put(
-    `${environment.apiUrl}/vendor/products/${productId}`,
-    formData
-  );
-
-}
+  }
 
 
+  /* =========================================================
+     ADD ADMIN PRODUCT
+  ========================================================= */
 
-
-  // =====================================================
-  // ADMIN PRODUCTS
-  // =====================================================
-
-  /**
-   * Add a new Admin Product.
-   *
-   * POST:
-   * /api/admin/products
-   *
-   * multipart/form-data:
-   * productData
-   * image
-   */
   addAdminProduct(
     productData: {
       productName: string;
@@ -427,33 +592,48 @@ updateVendorProduct(
     );
   }
 
-  /**
-   * Update an existing Admin Product.
-   *
-   * PUT:
-   * /api/admin/products/{productId}
-   *
-   * JSON:
-   * {
-   *   productName,
-   *   categoryId,
-   *   status
-   * }
-   */
+
+  /* =========================================================
+     UPDATE ADMIN PRODUCT
+  ========================================================= */
+
   updateAdminProduct(
     productId: number,
     productData: {
       productName: string;
       categoryId: number;
       status: string;
-    }
+    },
+    image?: File
   ): Observable<any> {
+
+    const formData = new FormData();
+
+    const productDataBlob = new Blob(
+      [JSON.stringify(productData)],
+      {
+        type: 'application/json'
+      }
+    );
+
+    formData.append(
+      'productData',
+      productDataBlob
+    );
+
+    if (image) {
+
+      formData.append(
+        'image',
+        image,
+        image.name
+      );
+
+    }
 
     return this.http.put(
       `${this.apiUrl}/admin/products/${productId}`,
-      productData
+      formData
     );
   }
-
-
 }

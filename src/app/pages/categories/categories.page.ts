@@ -4,6 +4,8 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
+import { ActivatedRoute } from '@angular/router';
+
 import {
   IonContent,
   IonIcon,
@@ -25,12 +27,6 @@ import {
   Product,
   Category
 } from '../../services/product.service';
-
-/* =====================================
-   CATEGORY MODEL
-   ===================================== */
-
-
 
 
 /* =====================================
@@ -111,17 +107,14 @@ export class CategoriesPage implements OnInit {
   constructor(
     private productService: ProductService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private activatedRoute: ActivatedRoute
   ) {
 
     addIcons({
-
       chevronDownOutline,
-
       imageOutline,
-
       cartOutline
-
     });
 
   }
@@ -133,7 +126,56 @@ export class CategoriesPage implements OnInit {
 
   ngOnInit(): void {
 
-    this.loadCategoriesAndProducts();
+    /*
+     * Read category ID passed from Home page.
+     *
+     * Example:
+     *
+     * /tabs/categories?categoryId=5
+     *
+     */
+
+    this.activatedRoute.queryParamMap.subscribe(params => {
+
+      const categoryId =
+        params.get('categoryId');
+
+
+      if (categoryId !== null) {
+
+        const parsedCategoryId =
+          Number(categoryId);
+
+
+        if (
+          Number.isInteger(parsedCategoryId) &&
+          parsedCategoryId > 0
+        ) {
+
+          this.selectedCategoryId =
+            parsedCategoryId;
+
+        } else {
+
+          this.selectedCategoryId = null;
+
+        }
+
+      } else {
+
+        this.selectedCategoryId = null;
+
+      }
+
+
+      /*
+       * Load the data after reading
+       * the selected category.
+       */
+
+      this.loadCategoriesAndProducts();
+
+    });
 
   }
 
@@ -228,7 +270,8 @@ export class CategoriesPage implements OnInit {
 
 
           /*
-           * Build category sections.
+           * Build category sections
+           * using the selected category ID.
            */
 
           this.buildCategorySections();
@@ -336,9 +379,6 @@ export class CategoriesPage implements OnInit {
      * =================================
      * ALL CATEGORIES
      * =================================
-     *
-     * Create one section for every
-     * category returned by the API.
      */
 
     this.categorySections =
@@ -367,14 +407,6 @@ export class CategoriesPage implements OnInit {
           };
 
         })
-        /*
-         * Don't show empty categories.
-         *
-         * If later the backend has a category
-         * without products, it won't create
-         * an empty section.
-         */
-
         .filter(
           section =>
             section.products.length > 0
@@ -395,6 +427,34 @@ export class CategoriesPage implements OnInit {
       categoryId;
 
 
+    /*
+     * Keep the URL synchronized
+     * with the selected filter.
+     */
+
+    if (categoryId === null) {
+
+      this.router.navigate(
+        ['/tabs/categories'],
+        {
+          queryParams: {}
+        }
+      );
+
+    } else {
+
+      this.router.navigate(
+        ['/tabs/categories'],
+        {
+          queryParams: {
+            categoryId: categoryId
+          }
+        }
+      );
+
+    }
+
+
     this.buildCategorySections();
 
     this.cdr.detectChanges();
@@ -410,14 +470,6 @@ export class CategoriesPage implements OnInit {
     product: Product
   ): void {
 
-    /*
-     * productId can repeat for different
-     * stores.
-     *
-     * Therefore navigate using
-     * productStoreId.
-     */
-
     this.router.navigate([
       '/tabs/product',
       product.productStoreId
@@ -428,9 +480,6 @@ export class CategoriesPage implements OnInit {
 
   /* =====================================
      ADD TO CART
-     =====================================
-     
-     Cart API will be connected later.
      ===================================== */
 
   addToCart(

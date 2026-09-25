@@ -1,0 +1,1971 @@
+/* ======================================================
+   ION CONTENT
+====================================================== */
+
+.orders-content {
+
+  --background:
+    var(--diwali-background);
+
+  --padding-top: 0;
+
+  --padding-bottom: 0;
+
+  --padding-start: 0;
+
+  --padding-end: 0;
+}
+
+
+/* ======================================================
+   PAGE
+====================================================== */
+
+:host {
+
+  display: block;
+
+  width: 100%;
+
+  height: 100%;
+
+  min-height: 0;
+}
+
+
+.orders-page {
+
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100%;
+
+  background:
+    var(--diwali-background);
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  overflow: visible;
+
+  padding-bottom: 30px;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.orders-header {
+
+  position: relative;
+
+  width: 100%;
+
+  height:
+    var(--diwali-header-height);
+
+  min-height:
+    var(--diwali-header-height);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    14px 55px 12px;
+
+  overflow: hidden;
+
+  border-radius:
+    0 0 var(--diwali-header-radius)
+    var(--diwali-header-radius);
+
+  background-image:
+
+    linear-gradient(
+      var(--diwali-header-overlay),
+      var(--diwali-header-overlay)
+    ),
+
+    url('/assets/images/top-bg.png');
+
+  background-size: cover;
+
+  background-position: center;
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  z-index: 5;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   BACK BUTTON
+====================================================== */
+
+.back-button {
+
+  position: absolute;
+
+  left: 8px;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  width:
+    var(--diwali-back-button-size);
+
+  height:
+    var(--diwali-back-button-size);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-circle-radius);
+
+  background:
+    rgba(255, 248, 220, 0.13);
+
+  color:
+    var(--diwali-cream);
+
+  padding: 0;
+
+  cursor: pointer;
+
+  z-index: 5;
+}
+
+
+.back-button ion-icon {
+
+  font-size:
+    var(--diwali-back-button-icon-size);
+
+  color:
+    var(--diwali-cream);
+}
+
+
+.back-button:active {
+
+  transform:
+    translateY(-50%)
+    scale(0.94);
+
+  background:
+    rgba(255, 248, 220, 0.22);
+}
+
+
+.hidden-back {
+
+  visibility: hidden;
+
+  pointer-events: none;
+}
+
+
+/* ======================================================
+   HEADER TITLE
+====================================================== */
+
+.header-title {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  min-width: 0;
+}
+
+
+.header-title h1 {
+
+  margin: 0;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size:
+    var(--diwali-title-size);
+
+  line-height: 1.1;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-cream);
+
+  text-shadow:
+    var(--diwali-header-text-shadow);
+}
+
+
+.header-title p {
+
+  margin:
+    4px 0 0;
+
+  font-size: 10px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-medium);
+
+  color:
+    var(--diwali-cream);
+
+  opacity: 0.90;
+
+  white-space: nowrap;
+}
+
+
+/* ======================================================
+   MAIN CONTAINER
+====================================================== */
+
+.orders-container {
+
+  width:
+    min(100%, 760px);
+
+  margin:
+    0 auto;
+
+  padding:
+    var(--diwali-space-14)
+    var(--diwali-page-padding-mobile)
+    25px;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   MOBILE SEARCH SECTION
+====================================================== */
+
+.mobile-search-section {
+
+  min-height:
+    58vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding:
+    30px 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* ======================================================
+   ORDERS ICON
+====================================================== */
+
+.orders-icon {
+
+  width: 76px;
+
+  height: 76px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-dark-red);
+
+  margin-bottom: 16px;
+}
+
+
+.orders-icon ion-icon {
+
+  font-size: 36px;
+}
+
+
+/* ======================================================
+   SEARCH HEADING
+====================================================== */
+
+.search-heading h2 {
+
+  margin:
+    0 0 6px;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 20px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-text);
+}
+
+
+.search-heading p {
+
+  max-width: 290px;
+
+  margin:
+    0 0 18px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+/* ======================================================
+   MOBILE INPUT
+====================================================== */
+
+.mobile-input-wrapper {
+
+  width:
+    min(100%, 360px);
+
+  margin-bottom: 8px;
+}
+
+
+.mobile-input {
+
+  --background:
+    #fffef8;
+
+  --color:
+    var(--diwali-text);
+
+  --placeholder-color:
+    var(--diwali-muted-text);
+
+  --placeholder-opacity:
+    0.8;
+
+  --padding-start:
+    13px;
+
+  --padding-end:
+    13px;
+
+  width: 100%;
+
+  height: 45px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid #ddd3b5;
+
+  border-radius: 11px;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 12px;
+
+  text-align: left;
+}
+
+
+/* ======================================================
+   ERROR
+====================================================== */
+
+.error-message {
+
+  width:
+    min(100%, 360px);
+
+  margin:
+    3px 0 8px;
+
+  color:
+    var(--diwali-red);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+
+  text-align: left;
+}
+
+
+/* ======================================================
+   SEARCH BUTTON
+====================================================== */
+
+.search-button {
+
+  --background:
+    var(--diwali-red);
+
+  --background-activated:
+    var(--diwali-dark-red);
+
+  --background-focused:
+    var(--diwali-red);
+
+  --color:
+    var(--diwali-cream);
+
+  --border-radius:
+    var(--diwali-main-button-radius);
+
+  --box-shadow:
+    var(--diwali-button-shadow);
+
+  width:
+    min(100%, 360px);
+
+  min-height:
+    var(--diwali-main-button-height);
+
+  margin-top: 5px;
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  text-transform: none;
+}
+
+
+/* ======================================================
+   SEARCHED MOBILE
+====================================================== */
+
+.orders-search-bar {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+
+  padding:
+    11px 12px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+}
+
+
+.searched-mobile {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  min-width: 0;
+}
+
+
+.searched-mobile span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 8px;
+}
+
+
+.searched-mobile strong {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 11px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.change-mobile-button {
+
+  flex: 0 0 auto;
+
+  min-height: 30px;
+
+  padding:
+    0 10px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background:
+    rgba(239, 11, 28, 0.07);
+
+  color:
+    var(--diwali-red);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+/* ======================================================
+   ORDERS HEADING
+====================================================== */
+
+.orders-list-heading {
+
+  width: 100%;
+
+  margin-bottom: 10px;
+}
+
+
+.orders-heading-left {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.orders-small-icon {
+
+  width: 42px;
+
+  height: 42px;
+
+  flex: 0 0 auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+}
+
+
+.orders-small-icon ion-icon {
+
+  font-size: 22px;
+}
+
+
+.orders-heading-left h2 {
+
+  margin: 0;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 18px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-text);
+}
+
+
+.orders-heading-left p {
+
+  margin:
+    2px 0 0;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  line-height: 1.3;
+}
+
+
+/* ======================================================
+   ORDER CARDS
+====================================================== */
+
+.order-cards {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+
+.order-card {
+
+  width: 100%;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease;
+}
+
+
+.order-card:active {
+
+  transform:
+    scale(0.985);
+}
+
+
+/* ======================================================
+   ORDER CARD TOP
+====================================================== */
+
+.order-card-top {
+
+  width: 100%;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+
+.order-card-title {
+
+  min-width: 0;
+}
+
+
+.order-label {
+
+  display: block;
+
+  margin-bottom: 3px;
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 7px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  letter-spacing: 0.3px;
+}
+
+
+.order-card-title h3 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 13px;
+
+  line-height: 1.3;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   STATUS
+====================================================== */
+
+.status-badge {
+
+  flex: 0 0 auto;
+
+  min-height: 25px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 4px;
+
+  padding:
+    0 8px;
+
+  border-radius: 12px;
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  white-space: nowrap;
+}
+
+
+.status-badge ion-icon {
+
+  font-size: 12px;
+}
+
+
+.status-placed {
+
+  background:
+    rgba(247, 180, 40, 0.13);
+
+  color:
+    #9b6b00;
+}
+
+
+.status-confirmed {
+
+  background:
+    rgba(35, 150, 85, 0.12);
+
+  color:
+    #287347;
+}
+
+
+.status-processing {
+
+  background:
+    rgba(70, 110, 190, 0.12);
+
+  color:
+    #315b9b;
+}
+
+
+.status-shipped {
+
+  background:
+    rgba(100, 75, 170, 0.12);
+
+  color:
+    #60479b;
+}
+
+
+.status-delivered {
+
+  background:
+    rgba(35, 150, 85, 0.12);
+
+  color:
+    #287347;
+}
+
+
+.status-cancelled {
+
+  background:
+    rgba(239, 11, 28, 0.09);
+
+  color:
+    var(--diwali-red);
+}
+
+
+.status-default {
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-text);
+}
+
+
+/* ======================================================
+   ORDER CARD MIDDLE
+====================================================== */
+
+.order-card-middle {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 12px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.order-info {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-width: 0;
+}
+
+
+.order-info > ion-icon {
+
+  font-size: 17px;
+
+  color:
+    var(--diwali-dark-red);
+}
+
+
+.order-info > div {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.order-info span,
+.order-total span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.order-info strong {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.order-total {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 2px;
+}
+
+
+.order-total strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 16px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   ORDER CARD BOTTOM
+====================================================== */
+
+.order-card-bottom {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 9px;
+
+  padding-top: 8px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 8px;
+}
+
+
+.view-order {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 3px;
+
+  color:
+    var(--diwali-red);
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.view-order ion-icon {
+
+  font-size: 12px;
+}
+
+
+/* ======================================================
+   EMPTY ORDERS
+====================================================== */
+
+.empty-orders {
+
+  min-height:
+    58vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding:
+    30px 20px;
+}
+
+
+.empty-orders-icon {
+
+  width: 76px;
+
+  height: 76px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    var(--diwali-quantity-background);
+
+  color:
+    var(--diwali-dark-red);
+
+  margin-bottom: 16px;
+}
+
+
+.empty-orders-icon ion-icon {
+
+  font-size: 36px;
+}
+
+
+.empty-orders h2 {
+
+  margin:
+    0 0 6px;
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 20px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  color:
+    var(--diwali-text);
+}
+
+
+.empty-orders p {
+
+  max-width: 270px;
+
+  margin:
+    0 0 18px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+.shop-button {
+
+  min-height: 38px;
+
+  padding:
+    0 20px;
+
+  border: none;
+
+  border-radius: 20px;
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+
+  cursor: pointer;
+}
+
+
+/* ======================================================
+   DETAIL CONTAINER
+====================================================== */
+
+.details-container {
+
+  padding-bottom: 35px;
+}
+
+
+/* ======================================================
+   DETAIL SUMMARY CARD
+====================================================== */
+
+.detail-summary-card {
+
+  width: 100%;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  margin-bottom: 10px;
+}
+
+
+.detail-summary-top {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 10px;
+}
+
+
+.detail-summary-top h2 {
+
+  margin: 3px 0 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 18px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.large-status {
+
+  min-height: 28px;
+
+  padding:
+    0 9px;
+
+  font-size: 8px;
+}
+
+
+.detail-total-row {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 13px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.detail-total-row span {
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.detail-total-row strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 19px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   DETAIL CARD
+====================================================== */
+
+.detail-card {
+
+  width: 100%;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  background:
+    var(--diwali-card);
+
+  border-radius:
+    var(--diwali-main-card-radius);
+
+  box-shadow:
+    var(--diwali-main-card-shadow);
+
+  margin-bottom: 10px;
+}
+
+
+/* ======================================================
+   DETAIL CARD HEADING
+====================================================== */
+
+.detail-card-heading {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 13px;
+}
+
+
+.detail-heading-icon {
+
+  width: 34px;
+
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(239, 11, 28, 0.08);
+
+  color:
+    var(--diwali-red);
+}
+
+
+.detail-heading-icon ion-icon {
+
+  font-size: 17px;
+}
+
+
+.detail-card-heading h2 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-family:
+    var(--diwali-font-heading);
+
+  font-size: 16px;
+
+  line-height: 1.2;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   DETAIL ROW
+====================================================== */
+
+.detail-row {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 10px;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+
+.detail-row:last-child {
+
+  margin-bottom: 0;
+}
+
+
+.detail-row > span {
+
+  flex: 0 0 auto;
+
+  color:
+    var(--diwali-muted-text);
+}
+
+
+.detail-row > strong {
+
+  max-width: 65%;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 9px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+
+  text-align: right;
+
+  word-break: break-word;
+}
+
+
+.address-row {
+
+  align-items: flex-start;
+}
+
+
+/* ======================================================
+   DETAIL ITEMS
+====================================================== */
+
+.detail-items {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0;
+}
+
+
+.detail-item {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding:
+    10px 0;
+
+  border-bottom:
+    1px solid var(--diwali-divider);
+}
+
+
+.detail-item:first-child {
+
+  padding-top: 0;
+}
+
+
+.detail-item:last-child {
+
+  border-bottom: none;
+
+  padding-bottom: 0;
+}
+
+
+.detail-item-main {
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.detail-item-main h3 {
+
+  margin: 0;
+
+  color:
+    var(--diwali-text);
+
+  font-size: 11px;
+
+  line-height: 1.3;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.detail-item-main p {
+
+  margin: 0;
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 8px;
+
+  font-weight:
+    var(--diwali-weight-semibold);
+}
+
+
+.detail-item-main span {
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 8px;
+}
+
+
+.detail-item-main small {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.detail-item-price {
+
+  flex: 0 0 auto;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 3px;
+}
+
+
+.detail-item-price span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+}
+
+
+.detail-item-price strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 12px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   ITEMS TOTAL
+====================================================== */
+
+.items-total {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-top: 11px;
+
+  padding-top: 10px;
+
+  border-top:
+    1px solid var(--diwali-divider);
+}
+
+
+.items-total span {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.items-total strong {
+
+  color:
+    var(--diwali-dark-red);
+
+  font-size: 16px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+/* ======================================================
+   HISTORY
+====================================================== */
+
+.history-list {
+
+  display: flex;
+
+  flex-direction: column;
+}
+
+
+.history-item {
+
+  position: relative;
+
+  display: flex;
+
+  gap: 10px;
+
+  padding-bottom: 16px;
+}
+
+
+.history-item:last-child {
+
+  padding-bottom: 0;
+}
+
+
+.history-dot {
+
+  position: relative;
+
+  width: 28px;
+
+  height: 28px;
+
+  flex: 0 0 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(239, 11, 28, 0.08);
+
+  color:
+    var(--diwali-red);
+
+  z-index: 2;
+}
+
+
+.history-dot ion-icon {
+
+  font-size: 14px;
+}
+
+
+.history-item:not(:last-child)
+.history-dot::after {
+
+  content: '';
+
+  position: absolute;
+
+  top: 28px;
+
+  left: 50%;
+
+  width: 1px;
+
+  height: 30px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+    var(--diwali-divider);
+}
+
+
+.history-content {
+
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.history-top {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+
+.history-top strong {
+
+  color:
+    var(--diwali-text);
+
+  font-size: 10px;
+
+  font-weight:
+    var(--diwali-weight-bold);
+}
+
+
+.history-top span {
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 7px;
+
+  text-align: right;
+}
+
+
+.history-content p {
+
+  margin:
+    3px 0 0;
+
+  color:
+    var(--diwali-secondary-text);
+
+  font-size: 8px;
+}
+
+
+.history-loading,
+.history-empty {
+
+  padding:
+    10px 0;
+
+  color:
+    var(--diwali-muted-text);
+
+  font-size: 9px;
+
+  text-align: center;
+}
+
+
+/* ======================================================
+   BACK TO ORDERS
+====================================================== */
+
+.back-orders-button {
+
+  width: 100%;
+
+  min-height: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  border: none;
+
+  border-radius:
+    var(--diwali-main-button-radius);
+
+  background:
+    var(--diwali-red);
+
+  color:
+    var(--diwali-cream);
+
+  font-family:
+    var(--diwali-font-body);
+
+  font-size:
+    var(--diwali-main-button-size);
+
+  font-weight:
+    var(--diwali-weight-bold);
+
+  box-shadow:
+    var(--diwali-button-shadow);
+
+  cursor: pointer;
+}
+
+
+.back-orders-button ion-icon {
+
+  font-size: 16px;
+}
+
+
+.back-orders-button:active {
+
+  transform:
+    scale(0.98);
+}
+
+
+/* ======================================================
+   SMALL MOBILE
+====================================================== */
+
+@media (max-width: 360px) {
+
+  .orders-header {
+
+    height:
+      var(--diwali-header-height-mobile);
+
+    min-height:
+      var(--diwali-header-height-mobile);
+
+    padding-left: 50px;
+
+    padding-right: 50px;
+  }
+
+
+  .header-title h1 {
+
+    font-size:
+      var(--diwali-title-size-mobile);
+  }
+
+
+  .header-title p {
+
+    font-size: 9px;
+  }
+
+
+  .back-button {
+
+    left: 7px;
+  }
+
+
+  .orders-container {
+
+    padding-left: 10px;
+
+    padding-right: 10px;
+  }
+
+
+  .order-card {
+
+    padding: 8px;
+  }
+
+
+  .detail-card,
+  .detail-summary-card {
+
+    padding: 12px;
+  }
+
+
+  .order-total strong {
+
+    font-size: 15px;
+  }
+
+
+  .detail-summary-top {
+
+    gap: 6px;
+  }
+
+
+  .large-status {
+
+    padding:
+      0 7px;
+
+    font-size: 7px;
+  }
+
+}
+
+
+/* ======================================================
+   LARGER MOBILE
+====================================================== */
+
+@media (min-width: 500px) {
+
+  .orders-container {
+
+    padding-left:
+      var(--diwali-page-padding);
+
+    padding-right:
+      var(--diwali-page-padding);
+  }
+
+
+  .order-card {
+
+    padding: 12px;
+  }
+
+
+  .detail-card,
+  .detail-summary-card {
+
+    padding: 18px;
+  }
+
+
+  .order-card-title h3 {
+
+    font-size: 14px;
+  }
+
+
+  .order-total strong {
+
+    font-size: 18px;
+  }
+
+}

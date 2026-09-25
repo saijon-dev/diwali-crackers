@@ -1,14 +1,14 @@
 <ion-content
   [fullscreen]="true"
-  class="products-content"
->
+  class="products-content">
+
 
   <div class="products-page">
 
 
-    <!-- =====================================
+    <!-- =========================
          HEADER
-         ===================================== -->
+    ========================== -->
 
     <header class="products-header">
 
@@ -16,12 +16,11 @@
         type="button"
         class="menu-button"
         aria-label="Open menu"
-        (click)="toggleMenu()"
-      >
+        (click)="toggleMenu()">
 
         <ion-icon
-          name="menu-outline"
-        ></ion-icon>
+          name="menu-outline">
+        </ion-icon>
 
       </button>
 
@@ -41,22 +40,20 @@
     </header>
 
 
+    <!-- =========================
+         SEARCH
+    ========================== -->
 
-    <!-- =====================================
-         SEARCH + ADD PRODUCT
-         ===================================== -->
+    <section
+      class="search-action-row">
 
-    <section class="search-action-row">
-
-
-      <!-- SEARCH -->
-
-      <div class="search-box">
+      <div
+        class="search-box">
 
         <ion-icon
           name="search-outline"
-          class="search-icon"
-        ></ion-icon>
+          class="search-icon">
+        </ion-icon>
 
 
         <input
@@ -73,12 +70,11 @@
             type="button"
             class="clear-search"
             aria-label="Clear search"
-            (click)="clearSearch()"
-          >
+            (click)="clearSearch()">
 
             <ion-icon
-              name="close-outline"
-            ></ion-icon>
+              name="close-outline">
+            </ion-icon>
 
           </button>
 
@@ -86,31 +82,28 @@
 
       </div>
 
-
-
-      <!-- ADD PRODUCT -->
-
-     
-
-
     </section>
 
 
+    <!-- =========================
+         RESULT COUNT
+    ========================== -->
 
-    <!-- =====================================
-         AVAILABLE PRODUCTS
-         ===================================== -->
+    <div
+      class="result-row">
 
-    <div class="result-row">
-
-      <div class="result-title">
+      <div
+        class="result-title">
 
         <span>
           Available Products
         </span>
 
-        <span class="result-count">
+        <span
+          class="result-count">
+
           {{ filteredProducts.length }}
+
         </span>
 
       </div>
@@ -118,18 +111,60 @@
     </div>
 
 
-
-    <!-- =====================================
+    <!-- =========================
          PRODUCTS
-         ===================================== -->
+    ========================== -->
 
-    <main class="products-container">
-
-
-      @if (filteredProducts.length > 0) {
+    <main
+      class="products-container">
 
 
-        <div class="products-grid">
+      @if (isLoading) {
+
+        <div class="empty-state">
+
+          <h2>
+            Loading products...
+          </h2>
+
+          <p>
+            Please wait while products are loaded.
+          </p>
+
+        </div>
+
+      }
+
+
+      @else if (errorMessage) {
+
+        <div class="empty-state">
+
+          <h2>
+            Unable to load products
+          </h2>
+
+          <p>
+            {{ errorMessage }}
+          </p>
+
+          <button
+            type="button"
+            (click)="loadAdminProducts()">
+
+            Try Again
+
+          </button>
+
+        </div>
+
+      }
+
+
+      @else if (filteredProducts.length > 0) {
+
+        <div
+          class="products-grid">
 
 
           @for (
@@ -137,16 +172,15 @@
             track product.productId
           ) {
 
-
             <article
               class="product-card"
-              (click)="openProduct(product)"
-            >
+              (click)="openProduct(product)">
 
 
               <!-- IMAGE -->
 
-              <div class="product-image-wrapper">
+              <div
+                class="product-image-wrapper">
 
                 <img
                   class="product-image"
@@ -157,19 +191,18 @@
               </div>
 
 
+              <!-- PRODUCT INFO -->
 
-              <!-- INFORMATION -->
+              <div
+                class="product-info">
 
-              <div class="product-info">
 
-
-                <!-- CATEGORY -->
-
-                <div class="category-label">
+                <div
+                  class="category-label">
 
                   <ion-icon
-                    name="grid-outline"
-                  ></ion-icon>
+                    name="grid-outline">
+                  </ion-icon>
 
                   <span>
                     {{ product.categoryName }}
@@ -178,47 +211,43 @@
                 </div>
 
 
-                <!-- NAME -->
-
                 <h2>
                   {{ product.productName }}
                 </h2>
 
 
-                <!-- SELECT -->
-
-                <div class="select-product-row">
+                <div
+                  class="select-product-row">
 
                   <span>
                     Select product
                   </span>
 
-                  <span class="select-arrow">
+                  <span
+                    class="select-arrow">
+
                     →
+
                   </span>
 
                 </div>
 
-
               </div>
 
-
             </article>
-
 
           }
 
 
         </div>
 
-
       }
 
 
       @else {
 
-
-        <div class="empty-state">
+        <div
+          class="empty-state">
 
           <h2>
             No products found
@@ -230,9 +259,10 @@
 
           <button
             type="button"
-            (click)="clearSearch()"
-          >
+            (click)="clearSearch()">
+
             Show all products
+
           </button>
 
         </div>
@@ -243,90 +273,94 @@
     </main>
 
 
-
-    <!-- =====================================
+    <!-- =========================
          SIDE MENU
-         ONLY LOGOUT
-         ===================================== -->
+    ========================== -->
 
     @if (isMenuOpen) {
 
-
       <div
         class="menu-overlay"
-        (click)="closeMenu()"
-      ></div>
+        (click)="closeMenu()">
+      </div>
 
 
       <aside
         class="side-menu"
-        (click)="$event.stopPropagation()"
-      >
+        (click)="$event.stopPropagation()">
 
-
-        <!-- CLOSE -->
 
         <button
           type="button"
           class="close-menu-button"
           aria-label="Close menu"
-          (click)="closeMenu()"
-        >
+          (click)="closeMenu()">
 
           <ion-icon
-            name="close-outline"
-          ></ion-icon>
+            name="close-outline">
+          </ion-icon>
 
         </button>
 
 
-        <!-- LOGOUT -->
+        <div
+          class="side-menu-content">
 
-        <div class="side-menu-content">
 
           <button
             type="button"
             class="logout-button"
-            (click)="logout()"
-          >
+            (click)="logout()">
 
-            <span class="logout-decoration">
+            <span
+              class="logout-decoration">
+
               ✦
+
             </span>
 
-            <span class="logout-text">
+
+            <span
+              class="logout-text">
+
               Logout
+
             </span>
 
-            <span class="logout-decoration">
+
+            <span
+              class="logout-decoration">
+
               ✦
+
             </span>
 
           </button>
 
-        </div>
 
+        </div>
 
       </aside>
 
-
     }
-
 
   </div>
 
 </ion-content>
 
 
- <button
-        type="button"
-        class="add-product-button"
-        aria-label="Add product"
-        (click)="addProduct()"
-      >
+<!-- =========================
+     FLOATING ADD BUTTON
+========================== -->
 
-        <ion-icon
-          name="add-outline"
-        ></ion-icon>
+<button
+  type="button"
+  class="add-product-button"
+  aria-label="Add product"
+  (click)="addProduct()">
 
-      </button>
+  <ion-icon
+    name="add-outline">
+  </ion-icon>
+
+</button>

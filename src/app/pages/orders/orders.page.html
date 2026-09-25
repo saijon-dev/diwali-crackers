@@ -1,0 +1,824 @@
+<ion-content
+  class="orders-content"
+  [fullscreen]="true">
+
+  <div class="orders-page">
+
+
+    <!-- ================================================
+         HEADER
+    ================================================= -->
+
+    <header class="orders-header">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="backToOrders()"
+        [class.hidden-back]="!showDetails">
+
+        <ion-icon
+          name="arrow-back-outline">
+        </ion-icon>
+
+      </button>
+
+
+      <div class="header-title">
+
+        <h1>
+          @if (showDetails) {
+            Order Details
+          } @else {
+            My Orders
+          }
+        </h1>
+
+        <p>
+          @if (showDetails) {
+            View your order information
+          } @else {
+            Track your Diwali orders
+          }
+        </p>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- ================================================
+         ORDER LIST VIEW
+    ================================================= -->
+
+    @if (!showDetails) {
+
+      <main class="orders-container">
+
+
+        <!-- ============================================
+             SEARCH MOBILE CARD
+        ============================================= -->
+
+        @if (!hasSearched) {
+
+          <section class="mobile-search-section">
+
+            <div class="orders-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <div class="search-heading">
+
+              <h2>
+                Find Your Orders
+              </h2>
+
+              <p>
+                Enter the mobile number used while placing your order.
+              </p>
+
+            </div>
+
+
+            <div class="mobile-input-wrapper">
+
+              <ion-input
+                class="mobile-input"
+                type="tel"
+                inputmode="numeric"
+                maxlength="10"
+                placeholder="Enter 10 digit mobile number"
+                [(ngModel)]="customerMobile"
+                (keyup.enter)="searchOrders()">
+              </ion-input>
+
+            </div>
+
+
+            @if (errorMessage) {
+
+              <p class="error-message">
+                {{ errorMessage }}
+              </p>
+
+            }
+
+
+            <ion-button
+              class="search-button"
+              expand="block"
+              (click)="searchOrders()"
+              [disabled]="isSearching">
+
+              <ion-icon
+                name="search-outline"
+                slot="start">
+              </ion-icon>
+
+              @if (isSearching) {
+                Searching...
+              } @else {
+                Find My Orders
+              }
+
+            </ion-button>
+
+          </section>
+
+        }
+
+
+        <!-- ============================================
+             SEARCH AGAIN / MOBILE SUMMARY
+        ============================================= -->
+
+        @if (hasSearched) {
+
+          <section class="orders-search-bar">
+
+            <div class="searched-mobile">
+
+              <span>
+                Orders for
+              </span>
+
+              <strong>
+                {{ searchedMobile }}
+              </strong>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="change-mobile-button"
+              (click)="hasSearched = false">
+
+              Change
+
+            </button>
+
+          </section>
+
+        }
+
+
+        <!-- ============================================
+             NO RECORDS
+        ============================================= -->
+
+        @if (
+          hasSearched &&
+          !isSearching &&
+          orders.length === 0
+        ) {
+
+          <section class="empty-orders">
+
+            <div class="empty-orders-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+
+            <h2>
+              No Records Found
+            </h2>
+
+
+            <p>
+              We couldn't find any orders for this mobile number.
+              Please check the number and try again.
+            </p>
+
+
+            <button
+              type="button"
+              class="shop-button"
+              (click)="hasSearched = false">
+
+              Search Again
+
+            </button>
+
+          </section>
+
+        }
+
+
+        <!-- ============================================
+             ORDERS
+        ============================================= -->
+
+        @if (
+          hasSearched &&
+          !isSearching &&
+          orders.length > 0
+        ) {
+
+          <section class="orders-list-section">
+
+
+            <div class="orders-list-heading">
+
+              <div class="orders-heading-left">
+
+                <div class="orders-small-icon">
+
+                  <ion-icon
+                    name="receipt-outline">
+                  </ion-icon>
+
+                </div>
+
+                <div>
+
+                  <h2>
+                    Your Orders
+                  </h2>
+
+                  <p>
+                    {{ orders.length }}
+                    {{ orders.length === 1 ? 'order' : 'orders' }}
+                    found
+                  </p>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="order-cards">
+
+              @for (
+                order of orders;
+                track order.orderId
+              ) {
+
+                <article
+                  class="order-card"
+                  (click)="openOrder(order)">
+
+
+                  <!-- ORDER CARD TOP -->
+
+                  <div class="order-card-top">
+
+                    <div class="order-card-title">
+
+                      <span class="order-label">
+                        ORDER #{{ order.orderId }}
+                      </span>
+
+                      <h3>
+                        {{ order.items.length }}
+                        {{ order.items.length === 1 ? 'Item' : 'Items' }}
+                      </h3>
+
+                    </div>
+
+
+                    <div
+                      class="status-badge"
+                      [ngClass]="getStatusClass(order.status)">
+
+                      <ion-icon
+                        [name]="getStatusIcon(order.status)">
+                      </ion-icon>
+
+                      <span>
+                        {{ order.status }}
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- ORDER CARD MIDDLE -->
+
+                  <div class="order-card-middle">
+
+                    <div class="order-info">
+
+                      <ion-icon
+                        name="calendar-outline">
+                      </ion-icon>
+
+                      <div>
+
+                        <span>
+                          Order Date
+                        </span>
+
+                        <strong>
+                          {{ formatDate(order.createdAt) }}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="order-total">
+
+                      <span>
+                        Total Amount
+                      </span>
+
+                      <strong>
+                        ₹{{ order.totalAmount | number:'1.2-2' }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- ORDER CARD BOTTOM -->
+
+                  <div class="order-card-bottom">
+
+                    <span>
+                      {{ order.paymentMethod }}
+                    </span>
+
+                    <div class="view-order">
+
+                      View Details
+
+                      <ion-icon
+                        name="chevron-forward-outline">
+                      </ion-icon>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </section>
+
+        }
+
+      </main>
+
+    }
+
+
+
+    <!-- ================================================
+         ORDER DETAILS VIEW
+    ================================================= -->
+
+    @if (
+      showDetails &&
+      selectedOrder
+    ) {
+
+      <main class="orders-container details-container">
+
+
+        <!-- ============================================
+             ORDER SUMMARY
+        ============================================= -->
+
+        <section class="detail-summary-card">
+
+
+          <div class="detail-summary-top">
+
+            <div>
+
+              <span class="order-label">
+                ORDER #{{ selectedOrder.orderId }}
+              </span>
+
+              <h2>
+                Order Summary
+              </h2>
+
+            </div>
+
+
+            <div
+              class="status-badge large-status"
+              [ngClass]="getStatusClass(selectedOrder.status)">
+
+              <ion-icon
+                [name]="getStatusIcon(selectedOrder.status)">
+              </ion-icon>
+
+              {{ selectedOrder.status }}
+
+            </div>
+
+          </div>
+
+
+          <div class="detail-total-row">
+
+            <span>
+              Total Amount
+            </span>
+
+            <strong>
+              ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+
+        </section>
+
+
+
+        <!-- ============================================
+             CUSTOMER DETAILS
+        ============================================= -->
+
+        <section class="detail-card">
+
+          <div class="detail-card-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="call-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Customer Details
+            </h2>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Name
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerName }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Mobile
+            </span>
+
+            <strong>
+              {{ selectedOrder.customerMobile }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row address-row">
+
+            <span>
+              Delivery Address
+            </span>
+
+            <strong>
+              {{ selectedOrder.deliveryAddress }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- ============================================
+             ORDER INFORMATION
+        ============================================= -->
+
+        <section class="detail-card">
+
+          <div class="detail-card-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="receipt-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Order Information
+            </h2>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Order Date
+            </span>
+
+            <strong>
+              {{ formatDateTime(selectedOrder.createdAt) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Expected Delivery
+            </span>
+
+            <strong>
+              {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Payment Method
+            </span>
+
+            <strong>
+              {{ selectedOrder.paymentMethod }}
+            </strong>
+
+          </div>
+
+
+          <div class="detail-row">
+
+            <span>
+              Current Status
+            </span>
+
+            <strong>
+              {{ selectedOrder.status }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- ============================================
+             ORDER ITEMS
+        ============================================= -->
+
+        <section class="detail-card">
+
+          <div class="detail-card-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="cube-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Ordered Items
+            </h2>
+
+          </div>
+
+
+          <div class="detail-items">
+
+            @for (
+              item of selectedOrder.items;
+              track item.orderItemId
+            ) {
+
+              <div class="detail-item">
+
+                <div class="detail-item-main">
+
+                  <h3>
+                    {{ item.productName }}
+                  </h3>
+
+                  @if (item.brandName) {
+
+                    <p>
+                      {{ item.brandName }}
+                    </p>
+
+                  }
+
+                  <span>
+                    {{ item.vendorName }}
+                  </span>
+
+                  @if (
+                    item.size ||
+                    item.packQuantity ||
+                    item.packUnit
+                  ) {
+
+                    <small>
+
+                      @if (item.size) {
+                        {{ item.size }}
+                      }
+
+                      @if (
+                        item.packQuantity &&
+                        item.packUnit
+                      ) {
+                        •
+                        {{ item.packQuantity }}
+                        {{ item.packUnit }}
+                      }
+
+                    </small>
+
+                  }
+
+                </div>
+
+
+                <div class="detail-item-price">
+
+                  <span>
+                    Qty: {{ item.quantity }}
+                  </span>
+
+                  <strong>
+                    ₹{{ item.subtotal | number:'1.2-2' }}
+                  </strong>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <div class="items-total">
+
+            <span>
+              Order Total
+            </span>
+
+            <strong>
+              ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- ============================================
+             ORDER HISTORY
+        ============================================= -->
+
+        <section class="detail-card history-card">
+
+          <div class="detail-card-heading">
+
+            <div class="detail-heading-icon">
+
+              <ion-icon
+                name="time-outline">
+              </ion-icon>
+
+            </div>
+
+            <h2>
+              Order Tracking
+            </h2>
+
+          </div>
+
+
+          @if (isLoadingDetails) {
+
+            <div class="history-loading">
+
+              Loading order details...
+
+            </div>
+
+          } @else if (orderHistory.length > 0) {
+
+            <div class="history-list">
+
+              @for (
+                history of orderHistory;
+                track history.changedAt
+              ) {
+
+                <div class="history-item">
+
+                  <div class="history-dot">
+
+                    <ion-icon
+                      [name]="getStatusIcon(history.status)">
+                    </ion-icon>
+
+                  </div>
+
+
+                  <div class="history-content">
+
+                    <div class="history-top">
+
+                      <strong>
+                        {{ history.status }}
+                      </strong>
+
+                      <span>
+                        {{ formatDateTime(history.changedAt) }}
+                      </span>
+
+                    </div>
+
+
+                    <p>
+                      Updated by {{ history.changedBy }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          } @else {
+
+            <div class="history-empty">
+
+              No tracking history available.
+
+            </div>
+
+          }
+
+        </section>
+
+
+
+        <!-- ============================================
+             BACK BUTTON
+        ============================================= -->
+
+        <button
+          type="button"
+          class="back-orders-button"
+          (click)="backToOrders()">
+
+          <ion-icon
+            name="arrow-back-outline">
+          </ion-icon>
+
+          Back to My Orders
+
+        </button>
+
+
+      </main>
+
+    }
+
+  </div>
+
+</ion-content>

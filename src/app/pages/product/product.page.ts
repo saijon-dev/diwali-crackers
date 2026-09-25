@@ -28,6 +28,8 @@ import {
   imageOutline
 } from 'ionicons/icons';
 
+import { CartService } from '../../services/cart.service';
+
 import {
   ProductService,
   Product
@@ -77,7 +79,27 @@ export class ProductPage implements OnInit, OnDestroy {
      CART
      ===================================== */
 
+  /*
+   * Existing UI state.
+   *
+   * This remains available so your
+   * current HTML does not break.
+   */
   addedToCart = false;
+
+
+  /*
+   * Prevents multiple clicks while
+   * the Add To Cart API is running.
+   */
+  isAddingToCart = false;
+
+
+  /*
+   * Once true, the same product cannot
+   * be added to the cart again.
+   */
+  isAddedToCart = false;
 
 
   /* =====================================
@@ -112,9 +134,14 @@ export class ProductPage implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+
     private router: Router,
+
     private productService: ProductService,
-    private cdr: ChangeDetectorRef
+
+    private cdr: ChangeDetectorRef,
+
+    private cartService: CartService
   ) {
 
     addIcons({
@@ -193,6 +220,10 @@ export class ProductPage implements OnInit, OnDestroy {
     this.stopImageSlider();
 
 
+    /* ===================================
+       RESET PRODUCT STATE
+    =================================== */
+
     this.isLoading = true;
 
     this.errorMessage = '';
@@ -205,8 +236,23 @@ export class ProductPage implements OnInit, OnDestroy {
 
     this.quantity = 1;
 
+    /*
+     * Reset cart state while loading
+     * another product.
+     */
+    this.addedToCart = false;
+
+    this.isAddingToCart = false;
+
+    this.isAddedToCart = false;
+
+
     this.cdr.detectChanges();
 
+
+    /* ===================================
+       GET PRODUCTS
+    =================================== */
 
     this.productService
       .getProducts()
@@ -244,9 +290,9 @@ export class ProductPage implements OnInit, OnDestroy {
             );
 
 
-          /*
-           * Product not found.
-           */
+          /* ==============================
+             PRODUCT NOT FOUND
+          ============================== */
 
           if (!foundProduct) {
 
@@ -267,9 +313,9 @@ export class ProductPage implements OnInit, OnDestroy {
           }
 
 
-          /*
-           * Set current product.
-           */
+          /* ==============================
+             SET CURRENT PRODUCT
+          ============================== */
 
           this.product =
             foundProduct;
@@ -284,11 +330,20 @@ export class ProductPage implements OnInit, OnDestroy {
           this.quantity = 1;
 
 
+          /* ==============================
+             CHECK CART STATE
+          ============================== */
+
+          this.checkCartState(
+            foundProduct.productStoreId
+          );
+
+
+          /* ==============================
+             EXPLORE MORE
+          ============================== */
+
           /*
-           * =================================
-           * EXPLORE MORE
-           * =================================
-           *
            * Exclude every store entry having
            * the same productId.
            */
@@ -318,11 +373,9 @@ export class ProductPage implements OnInit, OnDestroy {
           this.cdr.detectChanges();
 
 
-          /*
-           * =================================
-           * START AUTOMATIC IMAGE SLIDER
-           * =================================
-           */
+          /* ==============================
+             START IMAGE SLIDER
+          ============================== */
 
           this.startImageSlider();
 
@@ -358,6 +411,129 @@ export class ProductPage implements OnInit, OnDestroy {
 
           this.stopImageSlider();
 
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /* =====================================
+     CHECK CART STATE
+     ===================================== */
+
+  private checkCartState(
+    productStoreId: number
+  ): void {
+
+    /*
+     * First check whether CartService
+     * already has the current cart.
+     */
+
+    const currentCart =
+      this.cartService.getCurrentCart();
+
+
+    if (currentCart) {
+
+      this.isAddedToCart =
+        currentCart.items?.some(
+          item =>
+            item.productStoreId ===
+            productStoreId
+        ) ?? false;
+
+
+      /*
+       * Keep existing UI state in sync.
+       */
+
+      this.addedToCart =
+        this.isAddedToCart;
+
+
+      this.cdr.detectChanges();
+
+      return;
+    }
+
+
+    /*
+     * If there is no cart currently loaded,
+     * check whether a cart token exists.
+     */
+
+    const cartToken =
+      this.cartService.getCartToken();
+
+
+    /*
+     * No token means the user has never
+     * created a cart.
+     */
+
+    if (!cartToken) {
+
+      this.isAddedToCart = false;
+
+      this.addedToCart = false;
+
+      this.cdr.detectChanges();
+
+      return;
+
+    }
+
+
+    /*
+     * A token exists, so retrieve the
+     * current cart to determine whether
+     * this product was already added.
+     */
+
+    this.cartService
+      .getCart()
+      .subscribe({
+
+        next: (cart) => {
+
+          this.isAddedToCart =
+            cart.items?.some(
+              item =>
+                item.productStoreId ===
+                productStoreId
+            ) ?? false;
+
+
+          this.addedToCart =
+            this.isAddedToCart;
+
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Check Cart State Error:',
+            error
+          );
+
+
+          /*
+           * Do not block the product page
+           * if cart retrieval fails.
+           */
+
+          this.isAddedToCart = false;
+
+          this.addedToCart = false;
 
           this.cdr.detectChanges();
 
@@ -650,6 +826,11 @@ export class ProductPage implements OnInit, OnDestroy {
     }
 
 
+    /*
+     * Do not allow quantity to go above
+     * available product stock.
+     */
+
     if (
       this.quantity <
       this.product.stockQuantity
@@ -685,7 +866,65 @@ export class ProductPage implements OnInit, OnDestroy {
 
   addToCart(): void {
 
+    /*
+     * Product must exist.
+     */
+
     if (!this.product) {
+
+      return;
+
+    }
+
+
+    /*
+     * Prevent another request if:
+     *
+     * 1. The current request is still running.
+     * 2. This product is already in cart.
+     */
+
+    if (
+      this.isAddingToCart ||
+      this.isAddedToCart
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+     * Product store ID is REQUIRED by
+     * the Add To Cart API.
+     */
+
+    const productStoreId =
+      this.product.productStoreId;
+
+
+    /*
+     * Quantity selected by the user.
+     */
+
+    const quantity =
+      this.quantity;
+
+
+    /*
+     * Basic safety check.
+     */
+
+    if (
+      quantity < 1 ||
+      quantity >
+      this.product.stockQuantity
+    ) {
+
+      this.errorMessage =
+        'Please select a valid quantity.';
+
+      this.cdr.detectChanges();
 
       return;
 
@@ -695,24 +934,127 @@ export class ProductPage implements OnInit, OnDestroy {
     console.log(
       'Adding product to cart:',
       {
-        product: this.product,
-        quantity: this.quantity
+        productStoreId,
+        quantity
       }
     );
 
 
-    this.addedToCart = true;
+    /*
+     * Clear previous error.
+     */
+
+    this.errorMessage = '';
+
+
+    /*
+     * Show loading state.
+     */
+
+    this.isAddingToCart = true;
 
     this.cdr.detectChanges();
 
 
-    setTimeout(() => {
+    /*
+     * CartService automatically decides
+     * whether the request should contain:
+     *
+     * First product:
+     *
+     * {
+     *   productStoreId,
+     *   quantity
+     * }
+     *
+     * Later products:
+     *
+     * {
+     *   cartToken,
+     *   productStoreId,
+     *   quantity
+     * }
+     */
 
-      this.addedToCart = false;
+    this.cartService
+      .addToCart(
+        productStoreId,
+        quantity
+      )
+      .subscribe({
 
-      this.cdr.detectChanges();
+        next: (response) => {
 
-    }, 2000);
+          console.log(
+            'Add To Cart Response:',
+            response
+          );
+
+
+          /*
+           * Request completed successfully.
+           */
+
+          this.isAddingToCart = false;
+
+
+          /*
+           * Permanently mark this product
+           * as added while this product page
+           * is open.
+           *
+           * CartService also has the latest
+           * cart response now.
+           */
+
+          this.isAddedToCart = true;
+
+          this.addedToCart = true;
+
+
+          /*
+           * Make sure the UI updates immediately.
+           */
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Add To Cart Error:',
+            error
+          );
+
+
+          /*
+           * Restore button after failure.
+           */
+
+          this.isAddingToCart = false;
+
+          this.isAddedToCart = false;
+
+          this.addedToCart = false;
+
+
+          /*
+           * Display backend error if available.
+           */
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to add product to cart. Please try again.';
+
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
