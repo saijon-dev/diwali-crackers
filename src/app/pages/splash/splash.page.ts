@@ -16,7 +16,7 @@ export class SplashPage {
   constructor(private router: Router) {}
 
   goToHome(): void {
-    this.router.navigate(['/tabs/home']);
+    this.router.navigate(['/home']);
   }
 
 }

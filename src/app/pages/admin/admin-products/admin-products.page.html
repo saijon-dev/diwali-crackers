@@ -1,366 +1,1003 @@
-<ion-content
-  [fullscreen]="true"
-  class="products-content">
 
+<ion-content [fullscreen]="true" class="!bg-white">
+  <div class="relative flex min-h-[100dvh] flex-col overflow-visible bg-white px-3 font-sans text-[#17233c] sm:px-4">
 
-  <div class="products-page">
+    <!-- =====================================================
+         ADD PRODUCT VIEW
+    ====================================================== -->
 
+    @if (isAddProductView) {
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+      <!-- FORM SIDE DECORATIONS -->
 
-    <header class="products-header">
+      <img
+        src="assets/images/left-bg.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none fixed left-0 top-[24%] z-0 hidden h-auto w-[62px] select-none object-contain opacity-[0.12] sm:block md:w-[85px]"
+      />
 
-      <button
-        type="button"
-        class="menu-button"
-        aria-label="Open menu"
-        (click)="toggleMenu()">
+      <img
+        src="assets/images/right-bg.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none fixed right-0 top-[42%] z-0 hidden h-auto w-[62px] select-none object-contain opacity-[0.12] sm:block md:w-[85px]"
+      />
 
-        <ion-icon
-          name="menu-outline">
-        </ion-icon>
+      <!-- FORM HEADER -->
 
-      </button>
+      <header class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-start overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4">
+        <button
+          type="button"
+          aria-label="Back to products"
+          (click)="backToProducts()"
+          class="relative z-30 mr-2 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        >
+          <ion-icon name="arrow-back-outline" class="!text-[23px]"></ion-icon>
+        </button>
 
+        <div class="relative z-20 flex min-w-0 flex-1 flex-col justify-center leading-none">
+          <h1 class="!m-0 truncate !font-sans !text-[19px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]">
+            Add Product
+          </h1>
+          <p class="!m-[5px_0_0] truncate !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]">
+            Add a new cracker to your shop
+          </p>
+        </div>
 
-      <div class="header-title">
-
-        <h1>
-          Products
-        </h1>
-
-        <p>
-          Choose a product for your store
-        </p>
-
-      </div>
-
-    </header>
-
-
-    <!-- =========================
-         SEARCH
-    ========================== -->
-
-    <section
-      class="search-action-row">
-
-      <div
-        class="search-box">
-
-        <ion-icon
-          name="search-outline"
-          class="search-icon">
-        </ion-icon>
-
-
-        <input
-          type="text"
-          placeholder="Search products..."
-          [value]="searchText"
-          (input)="onSearchChange($event)"
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto max-w-[100px] select-none object-contain opacity-[0.85] sm:max-w-[125px]"
         />
+      </header>
 
+      <!-- FORM CONTENT -->
 
-        @if (searchText) {
+      <main class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-7 pt-4">
 
-          <button
-            type="button"
-            class="clear-search"
-            aria-label="Clear search"
-            (click)="clearSearch()">
+        <!-- INTRODUCTION -->
 
-            <ion-icon
-              name="close-outline">
-            </ion-icon>
+        <section class="mb-4 px-1">
+          <p class="!m-0 !font-sans !text-[9px] !font-bold uppercase tracking-[1.2px] !text-[#9e2020]">
+            Product Management
+          </p>
+          <h2 class="!m-[5px_0_0] !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c] sm:!text-[24px]">
+            Product Details
+          </h2>
+          <p class="!m-[6px_0_0] max-w-[440px] !font-sans !text-[11px] !font-medium !leading-[1.55] !text-[#806b68]">
+            Add the product information, pricing, stock and images for your shop.
+          </p>
+        </section>
 
-          </button>
+        <!-- SELECTED CATALOGUE PRODUCT -->
 
+        @if (isAdminProductSelected && selectedAdminProduct) {
+          <section class="mb-4 flex items-center gap-3 rounded-[14px] border border-[#ead8b9] bg-[#fffdf7] p-3 shadow-[0_3px_12px_rgba(86,48,10,0.05)]">
+            <div class="flex h-[58px] w-[58px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-[#f7e9bd]">
+              @if (getExistingProductImage()) {
+                <img
+                  [src]="getExistingProductImage()"
+                  [alt]="selectedAdminProduct.productName"
+                  class="block h-full w-full object-cover"
+                />
+              } @else {
+                <ion-icon name="image-outline" class="!text-[24px] !text-[#8f071f]"></ion-icon>
+              }
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <span class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]">
+                Selected Catalogue Product
+              </span>
+              <h3 class="!m-[4px_0_0] truncate !font-sans !text-[13px] !font-bold !text-[#17233c]">
+                {{ selectedAdminProduct.productName }}
+              </h3>
+              <p class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Product details have been prefilled where available.
+              </p>
+            </div>
+          </section>
         }
 
-      </div>
+        <!-- PRODUCT INFORMATION -->
 
-    </section>
+        <section class="rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
+          <!-- PRODUCT NAME -->
 
-    <!-- =========================
-         RESULT COUNT
-    ========================== -->
+          <div class="mb-4">
+            <label for="productName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Product Name
+            </label>
+            <input
+              id="productName"
+              type="text"
+              [(ngModel)]="productName"
+              placeholder="Enter product name"
+              autocomplete="off"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition duration-200 placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
 
-    <div
-      class="result-row">
+          <!-- CATEGORY -->
 
-      <div
-        class="result-title">
+          <div class="mb-4">
+            <label for="category" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Category
+            </label>
 
-        <span>
-          Available Products
-        </span>
+            <div class="flex items-stretch gap-2">
+              <div class="min-w-0 flex-1 overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition duration-200 focus-within:border-[#b3123b] focus-within:ring-2 focus-within:ring-[#b3123b]/10">
+                <ion-select
+                  id="category"
+                  [(ngModel)]="categoryId"
+                  interface="popover"
+                  placeholder="Select category"
+                  [disabled]="isLoadingCategories"
+                  class="!min-h-[44px] !w-full !px-3 !font-sans !text-[12px] !font-medium !text-[#17233c]"
+                  style="--placeholder-color: #a59a91; --placeholder-opacity: 1; --highlight-color-focused: #b3123b;"
+                >
+                  @for (category of categories; track category.categoryId) {
+                    <ion-select-option [value]="category.categoryId">
+                      {{ category.categoryName }}
+                    </ion-select-option>
+                  }
+                </ion-select>
+              </div>
 
-        <span
-          class="result-count">
+              <button
+                type="button"
+                aria-label="Add category"
+                (click)="openCategoryBox()"
+                [disabled]="isAddingCategory"
+                class="flex !h-[45px] !w-[45px] shrink-0 !items-center !justify-center !rounded-[11px] !border !border-[#ead8b9] !bg-[#f7e9bd] !text-[#8f071f] transition duration-200 hover:!bg-[#f1dfab] active:scale-95 disabled:opacity-50"
+              >
+                <ion-icon name="add-outline" class="!text-[22px]"></ion-icon>
+              </button>
+            </div>
 
-          {{ filteredProducts.length }}
+            @if (isLoadingCategories) {
+              <p class="!m-[6px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Loading categories...
+              </p>
+            }
 
-        </span>
+            @if (categoryErrorMessage) {
+              <p class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.4] !text-[#ef0b1c]">
+                {{ categoryErrorMessage }}
+              </p>
+            }
 
-      </div>
+            <!-- ADD CATEGORY PANEL -->
 
-    </div>
+            @if (showCategoryBox) {
+              <div class="mt-3 rounded-[13px] border border-[#ead8b9] bg-[#fffdf7] p-3.5 shadow-[0_4px_15px_rgba(86,48,10,0.06)] sm:p-4">
+                <div class="mb-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="!m-0 !font-sans !text-[13px] !font-extrabold !text-[#8f071f]">
+                      Add Category
+                    </h3>
+                    <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                      Create a new cracker category
+                    </p>
+                  </div>
 
+                  <button
+                    type="button"
+                    aria-label="Close category form"
+                    [disabled]="isAddingCategory"
+                    (click)="closeCategoryBox()"
+                    class="flex !h-[30px] !w-[30px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-[#f7e9bd] !p-0 !text-[#8f071f] transition duration-150 active:scale-90 disabled:opacity-50"
+                  >
+                    <ion-icon name="close-outline" class="!text-[17px]"></ion-icon>
+                  </button>
+                </div>
 
-    <!-- =========================
-         PRODUCTS
-    ========================== -->
+                <div class="mb-3">
+                  <label for="newCategoryName" class="mb-[6px] block !font-sans !text-[10px] !font-bold !text-[#17233c]">
+                    Category Name
+                  </label>
+                  <input
+                    id="newCategoryName"
+                    type="text"
+                    [(ngModel)]="newCategoryName"
+                    placeholder="Example: Rockets"
+                    autocomplete="off"
+                    class="h-[42px] w-full rounded-[10px] border border-[#e1d7d2] bg-white px-3 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition placeholder:text-[#a59a91] focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10"
+                  />
+                </div>
 
-    <main
-      class="products-container">
+                <div class="mb-3">
+                  <label for="newCategoryDescription" class="mb-[6px] block !font-sans !text-[10px] !font-bold !text-[#17233c]">
+                    Description
+                  </label>
+                  <textarea
+                    id="newCategoryDescription"
+                    [(ngModel)]="newCategoryDescription"
+                    rows="3"
+                    placeholder="Enter category description"
+                    class="w-full resize-y rounded-[10px] border border-[#e1d7d2] bg-white px-3 py-2.5 !font-sans !text-[11px] !font-medium leading-[1.5] text-[#17233c] outline-none transition placeholder:text-[#a59a91] focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10"
+                  ></textarea>
+                </div>
 
+                <div class="mb-3">
+                  <label class="mb-[6px] block !font-sans !text-[10px] !font-bold !text-[#17233c]">
+                    Category Image
+                  </label>
+                  <label class="flex min-h-[112px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[11px] border border-dashed border-[#d9c4b2] bg-white p-3 text-center transition duration-200 hover:border-[#b3123b] hover:bg-[#fffaf3] active:scale-[0.99]">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      (change)="onCategoryImageSelected($event)"
+                      class="hidden"
+                    />
 
-      @if (isLoading) {
+                    @if (newCategoryImagePreview) {
+                      <img
+                        [src]="newCategoryImagePreview"
+                        alt="Category preview"
+                        class="block h-[100px] w-[120px] rounded-[9px] object-cover"
+                      />
+                    } @else {
+                      <div class="mb-2 flex !h-[35px] !w-[35px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+                        <ion-icon name="image-outline" class="!text-[20px]"></ion-icon>
+                      </div>
+                      <span class="!font-sans !text-[10px] !font-bold !text-[#17233c]">
+                        Select Category Image
+                      </span>
+                      <span class="mt-1 !font-sans !text-[8px] !font-medium !text-[#806b68]">
+                        JPG, PNG or WEBP
+                      </span>
+                    }
+                  </label>
+                </div>
 
-        <div class="empty-state">
+                @if (categoryAddErrorMessage) {
+                  <div class="mb-3 rounded-[9px] border border-[#f2c7ca] bg-[#fff3f3] px-3 py-2 !font-sans !text-[10px] !font-medium leading-[1.4] !text-[#b3123b]">
+                    {{ categoryAddErrorMessage }}
+                  </div>
+                }
 
-          <h2>
-            Loading products...
-          </h2>
+                @if (categorySuccessMessage) {
+                  <div class="mb-3 rounded-[9px] border border-[#cce8d7] bg-[#f0fbf4] px-3 py-2 !font-sans !text-[10px] !font-semibold leading-[1.4] !text-[#237447]">
+                    {{ categorySuccessMessage }}
+                  </div>
+                }
 
-          <p>
-            Please wait while products are loaded.
-          </p>
+                <div class="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    [disabled]="isAddingCategory"
+                    (click)="closeCategoryBox()"
+                    class="flex min-h-[39px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#806b68] transition duration-200 hover:!bg-[#f8f4ed] active:scale-[0.98] disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
 
-        </div>
+                  <button
+                    type="button"
+                    [disabled]="isAddingCategory"
+                    (click)="addCategory()"
+                    class="flex min-h-[39px] flex-1 !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.12)] transition duration-200 hover:!bg-[#8f071f] active:scale-[0.98] disabled:opacity-50"
+                  >
+                    @if (isAddingCategory) {
+                      Adding...
+                    } @else {
+                      <ion-icon name="add-outline" class="!text-[15px]"></ion-icon>
+                      Add Category
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
 
-      }
+          <!-- PRODUCT DESCRIPTION -->
 
+          <div class="mb-4">
+            <label for="description" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Description
+            </label>
+            <textarea
+              id="description"
+              [(ngModel)]="description"
+              rows="4"
+              placeholder="Enter product description"
+              class="w-full resize-y rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 py-2.5 !font-sans !text-[12px] !font-medium leading-[1.55] text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            ></textarea>
+          </div>
 
-      @else if (errorMessage) {
+          <!-- BRAND NAME -->
 
-        <div class="empty-state">
+          <div class="mb-4">
+            <label for="brandName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Brand Name
+            </label>
+            <input
+              id="brandName"
+              type="text"
+              [(ngModel)]="brandName"
+              placeholder="Example: Standard"
+              autocomplete="off"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
 
-          <h2>
-            Unable to load products
-          </h2>
+          <!-- PRODUCT TYPE -->
 
-          <p>
-            {{ errorMessage }}
-          </p>
+          <div class="mb-4">
+            <label class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Product Type
+            </label>
 
-          <button
-            type="button"
-            (click)="loadAdminProducts()">
-
-            Try Again
-
-          </button>
-
-        </div>
-
-      }
-
-
-      @else if (filteredProducts.length > 0) {
-
-        <div
-          class="products-grid">
-
-
-          @for (
-            product of filteredProducts;
-            track product.productId
-          ) {
-
-            <article
-              class="product-card"
-              (click)="openProduct(product)">
-
-
-              <!-- IMAGE -->
-
-              <div
-                class="product-image-wrapper">
-
-                <img
-                  class="product-image"
-                  [src]="getProductImage(product)"
-                  [alt]="product.productName"
+            <div class="grid grid-cols-2 gap-2">
+              <label
+                [style.border-color]="isKidsSpecial === true ? '#b3123b' : '#e1d7d2'"
+                [style.background-color]="isKidsSpecial === true ? '#fff2f5' : '#fffdf7'"
+                class="flex min-h-[46px] cursor-pointer items-center gap-2.5 rounded-[11px] border px-3 transition duration-200 active:scale-[0.99]"
+              >
+                <input
+                  type="radio"
+                  name="productType"
+                  [checked]="isKidsSpecial === true"
+                  (change)="selectProductType(true)"
+                  class="h-[15px] w-[15px] shrink-0 accent-[#b3123b]"
                 />
+                <span class="!font-sans !text-[11px] !font-bold !text-[#17233c]">
+                  Kids Special
+                </span>
+              </label>
 
+              <label
+                [style.border-color]="isKidsSpecial === false ? '#b3123b' : '#e1d7d2'"
+                [style.background-color]="isKidsSpecial === false ? '#fff2f5' : '#fffdf7'"
+                class="flex min-h-[46px] cursor-pointer items-center gap-2.5 rounded-[11px] border px-3 transition duration-200 active:scale-[0.99]"
+              >
+                <input
+                  type="radio"
+                  name="productType"
+                  [checked]="isKidsSpecial === false"
+                  (change)="selectProductType(false)"
+                  class="h-[15px] w-[15px] shrink-0 accent-[#b3123b]"
+                />
+                <span class="!font-sans !text-[11px] !font-bold !text-[#17233c]">
+                  Regular
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- SIZE -->
+
+          <div class="mb-4">
+            <label for="size" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Size
+            </label>
+            <input
+              id="size"
+              type="text"
+              [(ngModel)]="size"
+              placeholder="Example: Medium"
+              autocomplete="off"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
+
+          <!-- PACK DETAILS -->
+
+      ```html
+<div class="grid grid-cols-2 gap-3">
+  <div class="min-w-0">
+    <label
+      for="packQuantity"
+      class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+    >
+      Pack Quantity
+    </label>
+
+    <input
+      id="packQuantity"
+      type="number"
+      [(ngModel)]="packQuantity"
+      min="1"
+      step="1"
+      placeholder="10"
+      class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+    />
+  </div>
+
+  <div class="min-w-0">
+    <label
+      class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+    >
+      Pack Unit
+    </label>
+
+    <ion-select
+      [(ngModel)]="packUnit"
+      interface="popover"
+      placeholder="Select unit"
+      [disabled]="isLoadingPackUnits || packUnits.length === 0"
+      class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c]"
+    >
+      @for (unit of packUnits; track unit.lookupId) {
+        <ion-select-option [value]="unit.lookupCode">
+          {{ unit.displayName }}
+        </ion-select-option>
+      }
+    </ion-select>
+
+    @if (packUnitErrorMessage) {
+      <p class="mt-1 !font-sans !text-[10px] text-[#b3123b]">
+        {{ packUnitErrorMessage }}
+      </p>
+    }
+  </div>
+</div>
+```
+
+        </section>
+
+        <!-- PRICING AND STOCK -->
+
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+          <div class="mb-5 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !font-sans !text-[19px] !font-bold !text-[#8f071f]">
+              ₹
+            </div>
+            <div>
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Pricing &amp; Stock
+              </h2>
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Set product price and availability
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="mrp" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+                MRP
+              </label>
+              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
+                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
+                <input
+                  id="mrp"
+                  type="number"
+                  [(ngModel)]="mrp"
+                  min="0"
+                  placeholder="120"
+                  class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none placeholder:font-normal placeholder:text-[#a59a91]"
+                />
               </div>
+            </div>
 
-
-              <!-- PRODUCT INFO -->
-
-              <div
-                class="product-info">
-
-
-                <div
-                  class="category-label">
-
-                  <ion-icon
-                    name="grid-outline">
-                  </ion-icon>
-
-                  <span>
-                    {{ product.categoryName }}
-                  </span>
-
-                </div>
-
-
-                <h2>
-                  {{ product.productName }}
-                </h2>
-
-
-                <div
-                  class="select-product-row">
-
-                  <span>
-                    Select product
-                  </span>
-
-                  <span
-                    class="select-arrow">
-
-                    →
-
-                  </span>
-
-                </div>
-
+            <div class="min-w-0">
+              <label for="sellingPrice" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+                Selling Price
+              </label>
+              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
+                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
+                <input
+                  id="sellingPrice"
+                  type="number"
+                  [(ngModel)]="sellingPrice"
+                  min="0"
+                  placeholder="100"
+                  class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none placeholder:font-normal placeholder:text-[#a59a91]"
+                />
               </div>
+            </div>
+          </div>
 
-            </article>
+          <div class="mt-4">
+            <label for="stockQuantity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Stock Quantity
+            </label>
+            <input
+              id="stockQuantity"
+              type="number"
+              [(ngModel)]="stockQuantity"
+              min="1"
+              step="1"
+              placeholder="Enter available quantity"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
+        </section>
 
+        <!-- PRODUCT IMAGES -->
+
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+          <div class="mb-5 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="image-outline" class="!text-[21px]"></ion-icon>
+            </div>
+            <div class="min-w-0">
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Product Images
+              </h2>
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Select one or more product images
+              </p>
+            </div>
+          </div>
+
+          @if (existingProductImages.length > 0) {
+            <div class="mb-4">
+              <h3 class="!m-0 !mb-2 !font-sans !text-[10px] !font-bold !text-[#17233c]">
+                Existing Product Image
+              </h3>
+              <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                @for (image of existingProductImages; track image) {
+                  <div class="aspect-square overflow-hidden rounded-[11px] border border-[#ead8b9] bg-[#fffdf7] p-1">
+                    <img [src]="image" alt="Existing product image" class="block h-full w-full rounded-[8px] object-cover" />
+                  </div>
+                }
+              </div>
+              <p class="!m-[7px_0_0] !font-sans !text-[9px] !font-medium !leading-[1.45] !text-[#806b68]">
+                This image is a reference preview. Select image files below to upload with the product.
+              </p>
+            </div>
           }
 
+          <label class="flex min-h-[145px] cursor-pointer flex-col items-center justify-center rounded-[12px] border border-dashed border-[#d9c4b2] bg-[#fffdf7] px-4 py-5 text-center transition duration-200 hover:border-[#b3123b] hover:bg-[#fffaf3] active:scale-[0.99]">
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              (change)="onImagesSelected($event)"
+              class="hidden"
+            />
+            <div class="mb-2.5 flex !h-[42px] !w-[42px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="cloud-upload-outline" class="!text-[22px]"></ion-icon>
+            </div>
+            <h3 class="!m-0 !font-sans !text-[12px] !font-extrabold !text-[#17233c]">
+              Add Product Images
+            </h3>
+            <p class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+              Tap to browse and select images
+            </p>
+            <span class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#a59a91]">
+              JPG, PNG or WEBP
+            </span>
+          </label>
 
-        </div>
+          @if (imagePreviews.length > 0) {
+            <div class="mt-4">
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <h3 class="!m-0 !font-sans !text-[10px] !font-bold !text-[#17233c]">
+                  Selected Images
+                </h3>
+                <span class="rounded-full bg-[#f7e9bd] px-2.5 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]">
+                  {{ imagePreviews.length }}
+                </span>
+              </div>
 
-      }
+              <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                @for (image of imagePreviews; track $index) {
+                  <div class="group relative aspect-square overflow-hidden rounded-[11px] border border-[#ead8b9] bg-[#fffdf7] p-1">
+                    <img [src]="image" alt="Product preview" class="block h-full w-full rounded-[8px] object-cover" />
+                    <button
+                      type="button"
+                      aria-label="Remove image"
+                      (click)="removeImage($index)"
+                      class="absolute right-1.5 top-1.5 flex !h-[25px] !w-[25px] !items-center !justify-center !rounded-full !border !border-white/70 !bg-[#8f071f] !p-0 !text-white shadow-sm transition duration-150 active:scale-90"
+                    >
+                      <ion-icon name="close-outline" class="!text-[15px]"></ion-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
 
+        <!-- SUCCESS / ERROR MESSAGES -->
 
-      @else {
+        @if (successMessage) {
+          <div role="status" class="mt-3 flex items-start gap-2 rounded-[11px] border border-[#cce8d7] bg-[#f0fbf4] px-3.5 py-3 !font-sans !text-[11px] !font-semibold leading-[1.45] !text-[#237447]">
+            <span class="mt-[1px] shrink-0 font-bold">✓</span>
+            <span>{{ successMessage }}</span>
+          </div>
+        }
 
-        <div
-          class="empty-state">
+        @if (errorMessage) {
+          <div role="alert" class="mt-3 flex items-start gap-2 rounded-[11px] border border-[#f2c7ca] bg-[#fff3f3] px-3.5 py-3 !font-sans !text-[11px] !font-medium leading-[1.45] !text-[#b3123b]">
+            <span class="mt-[1px] shrink-0 font-bold">!</span>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
 
-          <h2>
-            No products found
-          </h2>
+        <!-- FORM ACTIONS -->
 
-          <p>
-            Try searching with a different product name.
-          </p>
+        <section class="mt-4 flex gap-2.5 rounded-[14px] bg-white py-1">
+          <button
+            type="button"
+            [disabled]="isLoading"
+            (click)="clearForm()"
+            class="flex min-h-[45px] flex-1 !items-center !justify-center !rounded-[12px] !border !border-[#e1d7d2] !bg-white px-4 !font-sans !text-[11px] !font-bold !text-[#806b68] transition duration-200 hover:!bg-[#f8f4ed] active:scale-[0.98] disabled:opacity-50"
+          >
+            Clear Form
+          </button>
 
           <button
             type="button"
-            (click)="clearSearch()">
-
-            Show all products
-
+            [disabled]="isLoading"
+            (click)="addProduct()"
+            class="flex min-h-[45px] flex-[1.35] !items-center !justify-center gap-2 !rounded-[12px] !border-0 !bg-[#b3123b] px-4 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)] transition duration-200 hover:!bg-[#8f071f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            style="--background: #b3123b; --background-activated: #8f071f; --color: #fff8dc;"
+          >
+            @if (isLoading) {
+              <span class="h-4 w-4 animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"></span>
+              <span>Adding...</span>
+            } @else {
+              <ion-icon name="add-outline" class="!text-[18px]"></ion-icon>
+              <span>Add Product</span>
+            }
           </button>
+        </section>
+      </main>
 
+    } @else {
+
+      <!-- =====================================================
+           PRODUCT LIST VIEW
+      ====================================================== -->
+
+      <!-- LIST HEADER -->
+
+      <header class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 shadow-[0_3px_12px_rgba(70,25,5,0.08)] sm:-mx-4 sm:px-14">
+        <button
+          type="button"
+          aria-label="Open menu"
+          (click)="toggleMenu()"
+          class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        >
+          <ion-icon name="menu-outline" class="!text-[24px]"></ion-icon>
+        </button>
+
+        <div class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none">
+          <h1 class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]">
+            Add Products
+          </h1>
+          <p class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]">
+            Choose a product for your store
+          </p>
         </div>
 
-      }
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+        />
+      </header>
 
+      <main class="mx-auto flex w-full max-w-[760px] flex-1 flex-col">
 
-    </main>
+        <!-- SEARCH PRODUCTS -->
 
+        <section class="flex w-full items-center gap-2.5 pt-4">
+          <div class="flex h-[47px] min-w-0 flex-1 items-center overflow-hidden rounded-[13px] border border-[#e9dfd4] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]">
+            <ion-icon name="search-outline" class="ml-3.5 shrink-0 !text-[19px] !text-[#8f071f]"></ion-icon>
 
-    <!-- =========================
-         SIDE MENU
-    ========================== -->
+            <input
+              type="text"
+              placeholder="Search products..."
+              [value]="searchText"
+              (input)="onSearchChange($event)"
+              class="h-full w-full min-w-0 border-0 bg-transparent px-3 !font-sans !text-[11px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#806b68] focus:outline-none"
+            />
 
-    @if (isMenuOpen) {
+            @if (searchText) {
+              <button
+                type="button"
+                aria-label="Clear search"
+                (click)="clearSearch()"
+                class="mr-2 flex !h-[32px] !w-[32px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-[#f7e9bd] !p-0 !text-[#8f071f] transition-transform duration-150 active:scale-90"
+              >
+                <ion-icon name="close-outline" class="!text-[17px]"></ion-icon>
+              </button>
+            }
+          </div>
+        </section>
 
-      <div
-        class="menu-overlay"
-        (click)="closeMenu()">
-      </div>
+        <!-- PRODUCT RESULT COUNT -->
 
+        <section class="flex w-full items-center justify-between pb-3 pt-5">
+          <div>
+            <h2 class="!m-0 !font-sans !text-[16px] !font-extrabold !leading-tight !text-[#17233c]">
+              Available Products
+            </h2>
+            <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+              Choose a product to manage its store details
+            </p>
+          </div>
 
-      <aside
-        class="side-menu"
-        (click)="$event.stopPropagation()">
+          <span class="flex !h-[25px] min-w-[25px] shrink-0 !items-center !justify-center !rounded-full !bg-[#f7e9bd] !px-2 !font-sans !text-[10px] !font-extrabold !text-[#8f071f]">
+            {{ filteredProducts.length }}
+          </span>
+        </section>
 
+        <!-- LOADING STATE -->
+
+        @if (isLoadingProducts) {
+          <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
+            <div class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"></div>
+            <h2 class="!m-0 !font-sans !text-[14px] !font-bold !text-[#17233c]">
+              Loading products...
+            </h2>
+            <p class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+              Please wait while products are loaded.
+            </p>
+          </section>
+        }
+
+        <!-- API ERROR STATE -->
+
+        @else if (productsErrorMessage) {
+          <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
+            <div class="mb-4 flex !h-[62px] !w-[62px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="grid-outline" class="!text-[28px]"></ion-icon>
+            </div>
+            <h2 class="!m-0 !font-sans !text-[19px] !font-extrabold !text-[#17233c]">
+              Unable to load products
+            </h2>
+            <p class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+              {{ productsErrorMessage }}
+            </p>
+            <button
+              type="button"
+              (click)="loadAdminProducts()"
+              class="!min-h-[39px] !rounded-[12px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.98]"
+            >
+              Try Again
+            </button>
+          </section>
+        }
+
+        <!-- =====================================================
+             PRODUCT GRID
+             Updated: compact 3-column card layout.
+             Product selection and displayed details are unchanged.
+        ====================================================== -->
+
+        @else if (filteredProducts.length > 0) {
+          <section class="w-full pb-8 pt-1">
+
+            <!-- Three columns with smaller gaps between cards -->
+            <div class="grid w-full grid-cols-3 items-start gap-[10px] sm:gap-[12px]">
+
+              @for (product of filteredProducts; track product.productId) {
+
+                <!-- INDIVIDUAL PRODUCT CARD -->
+
+                <article
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'Select ' + product.productName"
+                  (click)="openProduct(product)"
+                  (keydown.enter)="openProduct(product)"
+                  class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
+                >
+
+                  <!-- PRODUCT IMAGE: reduced height for 3-column layout -->
+
+                  <div class="mx-auto mt-[6px] h-[100px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[118px] sm:w-[calc(100%-16px)]">
+                    <img
+                      [src]="getProductImage(product)"
+                      [alt]="product.productName"
+                      loading="lazy"
+                      class="block h-full w-full object-cover"
+                    />
+                  </div>
+
+                  <!-- PRODUCT DETAILS: compact spacing and typography -->
+
+                  <div class="flex min-w-0 flex-1 flex-col px-[7px] pb-[9px] pt-[7px] sm:px-[9px]">
+
+                    <!-- PRODUCT CATEGORY -->
+
+                    <div class="mb-[4px] flex min-w-0 items-center gap-1">
+                      <ion-icon
+                        name="grid-outline"
+                        class="shrink-0 !text-[10px] !text-[#8f071f]"
+                      ></ion-icon>
+
+                      <span class="truncate !font-sans !text-[8px] !font-bold uppercase !tracking-[0.15px] !text-[#9e2020] sm:!text-[9px]">
+                        {{ product.categoryName || 'Uncategorized' }}
+                      </span>
+                    </div>
+
+                    <!-- PRODUCT NAME: limited to two lines -->
+
+                    <h3 class="!m-0 min-h-[30px] min-w-0 overflow-hidden !font-sans !text-[10px] !font-bold !leading-[1.4] !text-[#17233c] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:!text-[12px]">
+                      {{ product.productName }}
+                    </h3>
+
+                    <!-- PRODUCT CODE: shown only when available -->
+
+                    @if (product.productCode) {
+                      <p class="!m-[4px_0_0] truncate !font-sans !text-[8px] !font-medium !text-[#806b68] sm:!text-[9px]">
+                        Code: {{ product.productCode }}
+                      </p>
+                    }
+
+                    <!-- SELECT PRODUCT ACTION -->
+
+                    <div class="mt-[8px] flex min-w-0 items-center justify-between gap-1 border-t border-[#f0e4d7] pt-[7px]">
+                      <span class="min-w-0 truncate !font-sans !text-[8px] !font-bold !text-[#b3123b] sm:!text-[10px]">
+                        Select product
+                      </span>
+
+                      <!-- Compact circular arrow indicator -->
+
+                      <span
+                        aria-hidden="true"
+                        class="flex !h-[20px] !w-[20px] shrink-0 !items-center !justify-center !rounded-full !bg-[#f7e9bd] !font-sans !text-[12px] !font-bold !text-[#8f071f] sm:!h-[23px] sm:!w-[23px] sm:!text-[13px]"
+                      >
+                        →
+                      </span>
+                    </div>
+
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        }
+
+        <!-- EMPTY SEARCH RESULTS -->
+
+        @else {
+          <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
+            <div class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="search-outline" class="!text-[29px]"></ion-icon>
+            </div>
+            <h2 class="!m-0 !font-sans !text-[20px] !font-extrabold !text-[#17233c]">
+              No Products Found
+            </h2>
+            <p class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+              Try searching with a different product name, category, or product code.
+            </p>
+            <button
+              type="button"
+              (click)="clearSearch()"
+              class="!min-h-[39px] !rounded-[20px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.98]"
+            >
+              Show All Products
+            </button>
+          </section>
+        }
+      </main>
+    }
+
+    <!-- BOTTOM DIWALI DECORATION -->
+
+    <div class="pointer-events-none relative z-0 -mx-3 mt-auto w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        aria-hidden="true"
+        class="block h-auto w-[175%] max-w-none select-none opacity-[0.18]"
+      />
+    </div>
+
+    <!-- =====================================================
+         SIDE MENU OVERLAY
+    ====================================================== -->
+
+    <div
+      aria-hidden="true"
+      (click)="closeMenu()"
+      [class.pointer-events-none]="!isMenuOpen"
+      [class.pointer-events-auto]="isMenuOpen"
+      [class.opacity-0]="!isMenuOpen"
+      [class.opacity-100]="isMenuOpen"
+      class="fixed inset-0 z-[9998] bg-[rgba(20,15,5,0.38)] opacity-0 transition-opacity duration-300 ease-in-out"
+    ></div>
+
+    <!-- SIDE MENU -->
+
+    <aside
+      [attr.aria-hidden]="!isMenuOpen"
+      [class.translate-x-0]="isMenuOpen"
+      [class.-translate-x-full]="!isMenuOpen"
+      class="fixed inset-y-0 left-0 z-[9999] flex h-[100dvh] w-[min(82vw,310px)] flex-col overflow-hidden bg-[#fffdf7] pt-[env(safe-area-inset-top)] shadow-[4px_0_24px_rgba(50,20,0,0.18)] transition-transform duration-300 ease-in-out"
+    >
+      <!-- SIDE MENU HEADER -->
+
+      <header class="relative flex h-[100px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-10">
+        <button
+          type="button"
+          aria-label="Close menu"
+          [attr.tabindex]="isMenuOpen ? 0 : -1"
+          (click)="closeMenu()"
+          class="absolute left-2 top-1/2 z-30 flex !h-[38px] !w-[38px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        >
+          <ion-icon name="close-outline" class="!text-[23px]"></ion-icon>
+        </button>
+
+        <div class="relative z-20 flex flex-col items-center text-center">
+          <h2 class="!m-0 !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#fff8dc]">
+            Vendor Menu
+          </h2>
+          <p class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !text-[#f7df9d]">
+            Diwali Crackers
+          </p>
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-full w-auto select-none object-contain opacity-[0.9]"
+        />
+      </header>
+
+      <!-- SIDE MENU CONTENT -->
+
+      <div class="flex flex-1 flex-col px-3.5 pt-5">
+
+        <!-- CURRENT SECTION -->
+
+        <div class="mb-4 rounded-[12px] bg-[#f7e9bd] px-3 py-3">
+          <p class="!m-0 !font-sans !text-[9px] !font-semibold uppercase tracking-[0.4px] !text-[#806b68]">
+            Administration
+          </p>
+          <p class="!m-[4px_0_0] !font-sans !text-[12px] !font-bold !text-[#17233c]">
+            Manage Products
+          </p>
+        </div>
+
+        <!-- LOGOUT ACTION -->
 
         <button
           type="button"
-          class="close-menu-button"
-          aria-label="Close menu"
-          (click)="closeMenu()">
-
-          <ion-icon
-            name="close-outline">
-          </ion-icon>
-
+          [attr.tabindex]="isMenuOpen ? 0 : -1"
+          (click)="logout()"
+          class="flex !min-h-[46px] w-full !items-center gap-3 !rounded-[12px] !border !border-[#f0dfd5] !bg-white !px-3.5 !py-2 !text-left shadow-[0_3px_9px_rgba(86,48,10,0.05)] transition-colors duration-150 active:!bg-[#fff4e8]"
+        >
+          <span class="flex !h-[31px] !w-[31px] shrink-0 !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+            <ion-icon name="log-out-outline" class="!text-[18px]"></ion-icon>
+          </span>
+          <span class="flex-1 !font-sans !text-[12px] !font-bold !text-[#8f071f]">
+            Logout
+          </span>
+          <ion-icon name="chevron-forward-outline" class="!text-[16px] !text-[#b3123b]"></ion-icon>
         </button>
 
+        <!-- DECORATIVE BOTTOM IMAGE -->
 
-        <div
-          class="side-menu-content">
-
-
-          <button
-            type="button"
-            class="logout-button"
-            (click)="logout()">
-
-            <span
-              class="logout-decoration">
-
-              ✦
-
-            </span>
-
-
-            <span
-              class="logout-text">
-
-              Logout
-
-            </span>
-
-
-            <span
-              class="logout-decoration">
-
-              ✦
-
-            </span>
-
-          </button>
-
-
+        <div class="pointer-events-none mt-auto -mx-3 overflow-hidden">
+          <img
+            src="assets/images/newDesignBg.png"
+            alt=""
+            aria-hidden="true"
+            class="block h-auto w-[175%] max-w-none select-none opacity-[0.18]"
+          />
         </div>
-
-      </aside>
-
-    }
-
+      </div>
+    </aside>
   </div>
-
 </ion-content>
 
+<!-- =====================================================
+     FLOATING ADD PRODUCT BUTTON
+     Visible only when the product list is displayed.
+====================================================== -->
 
-<!-- =========================
-     FLOATING ADD BUTTON
-========================== -->
-
-<button
-  type="button"
-  class="add-product-button"
-  aria-label="Add product"
-  (click)="addProduct()">
-
-  <ion-icon
-    name="add-outline">
-  </ion-icon>
-
-</button>
+@if (!isAddProductView) {
+  <button
+    type="button"
+    aria-label="Add product"
+    (click)="openNewProductForm()"
+    class="fixed bottom-5 right-4 z-[1000] flex !h-[48px] !w-[48px] !items-center !justify-center !rounded-full !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] shadow-[0_5px_14px_rgba(143,7,31,0.24)] transition-transform duration-150 active:scale-90"
+  >
+    <ion-icon name="add-outline" class="!text-[26px]"></ion-icon>
+  </button>
+}

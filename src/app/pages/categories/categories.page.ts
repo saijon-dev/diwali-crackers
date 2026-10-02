@@ -4,12 +4,20 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 
-import { ActivatedRoute } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router
+} from '@angular/router';
+
+import {
+  FloatingCartComponent
+} from '../../components/floating-cart/floating-cart.component';
 
 import {
   IonContent,
   IonIcon,
-  IonBackButton
+  IonSelect,
+  IonSelectOption
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -17,204 +25,412 @@ import { addIcons } from 'ionicons';
 import {
   chevronDownOutline,
   imageOutline,
-  cartOutline
+  cartOutline,
+  arrowBackOutline,
+  homeOutline,
+  addOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
-
-import { Router } from '@angular/router';
 
 import {
   ProductService,
   Product,
-  Category
+  Category,
+  ProductPageResponse
 } from '../../services/product.service';
+
+import {
+  CartService
+} from '../../services/cart.service';
 
 
 /* =====================================
-   CATEGORY WITH PRODUCTS
-   ===================================== */
+   STORE SECTION
+===================================== */
 
-interface CategorySection {
-
-  categoryId: number;
-
-  categoryName: string;
-
+interface StoreSection {
+  storeName: string;
   products: Product[];
-
 }
 
 
+/* =====================================
+   CATEGORY SECTION
+===================================== */
+
+interface CategorySection {
+  categoryId: number;
+  categoryName: string;
+  products: Product[];
+}
+
+
+/* =====================================
+   COMPONENT
+===================================== */
+
 @Component({
   selector: 'app-categories',
-
   templateUrl: './categories.page.html',
-
-  styleUrls: ['./categories.page.scss'],
-
   standalone: true,
-
   imports: [
     IonContent,
     IonIcon,
-    IonBackButton
+    IonSelect,
+    IonSelectOption,
+    FloatingCartComponent
   ]
 })
 export class CategoriesPage implements OnInit {
 
 
   /* =====================================
-     CATEGORIES FROM API
-     ===================================== */
+     CATEGORIES
+  ===================================== */
 
   categories: Category[] = [];
 
 
   /* =====================================
-     PRODUCTS FROM API
-     ===================================== */
+     VENDOR-SPECIFIC CATEGORIES
+  ===================================== */
+
+  vendorCategories: Category[] = [];
+
+
+  /* =====================================
+     PRODUCTS
+
+     Always Product[].
+  ===================================== */
 
   products: Product[] = [];
 
 
   /* =====================================
+     ALL PRODUCTS
+
+     Complete response from the normal
+     products API.
+
+     Used to restore all products.
+  ===================================== */
+
+  allProducts: Product[] = [];
+
+
+  /* =====================================
      CATEGORY SECTIONS
-     ===================================== */
+  ===================================== */
 
   categorySections: CategorySection[] = [];
 
 
   /* =====================================
+     STORE SECTIONS
+  ===================================== */
+
+  storeSections: StoreSection[] = [];
+
+
+  /* =====================================
      SELECTED CATEGORY
-     ===================================== */
+  ===================================== */
 
   selectedCategoryId: number | null = null;
 
 
   /* =====================================
+     SELECTED STORE
+  ===================================== */
+
+  selectedStoreName: string | null = null;
+
+
+  /* =====================================
+     STORE VIEW
+  ===================================== */
+
+  isStoreView = false;
+
+
+  /* =====================================
+     STORE PRODUCTS
+  ===================================== */
+
+  selectedStoreProducts: Product[] = [];
+
+
+  /* =====================================
+     COMPLETE VENDOR PRODUCTS
+
+     Complete response from:
+
+     /api/{productStoreId}/all-vendor-products
+  ===================================== */
+
+  private allSelectedStoreProducts: Product[] = [];
+
+
+  /* =====================================
      LOADING
-     ===================================== */
+  ===================================== */
 
   isLoading = false;
 
 
   /* =====================================
      ERROR
-     ===================================== */
+  ===================================== */
 
   errorMessage = '';
 
 
+  /* =====================================
+     CONSTRUCTOR
+  ===================================== */
+
   constructor(
-    private productService: ProductService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private activatedRoute: ActivatedRoute
+    private readonly productService: ProductService,
+    private readonly router: Router,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly cartService: CartService,
+    private readonly activatedRoute: ActivatedRoute
   ) {
 
     addIcons({
       chevronDownOutline,
       imageOutline,
-      cartOutline
+      cartOutline,
+      arrowBackOutline,
+      homeOutline,
+      addOutline,
+      checkmarkOutline
     });
 
   }
 
 
   /* =====================================
-     INITIAL LOAD
-     ===================================== */
+     INIT
+  ===================================== */
 
   ngOnInit(): void {
 
-    /*
-     * Read category ID passed from Home page.
-     *
-     * Example:
-     *
-     * /tabs/categories?categoryId=5
-     *
-     */
+    this.activatedRoute.queryParamMap.subscribe(
+      params => {
 
-    this.activatedRoute.queryParamMap.subscribe(params => {
+        const categoryIdParam =
+          params.get('categoryId');
 
-      const categoryId =
-        params.get('categoryId');
+        const storeIdParam =
+          params.get('storeId');
 
 
-      if (categoryId !== null) {
+        /* =================================
+           STORE ID FROM HOME VENDOR CARD
+        ================================= */
 
-        const parsedCategoryId =
-          Number(categoryId);
+        if (storeIdParam !== null) {
+
+          const storeId =
+            Number(storeIdParam);
 
 
-        if (
-          Number.isInteger(parsedCategoryId) &&
-          parsedCategoryId > 0
-        ) {
+          if (
+            Number.isInteger(storeId) &&
+            storeId > 0
+          ) {
 
-          this.selectedCategoryId =
-            parsedCategoryId;
+            /*
+             * Vendor card from Home gives
+             * us storeId directly.
+             *
+             * Do not convert storeId into
+             * productStoreId.
+             */
 
-        } else {
+            this.loadStoreProducts(
+              storeId
+            );
 
-          this.selectedCategoryId = null;
+            return;
+
+          }
 
         }
 
-      } else {
 
-        this.selectedCategoryId = null;
+        /* =================================
+           CATEGORY ID FROM HOME
+        ================================= */
+
+        if (categoryIdParam !== null) {
+
+          const categoryId =
+            Number(categoryIdParam);
+
+
+          if (
+            Number.isInteger(categoryId) &&
+            categoryId > 0
+          ) {
+
+            /*
+             * Prevent unnecessary API calls
+             * when the selected category is
+             * already displayed.
+             */
+
+            if (
+              this.selectedCategoryId === categoryId &&
+              this.products.length > 0 &&
+              !this.isStoreView
+            ) {
+
+              return;
+
+            }
+
+
+            /*
+             * Make sure normal category
+             * mode is active.
+             */
+
+            this.isStoreView = false;
+
+
+            this.selectedCategoryId =
+              categoryId;
+
+
+            this.loadCategoriesAndProducts(
+              categoryId
+            );
+
+            return;
+
+          }
+
+        }
+
+
+        /* =================================
+           EXISTING STORE VIEW CHECK
+        ================================= */
+
+        if (this.isStoreView) {
+          return;
+        }
+
+
+        /* =================================
+           NORMAL CATEGORIES PAGE
+        ================================= */
+
+        if (this.products.length === 0) {
+
+          this.loadCategoriesAndProducts();
+
+          return;
+
+        }
+
+
+        /* =================================
+           ALL CATEGORIES
+        ================================= */
+
+        this.selectedCategoryId =
+          null;
+
+        this.products =
+          [...this.allProducts];
+
+        this.buildStoreSections();
+
+        this.cdr.detectChanges();
 
       }
-
-
-      /*
-       * Load the data after reading
-       * the selected category.
-       */
-
-      this.loadCategoriesAndProducts();
-
-    });
+    );
 
   }
 
 
   /* =====================================
-     LOAD CATEGORIES + PRODUCTS
-     ===================================== */
+     LOAD CATEGORIES AND PRODUCTS
 
-  loadCategoriesAndProducts(): void {
+     Initial page loading.
+
+     If categoryId exists:
+       → load category products
+
+     Otherwise:
+       → load all products
+  ===================================== */
+
+  private loadCategoriesAndProducts(
+    categoryId?: number
+  ): void {
 
     this.isLoading = true;
 
     this.errorMessage = '';
 
-    this.cdr.detectChanges();
-
-
-    /*
-     * First load categories.
-     */
-
     this.productService
       .getCategories()
       .subscribe({
 
-        next: (categories) => {
+        next: (response: any) => {
 
           console.log(
             'Categories API Response:',
-            categories
+            response
           );
 
 
+          /*
+           * Support either:
+           *
+           * Category[]
+           *
+           * or:
+           *
+           * { content: Category[] }
+           */
+
           this.categories =
-            categories || [];
+            Array.isArray(response)
+              ? response
+              : (response?.content ?? []);
 
 
           /*
-           * Then load products.
+           * If a category was supplied,
+           * load only that category.
+           */
+
+          if (
+            categoryId !== undefined &&
+            categoryId !== null
+          ) {
+
+            this.selectedCategoryId =
+              categoryId;
+
+            this.loadProductsByCategory(
+              categoryId
+            );
+
+            return;
+
+          }
+
+
+          /*
+           * Otherwise load complete
+           * product list.
            */
 
           this.loadProducts();
@@ -230,6 +446,16 @@ export class CategoriesPage implements OnInit {
           );
 
 
+          this.categories = [];
+
+          this.products = [];
+
+          this.allProducts = [];
+
+          this.categorySections = [];
+
+          this.storeSections = [];
+
           this.isLoading = false;
 
           this.errorMessage =
@@ -237,6 +463,254 @@ export class CategoriesPage implements OnInit {
             error?.message ||
             'Unable to load categories.';
 
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /* =====================================
+     LOAD STORE PRODUCTS
+
+     API:
+
+     /api/stores/product-stores/{storeId}/store-products
+
+     Example:
+
+     /api/stores/product-stores/22/store-products
+  ===================================== */
+
+  private loadStoreProducts(
+    storeId: number
+  ): void {
+
+    /*
+     * Enter vendor/store view.
+     */
+
+    this.isStoreView = true;
+
+    this.isLoading = true;
+
+    this.errorMessage = '';
+
+
+    /*
+     * Reset previous vendor data.
+     */
+
+    this.selectedStoreName = null;
+
+    this.selectedCategoryId = null;
+
+    this.selectedStoreProducts = [];
+
+    this.allSelectedStoreProducts = [];
+
+    this.vendorCategories = [];
+
+
+    /*
+     * The vendor categories require
+     * the global categories list.
+     *
+     * If categories are already loaded,
+     * reuse them.
+     *
+     * Otherwise load them first.
+     */
+
+    if (this.categories.length > 0) {
+
+      this.fetchStoreProducts(
+        storeId
+      );
+
+      return;
+
+    }
+
+
+    this.productService
+      .getCategories()
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'Categories API Response for Store:',
+            response
+          );
+
+
+          this.categories =
+            Array.isArray(response)
+              ? response
+              : (response?.content ?? []);
+
+
+          this.fetchStoreProducts(
+            storeId
+          );
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Categories API Error for Store:',
+            error
+          );
+
+
+          /*
+           * Even if categories fail,
+           * we still try to load the
+           * vendor products.
+           */
+
+          this.categories = [];
+
+          this.fetchStoreProducts(
+            storeId
+          );
+
+        }
+
+      });
+
+  }
+
+
+  /* =====================================
+     FETCH STORE PRODUCTS
+
+     Called after categories are available.
+  ===================================== */
+
+  private fetchStoreProducts(
+    storeId: number
+  ): void {
+
+    this.productService
+      .getStoreProducts(
+        storeId,
+        0,
+        10
+      )
+      .subscribe({
+
+        next: (response: ProductPageResponse) => {
+
+          console.log(
+            'Store Products API Response:',
+            response
+          );
+
+
+          /*
+           * Store-products API returns:
+
+           * {
+           *   content: Product[],
+           *   ...
+           * }
+           *
+           * We need only content.
+           */
+
+          const storeProducts =
+            response?.content ?? [];
+
+
+          /*
+           * Store products are now the
+           * vendor products displayed
+           * by the existing Categories UI.
+           */
+
+          this.allSelectedStoreProducts =
+            [...storeProducts];
+
+
+          this.selectedStoreProducts =
+            [...storeProducts];
+
+
+          /*
+           * Also keep products populated.
+           *
+           * This allows existing product
+           * grouping / shared UI logic to
+           * continue working.
+           */
+
+          this.products =
+            [...storeProducts];
+
+
+          /*
+           * The store name is available
+           * from the product response.
+           */
+
+          this.selectedStoreName =
+            storeProducts.length > 0
+              ? (
+                  storeProducts[0]
+                    .storeName?.trim() ||
+                  'Store'
+                )
+              : null;
+
+
+          /*
+           * Build categories available
+           * for this vendor.
+           */
+
+          this.buildVendorCategories();
+
+
+          this.isLoading = false;
+
+          this.errorMessage = '';
+
+          this.cdr.detectChanges();
+
+          this.scrollToTop();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Store Products API Error:',
+            error
+          );
+
+
+          this.products = [];
+
+          this.allSelectedStoreProducts = [];
+
+          this.selectedStoreProducts = [];
+
+          this.vendorCategories = [];
+
+          this.selectedStoreName = null;
+
+          this.isLoading = false;
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load vendor products.';
 
           this.cdr.detectChanges();
 
@@ -249,15 +723,26 @@ export class CategoriesPage implements OnInit {
 
   /* =====================================
      LOAD PRODUCTS
-     ===================================== */
+
+     Initial/all-categories API.
+
+     Response:
+
+     {
+       content: Product[],
+       ...
+     }
+  ===================================== */
 
   loadProducts(): void {
+
+    this.isLoading = true;
 
     this.productService
       .getProducts()
       .subscribe({
 
-        next: (response) => {
+        next: (response: ProductPageResponse) => {
 
           console.log(
             'Products API Response:',
@@ -265,19 +750,33 @@ export class CategoriesPage implements OnInit {
           );
 
 
+          /*
+           * IMPORTANT:
+           *
+           * response is ProductPageResponse.
+           *
+           * products must contain only
+           * response.content.
+           */
+
+          this.allProducts =
+            response?.content ?? [];
+
+
           this.products =
-            response?.content || [];
+            [...this.allProducts];
 
 
           /*
-           * Build category sections
-           * using the selected category ID.
+           * Build normal store sections.
            */
 
-          this.buildCategorySections();
+          this.buildStoreSections();
 
 
           this.isLoading = false;
+
+          this.errorMessage = '';
 
           this.cdr.detectChanges();
 
@@ -294,7 +793,13 @@ export class CategoriesPage implements OnInit {
 
           this.products = [];
 
+          this.allProducts = [];
+
           this.categorySections = [];
+
+          this.storeSections = [];
+
+          this.selectedStoreProducts = [];
 
           this.isLoading = false;
 
@@ -302,7 +807,6 @@ export class CategoriesPage implements OnInit {
             error?.error?.message ||
             error?.message ||
             'Unable to load products.';
-
 
           this.cdr.detectChanges();
 
@@ -314,148 +818,425 @@ export class CategoriesPage implements OnInit {
 
 
   /* =====================================
-     BUILD CATEGORY SECTIONS
-     ===================================== */
+     LOAD PRODUCTS BY CATEGORY
 
-  buildCategorySections(): void {
+     API:
 
-    /*
-     * If a specific category is selected,
-     * show only that category.
-     */
+     /api/products/category/{categoryId}
 
-    if (
-      this.selectedCategoryId !== null
-    ) {
+     IMPORTANT:
 
-      const selectedCategory =
-        this.categories.find(
-          category =>
-            category.categoryId ===
-            this.selectedCategoryId
-        );
+     This API returns ProductPageResponse,
+     NOT Product[].
+
+     Therefore:
+
+     response.content
+     ↓
+     this.products
+  ===================================== */
+
+  private loadProductsByCategory(
+    categoryId: number
+  ): void {
+
+    this.isLoading = true;
+
+    this.errorMessage = '';
+
+    this.productService
+      .getProductsByCategory(categoryId)
+      .subscribe({
+
+        next: (response: ProductPageResponse) => {
+
+          console.log(
+            'Category Products API Response:',
+            response
+          );
 
 
-      if (!selectedCategory) {
+          /*
+           * IMPORTANT FIX:
+           *
+           * Do NOT do:
+           *
+           * this.products = response;
+           *
+           * response is ProductPageResponse.
+           *
+           * We need response.content.
+           */
 
-        this.categorySections = [];
-
-        return;
-
-      }
+          this.products =
+            response?.content ?? [];
 
 
-      const categoryProducts =
-        this.products.filter(
-          product =>
-            product.categoryId ===
-            selectedCategory.categoryId
-        );
+          console.log(
+            'Category Products:',
+            this.products
+          );
 
 
-      this.categorySections = [
+          /*
+           * Build store sections from
+           * the category products.
+           */
 
-        {
-          categoryId:
-            selectedCategory.categoryId,
+          this.buildStoreSections();
 
-          categoryName:
-            selectedCategory.categoryName,
 
-          products:
-            categoryProducts
+          this.isLoading = false;
+
+          this.errorMessage = '';
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Category Products API Error:',
+            error
+          );
+
+
+          this.products = [];
+
+          this.categorySections = [];
+
+          this.storeSections = [];
+
+          this.isLoading = false;
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load products for this category.';
+
+          this.cdr.detectChanges();
 
         }
 
-      ];
+      });
 
+  }
+
+
+  /* =====================================
+     BUILD STORE SECTIONS
+
+     Groups products by storeName.
+  ===================================== */
+
+  buildStoreSections(): void {
+
+    /*
+     * Safety check.
+     */
+
+    if (!Array.isArray(this.products)) {
+
+      console.error(
+        'Products is not an array:',
+        this.products
+      );
+
+      this.products = [];
+
+    }
+
+
+    const filteredProducts =
+      [...this.products];
+
+
+    /*
+     * GROUP BY STORE
+     */
+
+    const storeMap =
+      new Map<
+        string,
+        StoreSection
+      >();
+
+
+    filteredProducts.forEach(
+      product => {
+
+        const storeName =
+          product.storeName?.trim() ||
+          'Store';
+
+
+        const storeKey =
+          storeName.toLowerCase();
+
+
+        if (!storeMap.has(storeKey)) {
+
+          storeMap.set(
+            storeKey,
+            {
+              storeName,
+              products: []
+            }
+          );
+
+        }
+
+
+        storeMap
+          .get(storeKey)!
+          .products
+          .push(product);
+
+      }
+    );
+
+
+    this.storeSections =
+      Array.from(
+        storeMap.values()
+      );
+
+  }
+
+
+  /* =====================================
+     CATEGORY CHANGE
+
+     NORMAL VIEW:
+       API request
+
+     VENDOR VIEW:
+       local filtering
+  ===================================== */
+
+  selectCategory(
+    categoryId: number | null
+  ): void {
+
+    /* ==================================
+       ALL CATEGORIES
+    ================================== */
+
+    if (categoryId === null) {
+
+      this.isStoreView = false;
+
+      this.selectedStoreName = null;
+
+      this.selectedStoreProducts = [];
+
+      this.allSelectedStoreProducts = [];
+
+      this.vendorCategories = [];
+
+      this.selectedCategoryId = null;
+
+
+      /*
+       * Restore original complete
+       * product list.
+       */
+
+      this.products =
+        [...this.allProducts];
+
+
+      /*
+       * Remove query parameters.
+       */
+
+      this.router.navigate(
+        ['/categories'],
+        {
+          queryParams: {}
+        }
+      );
+
+
+      this.buildStoreSections();
+
+      this.cdr.detectChanges();
 
       return;
 
     }
 
 
-    /*
-     * =================================
-     * ALL CATEGORIES
-     * =================================
-     */
+    /* ==================================
+       NORMAL CATEGORY VIEW
+    ================================== */
 
-    this.categorySections =
-      this.categories
-        .map(category => {
+    this.isStoreView = false;
 
-          const categoryProducts =
-            this.products.filter(
-              product =>
-                product.categoryId ===
-                category.categoryId
-            );
+    this.selectedStoreName = null;
 
+    this.selectedStoreProducts = [];
 
-          return {
+    this.allSelectedStoreProducts = [];
 
-            categoryId:
-              category.categoryId,
-
-            categoryName:
-              category.categoryName,
-
-            products:
-              categoryProducts
-
-          };
-
-        })
-        .filter(
-          section =>
-            section.products.length > 0
-        );
-
-  }
-
-
-  /* =====================================
-     CATEGORY FILTER
-     ===================================== */
-
-  selectCategory(
-    categoryId: number | null
-  ): void {
+    this.vendorCategories = [];
 
     this.selectedCategoryId =
       categoryId;
 
 
     /*
-     * Keep the URL synchronized
-     * with the selected filter.
+     * Keep category ID in URL.
      */
 
-    if (categoryId === null) {
-
-      this.router.navigate(
-        ['/tabs/categories'],
-        {
-          queryParams: {}
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {
+          categoryId
         }
+      }
+    );
+
+
+    /*
+     * Load category products.
+     */
+
+    this.loadProductsByCategory(
+      categoryId
+    );
+
+  }
+
+
+  /* =====================================
+     CATEGORY DROPDOWN
+  ===================================== */
+
+  onCategoryChange(
+    event: CustomEvent
+  ): void {
+
+    const value =
+      event.detail?.value;
+
+
+    /* ==================================
+       VENDOR PRODUCTS VIEW
+    ================================== */
+
+    if (this.isStoreView) {
+
+      /*
+       * ALL CATEGORIES
+       */
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === 'all' ||
+        value === ''
+      ) {
+
+        this.selectedCategoryId = null;
+
+        this.loadAllSelectedStoreProducts();
+
+        return;
+
+      }
+
+
+      const categoryId =
+        Number(value);
+
+
+      if (
+        !Number.isInteger(categoryId) ||
+        categoryId <= 0
+      ) {
+
+        return;
+
+      }
+
+
+      this.selectedCategoryId =
+        categoryId;
+
+
+      this.filterSelectedStoreProducts(
+        categoryId
       );
 
-    } else {
-
-      this.router.navigate(
-        ['/tabs/categories'],
-        {
-          queryParams: {
-            categoryId: categoryId
-          }
-        }
-      );
+      return;
 
     }
 
 
-    this.buildCategorySections();
+    /* ==================================
+       NORMAL CATEGORIES VIEW
+    ================================== */
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === 'all' ||
+      value === ''
+    ) {
+
+      this.selectCategory(null);
+
+      return;
+
+    }
+
+
+    const categoryId =
+      Number(value);
+
+
+    if (
+      Number.isInteger(categoryId) &&
+      categoryId > 0
+    ) {
+
+      this.selectCategory(
+        categoryId
+      );
+
+    }
+
+  }
+
+
+  /* =====================================
+     FILTER VENDOR PRODUCTS
+  ===================================== */
+
+  private filterSelectedStoreProducts(
+    categoryId: number | null
+  ): void {
+
+    if (categoryId === null) {
+
+      this.selectedStoreProducts =
+        [...this.allSelectedStoreProducts];
+
+    } else {
+
+      this.selectedStoreProducts =
+        this.allSelectedStoreProducts.filter(
+          product =>
+            product.categoryId ===
+            categoryId
+        );
+
+    }
+
 
     this.cdr.detectChanges();
 
@@ -463,15 +1244,338 @@ export class CategoriesPage implements OnInit {
 
 
   /* =====================================
+     LOAD ALL SELECTED STORE PRODUCTS
+  ===================================== */
+
+  private loadAllSelectedStoreProducts(): void {
+
+    this.selectedStoreProducts =
+      [...this.allSelectedStoreProducts];
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /* =====================================
+     VIEW ALL STORE PRODUCTS
+
+     API:
+
+     /api/{productStoreId}/all-vendor-products
+
+     Any productStoreId belonging to the
+     selected store can be used.
+  ===================================== */
+
+  viewAllStore(
+    store: StoreSection
+  ): void {
+
+    if (
+      !store ||
+      !store.products ||
+      store.products.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    /*
+     * Any productStoreId belonging
+     * to this store.
+     */
+
+    const productStoreId =
+      store.products[0]?.productStoreId;
+
+
+    if (!productStoreId) {
+
+      console.error(
+        'No productStoreId found for vendor:',
+        store.storeName
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Save selected store.
+     */
+
+    this.selectedStoreName =
+      store.storeName;
+
+
+    /*
+     * Enter vendor view.
+     */
+
+    this.isStoreView = true;
+
+
+    /*
+     * Reset category.
+     */
+
+    this.selectedCategoryId = null;
+
+
+    /*
+     * Clear previous vendor data.
+     */
+
+    this.selectedStoreProducts = [];
+
+    this.allSelectedStoreProducts = [];
+
+    this.vendorCategories = [];
+
+
+    this.isLoading = true;
+
+    this.errorMessage = '';
+
+    this.cdr.detectChanges();
+
+
+    /*
+     * ALL VENDOR PRODUCTS API
+     */
+
+    this.productService
+      .getAllVendorProducts(productStoreId)
+      .subscribe({
+
+        next: (response: ProductPageResponse) => {
+
+          console.log(
+            'All Vendor Products API Response:',
+            response
+          );
+
+
+          /*
+           * Vendor API returns:
+
+           * {
+           *   content: Product[],
+           *   ...
+           * }
+           */
+
+          this.allSelectedStoreProducts =
+            response?.content ?? [];
+
+
+          /*
+           * Display all vendor products.
+           */
+
+          this.selectedStoreProducts =
+            [...this.allSelectedStoreProducts];
+
+
+          /*
+           * Build vendor-specific categories.
+           */
+
+          this.buildVendorCategories();
+
+
+          this.isLoading = false;
+
+          this.errorMessage = '';
+
+          this.cdr.detectChanges();
+
+          this.scrollToTop();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'All Vendor Products API Error:',
+            error
+          );
+
+
+          this.allSelectedStoreProducts = [];
+
+          this.selectedStoreProducts = [];
+
+          this.vendorCategories = [];
+
+          this.isLoading = false;
+
+          this.errorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load vendor products.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+
+    /*
+     * Keep the same Categories route.
+     */
+
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {}
+      }
+    );
+
+  }
+
+
+  /* =====================================
+     BUILD VENDOR CATEGORIES
+  ===================================== */
+
+  private buildVendorCategories(): void {
+
+    const vendorCategoryIds =
+      new Set<number>();
+
+
+    this.allSelectedStoreProducts
+      .forEach(
+        product => {
+
+          if (
+            product.categoryId !== null &&
+            product.categoryId !== undefined
+          ) {
+
+            vendorCategoryIds.add(
+              product.categoryId
+            );
+
+          }
+
+        }
+      );
+
+
+    /*
+     * Match product category IDs
+     * with the global categories list.
+     */
+
+    this.vendorCategories =
+      this.categories.filter(
+        category =>
+          vendorCategoryIds.has(
+            category.categoryId
+          )
+      );
+
+  }
+
+
+  /* =====================================
+     BACK TO STORE GROUPS
+  ===================================== */
+
+  backToStoreGroups(): void {
+
+    this.isStoreView = false;
+
+    this.selectedStoreName = null;
+
+    this.selectedStoreProducts = [];
+
+    this.allSelectedStoreProducts = [];
+
+    this.selectedCategoryId = null;
+
+    this.vendorCategories = [];
+
+
+    /*
+     * Restore complete initial
+     * product list.
+     */
+
+    this.products =
+      [...this.allProducts];
+
+
+    this.buildStoreSections();
+
+
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {}
+      }
+    );
+
+
+    this.scrollToTop();
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /* =====================================
+     SCROLL TO TOP
+  ===================================== */
+
+  private scrollToTop(): void {
+
+    setTimeout(() => {
+
+      const content =
+        document.querySelector(
+          'ion-content'
+        ) as any;
+
+
+      if (content?.scrollToTop) {
+
+        content.scrollToTop(300);
+
+      }
+
+    }, 50);
+
+  }
+
+
+  /* =====================================
      OPEN PRODUCT
-     ===================================== */
+  ===================================== */
 
   openProduct(
     product: Product
   ): void {
 
+    if (
+      !product?.productStoreId
+    ) {
+
+      return;
+
+    }
+
+
     this.router.navigate([
-      '/tabs/product',
+      '/product',
       product.productStoreId
     ]);
 
@@ -480,37 +1584,127 @@ export class CategoriesPage implements OnInit {
 
   /* =====================================
      ADD TO CART
-     ===================================== */
+  ===================================== */
 
   addToCart(
     product: Product
   ): void {
 
-    console.log(
-      'Added to cart:',
-      product
-    );
+    if (
+      !product ||
+      !product.productStoreId ||
+      product.alreadyAdded
+    ) {
+
+      return;
+
+    }
+
+
+    this.cartService
+      .addToCart(
+        product.productStoreId,
+        1
+      )
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            'Product added to cart:',
+            response
+          );
+
+
+          /*
+           * Change + to check only
+           * after successful API response.
+           */
+
+          product.alreadyAdded = true;
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Add to cart failed:',
+            error
+          );
+
+
+          /*
+           * Keep + enabled if API fails.
+           */
+
+          product.alreadyAdded = false;
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
 
   /* =====================================
-     TRACK CATEGORY
-     ===================================== */
+     BACK BUTTON
+  ===================================== */
 
-  trackCategory(
+handleBack(): void {
+
+  if (this.isStoreView) {
+    window.history.back();
+    return;
+  }
+
+  this.goHome();
+
+}
+
+
+  /* =====================================
+     HOME
+  ===================================== */
+
+  goHome(): void {
+
+    if (window.history.length > 1) {
+
+      window.history.back();
+
+    } else {
+
+      this.router.navigate([
+        '/home'
+      ]);
+
+    }
+
+  }
+
+
+  /* =====================================
+     TRACK STORE
+  ===================================== */
+
+  trackStore(
     index: number,
-    category: CategorySection
-  ): number {
+    store: StoreSection
+  ): string {
 
-    return category.categoryId;
+    return store.storeName;
 
   }
 
 
   /* =====================================
      TRACK PRODUCT
-     ===================================== */
+  ===================================== */
 
   trackProduct(
     index: number,

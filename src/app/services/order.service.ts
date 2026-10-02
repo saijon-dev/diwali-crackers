@@ -34,7 +34,7 @@ export interface AdminOrderItem {
 
   packUnit: string | null;
 
-  storeImageUrl: string | null;
+  productImageUrl: string | null;
 
   quantity: number;
 
@@ -118,7 +118,7 @@ export interface OrderItem {
 
   packUnit: string | null;
 
-  storeImageUrl: string | null;
+  productImageUrl: string | null;
 
   quantity: number;
 

@@ -6,46 +6,12 @@ export const TAB_ROUTES: Routes = [
      CUSTOMER
   ========================================= */
 
-  {
-    path: 'home',
-    loadComponent: () =>
-      import('../pages/home/home.page')
-        .then(m => m.HomePage)
-  },
 
-  {
-    path: 'search',
-    loadComponent: () =>
-      import('../pages/search/search.page')
-        .then(m => m.SearchPage)
-  },
 
-  {
-    path: 'categories',
-    loadComponent: () =>
-      import('../pages/categories/categories.page')
-        .then(m => m.CategoriesPage)
-  },
 
-  {
-    path: 'cart',
-    loadComponent: () =>
-      import('../pages/cart/cart.page')
-        .then(m => m.CartPage)
-  },
 
-  {
-    path: 'product/:id',
-    loadComponent: () =>
-      import('../pages/product/product.page')
-        .then(m => m.ProductPage)
-  },
-{
-  path: 'orders',
-  loadComponent: () =>
-    import('../pages/orders/orders.page')
-      .then(m => m.OrdersPage)
-},
+
+ 
 
   /* =========================================
      ADMIN
@@ -123,13 +89,6 @@ export const TAB_ROUTES: Routes = [
     loadComponent: () =>
       import('../pages/admin/admin-edit/admin-edit.page')
         .then(m => m.AdminEditPage)
-  },
-
-  {
-    path: 'add-product',
-    loadComponent: () =>
-      import('../pages/admin/admin-add-product/admin-add-product.page')
-        .then(m => m.AdminAddProductPage)
   },
 
   {

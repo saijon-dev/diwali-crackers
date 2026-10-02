@@ -6,7 +6,9 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  IonSelectOption,
+  IonSelect
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -47,12 +49,13 @@ interface Category {
 @Component({
   selector: 'app-vend-products',
   templateUrl: './vend-products.page.html',
-  styleUrls: ['./vend-products.page.scss'],
   standalone: true,
   imports: [
     IonContent,
     IonIcon,
-    FormsModule
+    FormsModule,
+    IonSelectOption,
+    IonSelect
   ]
 })
 export class VendProductsPage implements OnInit {

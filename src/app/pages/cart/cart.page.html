@@ -1,86 +1,136 @@
 <ion-content
   [fullscreen]="true"
-  class="cart-content"
+  class="!bg-white [--padding-bottom:0px]"
 >
 
-  <div class="cart-page">
+  <!-- =====================================================
+       PAGE WRAPPER
+  ===================================================== -->
 
+<div
+  class="flex min-h-[100dvh] flex-col overflow-visible bg-white px-3 pb-6 sm:px-4"
+>
 
-    <!-- =====================================
+    <!-- =====================================================
          HEADER
-    ====================================== -->
+    ===================================================== -->
 
-    <header class="cart-header">
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center overflow-hidden bg-[#8f071f] px-3 shadow-none sm:-mx-4 sm:px-4"
+    >
+
+      <!-- RIGHT DEEPAS -->
+
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+      />
+
+
+      <!-- HOME -->
 
       <button
         type="button"
-        class="back-button"
+        aria-label="Home"
         (click)="goBack()"
-        aria-label="Back"
+        class="absolute right-[40px] top-[54%] z-30 flex h-[30px] w-[38px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
 
         <ion-icon
-          name="arrow-back-outline"
+          name="home-outline"
+          class="!text-[23px]"
         ></ion-icon>
 
       </button>
 
 
-      <div class="header-title">
+      <!-- BACK -->
 
-        <h1>
+      <button
+        type="button"
+        (click)="goBack()"
+        aria-label="Back"
+        class="relative z-30 flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[#fff8dc] transition-transform duration-150 active:scale-90"
+      >
+
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+
+      </button>
+
+
+      <!-- TITLE -->
+
+      <div
+        class="relative z-30 ml-1 flex min-w-0 items-center"
+      >
+
+        <h1
+          class="!m-0 truncate !font-serif !text-[20px] !font-bold !leading-none !tracking-[0.5px] !text-[#fff8dc] sm:!text-[22px]"
+        >
           Cart
         </h1>
-
-        <p>
-          Review your selected crackers
-        </p>
 
       </div>
 
     </header>
 
 
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+<main
+  class="relative z-10 mx-auto w-full max-w-[760px] flex-1"
+>
 
-    <!-- =====================================
-         CART CONTENT
-    ====================================== -->
+      @if (cartStores.length > 0) {
 
-    <main class="cart-container">
+        <!-- =================================================
+             CART HEADING
+        ================================================= -->
 
+        <section
+          class="mb-3 flex w-full items-center justify-between gap-3 pt-4"
+        >
 
-      @if (cartItems.length > 0) {
+          <div
+            class="flex min-w-0 items-center gap-2.5"
+          >
 
-
-        <!-- =================================
-             CART HEADER / COUNT
-        ================================== -->
-
-        <div class="cart-summary-heading">
-
-          <div class="cart-heading-left">
-
-            <div class="cart-icon">
+            <div
+              class="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[13px] bg-[#b3123b] text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.12)]"
+            >
 
               <ion-icon
                 name="cart-outline"
+                class="!text-[22px]"
               ></ion-icon>
 
             </div>
 
 
-            <div>
+            <div
+              class="min-w-0"
+            >
 
-              <h2>
+              <h2
+                class="!m-0 !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+              >
                 Your Cart
               </h2>
 
-              <p>
-
+              <p
+                class="!m-[2px_0_0] font-sans text-[9px] font-medium leading-tight text-[#806b68]"
+              >
+                {{ totalStores }}
+                {{ totalStores === 1 ? 'store' : 'stores' }}
+                ·
                 {{ totalItems }}
-
                 {{ totalItems === 1 ? 'item' : 'items' }}
-
               </p>
 
             </div>
@@ -88,398 +138,422 @@
           </div>
 
 
-
-          <!-- CLEAR CART -->
+          <!-- =================================================
+               CLEAR
+          ================================================= -->
 
           <button
             type="button"
-            class="clear-cart-button"
             [disabled]="isClearingCart"
             (click)="clearCart()"
+            class="flex !h-[36px] !min-w-[72px] shrink-0 items-center justify-center !rounded-[9px] !border-0 !bg-[#b3123b] !px-4 font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_7px_rgba(100,0,20,0.14)] transition-transform duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
-
-            <ion-icon
-              name="trash-outline"
-            ></ion-icon>
-
-            <span>
-              Clear
-            </span>
-
+            Clear
           </button>
 
-        </div>
+        </section>
 
 
+        <!-- =================================================
+             VENDOR SECTIONS
+        ================================================= -->
 
-        <!-- =================================
-             CART ITEMS
-        ================================== -->
-
-        <section class="cart-items-section">
-
+        <section
+          class="flex flex-col gap-3"
+        >
 
           @for (
-            item of cartItems;
-            track item.cartItemId
+            store of cartStores;
+            track store.storeId
           ) {
 
+            <!-- =================================================
+                 STORE SECTION
+            ================================================= -->
 
-            <article
-              class="cart-item"
+            <section
+              class="w-full overflow-hidden rounded-[14px] bg-white shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
             >
 
+              <!-- =================================================
+                   STORE HEADER
+              ================================================= -->
 
-              <!-- IMAGE -->
+              <div
+                class="flex min-h-[67px] items-center justify-between gap-3 rounded-t-[14px] bg-white px-3 py-2.5"
+              >
 
-              <div class="cart-item-image">
+                <div
+                  class="flex min-w-0 items-center gap-2.5"
+                >
 
-                @if (item.imageUrl) {
+                  <!-- STORE IMAGE -->
 
-                  <img
-                    [src]="item.imageUrl"
-                    [alt]="item.productName"
-                  />
+                  <div
+                    class="flex h-[42px] w-[42px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#f7df9d] text-[#9e2020]"
+                  >
 
-                } @else {
+                    @if (store.storeImageUrl) {
 
-                  <div class="image-placeholder">
+                      <img
+                        [src]="store.storeImageUrl"
+                        [alt]="store.storeName"
+                        class="block h-full w-full object-cover"
+                        loading="lazy"
+                      />
 
-                    <ion-icon
-                      name="image-outline"
-                    ></ion-icon>
+                    } @else {
+
+                      <ion-icon
+                        name="storefront-outline"
+                        class="!text-[22px]"
+                      ></ion-icon>
+
+                    }
 
                   </div>
+
+
+                  <!-- STORE NAME -->
+
+                  <div
+                    class="min-w-0"
+                  >
+
+                    <h3
+                      class="!m-0 truncate !font-sans !text-[16px] !font-bold !leading-tight !tracking-[-0.15px] !text-[#17233c] sm:!text-[17px]"
+                    >
+                      {{ store.storeName }}
+                    </h3>
+
+                    <p
+                      class="!m-[3px_0_0] font-sans text-[8px] font-medium leading-tight text-[#806b68]"
+                    >
+                      {{ store.items.length }}
+                      {{ store.items.length === 1 ? 'product' : 'products' }}
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <!-- STORE TOTAL -->
+
+                <div
+                  class="flex shrink-0 items-center gap-2"
+                >
+
+                  <div
+                    class="h-[40px] w-px bg-[#e1e1e1]"
+                  ></div>
+
+                  <div
+                    class="flex min-w-[72px] flex-col items-end"
+                  >
+
+                    <span
+                      class="font-sans text-[7px] font-semibold uppercase tracking-[0.3px] text-[#806b68]"
+                    >
+                      Store Total
+                    </span>
+
+                    <strong
+                      class="mt-[2px] font-sans text-[15px] font-bold leading-tight text-[#9e2020]"
+                    >
+                      ₹{{ store.storeSubtotal }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- =================================================
+                   STORE PRODUCTS
+              ================================================= -->
+
+              <div
+                class="flex flex-col rounded-b-[14px] bg-white px-2.5"
+                
+              >
+
+                @for (
+                  item of store.items;
+                  track item.cartItemId
+                ) {
+
+                  <!-- =================================================
+                       PRODUCT
+                  ================================================= -->
+
+
+                  <article
+                    class="flex min-w-0 gap-2.5 border-b border-[#e3e3e3] py-2.5 last:border-b-0 sm:gap-3"
+                  >
+
+                    <!-- PRODUCT IMAGE -->
+
+                    <div
+                      class="h-[100px] w-[88px] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[108px] sm:w-[96px]"
+                    >
+
+                      @if (item.productImageUrl) {
+
+                        <img
+                          [src]="item.productImageUrl"
+                          [alt]="item.productName"
+                          class="block h-full w-full object-cover"
+                          loading="lazy"
+                        />
+
+                      } @else {
+
+                        <div
+                          class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#99917e]"
+                        >
+
+                          <ion-icon
+                            name="image-outline"
+                            class="!text-[27px]"
+                          ></ion-icon>
+
+                        </div>
+
+                      }
+
+                    </div>
+
+
+                    <!-- PRODUCT DETAILS -->
+
+                    <div
+                      class="flex min-w-0 flex-1 flex-col"
+                            (click)="openProduct(item.productStoreId)"
+                    >
+
+                      <!-- TOP -->
+
+                      <div
+                        class="flex min-w-0 items-start justify-between gap-2"
+                      >
+
+                        <div
+                          class="min-w-0 flex-1"
+                        >
+
+                          <h4
+                            class="!m-0 line-clamp-2 overflow-hidden !font-sans !text-[14px] !font-bold !leading-[1.25] !text-[#17233c] sm:!text-[15px]"
+                          >
+                            {{ item.productName }}
+                          </h4>
+
+                          <p
+                            class="!m-[4px_0_0] truncate font-sans text-[8px] font-medium leading-tight text-[#806b68]"
+                          >
+                            {{ item.packQuantity }}
+                            {{ item.packUnit }}
+
+                            @if (item.size) {
+                              · {{ item.size }}
+                            }
+
+                          </p>
+
+                        </div>
+
+
+                        <!-- DELETE ICON -->
+
+                        <button
+                          type="button"
+                          (click)="removeItem(item); $event.stopPropagation()"
+                          aria-label="Remove item"
+                          class="flex h-[28px] w-[28px] shrink-0 items-center justify-center !border-0 !bg-transparent !p-0 text-[#b3123b] transition-transform duration-150 active:scale-90"
+                        >
+
+                          <ion-icon
+                            name="trash-outline"
+                            class="!text-[17px]"
+                          ></ion-icon>
+
+                        </button>
+
+                      </div>
+
+
+                      <!-- PRICE + QUANTITY -->
+
+                      <div
+                        class="mt-auto flex items-end justify-between gap-2 pt-2"
+                      >
+
+                        <!-- PRICE -->
+
+                        <div
+                          class="flex min-w-0 flex-col"
+                        >
+
+                          <span
+                            class="font-sans text-[7px] font-medium text-[#99917e]"
+                          >
+                            Price
+                          </span>
+
+                          <strong
+                            class="font-sans text-[13px] font-bold leading-tight text-[#17233c]"
+                          >
+                            ₹{{ item.sellingPrice }}
+                          </strong>
+
+                        </div>
+
+
+                        <!-- QUANTITY -->
+
+                        <div
+                          class="flex h-[27px] shrink-0 items-center overflow-hidden rounded-[6px] bg-[#f3f3f3]"
+                        >
+
+                          <!-- MINUS -->
+
+                          <button
+                            type="button"
+                            [disabled]="item.quantity <= 1"
+                            (click)="decreaseQuantity(item); $event.stopPropagation()"
+                            aria-label="Decrease quantity"
+                            class="flex h-[27px] w-[27px] items-center justify-center !rounded-[5px] !border-0 !bg-[#e8c4ca] !p-0 text-[#9e2020] transition-transform duration-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
+                          >
+
+                            <ion-icon
+                              name="remove-outline"
+                              class="!text-[12px]"
+                            ></ion-icon>
+
+                          </button>
+
+
+                          <!-- NUMBER -->
+
+                          <span
+                            class="flex h-[27px] min-w-[28px] items-center justify-center bg-[#f8f8f8] px-1 font-sans text-[10px] font-semibold text-[#17233c]"
+                          >
+                            {{ item.quantity }}
+                          </span>
+
+
+                          <!-- PLUS -->
+
+                          <button
+                            type="button"
+                            [disabled]="item.quantity >= item.availableStock"
+                            (click)="increaseQuantity(item); $event.stopPropagation()"
+                            aria-label="Increase quantity"
+                            class="flex h-[27px] w-[27px] items-center justify-center !rounded-[5px] !border-0 !bg-[#b3123b] !p-0 text-[#fff8dc] transition-transform duration-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+
+                            <ion-icon
+                              name="add-outline"
+                              class="!text-[12px]"
+                            ></ion-icon>
+
+                          </button>
+
+                        </div>
+
+                      </div>
+
+
+                      <!-- ITEM TOTAL -->
+
+                      <div
+                        class="mt-2 flex items-center justify-between gap-2 border-t border-[#e3e3e3] pt-[6px]"
+                      >
+
+                        <span
+                          class="font-sans text-[8px] font-medium text-[#806b68]"
+                        >
+                          Item Total
+                        </span>
+
+                        <strong
+                          class="font-sans text-[11px] font-bold text-[#9e2020]"
+                        >
+                          ₹{{ getItemTotal(item) }}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                  </article>
 
                 }
 
               </div>
 
-
-
-              <!-- INFORMATION -->
-
-              <div class="cart-item-details">
-
-
-                <div class="cart-item-top">
-
-                  <div class="cart-item-title">
-
-                    <span class="item-category">
-                      {{ item.categoryName }}
-                    </span>
-
-                    <h3>
-                      {{ item.productName }}
-                    </h3>
-
-                    <p class="pack-details">
-
-                      {{ item.packQuantity }}
-
-                      {{ item.packUnit }}
-
-                    </p>
-
-                  </div>
-
-
-
-                  <!-- REMOVE -->
-
-                  <button
-                    type="button"
-                    class="remove-button"
-                    (click)="removeItem(item)"
-                    aria-label="Remove item"
-                  >
-
-                    <ion-icon
-                      name="trash-outline"
-                    ></ion-icon>
-
-                  </button>
-
-                </div>
-
-
-
-                <!-- PRICE -->
-
-                <div class="cart-item-bottom">
-
-
-                  <div class="item-price">
-
-                    <span class="price-label">
-                      Price
-                    </span>
-
-                    <strong>
-                      ₹{{ item.sellingPrice }}
-                    </strong>
-
-                  </div>
-
-
-
-                  <!-- QUANTITY -->
-
-                  <div class="quantity-control">
-
-
-                    <button
-                      type="button"
-                      class="quantity-button"
-                      [disabled]="item.quantity <= 1"
-                      (click)="decreaseQuantity(item)"
-                    >
-
-                      <ion-icon
-                        name="remove-outline"
-                      ></ion-icon>
-
-                    </button>
-
-
-                    <span class="quantity-value">
-                      {{ item.quantity }}
-                    </span>
-
-
-                    <button
-                      type="button"
-                      class="quantity-button"
-                      [disabled]="
-                        item.quantity >=
-                        item.availableStock
-                      "
-                      (click)="increaseQuantity(item)"
-                    >
-
-                      <ion-icon
-                        name="add-outline"
-                      ></ion-icon>
-
-                    </button>
-
-
-                  </div>
-
-                </div>
-
-
-
-                <!-- ITEM TOTAL -->
-
-                <div class="item-total-row">
-
-                  <span>
-                    Item Total
-                  </span>
-
-                  <strong>
-                    ₹{{ getItemTotal(item) }}
-                  </strong>
-
-                </div>
-
-
-              </div>
-
-            </article>
-
+            </section>
 
           }
 
-
         </section>
 
 
+        <!-- =================================================
+             CONTINUE SHOPPING
+        ================================================= -->
 
-        <!-- =================================
-             BILLING SUMMARY
-        ================================== -->
-
-        <section class="billing-card">
-
-
-          <div class="billing-heading">
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-            <h2>
-              Bill Summary
-            </h2>
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-          </div>
-
-
-
-          <!-- SUBTOTAL -->
-
-          <div class="billing-row">
-
-            <span>
-              Items Total
-            </span>
-
-            <strong>
-              ₹{{ calculatedSubtotal }}
-            </strong>
-
-          </div>
-
-
-
-          <!-- DISCOUNT -->
-
-          <div class="billing-row">
-
-            <span>
-              Discount
-            </span>
-
-            <strong class="discount-value">
-              - ₹{{ discount }}
-            </strong>
-
-          </div>
-
-
-
-          <!-- DELIVERY -->
-
-          <div class="billing-row">
-
-            <span>
-              Delivery
-            </span>
-
-            @if (deliveryCharge === 0) {
-
-              <strong class="free-value">
-                FREE
-              </strong>
-
-            } @else {
-
-              <strong>
-                ₹{{ deliveryCharge }}
-              </strong>
-
-            }
-
-          </div>
-
-
-
-          <!-- DIVIDER -->
-
-          <div class="billing-divider"></div>
-
-
-
-          <!-- GRAND TOTAL -->
-
-          <div class="grand-total-row">
-
-            <div>
-
-              <span>
-                Grand Total
-              </span>
-
-              <small>
-                {{ totalItems }} items
-              </small>
-
-            </div>
-
-
-            <strong>
-              ₹{{ grandTotal }}
-            </strong>
-
-          </div>
-
-
-        </section>
-
-
-
-        <!-- =================================
-             CHECKOUT BUTTON
-        ================================== -->
-
-        <section class="checkout-section">
+        <section
+          class="w-full pb-3 pt-3 text-center"
+        >
 
           <button
             type="button"
-            class="continue-button"
-            (click)="continueToCheckout()"
-          >
-
-            <span>
-              Continue to Checkout
-            </span>
-
-            <ion-icon
-              name="chevron-forward-outline"
-            ></ion-icon>
-
-          </button>
-
-
-          <button
-            type="button"
-            class="continue-shopping-button"
             (click)="continueShopping()"
+            class="min-h-[34px] border-0 bg-transparent px-3 font-sans text-[10px] font-semibold text-[#9e2020] transition-transform duration-150 active:scale-95"
           >
-
             Continue Shopping
-
           </button>
 
         </section>
-
 
       }
 
 
-
-      <!-- =================================
+      <!-- =================================================
            EMPTY CART
-      ================================== -->
+      ================================================= -->
 
       @else {
 
+        <section
+          class="flex min-h-[65vh] flex-col items-center justify-center px-5 py-10 text-center"
+        >
 
-        <section class="empty-cart">
-
-
-          <div class="empty-cart-icon">
+          <div
+            class="mb-4 flex h-[76px] w-[76px] items-center justify-center rounded-full bg-[#eaeaea] text-[#9e2020]"
+          >
 
             <ion-icon
               name="cart-outline"
+              class="!text-[36px]"
             ></ion-icon>
 
           </div>
 
 
-          <h2>
-            Your Cart is Empty
+          <h2
+            class="!m-0 !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+          >
+            Your Cart
           </h2>
 
 
-          <p>
+          <p
+            class="!m-0 !mb-[18px] max-w-[270px] font-sans text-[10px] font-medium leading-[1.5] text-[#806b68]"
+          >
             Add some crackers to your cart
             and they will appear here.
           </p>
@@ -487,50 +561,168 @@
 
           <button
             type="button"
-            class="shop-button"
             (click)="continueShopping()"
+            class="min-h-[38px] !rounded-[9px] !border-0 !bg-[#b3123b] !px-5 font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform duration-150 active:scale-95"
           >
-
             Start Shopping
-
           </button>
-
 
         </section>
 
-
       }
-
 
     </main>
 
 
-
-    <!-- =====================================
-         DECORATIONS
-    ====================================== -->
-
-    <img
-      src="assets/images/top-rightdesign.png"
-      alt=""
-      class="top-right-decoration"
-    />
-
-
-    <img
-      src="assets/images/bottom-leftdesign.png"
-      alt=""
-      class="bottom-left-decoration"
-    />
-
+    <!-- =====================================================
+         BOTTOM DECORATION
+         NORMAL PAGE FLOW — NOT FIXED
+         REACHED AT THE END OF SCROLL
+    ===================================================== -->
+<div
+  class="pointer-events-none -mx-3 mt-auto w-[calc(100%+24px)] overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+>
+  <img
+    src="assets/images/newDesignBg.png"
+    alt=""
+    class="block h-auto w-[155%] max-w-none -translate-x-0 -translate-y-[5px] opacity-[0.16]"
+  />
+</div>
 
   </div>
+
+
+  <!-- =====================================================
+       FIXED CHECKOUT BAR
+  ===================================================== -->
+
+  @if (cartStores.length > 0) {
+
+    <div
+      class="fixed bottom-0 left-0 right-0 z-[100] border-t border-[#eadfca] bg-white px-3 pb-[max(9px,env(safe-area-inset-bottom))] pt-2 shadow-[0_-4px_18px_rgba(86,48,10,0.10)] sm:px-4"
+    >
+
+      <div
+        class="mx-auto flex w-full max-w-[760px] items-center gap-3"
+      >
+
+        <!-- TOTALS -->
+
+        <div
+          class="flex min-w-0 flex-1 items-center"
+        >
+
+          <!-- STORES -->
+
+          <div
+            class="flex min-w-[36px] flex-col items-start justify-center"
+          >
+
+            <span
+              class="font-sans text-[7px] font-medium leading-none text-[#806b68]"
+            >
+              Stores
+            </span>
+
+            <strong
+              class="mt-[3px] font-sans text-[13px] font-bold leading-none text-[#17233c]"
+            >
+              {{ totalStores }}
+            </strong>
+
+          </div>
+
+
+          <span
+            class="mx-2 font-sans text-[10px] font-bold leading-none text-[#b3123b]"
+          >
+            ·
+          </span>
+
+
+          <!-- ITEMS -->
+
+          <div
+            class="flex min-w-[36px] flex-col items-start justify-center"
+          >
+
+            <span
+              class="font-sans text-[7px] font-medium leading-none text-[#806b68]"
+            >
+              Items
+            </span>
+
+            <strong
+              class="mt-[3px] font-sans text-[13px] font-bold leading-none text-[#17233c]"
+            >
+              {{ totalItems }}
+            </strong>
+
+          </div>
+
+
+          <span
+            class="mx-2 font-sans text-[10px] font-bold leading-none text-[#b3123b]"
+          >
+            ·
+          </span>
+
+
+          <!-- GRAND TOTAL -->
+
+          <div
+            class="flex min-w-0 flex-1 flex-col items-start justify-center"
+          >
+
+            <span
+              class="font-sans text-[7px] font-medium leading-none text-[#806b68]"
+            >
+              Grand Total
+            </span>
+
+            <strong
+              class="mt-[3px] truncate font-sans text-[17px] font-black leading-none text-[#9e2020]"
+            >
+              ₹{{ grandTotal }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- PROCEED TO CHECKOUT -->
+
+        <button
+          type="button"
+          [disabled]="isLoading || cartStores.length === 0"
+          (click)="continueToCheckout()"
+          class="flex !h-[46px] shrink-0 items-center justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] !px-4 font-sans !text-[10px] !font-black !text-[#fff8dc] shadow-[0_3px_9px_rgba(100,0,20,0.18)] transition-transform duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 sm:!px-5"
+        >
+
+          <span
+            class="whitespace-nowrap"
+          >
+            Proceed to Checkout
+          </span>
+
+          <ion-icon
+            name="chevron-forward-outline"
+            class="!text-[16px]"
+          ></ion-icon>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
 
 </ion-content>
 
 
-
-<!-- ====================================================
+<!-- =====================================================
      CHECKOUT MODAL
 ===================================================== -->
 
@@ -543,26 +735,33 @@
 
   <ng-template>
 
-    <div class="checkout-modal-content">
+    <div
+      class="max-h-[90vh] w-full overflow-y-auto bg-white p-5 text-[#17233c] sm:p-[22px]"
+    >
 
+      <!-- HEADER -->
 
-      <!-- ==========================================
-           MODAL HEADER
-      =========================================== -->
-
-      <div class="checkout-modal-header">
+      <div
+        class="mb-5 flex items-start justify-between gap-3"
+      >
 
         <div>
 
-          <span class="checkout-eyebrow">
+          <span
+            class="mb-1 block font-sans text-[8px] font-bold tracking-[1.3px] text-[#b3123b]"
+          >
             CHECKOUT
           </span>
 
-          <h2>
+          <h2
+            class="!m-0 font-serif text-[20px] font-bold leading-tight text-[#17233c] sm:text-[20px]"
+          >
             Delivery Details
           </h2>
 
-          <p>
+          <p
+            class="!m-[5px_0_0] font-sans text-[9px] font-medium leading-[1.4] text-[#806b68]"
+          >
             Enter your details to place your order.
           </p>
 
@@ -571,14 +770,15 @@
 
         <button
           type="button"
-          class="modal-close-button"
           [disabled]="isCreatingOrder"
           (click)="closeCheckoutModal()"
           aria-label="Close checkout"
+          class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border-0 bg-[#f8e5e7] p-0 text-[#b3123b] transition-transform duration-150 active:scale-90 disabled:opacity-45"
         >
 
           <ion-icon
             name="close-outline"
+            class="!text-[18px]"
           ></ion-icon>
 
         </button>
@@ -586,87 +786,153 @@
       </div>
 
 
+      <!-- FORM -->
 
-      <!-- ==========================================
-           CHECKOUT FORM
-      =========================================== -->
-
-      <div class="checkout-form">
-
+      <div
+        class="flex flex-col gap-[15px]"
+      >
 
         <!-- NAME -->
 
-        <div class="form-field">
+        <div
+          class="flex flex-col gap-1.5"
+        >
 
-          <label for="customerName">
+          <label
+            for="customerName"
+            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
+          >
             Name
           </label>
 
           <ion-input
             id="customerName"
-            class="checkout-input"
+            class="w-full !font-sans !text-[12px]"
             type="text"
             [(ngModel)]="customerName"
             placeholder="Enter your name"
             autocomplete="name"
+            style="
+              --background: #fffef8;
+              --color: #17233c;
+              --placeholder-color: #99917e;
+              --placeholder-opacity: 0.8;
+              --padding-start: 13px;
+              --padding-end: 13px;
+              --padding-top: 0;
+              --padding-bottom: 0;
+              height: 45px;
+              border: 1px solid #ddd3b5;
+              border-radius: 11px;
+              font-family: Poppins, sans-serif;
+              font-size: 12px;
+            "
           ></ion-input>
 
         </div>
 
 
-
         <!-- MOBILE -->
 
-        <div class="form-field">
+        <div
+          class="flex flex-col gap-1.5"
+        >
 
-          <label for="customerMobile">
+          <label
+            for="customerMobile"
+            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
+          >
             Mobile Number
           </label>
 
           <ion-input
             id="customerMobile"
-            class="checkout-input"
+            class="w-full !font-sans !text-[12px]"
             type="tel"
             [(ngModel)]="customerMobile"
             placeholder="Enter mobile number"
             maxlength="10"
             inputmode="numeric"
             autocomplete="tel"
+            style="
+              --background: #fffef8;
+              --color: #17233c;
+              --placeholder-color: #99917e;
+              --placeholder-opacity: 0.8;
+              --padding-start: 13px;
+              --padding-end: 13px;
+              --padding-top: 0;
+              --padding-bottom: 0;
+              height: 45px;
+              border: 1px solid #ddd3b5;
+              border-radius: 11px;
+              font-family: Poppins, sans-serif;
+              font-size: 12px;
+            "
           ></ion-input>
 
         </div>
 
 
-
         <!-- ADDRESS -->
 
-        <div class="form-field">
+        <div
+          class="flex flex-col gap-1.5"
+        >
 
-          <label for="deliveryAddress">
+          <label
+            for="deliveryAddress"
+            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
+          >
             Delivery Address
           </label>
 
           <ion-textarea
             id="deliveryAddress"
-            class="checkout-textarea"
+            class="w-full !font-sans !text-[12px]"
             [(ngModel)]="deliveryAddress"
             placeholder="Enter your complete delivery address"
             [rows]="4"
             autoGrow="true"
             autocomplete="street-address"
+            style="
+              --background: #fffef8;
+              --color: #17233c;
+              --placeholder-color: #99917e;
+              --placeholder-opacity: 0.8;
+              --padding-start: 13px;
+              --padding-end: 13px;
+              --padding-top: 11px;
+              --padding-bottom: 11px;
+              min-height: 100px;
+              border: 1px solid #ddd3b5;
+              border-radius: 11px;
+              font-family: Poppins, sans-serif;
+              font-size: 12px;
+            "
           ></ion-textarea>
 
         </div>
 
 
-
-        <!-- ORDER BUTTON -->
+        <!-- ORDER -->
 
         <ion-button
           expand="block"
-          class="make-order-button"
+          type="button"
           [disabled]="isCreatingOrder"
           (click)="makeOrder()"
+          class="!m-0 !font-sans !text-[12px] !font-bold"
+          style="
+            --background: #b3123b;
+            --background-activated: #8f071f;
+            --background-focused: #b3123b;
+            --color: #fff8dc;
+            --border-radius: 13px;
+            --box-shadow: 0 3px 8px rgba(100,0,20,0.15);
+            --padding-top: 0;
+            --padding-bottom: 0;
+          "
         >
 
           @if (isCreatingOrder) {
@@ -681,9 +947,7 @@
 
         </ion-button>
 
-
       </div>
-
 
     </div>
 
@@ -693,8 +957,8 @@
 
 
 
-<!-- ====================================================
-     SUCCESS / ERROR TOAST
+<!-- =====================================================
+     TOAST
 ===================================================== -->
 
 <ion-toast
@@ -702,7 +966,7 @@
   [message]="toastMessage"
   [color]="toastColor"
   [duration]="2200"
-  [position]="'bottom'"
+  position="bottom"
   cssClass="diwali-toast"
   (didDismiss)="isToastOpen = false"
 ></ion-toast>

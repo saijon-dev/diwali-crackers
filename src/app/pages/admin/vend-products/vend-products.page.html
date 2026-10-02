@@ -1,67 +1,74 @@
-<ion-content
-  [fullscreen]="true"
-  class="vend-products-content"
+
+<ion-content [fullscreen]="true" class="!bg-white">
+<div
+  class="relative flex min-h-full flex-col overflow-visible bg-white px-3 font-sans text-[#17233c] sm:px-4"
 >
-
-  <div class="vend-products-page">
-
-
-    <!-- =================================================
+    <!-- =====================================================
          HEADER
-    ================================================== -->
+    ====================================================== -->
 
-    <header class="products-header">
+   <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center overflow-hidden bg-[#8f071f] px-3 shadow-none sm:-mx-4 sm:px-4"
+    >
+  <!-- Back navigation -->
+  <button
+    type="button"
+    aria-label="Go back"
+    (click)="goBack()"
+    class="relative z-30 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+  >
+    <ion-icon
+      name="arrow-back-outline"
+      class="!text-[23px]"
+    ></ion-icon>
+  </button>
 
-      <button
-        type="button"
-        class="back-button"
-        (click)="goBack()"
-      >
+  <!-- Title immediately after back button -->
+  <div
+    class="relative z-20 ml-2 flex min-w-0 flex-col items-start justify-center leading-none"
+  >
+    <h1
+      class="!m-0 !font-sans !text-[19px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+    >
+      My Products
+    </h1>
 
-        <ion-icon
-          name="arrow-back-outline"
-        ></ion-icon>
+    <p
+      class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]"
+    >
+      Manage your store products
+    </p>
+  </div>
 
-      </button>
-
-
-      <div class="header-title">
-
-        <h1>My Products</h1>
-
-        <span>
-          Manage your store products
-        </span>
-
-      </div>
-
-    </header>
+  <!-- Festive header decoration -->
+  <img
+    src="assets/images/right-deepas.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto max-w-[95px] select-none object-contain opacity-[0.85] sm:max-w-[125px]"
+  />
+</header>
 
 
-
-    <!-- =================================================
+    <!-- =====================================================
          MAIN CONTENT
-    ================================================== -->
+    ====================================================== -->
 
-    <main class="products-main">
+    <main class="relative z-10 mx-auto flex w-full max-w-[900px] flex-1 flex-col">
 
+      <!-- =====================================================
+           SEARCH AND CATEGORY FILTER
+      ====================================================== -->
 
-      <!-- =================================================
-           SEARCH + CATEGORY
-      ================================================== -->
+      <section class="grid grid-cols-[minmax(0,1fr)_minmax(105px,0.72fr)] items-center gap-2 pt-4 sm:gap-3">
 
-      <section class="filter-section">
-
-
-        <!-- SEARCH -->
-
-        <div class="search-box">
+        <!-- Search input -->
+        <div class="flex h-[43px] min-w-0 items-center overflow-hidden rounded-[12px] border border-[#ead8b9] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]">
 
           <ion-icon
             name="search-outline"
-            class="search-icon"
+            class="ml-2.5 shrink-0 !text-[17px] !text-[#8f071f] sm:ml-3"
           ></ion-icon>
-
 
           <input
             type="text"
@@ -69,345 +76,344 @@
             (ngModelChange)="onSearchChange()"
             placeholder="Search products"
             autocomplete="off"
+            class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[10px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#806b68] focus:outline-none sm:!text-[11px]"
           />
 
-
+          <!-- Clear search button -->
           @if (searchText) {
-
             <button
               type="button"
-              class="clear-search"
+              aria-label="Clear search"
               (click)="clearSearch()"
+              class="mr-1 flex !h-[28px] !w-[28px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-[#f7e9bd] !p-0 !text-[#8f071f] transition-transform duration-150 active:scale-90"
             >
-
               <ion-icon
                 name="close-outline"
+                class="!text-[16px]"
               ></ion-icon>
-
             </button>
-
           }
-
         </div>
 
 
+     <div
+  class="flex min-w-0 items-center rounded-xl border border-[#e7dfe0] bg-white px-2"
+>
+  <ion-select
+    interface="popover"
+    placeholder="Category"
+    [(ngModel)]="selectedCategory"
+    (ionChange)="onCategoryChange()"
+    class="w-full text-sm text-[#17233c]"
+    aria-label="Filter products by category"
+  >
+    <ion-select-option value="ALL">
+      All Categories
+    </ion-select-option>
 
-        <!-- CATEGORY -->
-
-        <div class="category-filter">
-
-          <select
-            [(ngModel)]="selectedCategory"
-            (ngModelChange)="onCategoryChange()"
-          >
-
-            <option value="ALL">
-              All Categories
-            </option>
-
-
-            @for (
-              category of categories;
-              track category.categoryId
-            ) {
-
-              <option
-                [value]="category.categoryName"
-              >
-                {{ category.categoryName }}
-              </option>
-
-            }
-
-          </select>
-
-
-          <ion-icon
-            name="chevron-down-outline"
-          ></ion-icon>
-
-        </div>
-
+    @for (category of categories; track category.categoryId) {
+      <ion-select-option [value]="category.categoryId">
+        {{ category.categoryName }}
+      </ion-select-option>
+    }
+  </ion-select>
+</div>
       </section>
 
 
+      <!-- =====================================================
+           SECTION HEADING AND PRODUCT COUNT
+      ====================================================== -->
 
-      <!-- =================================================
-           SECTION HEADING
-      ================================================== -->
+      <section class="flex w-full items-center justify-between gap-2 pb-3 pt-5">
 
-      <section class="products-heading">
+        <div class="min-w-0">
+          <p class="!m-0 !font-sans !text-[8px] !font-bold uppercase !tracking-[1.1px] !text-[#9e2020] sm:!text-[9px]">
+            Your Store
+          </p>
 
-        <div>
-
-          <span class="section-kicker">
-            YOUR STORE
-          </span>
-
-          <h2>
+          <h2 class="!m-[3px_0_0] !font-sans !text-[16px] !font-extrabold !leading-tight !text-[#17233c] sm:!text-[18px]">
             My Products
           </h2>
 
+          <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !leading-[1.4] !text-[#806b68]">
+            Manage your product listings
+          </p>
         </div>
 
-
+        <!-- Number of filtered products -->
         @if (!isLoadingProducts) {
-
-          <span class="product-count">
-
+          <span class="flex !h-[27px] min-w-[27px] shrink-0 !items-center !justify-center !rounded-full !bg-[#8f071f] !px-2 !font-sans !text-[10px] !font-extrabold !text-[#fff8dc] shadow-[0_2px_6px_rgba(143,7,31,0.12)]">
             {{ filteredProducts.length }}
-
           </span>
-
         }
-
       </section>
 
 
-
-      <!-- =================================================
-           LOADING
-      ================================================== -->
+      <!-- =====================================================
+           LOADING SKELETONS
+      ====================================================== -->
 
       @if (isLoadingProducts) {
-
-        <section class="loading-grid">
-
+        <section
+          aria-label="Loading products"
+          class="grid grid-cols-3 items-start gap-2 pb-8 sm:gap-3"
+        >
           @for (
-            item of [1,2,3,4];
+            item of [1, 2, 3, 4, 5, 6];
             track item
           ) {
+            <div class="min-w-0 overflow-hidden rounded-[12px] bg-[#fffdf7] p-1.5 shadow-[0_3px_10px_rgba(86,48,10,0.06)] sm:rounded-[14px] sm:p-2">
 
-            <div class="skeleton-card">
+              <!-- Image placeholder -->
+              <div class="aspect-square w-full animate-pulse rounded-[9px] bg-[#f0e3c2]"></div>
 
-              <div class="skeleton-image"></div>
+              <!-- Text placeholders -->
+              <div class="mt-2 h-[7px] w-[55%] animate-pulse rounded-full bg-[#ead8b9]"></div>
 
-              <div class="skeleton-line large"></div>
+              <div class="mt-2 h-[10px] w-[90%] animate-pulse rounded-full bg-[#e8dfd4]"></div>
 
-              <div class="skeleton-line small"></div>
+              <div class="mt-2 h-[9px] w-[60%] animate-pulse rounded-full bg-[#f0e3c2]"></div>
 
-              <div class="skeleton-line price"></div>
-
+              <div class="mt-2 h-[15px] w-[70%] animate-pulse rounded-full bg-[#f0e3c2]"></div>
             </div>
-
           }
-
         </section>
-
       }
 
 
-
-      <!-- =================================================
-           ERROR
-      ================================================== -->
+      <!-- =====================================================
+           ERROR STATE
+      ====================================================== -->
 
       @else if (errorMessage) {
+        <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
 
-        <section class="state-card">
-
-          <div class="state-icon">
-
+          <div class="mb-3 flex !h-[58px] !w-[58px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
             <ion-icon
               name="alert-circle-outline"
+              class="!text-[28px]"
             ></ion-icon>
-
           </div>
 
-          <h3>
+          <h3 class="!m-0 !font-sans !text-[16px] !font-extrabold !text-[#17233c]">
             Something went wrong
           </h3>
 
-          <p>
+          <p class="!m-[7px_0_16px] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
             {{ errorMessage }}
           </p>
 
           <button
             type="button"
             (click)="retry()"
+            class="flex !min-h-[39px] !items-center !justify-center !rounded-[11px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.98]"
           >
             Try Again
           </button>
-
         </section>
-
       }
 
 
-
-      <!-- =================================================
-           PRODUCTS
-      ================================================== -->
+      <!-- =====================================================
+           THREE-COLUMN PRODUCT GRID
+      ====================================================== -->
 
       @else if (filteredProducts.length > 0) {
+        <section class="w-full pb-8 pt-1">
 
-        <section class="product-grid">
+          <!-- Three compact cards per row -->
+          <div class="grid w-full grid-cols-3 items-stretch gap-2 sm:gap-3">
 
-          @for (
-            product of filteredProducts;
-            track product.productId
-          ) {
+            @for (
+              product of filteredProducts;
+              track product.productId
+            ) {
+              <article
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Open ' + product.productName"
+                (click)="openProduct(product)"
+                (keydown.enter)="openProduct(product)"
+                (keydown.space)="$event.preventDefault(); openProduct(product)"
+                class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[12px] border border-[#f0e4d7] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.97] sm:rounded-[14px]"
+              >
 
-            <article
-              class="product-card"
-              (click)="openProduct(product)"
-            >
+                <!-- =========================================
+                     PRODUCT IMAGE
+                ========================================== -->
 
+                <div class="relative mx-auto mt-1.5 aspect-square w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#fff8e8] sm:mt-2 sm:w-[calc(100%-16px)] sm:rounded-[11px]">
 
-              <!-- IMAGE -->
+                  <img
+                    [src]="getProductImage(product)"
+                    [alt]="product.productName"
+                    loading="lazy"
+                    class="block h-full w-full object-cover"
+                  />
 
-              <div class="product-image">
-
-                <img
-                  [src]="getProductImage(product)"
-                  [alt]="product.productName"
-                />
-
-
-                @if (product.isKidsSpecial) {
-
-                  <span class="kids-badge">
-                    Kids
-                  </span>
-
-                }
-
-              </div>
-
-
-
-              <!-- PRODUCT INFO -->
-
-              <div class="product-info">
-
-
-                <span class="category-name">
-
-                  {{ product.categoryName }}
-
-                </span>
-
-
-                <h3>
-
-                  {{ product.productName }}
-
-                </h3>
-
-
-                @if (product.brandName) {
-
-                  <p class="brand-name">
-
-                    {{ product.brandName }}
-
-                  </p>
-
-                }
-
-
-                <div class="price-row">
-
-                  <span class="selling-price">
-
-                    {{ formatPrice(product.sellingPrice) }}
-
-                  </span>
-
-
-                  @if (
-                    product.mrp &&
-                    product.mrp > product.sellingPrice
-                  ) {
-
-                    <span class="mrp">
-
-                      {{ formatPrice(product.mrp) }}
-
+                  <!-- Kids special badge -->
+                  @if (product.isKidsSpecial) {
+                    <span class="absolute left-1 top-1 inline-flex items-center rounded-full bg-[#8f071f] px-1.5 py-[3px] !font-sans !text-[7px] !font-bold !leading-none !text-[#fff8dc] shadow-sm sm:left-1.5 sm:top-1.5 sm:!text-[8px]">
+                      Kids
                     </span>
-
                   }
-
                 </div>
 
 
-                <span
-                  class="stock-status"
-                  [class]="getStockClass(product)"
-                >
+                <!-- =========================================
+                     PRODUCT INFORMATION
+                ========================================== -->
 
-                  {{ getStockText(product) }}
+                <div class="flex flex-1 flex-col px-1.5 pb-2 pt-2 sm:px-2.5 sm:pb-2.5">
 
-                </span>
+                  <!-- Category -->
+                  <span class="mb-1 block truncate !font-sans !text-[7px] !font-bold uppercase !leading-[1.3] !tracking-[0.2px] !text-[#9e2020] sm:!text-[9px]">
+                    {{ product.categoryName || 'Uncategorized' }}
+                  </span>
 
-              </div>
+                  <!-- Product name -->
+                  <h3 class="!m-0 min-h-[28px] overflow-hidden !font-sans !text-[10px] !font-bold !leading-[1.35] !text-[#17233c] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] sm:min-h-[36px] sm:!text-[12px]">
+                    {{ product.productName }}
+                  </h3>
 
-            </article>
+                  <!-- Brand -->
+                  @if (product.brandName) {
+                    <p class="!m-[3px_0_0] truncate !font-sans !text-[8px] !font-medium !leading-[1.3] !text-[#806b68] sm:!text-[9px]">
+                      {{ product.brandName }}
+                    </p>
+                  }
 
-          }
+                  <!-- Price and optional MRP -->
+                  <div class="mt-2 flex min-w-0 flex-wrap items-baseline gap-x-1 gap-y-0.5">
 
+                    <span class="!font-sans !text-[10px] !font-extrabold !leading-tight !text-[#8f071f] sm:!text-[12px]">
+                      {{ formatPrice(product.sellingPrice) }}
+                    </span>
+
+                    @if (
+                      product.mrp &&
+                      product.mrp > product.sellingPrice
+                    ) {
+                      <span class="!font-sans !text-[8px] !font-medium !leading-tight !text-[#9b8d84] line-through sm:!text-[9px]">
+                        {{ formatPrice(product.mrp) }}
+                      </span>
+                    }
+                  </div>
+
+                  <!-- Stock status -->
+                  <div class="mt-2 border-t border-[#f0e4d7] pt-1.5">
+
+                    <span
+                      class="inline-flex max-w-full items-center rounded-full px-1.5 py-1 !font-sans !text-[7px] !font-bold !leading-[1.25] sm:px-2 sm:!text-[9px]"
+                      [style.background-color]="
+                        !product.isAvailable
+                          ? '#fce8e8'
+                          : product.stockQuantity <= 0
+                            ? '#fff0e8'
+                            : product.stockQuantity <= 10
+                              ? '#fff5d9'
+                              : '#eaf8ef'
+                      "
+                      [style.color]="
+                        !product.isAvailable
+                          ? '#a61b29'
+                          : product.stockQuantity <= 0
+                            ? '#b54708'
+                            : product.stockQuantity <= 10
+                              ? '#936400'
+                              : '#237447'
+                      "
+                    >
+                      {{ getStockText(product) }}
+                    </span>
+                  </div>
+
+                  <!-- Open product indicator -->
+                  <div class="mt-2 flex items-center justify-between gap-1">
+
+                    <span class="min-w-0 truncate !font-sans !text-[8px] !font-semibold !text-[#b3123b] sm:!text-[9px]">
+                      Manage
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      class="flex !h-[19px] !w-[19px] shrink-0 !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f] sm:!h-[22px] sm:!w-[22px]"
+                    >
+                      <ion-icon
+                        name="chevron-down-outline"
+                        class="rotate-[-90deg] !text-[11px] sm:!text-[12px]"
+                      ></ion-icon>
+                    </span>
+                  </div>
+
+                </div>
+              </article>
+            }
+
+          </div>
         </section>
-
       }
 
 
-
-      <!-- =================================================
-           EMPTY
-      ================================================== -->
+      <!-- =====================================================
+           EMPTY STATE
+      ====================================================== -->
 
       @else {
+        <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
 
-        <section class="empty-state">
-
-          <div class="empty-icon">
-
+          <div class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
             <ion-icon
               name="cube-outline"
+              class="!text-[29px]"
             ></ion-icon>
-
           </div>
 
-
-          <h3>
-
+          <h3 class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]">
             @if (searchText || selectedCategory !== 'ALL') {
-
               No matching products
-
             } @else {
-
               No products yet
-
             }
-
           </h3>
 
-
-          <p>
-
-            @if (
-              searchText ||
-              selectedCategory !== 'ALL'
-            ) {
-
-              Try changing your search
-              or category filter.
-
+          <p class="!m-[8px_0_0] max-w-[270px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+            @if (searchText || selectedCategory !== 'ALL') {
+              Try changing your search or category filter.
             } @else {
-
-              Products you add to your
-              store will appear here.
-
+              Products you add to your store will appear here.
             }
-
           </p>
 
+          <!-- Reset search/category filters when there are no matches -->
+          @if (searchText || selectedCategory !== 'ALL') {
+            <button
+              type="button"
+              (click)="clearSearch(); selectedCategory = 'ALL'; onCategoryChange()"
+              class="mt-4 flex !min-h-[39px] !items-center !justify-center !rounded-[20px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.98]"
+            >
+              Show All Products
+            </button>
+          }
         </section>
-
       }
 
     </main>
+
+
+    <!-- =====================================================
+         SUBTLE DIWALI BOTTOM DECORATION
+    ====================================================== -->
+
+    <div class="pointer-events-none relative z-0 -mx-3 mt-auto w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        aria-hidden="true"
+        class="block h-auto w-[175%] max-w-none select-none opacity-[0.14]"
+      />
+    </div>
 
   </div>
 

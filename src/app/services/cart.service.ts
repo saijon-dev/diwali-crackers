@@ -7,8 +7,16 @@ import {
 
 import {
   Observable,
-  BehaviorSubject
+  BehaviorSubject,
+  of,
+  throwError
 } from 'rxjs';
+
+import {
+  finalize,
+  shareReplay,
+  tap
+} from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -18,41 +26,36 @@ import { environment } from '../../environments/environment';
 ====================================================== */
 
 export interface CartItem {
-
   cartItemId: number;
-
   productStoreId: number;
-
   productId: number;
-
   productName: string;
-
   vendorName: string;
-
   brandName: string;
-
   size: string;
-
   packQuantity: number;
-
   packUnit: string;
-
-  storeImageUrl?: string | null;
-
+  productImageUrl?: string | null;
   sellingPrice: number;
-
   quantity: number;
-
   subtotal: number;
-
   availableStock: number;
-
   stockStatus: string;
-
   categoryName?: string;
-
   imageUrl?: string;
+}
 
+
+/* ======================================================
+   CART STORE
+====================================================== */
+
+export interface CartStore {
+  storeId: number;
+  storeName: string;
+  storeImageUrl: string | null;
+  items: CartItem[];
+  storeSubtotal: number;
 }
 
 
@@ -61,21 +64,13 @@ export interface CartItem {
 ====================================================== */
 
 export interface CartResponse {
-
   cartId: number;
-
   cartToken: string;
-
   customerMobile: string | null;
-
   message: string;
-
-  items: CartItem[];
-
+  stores: CartStore[];
   totalItems: number;
-
   subtotal: number;
-
 }
 
 
@@ -84,11 +79,8 @@ export interface CartResponse {
 ====================================================== */
 
 export interface AddCartRequest {
-
   productStoreId: number;
-
   quantity: number;
-
 }
 
 
@@ -97,9 +89,7 @@ export interface AddCartRequest {
 ====================================================== */
 
 export interface UpdateCartRequest {
-
   quantity: number;
-
 }
 
 
@@ -108,15 +98,10 @@ export interface UpdateCartRequest {
 ====================================================== */
 
 export interface CreateOrderRequest {
-
   cartToken: string;
-
   customerName: string;
-
   customerMobile: string;
-
   deliveryAddress: string;
-
 }
 
 
@@ -125,33 +110,19 @@ export interface CreateOrderRequest {
 ====================================================== */
 
 export interface OrderItem {
-
   orderItemId: number;
-
   productId: number;
-
   vendorId: number;
-
   productName: string;
-
   vendorName: string;
-
   brandName: string;
-
   size: string;
-
   packQuantity: number;
-
   packUnit: string;
-
   storeImageUrl: string | null;
-
   quantity: number;
-
   price: number;
-
   subtotal: number;
-
 }
 
 
@@ -160,27 +131,16 @@ export interface OrderItem {
 ====================================================== */
 
 export interface OrderResponse {
-
   orderId: number;
-
   customerName: string;
-
   customerMobile: string;
-
   deliveryAddress: string;
-
   totalAmount: number;
-
   paymentMethod: string;
-
   status: string;
-
   expectedDeliveryDate: string;
-
   createdAt: string;
-
   items: OrderItem[];
-
 }
 
 
@@ -201,24 +161,41 @@ export class CartService {
     'diwali_cart_token';
 
 
-    private readonly CUSTOMER_MOBILE_KEY =
-  'diwali_customer_mobile';
+  private readonly CUSTOMER_MOBILE_KEY =
+    'diwali_customer_mobile';
 
 
   /* ====================================================
-     CART SUBJECT
+     CART STATE
   ==================================================== */
 
-  private cartSubject =
-    new BehaviorSubject<CartResponse | null>(null);
+  private readonly cartSubject =
+    new BehaviorSubject<CartResponse | null>(
+      null
+    );
 
 
-  cart$ =
+  readonly cart$ =
     this.cartSubject.asObservable();
 
 
+  /*
+   * Holds the initial cart request while it is running.
+   *
+   * This prevents:
+   *
+   * Product Details → getCart()
+   * Floating Cart   → getCart()
+   * Cart Page       → getCart()
+   *
+   * from creating three simultaneous HTTP requests.
+   */
+  private cartRequest$:
+    Observable<CartResponse> | null = null;
+
+
   constructor(
-    private http: HttpClient
+    private readonly http: HttpClient
   ) {}
 
 
@@ -265,6 +242,33 @@ export class CartService {
 
 
   /* ====================================================
+     UPDATE CENTRAL CART STATE
+  ==================================================== */
+
+  private updateCartState(
+    response: CartResponse
+  ): CartResponse {
+
+    if (response?.cartToken) {
+
+      this.saveCartToken(
+        response.cartToken
+      );
+
+    }
+
+
+    this.cartSubject.next(
+      response
+    );
+
+
+    return response;
+
+  }
+
+
+  /* ====================================================
      ADD TO CART
   ==================================================== */
 
@@ -273,9 +277,10 @@ export class CartService {
     quantity: number
   ): Observable<CartResponse> {
 
-    const body: AddCartRequest & {
-      cartToken?: string;
-    } = {
+    const body:
+      AddCartRequest & {
+        cartToken?: string;
+      } = {
 
       productStoreId,
 
@@ -296,53 +301,20 @@ export class CartService {
     }
 
 
-    return new Observable<CartResponse>(
-      observer => {
+    return this.http
+      .post<CartResponse>(
+        `${this.apiUrl}/cart/items`,
+        body
+      )
+      .pipe(
 
-        this.http
-          .post<CartResponse>(
-            `${this.apiUrl}/cart/items`,
-            body
+        tap(response =>
+          this.updateCartState(
+            response
           )
-          .subscribe({
+        )
 
-            next: (response) => {
-
-              if (response.cartToken) {
-
-                this.saveCartToken(
-                  response.cartToken
-                );
-
-              }
-
-
-              this.cartSubject.next(
-                response
-              );
-
-
-              observer.next(
-                response
-              );
-
-              observer.complete();
-
-            },
-
-
-            error: (error) => {
-
-              observer.error(
-                error
-              );
-
-            }
-
-          });
-
-      }
-    );
+      );
 
   }
 
@@ -359,67 +331,79 @@ export class CartService {
 
     if (!cartToken) {
 
-      return new Observable<CartResponse>(
-        observer => {
-
-          observer.error(
-            new Error(
-              'Cart token not found.'
-            )
-          );
-
-        }
+      return throwError(
+        () =>
+          new Error(
+            'Cart token not found.'
+          )
       );
 
     }
 
 
-    return new Observable<CartResponse>(
-      observer => {
-
-        this.http
-          .get<CartResponse>(
-            `${this.apiUrl}/cart/${cartToken}`
-          )
-          .subscribe({
-
-            next: (response) => {
-
-              if (response.cartToken) {
-
-                this.saveCartToken(
-                  response.cartToken
-                );
-
-              }
+    /*
+     * If this cart is already loaded in memory,
+     * DO NOT call the backend again.
+     *
+     * This is the main fix for repeated cart APIs
+     * during navigation.
+     */
+    const currentCart =
+      this.cartSubject.getValue();
 
 
-              this.cartSubject.next(
-                response
-              );
+    if (
+      currentCart &&
+      currentCart.cartToken === cartToken
+    ) {
+
+      return of(
+        currentCart
+      );
+
+    }
 
 
-              observer.next(
-                response
-              );
+    /*
+     * If another component is already loading the cart,
+     * share that same request.
+     */
+    if (this.cartRequest$) {
 
-              observer.complete();
+      return this.cartRequest$;
 
-            },
+    }
 
 
-            error: (error) => {
+    this.cartRequest$ =
+      this.http
+        .get<CartResponse>(
+          `${this.apiUrl}/cart/${cartToken}`
+        )
+        .pipe(
 
-              observer.error(
-                error
-              );
+          tap(response =>
+            this.updateCartState(
+              response
+            )
+          ),
 
-            }
+          finalize(() => {
 
-          });
+            this.cartRequest$ =
+              null;
 
-      }
-    );
+          }),
+
+          shareReplay({
+            bufferSize: 1,
+            refCount: false
+          })
+
+        );
+
+
+    return this.cartRequest$;
 
   }
 
@@ -435,50 +419,24 @@ export class CartService {
 
     const body:
       UpdateCartRequest = {
-
       quantity
-
     };
 
 
-    return new Observable<CartResponse>(
-      observer => {
+    return this.http
+      .put<CartResponse>(
+        `${this.apiUrl}/cart/items/${cartItemId}`,
+        body
+      )
+      .pipe(
 
-        this.http
-          .put<CartResponse>(
-            `${this.apiUrl}/cart/items/${cartItemId}`,
-            body
+        tap(response =>
+          this.updateCartState(
+            response
           )
-          .subscribe({
+        )
 
-            next: (response) => {
-
-              this.cartSubject.next(
-                response
-              );
-
-
-              observer.next(
-                response
-              );
-
-              observer.complete();
-
-            },
-
-
-            error: (error) => {
-
-              observer.error(
-                error
-              );
-
-            }
-
-          });
-
-      }
-    );
+      );
 
   }
 
@@ -491,49 +449,25 @@ export class CartService {
     cartItemId: number
   ): Observable<CartResponse> {
 
-    return new Observable<CartResponse>(
-      observer => {
+    return this.http
+      .delete<CartResponse>(
+        `${this.apiUrl}/cart/items/${cartItemId}`
+      )
+      .pipe(
 
-        this.http
-          .delete<CartResponse>(
-            `${this.apiUrl}/cart/items/${cartItemId}`
+        tap(response =>
+          this.updateCartState(
+            response
           )
-          .subscribe({
+        )
 
-            next: (response) => {
-
-              this.cartSubject.next(
-                response
-              );
-
-
-              observer.next(
-                response
-              );
-
-              observer.complete();
-
-            },
-
-
-            error: (error) => {
-
-              observer.error(
-                error
-              );
-
-            }
-
-          });
-
-      }
-    );
+      );
 
   }
 
 
   /* ====================================================
-     CLEAR CART API
+     CLEAR ENTIRE CART
   ==================================================== */
 
   clearCart(): Observable<any> {
@@ -544,65 +478,32 @@ export class CartService {
 
     if (!cartToken) {
 
-      return new Observable<any>(
-        observer => {
-
-          observer.next(null);
-
-          observer.complete();
-
-        }
-      );
+      return of(null);
 
     }
 
 
-    return new Observable<any>(
-      observer => {
+    return this.http
+      .delete(
+        `${this.apiUrl}/cart/${cartToken}`
+      )
+      .pipe(
 
-        this.http
-          .delete(
-            `${this.apiUrl}/cart/${cartToken}`
-          )
-          .subscribe({
+        tap(() => {
 
-            next: (response) => {
+          this.removeCartToken();
 
-              this.removeCartToken();
+          this.cartSubject.next(null);
 
-              this.cartSubject.next(null);
+        })
 
-
-              observer.next(
-                response
-              );
-
-              observer.complete();
-
-            },
-
-
-            error: (error) => {
-
-              observer.error(
-                error
-              );
-
-            }
-
-          });
-
-      }
-    );
+      );
 
   }
 
 
   /* ====================================================
      CLEAR LOCAL CART
-     
-     Used after successful order creation.
-     Does NOT make another API request.
   ==================================================== */
 
   clearLocalCart(): void {
@@ -618,9 +519,10 @@ export class CartService {
      CURRENT CART
   ==================================================== */
 
-  getCurrentCart(): CartResponse | null {
+  getCurrentCart():
+    CartResponse | null {
 
-    return this.cartSubject.value;
+    return this.cartSubject.getValue();
 
   }
 
@@ -632,8 +534,8 @@ export class CartService {
   getCartItemCount(): number {
 
     return (
-      this.cartSubject.value?.totalItems ||
-      0
+      this.cartSubject.getValue()
+        ?.totalItems ?? 0
     );
 
   }
@@ -648,20 +550,25 @@ export class CartService {
   ): boolean {
 
     const cart =
-      this.cartSubject.value;
+      this.cartSubject.getValue();
 
 
-    if (!cart) {
-
+    if (!cart?.stores?.length) {
       return false;
-
     }
 
 
-    return cart.items.some(
-      item =>
-        item.productStoreId ===
-        productStoreId
+    return cart.stores.some(
+      store =>
+        store.items?.some(
+          item =>
+            Number(
+              item.productStoreId
+            ) ===
+            Number(
+              productStoreId
+            )
+        ) ?? false
     );
 
   }
@@ -710,35 +617,33 @@ export class CartService {
   }
 
 
+  /* ====================================================
+     SAVE CUSTOMER MOBILE
+  ==================================================== */
 
+  saveCustomerMobile(
+    mobile: string
+  ): void {
+
+    localStorage.setItem(
+      this.CUSTOMER_MOBILE_KEY,
+      mobile.trim()
+    );
+
+  }
 
 
   /* ====================================================
-   SAVE CUSTOMER MOBILE
-==================================================== */
+     GET CUSTOMER MOBILE
+  ==================================================== */
 
-saveCustomerMobile(
-  mobile: string
-): void {
+  getCustomerMobile():
+    string | null {
 
-  localStorage.setItem(
-    this.CUSTOMER_MOBILE_KEY,
-    mobile.trim()
-  );
+    return localStorage.getItem(
+      this.CUSTOMER_MOBILE_KEY
+    );
 
-}
-
-
-/* ====================================================
-   GET CUSTOMER MOBILE
-==================================================== */
-
-getCustomerMobile(): string | null {
-
-  return localStorage.getItem(
-    this.CUSTOMER_MOBILE_KEY
-  );
-
-}
+  }
 
 }

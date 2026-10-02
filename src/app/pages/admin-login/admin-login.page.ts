@@ -1,5 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+
+import {
+  ChangeDetectorRef,
+  Component,
+  ViewChild
+} from '@angular/core';
 
 import {
   FormBuilder,
@@ -11,7 +16,6 @@ import {
 import { Router } from '@angular/router';
 
 import {
-  IonBackButton,
   IonButton,
   IonContent,
   IonIcon,
@@ -26,7 +30,7 @@ import {
 
 import { addIcons } from 'ionicons';
 
-import { BackButtonComponent } from '../../components/back-button/back-button';
+
 import { AuthService } from '../../services/auth.service';
 
 
@@ -46,11 +50,17 @@ import { AuthService } from '../../services/auth.service';
     IonIcon,
     IonInput,
     IonButton,
-    IonBackButton,
-    BackButtonComponent
   ]
 })
 export class AdminLoginPage {
+
+  /* =========================================
+     OTP INPUT REFERENCE
+  ========================================= */
+
+  @ViewChild('otpInput')
+  otpInput?: IonInput;
+
 
   /* =========================================
      LOGIN STATE
@@ -61,6 +71,22 @@ export class AdminLoginPage {
   isOtpStep = false;
 
   isLoading = false;
+
+
+  /* =========================================
+     OTP DISPLAY
+  ========================================= */
+
+  otpDigits: string[] = [
+    '',
+    '',
+    '',
+    '',
+    '',
+    ''
+  ];
+
+  otpFocusedIndex = -1;
 
 
   /* =========================================
@@ -125,6 +151,152 @@ export class AdminLoginPage {
 
 
   /* =========================================
+     OTP INPUT
+  ========================================= */
+
+  onOtpInput(event: any): void {
+
+    let value =
+      event?.detail?.value ?? '';
+
+
+    /*
+     * Allow only numbers.
+     */
+
+    value =
+      value
+        .toString()
+        .replace(/\D/g, '')
+        .slice(0, 6);
+
+
+    /*
+     * Keep the FormControl synchronized.
+     */
+
+    if (this.otp?.value !== value) {
+
+      this.otp?.setValue(
+        value,
+        {
+          emitEvent: false
+        }
+      );
+
+    }
+
+
+    /*
+     * Update the six visual boxes.
+     */
+
+    this.otpDigits =
+      Array.from(
+        {
+          length: 6
+        },
+        (_, index) =>
+          value[index] || ''
+      );
+
+
+    /*
+     * Determine which box should look active.
+     */
+
+    if (value.length < 6) {
+
+      this.otpFocusedIndex =
+        value.length;
+
+    } else {
+
+      this.otpFocusedIndex = 5;
+
+    }
+
+
+    /*
+     * Clear API error when user starts
+     * entering a new OTP.
+     */
+
+    if (value.length > 0) {
+
+      this.errorMessage = '';
+
+    }
+
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /* =========================================
+     OTP FOCUS
+  ========================================= */
+
+  onOtpFocus(): void {
+
+    const value =
+      this.otp?.value || '';
+
+
+    this.otpFocusedIndex =
+      Math.min(
+        value.length,
+        5
+      );
+
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /* =========================================
+     OTP BLUR
+  ========================================= */
+
+  onOtpBlur(): void {
+
+    this.otpFocusedIndex = -1;
+
+    this.cdr.detectChanges();
+
+  }
+
+
+  /* =========================================
+     FOCUS OTP INPUT
+  ========================================= */
+
+  async focusOtpInput(): Promise<void> {
+
+    if (!this.isOtpStep) {
+      return;
+    }
+
+
+    try {
+
+      await this.otpInput?.setFocus();
+
+    } catch {
+
+      /*
+       * Ignore focus errors caused by
+       * Ionic rendering timing.
+       */
+
+    }
+
+  }
+
+
+  /* =========================================
      ROLE BASED REDIRECTION
   ========================================= */
 
@@ -145,6 +317,7 @@ export class AdminLoginPage {
       ]);
 
       return;
+
     }
 
 
@@ -159,6 +332,7 @@ export class AdminLoginPage {
       ]);
 
       return;
+
     }
 
 
@@ -196,6 +370,7 @@ export class AdminLoginPage {
       this.cdr.detectChanges();
 
       return;
+
     }
 
 
@@ -261,7 +436,25 @@ export class AdminLoginPage {
               this.otp?.reset();
 
 
-              /* Make OTP required */
+              /*
+               * Clear visual OTP boxes.
+               */
+
+              this.otpDigits = [
+                '',
+                '',
+                '',
+                '',
+                '',
+                ''
+              ];
+
+              this.otpFocusedIndex = -1;
+
+
+              /*
+               * Make OTP required.
+               */
 
               this.otp?.setValidators([
                 Validators.required,
@@ -275,7 +468,20 @@ export class AdminLoginPage {
 
               this.cdr.detectChanges();
 
+
+              /*
+               * Focus OTP input after the
+               * OTP section has rendered.
+               */
+
+              setTimeout(() => {
+
+                this.focusOtpInput();
+
+              }, 150);
+
               return;
+
             }
 
 
@@ -290,6 +496,7 @@ export class AdminLoginPage {
             this.redirectByRole();
 
             return;
+
           }
 
 
@@ -346,7 +553,25 @@ export class AdminLoginPage {
     this.otp?.reset();
 
 
-    /* Remove OTP required validator */
+    /*
+     * Clear OTP boxes.
+     */
+
+    this.otpDigits = [
+      '',
+      '',
+      '',
+      '',
+      '',
+      ''
+    ];
+
+    this.otpFocusedIndex = -1;
+
+
+    /*
+     * Remove OTP required validator.
+     */
 
     this.otp?.setValidators([
       Validators.pattern('^[0-9]{6}$')
@@ -369,7 +594,7 @@ export class AdminLoginPage {
   goToHome(): void {
 
     this.router.navigate([
-      '/tabs/home'
+      '/home'
     ]);
 
   }

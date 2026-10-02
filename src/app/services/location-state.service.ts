@@ -6,7 +6,6 @@ import {
 } from '@angular/common/http';
 
 import {
-  Observable,
   firstValueFrom
 } from 'rxjs';
 
@@ -23,60 +22,17 @@ import {
 ========================================================= */
 
 export interface NearbyStore {
-
   storeUserId: number;
-
   storeName: string;
-
   address: string;
-
   city: string;
-
   state: string;
-
   pincode: string;
-
   latitude: number;
-
   longitude: number;
-
   distanceKm: number;
-
   deliveryRadiusKm: number;
-
   deliversToCustomer: boolean;
-
-}
-
-
-/* =========================================================
-   NEARBY STORE PAGE RESPONSE
-========================================================= */
-
-export interface NearbyStorePageResponse {
-
-  content: NearbyStore[];
-
-  empty: boolean;
-
-  first: boolean;
-
-  last: boolean;
-
-  number: number;
-
-  numberOfElements: number;
-
-  size: number;
-
-  totalElements: number;
-
-  totalPages: number;
-
-  pageable?: any;
-
-  sort?: any;
-
 }
 
 
@@ -85,17 +41,11 @@ export interface NearbyStorePageResponse {
 ========================================================= */
 
 export interface CustomerLocationState {
-
   latitude: number;
-
   longitude: number;
-
   accuracy: number;
-
   nearbyStores: NearbyStore[];
-
   nearbyStoreNames: string[];
-
 }
 
 
@@ -108,21 +58,11 @@ export interface CustomerLocationState {
 })
 export class LocationStateService {
 
-
-  /* =======================================================
-     STORAGE KEYS
-  ======================================================= */
-
   private readonly LOCATION_KEY =
     'diwali_customer_location';
 
   private readonly NEARBY_STORES_KEY =
     'diwali_nearby_stores';
-
-
-  /* =======================================================
-     API
-  ======================================================= */
 
   private readonly apiUrl =
     environment.apiUrl;
@@ -132,13 +72,29 @@ export class LocationStateService {
      CURRENT STATE
   ======================================================= */
 
-  private currentLocation: CustomerLocationState | null =
-    null;
+  private currentLocation:
+    CustomerLocationState | null = null;
+
+
+  /*
+   * If multiple API calls ask for location at the same
+   * time, they all use the same initialization promise.
+   *
+   * This prevents:
+   *
+   * GPS → nearby stores
+   * GPS → nearby stores
+   * GPS → nearby stores
+   *
+   * from happening simultaneously.
+   */
+  private initializationPromise:
+    Promise<CustomerLocationState> | null = null;
 
 
   constructor(
-    private locationService: LocationService,
-    private http: HttpClient
+    private readonly locationService: LocationService,
+    private readonly http: HttpClient
   ) {
 
     this.restoreStoredLocation();
@@ -146,56 +102,69 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
-     INITIALIZE CUSTOMER LOCATION
-  ======================================================= */
+  /* =========================================================
+     INITIALIZE LOCATION
+  ========================================================= */
 
-  async initializeLocation(): Promise<CustomerLocationState> {
+  async initializeLocation():
+    Promise<CustomerLocationState> {
 
     /*
-     * First try to use the location already stored
-     * from an earlier successful initialization.
+     * Already initialized during this application session.
      */
-
-    if (
-      this.currentLocation &&
-      this.currentLocation.nearbyStores.length >= 0
-    ) {
-
+    if (this.currentLocation) {
       return this.currentLocation;
-
     }
 
 
     /*
-     * Try restoring from localStorage.
+     * Try localStorage before requesting GPS.
      */
-
     this.restoreStoredLocation();
 
 
-    if (
-      this.currentLocation
-    ) {
-
+    if (this.currentLocation) {
       return this.currentLocation;
-
     }
 
 
     /*
-     * No stored location.
+     * Another request may already be initializing location.
      *
-     * Get the customer's current GPS location.
+     * Reuse it instead of starting another GPS/API cycle.
      */
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+
+    this.initializationPromise =
+      this.initializeFromGps();
+
+
+    try {
+
+      return await this.initializationPromise;
+
+    } finally {
+
+      this.initializationPromise = null;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     INITIALIZE FROM GPS
+  ========================================================= */
+
+  private async initializeFromGps():
+    Promise<CustomerLocationState> {
 
     const location =
       await this.locationService.getCurrentLocation();
 
-
-    /*
-     * Call nearby stores API.
-     */
 
     const nearbyStores =
       await this.getNearbyStores(
@@ -205,28 +174,15 @@ export class LocationStateService {
 
 
     /*
-     * Only stores that actually deliver to the
-     * customer are allowed.
+     * Only stores that explicitly deliver to the customer
+     * are allowed.
      */
-
     const deliverableStores =
       nearbyStores.filter(
         store =>
           store.deliversToCustomer === true
       );
 
-
-    /*
-     * Store names are normalized so that:
-     *
-     * "Siri Crackers"
-     *
-     * and
-     *
-     * " siri crackers "
-     *
-     * are treated as the same store.
-     */
 
     const nearbyStoreNames =
       deliverableStores.map(
@@ -236,10 +192,6 @@ export class LocationStateService {
           )
       );
 
-
-    /*
-     * Create complete location state.
-     */
 
     this.currentLocation = {
 
@@ -260,10 +212,6 @@ export class LocationStateService {
     };
 
 
-    /*
-     * Save locally.
-     */
-
     this.saveLocationState();
 
 
@@ -278,9 +226,9 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
+  /* =========================================================
      GET NEARBY STORES
-  ======================================================= */
+  ========================================================= */
 
   getNearbyStores(
     latitude: number,
@@ -289,61 +237,32 @@ export class LocationStateService {
     size: number = 10
   ): Promise<NearbyStore[]> {
 
-    let params =
+    const params =
       new HttpParams()
-
-        .set(
-          'latitude',
-          latitude
-        )
-
-        .set(
-          'longitude',
-          longitude
-        )
-
-        .set(
-          'page',
-          page
-        )
-
-        .set(
-          'size',
-          size
-        );
+        .set('latitude', latitude)
+        .set('longitude', longitude)
+        .set('page', page)
+        .set('size', size);
 
 
     return firstValueFrom(
-
-      this.http.get<NearbyStorePageResponse>(
+      this.http.get<{
+        content: NearbyStore[];
+      }>(
         `${this.apiUrl}/stores/nearby`,
-        {
-          params
-        }
+        { params }
       )
-
     ).then(
-
-      response => {
-
-        console.log(
-          'Nearby Stores API Response:',
-          response
-        );
-
-
-        return response?.content || [];
-
-      }
-
+      response =>
+        response?.content ?? []
     );
 
   }
 
 
-  /* =======================================================
-     GET CURRENT LOCATION STATE
-  ======================================================= */
+  /* =========================================================
+     CURRENT LOCATION STATE
+  ========================================================= */
 
   getCurrentLocationState():
     CustomerLocationState | null {
@@ -353,39 +272,39 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
-     GET NEARBY STORES
-  ======================================================= */
+  /* =========================================================
+     NEARBY STORES
+  ========================================================= */
 
   getNearbyStoresFromState():
     NearbyStore[] {
 
     return (
-      this.currentLocation?.nearbyStores ||
+      this.currentLocation?.nearbyStores ??
       []
     );
 
   }
 
 
-  /* =======================================================
-     GET NEARBY STORE NAMES
-  ======================================================= */
+  /* =========================================================
+     NEARBY STORE NAMES
+  ========================================================= */
 
   getNearbyStoreNames():
     string[] {
 
     return (
-      this.currentLocation?.nearbyStoreNames ||
+      this.currentLocation?.nearbyStoreNames ??
       []
     );
 
   }
 
 
-  /* =======================================================
-     CHECK WHETHER STORE IS ALLOWED
-  ======================================================= */
+  /* =========================================================
+     CHECK STORE
+  ========================================================= */
 
   isStoreNearby(
     storeName: string
@@ -405,11 +324,13 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
-     FILTER PRODUCTS BY STORE NAME
-  ======================================================= */
+  /* =========================================================
+     FILTER PRODUCTS
+  ========================================================= */
 
-  filterProductsByNearbyStores<T extends { storeName: string }>(
+  filterProductsByNearbyStores<T extends {
+    storeName: string;
+  }>(
     products: T[]
   ): T[] {
 
@@ -417,54 +338,33 @@ export class LocationStateService {
       this.getNearbyStoreNames();
 
 
-    /*
-     * If there are no nearby stores, return no products.
-     *
-     * This is intentional.
-     *
-     * We must never expose products from stores that
-     * have not been confirmed as deliverable.
-     */
-
-    if (
-      nearbyStoreNames.length === 0
-    ) {
-
+    if (nearbyStoreNames.length === 0) {
       return [];
-
     }
 
 
     return products.filter(
-      product => {
-
-        const productStoreName =
+      product =>
+        nearbyStoreNames.includes(
           this.normalizeStoreName(
             product.storeName
-          );
-
-
-        return nearbyStoreNames.includes(
-          productStoreName
-        );
-
-      }
+          )
+        )
     );
 
   }
 
 
-  /* =======================================================
+  /* =========================================================
      NORMALIZE STORE NAME
-  ======================================================= */
+  ========================================================= */
 
   private normalizeStoreName(
     storeName: string
   ): string {
 
     return (
-      storeName ||
-      ''
+      storeName ?? ''
     )
       .trim()
       .toLowerCase();
@@ -472,29 +372,22 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
-     SAVE LOCATION STATE
-  ======================================================= */
+  /* =========================================================
+     SAVE LOCATION
+  ========================================================= */
 
   private saveLocationState(): void {
 
-    if (
-      !this.currentLocation
-    ) {
-
+    if (!this.currentLocation) {
       return;
-
     }
 
 
     try {
 
       localStorage.setItem(
-
         this.LOCATION_KEY,
-
         JSON.stringify({
-
           latitude:
             this.currentLocation.latitude,
 
@@ -503,20 +396,15 @@ export class LocationStateService {
 
           accuracy:
             this.currentLocation.accuracy
-
         })
-
       );
 
 
       localStorage.setItem(
-
         this.NEARBY_STORES_KEY,
-
         JSON.stringify(
           this.currentLocation.nearbyStores
         )
-
       );
 
     } catch (error) {
@@ -531,11 +419,20 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
-     RESTORE LOCATION STATE
-  ======================================================= */
+  /* =========================================================
+     RESTORE LOCATION
+  ========================================================= */
 
   private restoreStoredLocation(): void {
+
+    /*
+     * Don't repeatedly parse localStorage once the
+     * in-memory state already exists.
+     */
+    if (this.currentLocation) {
+      return;
+    }
+
 
     try {
 
@@ -567,16 +464,16 @@ export class LocationStateService {
         );
 
 
-      const stores:
-        NearbyStore[] =
+      const stores =
         JSON.parse(
           storedStores
-        );
+        ) as NearbyStore[];
 
 
       if (
         typeof location.latitude !== 'number' ||
-        typeof location.longitude !== 'number'
+        typeof location.longitude !== 'number' ||
+        !Array.isArray(stores)
       ) {
 
         return;
@@ -600,7 +497,9 @@ export class LocationStateService {
           location.longitude,
 
         accuracy:
-          location.accuracy || 0,
+          typeof location.accuracy === 'number'
+            ? location.accuracy
+            : 0,
 
         nearbyStores:
           deliverableStores,
@@ -636,13 +535,15 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
+  /* =========================================================
      CLEAR LOCATION
-  ======================================================= */
+  ========================================================= */
 
   clearLocation(): void {
 
     this.currentLocation = null;
+
+    this.initializationPromise = null;
 
 
     try {
@@ -667,43 +568,29 @@ export class LocationStateService {
   }
 
 
-  /* =======================================================
+  /* =========================================================
      REFRESH LOCATION
-  ======================================================= */
+  ========================================================= */
 
   async refreshLocation():
     Promise<CustomerLocationState> {
 
-    /*
-     * Clear old location first.
-     */
-
     this.clearLocation();
-
-
-    /*
-     * Get completely fresh GPS location
-     * and nearby stores.
-     */
 
     return this.initializeLocation();
 
   }
 
 
-  /* =======================================================
-     GET CUSTOMER GPS LOCATION
-  ======================================================= */
+  /* =========================================================
+     GPS LOCATION
+  ========================================================= */
 
   getGpsLocation():
     UserLocation | null {
 
-    if (
-      !this.currentLocation
-    ) {
-
+    if (!this.currentLocation) {
       return null;
-
     }
 
 

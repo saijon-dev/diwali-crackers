@@ -36,22 +36,31 @@ import {
   cartOutline,
   imageOutline,
   chevronForwardOutline,
-  closeOutline
+  closeOutline,
+  homeOutline,
+  storefrontOutline
 } from 'ionicons/icons';
 
 import {
   CartService,
   CartItem,
+  CartStore,
   CreateOrderRequest,
   OrderResponse
 } from '../../services/cart.service';
+
+import {
+  FloatingCartComponent
+} from '../../components/floating-cart/floating-cart.component';
+import { Product } from '../../services/product.service';
 
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.page.html',
-  styleUrls: ['./cart.page.scss'],
+
   standalone: true,
+
   imports: [
     FormsModule,
     IonContent,
@@ -61,7 +70,8 @@ import {
     IonInput,
     IonTextarea,
     IonAlert,
-    IonToast
+    IonToast,
+    FloatingCartComponent
   ]
 })
 export class CartPage implements OnInit {
@@ -82,7 +92,21 @@ export class CartPage implements OnInit {
 
 
   /* ====================================================
+     CART STORES
+
+     Products are already separated by
+     vendor/store by the backend.
+  ==================================================== */
+
+  cartStores: CartStore[] = [];
+
+
+  /* ====================================================
      CART ITEMS
+
+     Flattened list used only for
+     compatibility with totals and
+     existing checkout logic.
   ==================================================== */
 
   cartItems: CartItem[] = [];
@@ -159,26 +183,21 @@ export class CartPage implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private cartService: CartService,
-      private alertController: AlertController
+    private alertController: AlertController
   ) {
 
     addIcons({
 
       arrowBackOutline,
-
       removeOutline,
-
       addOutline,
-
       trashOutline,
-
       cartOutline,
-
       imageOutline,
-
       chevronForwardOutline,
-
-      closeOutline
+      closeOutline,
+      homeOutline,
+      storefrontOutline
 
     });
 
@@ -207,6 +226,8 @@ export class CartPage implements OnInit {
 
 
     if (!token) {
+
+      this.cartStores = [];
 
       this.cartItems = [];
 
@@ -240,8 +261,23 @@ export class CartPage implements OnInit {
             response.cartToken || '';
 
 
+          /*
+           * Backend now returns stores[].
+           */
+
+          this.cartStores =
+            response.stores ?? [];
+
+
+          /*
+           * Keep a flattened list for
+           * totals and existing methods.
+           */
+
           this.cartItems =
-            response.items || [];
+            this.flattenStoreItems(
+              this.cartStores
+            );
 
 
           this.subtotal =
@@ -249,6 +285,8 @@ export class CartPage implements OnInit {
 
 
           this.isLoading = false;
+
+          this.errorMessage = '';
 
           this.calculateTotals();
 
@@ -264,6 +302,8 @@ export class CartPage implements OnInit {
             error
           );
 
+
+          this.cartStores = [];
 
           this.cartItems = [];
 
@@ -284,7 +324,51 @@ export class CartPage implements OnInit {
 
 
   /* ====================================================
-     CART ITEM COUNT
+     FLATTEN STORE ITEMS
+
+     Used only internally for totals.
+  ==================================================== */
+
+  private flattenStoreItems(
+    stores: CartStore[]
+  ): CartItem[] {
+
+    return stores.reduce(
+      (
+        items: CartItem[],
+        store: CartStore
+      ) => {
+
+        if (store.items?.length) {
+
+          items.push(
+            ...store.items
+          );
+
+        }
+
+        return items;
+
+      },
+      []
+    );
+
+  }
+
+
+  /* ====================================================
+     TOTAL STORES
+  ==================================================== */
+
+  get totalStores(): number {
+
+    return this.cartStores.length;
+
+  }
+
+
+  /* ====================================================
+     TOTAL ITEMS
   ==================================================== */
 
   get totalItems(): number {
@@ -368,8 +452,8 @@ export class CartPage implements OnInit {
   ): void {
 
     if (
-      item.quantity >=
-      item.availableStock
+      this.isLoading ||
+      item.quantity >= item.availableStock
     ) {
 
       return;
@@ -398,6 +482,7 @@ export class CartPage implements OnInit {
   ): void {
 
     if (
+      this.isLoading ||
       item.quantity <= 1
     ) {
 
@@ -420,6 +505,14 @@ export class CartPage implements OnInit {
 
   /* ====================================================
      UPDATE QUANTITY
+
+     PUT:
+
+     /cart/items/{cartItemId}
+
+     {
+       "quantity": 5
+     }
   ==================================================== */
 
   private updateQuantity(
@@ -447,8 +540,23 @@ export class CartPage implements OnInit {
           );
 
 
+          /*
+           * Backend returns the complete
+           * new stores[] structure.
+           */
+
+          this.cartStores =
+            response.stores ?? [];
+
+
           this.cartItems =
-            response.items || [];
+            this.flattenStoreItems(
+              this.cartStores
+            );
+
+
+          this.cartToken =
+            response.cartToken || this.cartToken;
 
 
           this.isLoading = false;
@@ -511,8 +619,14 @@ export class CartPage implements OnInit {
           );
 
 
+          this.cartStores =
+            response?.stores ?? [];
+
+
           this.cartItems =
-            response?.items || [];
+            this.flattenStoreItems(
+              this.cartStores
+            );
 
 
           this.isLoading = false;
@@ -606,6 +720,8 @@ export class CartPage implements OnInit {
             response
           );
 
+
+          this.cartStores = [];
 
           this.cartItems = [];
 
@@ -706,10 +822,6 @@ export class CartPage implements OnInit {
     }
 
 
-    /* ==================================================
-       NAME
-    ================================================== */
-
     if (
       !this.customerName.trim()
     ) {
@@ -723,10 +835,6 @@ export class CartPage implements OnInit {
 
     }
 
-
-    /* ==================================================
-       MOBILE
-    ================================================== */
 
     const mobile =
       this.customerMobile.trim();
@@ -756,10 +864,6 @@ export class CartPage implements OnInit {
     }
 
 
-    /* ==================================================
-       ADDRESS
-    ================================================== */
-
     if (
       !this.deliveryAddress.trim()
     ) {
@@ -773,10 +877,6 @@ export class CartPage implements OnInit {
 
     }
 
-
-    /* ==================================================
-       CART TOKEN
-    ================================================== */
 
     const token =
       this.cartService.getCartToken();
@@ -794,16 +894,8 @@ export class CartPage implements OnInit {
     }
 
 
-    /* ==================================================
-       CLOSE MODAL
-    ================================================== */
-
     this.isCheckoutModalOpen = false;
 
-
-    /* ==================================================
-       CONFIRM ORDER
-    ================================================== */
 
     const alert =
       await this.createConfirmAlert(
@@ -876,42 +968,26 @@ export class CartPage implements OnInit {
           this.createdOrder =
             response;
 
-
           this.isCreatingOrder = false;
 
 
-          /*
-           * Clear the local cart immediately.
-           *
-           * This updates:
-           * - CartPage
-           * - Cart badge
-           * - CartService
-           *
-           * without making another DELETE request.
-           */
-
-this.cartService.saveCustomerMobile(
-  this.customerMobile.trim()
-);
+          this.cartService.saveCustomerMobile(
+            this.customerMobile.trim()
+          );
 
 
+          this.cartService.clearLocalCart();
 
 
-          this.cartService
-            .clearLocalCart();
-
+          this.cartStores = [];
 
           this.cartItems = [];
 
           this.cartToken = '';
 
+
           this.calculateTotals();
 
-
-          /*
-           * Reset checkout fields.
-           */
 
           this.customerName = '';
 
@@ -923,26 +999,16 @@ this.cartService.saveCustomerMobile(
           this.cdr.detectChanges();
 
 
-          /*
-           * Show Ionic toast.
-           */
-
           this.showToast(
             `Order #${response.orderId} placed successfully.`,
             'success'
           );
 
 
-          /*
-           * Navigate to Orders page.
-           *
-           * Create /tabs/orders next.
-           */
-
           setTimeout(() => {
 
             this.router.navigate([
-              '/tabs/orders'
+              '/orders'
             ]);
 
           }, 900);
@@ -983,7 +1049,7 @@ this.cartService.saveCustomerMobile(
 
 
   /* ====================================================
-     CREATE IONIC CONFIRM ALERT
+     CREATE CONFIRM ALERT
   ==================================================== */
 
   private async createConfirmAlert(
@@ -1006,18 +1072,13 @@ this.cartService.saveCustomerMobile(
 
         {
           text: 'Cancel',
-
           role: 'cancel'
-
         },
 
         {
           text: confirmText,
-
           role: 'confirm',
-
           handler: confirmHandler
-
         }
 
       ]
@@ -1067,7 +1128,7 @@ this.cartService.saveCustomerMobile(
   continueShopping(): void {
 
     this.router.navigate([
-      '/tabs/home'
+      '/home'
     ]);
 
   }
@@ -1077,12 +1138,26 @@ this.cartService.saveCustomerMobile(
      BACK
   ==================================================== */
 
-  goBack(): void {
-
-    this.router.navigate([
-      '/tabs/home'
-    ]);
-
+ goBack(): void {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    this.router.navigate(['/home']);
   }
+}
+
+
+openProduct(productStoreId: number): void {
+
+  if (!productStoreId) {
+    return;
+  }
+
+  this.router.navigate([
+    '/product',
+    productStoreId
+  ]);
+
+}
 
 }

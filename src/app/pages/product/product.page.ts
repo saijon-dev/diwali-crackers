@@ -1,8 +1,12 @@
 import {
+  ChangeDetectorRef,
   Component,
-  OnInit,
+  ElementRef,
   OnDestroy,
-  ChangeDetectorRef
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
 } from '@angular/core';
 
 import {
@@ -11,20 +15,25 @@ import {
 } from '@angular/router';
 
 import {
+  HttpClient
+} from '@angular/common/http';
+
+import {
   IonContent,
-  IonIcon,
-  IonBackButton
+  IonIcon
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
 
 import {
   cartOutline,
+  arrowBackOutline,
   chevronBackOutline,
   chevronForwardOutline,
   addOutline,
   removeOutline,
   checkmarkCircleOutline,
+  checkmarkOutline,
   imageOutline
 } from 'ionicons/icons';
 
@@ -35,277 +44,356 @@ import {
   Product
 } from '../../services/product.service';
 
+import {
+  FloatingCartComponent
+} from '../../components/floating-cart/floating-cart.component';
+
+import {
+  environment
+} from '../../../environments/environment';
+
+
+/* =========================================================
+   CATEGORY MODEL
+========================================================= */
+
+interface ProductCategory {
+  categoryId: number;
+  categoryName: string;
+}
+
+
+/* =========================================================
+   COMPONENT
+========================================================= */
 
 @Component({
   selector: 'app-product',
-
   standalone: true,
-
   templateUrl: './product.page.html',
-
-  styleUrls: ['./product.page.scss'],
-
   imports: [
     IonContent,
     IonIcon,
-    IonBackButton
+    FloatingCartComponent
   ]
 })
 export class ProductPage implements OnInit, OnDestroy {
 
+  @ViewChild(IonContent)
+  content!: IonContent;
 
-  /* =====================================
-     IMAGE
-     ===================================== */
+  @ViewChild('categoryScroller')
+  categoryScroller?: ElementRef<HTMLDivElement>;
 
-  selectedImageIndex = 0;
-
-  /*
-   * Automatically changes the product
-   * image every 5 seconds.
-   */
-  private imageInterval:
-    ReturnType<typeof setInterval> | null = null;
+  @ViewChildren('categoryItem')
+  categoryItems!: QueryList<ElementRef<HTMLButtonElement>>;
 
 
-  /* =====================================
-     QUANTITY
-     ===================================== */
-
-  quantity = 1;
-
-
-  /* =====================================
-     CART
-     ===================================== */
-
-  /*
-   * Existing UI state.
-   *
-   * This remains available so your
-   * current HTML does not break.
-   */
-  addedToCart = false;
-
-
-  /*
-   * Prevents multiple clicks while
-   * the Add To Cart API is running.
-   */
-  isAddingToCart = false;
-
-
-  /*
-   * Once true, the same product cannot
-   * be added to the cart again.
-   */
-  isAddedToCart = false;
-
-
-  /* =====================================
-     PRODUCTS
-     ===================================== */
-
-  products: Product[] = [];
-
-
-  /* =====================================
-     CURRENT PRODUCT
-     ===================================== */
+  /* =========================================================
+     PRODUCT
+  ========================================================= */
 
   product: Product | null = null;
 
 
-  /* =====================================
-     EXPLORE MORE
-     ===================================== */
+  /* =========================================================
+     ALL VENDOR PRODUCTS
+
+     Loaded once when Product Details opens.
+  ========================================================= */
+
+  private allVendorProducts: Product[] = [];
+
+
+  /* =========================================================
+     CATEGORY SELECTION
+  ========================================================= */
+
+  categories: ProductCategory[] = [];
+
+  selectedCategoryId: number | null = null;
+
+  private categoryScrollFrame: number | null = null;
+
+
+  /*
+   * Only products belonging to the selected category
+   * are displayed below the category selector.
+   *
+   * The currently displayed main product is excluded.
+   */
+
+  get categoryProducts(): Product[] {
+    if (this.selectedCategoryId === null) {
+      return [];
+    }
+
+    const selectedCategory = this.categories.find(
+      category =>
+        category.categoryId === this.selectedCategoryId
+    );
+
+    if (!selectedCategory) {
+      return [];
+    }
+
+    return this.exploreProducts.filter(
+      item =>
+        (item.categoryName || '').trim().toLowerCase() ===
+        selectedCategory.categoryName.trim().toLowerCase()
+    );
+  }
+
+
+  /* =========================================================
+     OTHER PRODUCTS
+  ========================================================= */
 
   exploreProducts: Product[] = [];
 
+  exploreAddingProductStoreId: number | null = null;
 
-  /* =====================================
-     STATE
-     ===================================== */
+
+  /* =========================================================
+     IMAGE
+  ========================================================= */
+
+  selectedImageIndex = 0;
+
+  private imageInterval: ReturnType<typeof setInterval> | null = null;
+
+
+  /* =========================================================
+     QUANTITY
+  ========================================================= */
+
+  quantity = 1;
+
+
+  /* =========================================================
+     CART
+  ========================================================= */
+
+  isAddingToCart = false;
+
+  isAddedToCart = false;
+
+
+  /* =========================================================
+     PAGE STATE
+  ========================================================= */
 
   isLoading = false;
 
   errorMessage = '';
 
 
+  /* =========================================================
+     CONSTRUCTOR
+  ========================================================= */
+
   constructor(
-    private route: ActivatedRoute,
-
-    private router: Router,
-
-    private productService: ProductService,
-
-    private cdr: ChangeDetectorRef,
-
-    private cartService: CartService
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly productService: ProductService,
+    private readonly cdr: ChangeDetectorRef,
+    private readonly cartService: CartService,
+    private readonly http: HttpClient
   ) {
-
     addIcons({
-
       cartOutline,
-
+      arrowBackOutline,
       chevronBackOutline,
-
       chevronForwardOutline,
-
       addOutline,
-
       removeOutline,
-
       checkmarkCircleOutline,
-
+      checkmarkOutline,
       imageOutline
-
     });
-
   }
 
 
-  /* =====================================
-     INITIAL LOAD
-     ===================================== */
+  /* =========================================================
+     INIT
+  ========================================================= */
 
   ngOnInit(): void {
 
     /*
-     * Listen to route changes.
-     *
-     * This allows Product Details to
-     * update correctly when the user
-     * clicks another product from
-     * Explore More.
+     * Load the categories independently from the
+     * vendor products API.
      */
 
-    this.route.paramMap
-      .subscribe(params => {
-
-        const productStoreId =
-          Number(
-            params.get('id')
-          );
+    this.loadCategories();
 
 
-        console.log(
-          'Selected productStoreId:',
-          productStoreId
-        );
+    this.route.paramMap.subscribe(params => {
 
+      /*
+       * The Product Details route receives productStoreId.
+       *
+       * Example:
+       * /product/22
+       *
+       * 22 = productStoreId
+       */
 
-        this.loadProduct(
-          productStoreId
-        );
+      const productStoreId = Number(params.get('id'));
 
-      });
+      if (!productStoreId || productStoreId <= 0) {
+        this.errorMessage = 'Invalid product.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
 
+      this.loadVendorProducts(productStoreId);
+
+    });
   }
 
 
-  /* =====================================
-     LOAD PRODUCT
-     ===================================== */
+  /* =========================================================
+     LOAD CATEGORIES
 
-  loadProduct(
-    productStoreId: number
+     API:
+     GET /api/categories
+  ========================================================= */
+
+  private loadCategories(): void {
+
+    this.http
+      .get<any>(`${environment.apiUrl}/categories`)
+      .subscribe({
+
+        next: response => {
+
+          const categoryResponse =
+            Array.isArray(response)
+              ? response
+              : response?.content ??
+                response?.categories ??
+                response?.data ??
+                [];
+
+          this.categories = categoryResponse
+            .map((category: any) => ({
+              categoryId: Number(
+                category.categoryId ?? category.id
+              ),
+              categoryName: String(
+                category.categoryName ?? category.name ?? ''
+              ).trim()
+            }))
+            .filter(
+              (category: ProductCategory) =>
+                Number.isFinite(category.categoryId) &&
+                category.categoryId > 0 &&
+                category.categoryName.length > 0
+            );
+
+          /*
+           * If the main product is already loaded,
+           * select its category. Otherwise, select
+           * the first category when available.
+           */
+
+          if (this.product) {
+            this.selectCategoryForProduct(this.product);
+          } else if (this.categories.length > 0) {
+            this.selectedCategoryId =
+              this.categories[0].categoryId;
+
+            this.centerCategory(this.selectedCategoryId);
+          }
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: error => {
+          console.error('Categories API Error:', error);
+
+          this.categories = [];
+          this.selectedCategoryId = null;
+
+          this.cdr.detectChanges();
+        }
+
+      });
+  }
+
+
+  /* =========================================================
+     LOAD ALL VENDOR PRODUCTS
+
+     API:
+     /{productStoreId}/all-vendor-products
+  ========================================================= */
+
+  private loadVendorProducts(
+    selectedProductStoreId: number
   ): void {
-
-    /*
-     * Stop the previous image slider
-     * before loading another product.
-     */
 
     this.stopImageSlider();
 
-
-    /* ===================================
-       RESET PRODUCT STATE
-    =================================== */
-
     this.isLoading = true;
-
     this.errorMessage = '';
 
     this.product = null;
-
     this.exploreProducts = [];
+    this.allVendorProducts = [];
 
     this.selectedImageIndex = 0;
-
     this.quantity = 1;
 
-    /*
-     * Reset cart state while loading
-     * another product.
-     */
-    this.addedToCart = false;
-
     this.isAddingToCart = false;
-
     this.isAddedToCart = false;
 
+    this.exploreAddingProductStoreId = null;
 
     this.cdr.detectChanges();
 
-
-    /* ===================================
-       GET PRODUCTS
-    =================================== */
-
     this.productService
-      .getProducts()
+      .getAllVendorProducts(selectedProductStoreId)
       .subscribe({
 
-        next: (response) => {
+        next: response => {
 
           console.log(
-            'Products API Response:',
+            'All Vendor Products Response:',
             response
           );
 
-
-          /*
-           * Store all products.
-           */
-
-          this.products =
-            response?.content || [];
+          this.allVendorProducts =
+            response?.content ?? [];
 
 
           /*
-           * Find the exact store-specific
-           * product.
-           *
-           * productStoreId is used because
-           * productId can repeat.
+           * Find the exact selected product.
            */
 
-          const foundProduct =
-            this.products.find(
-              product =>
-                product.productStoreId ===
-                productStoreId
+          const selectedProduct =
+            this.allVendorProducts.find(
+              item =>
+                Number(item.productStoreId) ===
+                Number(selectedProductStoreId)
             );
 
 
-          /* ==============================
-             PRODUCT NOT FOUND
-          ============================== */
+          /*
+           * Product not found.
+           */
 
-          if (!foundProduct) {
+          if (!selectedProduct) {
 
             this.product = null;
-
             this.exploreProducts = [];
 
             this.isLoading = false;
-
             this.errorMessage =
-              'Product not found.';
-
-            this.stopImageSlider();
+              'Unable to find the selected product.';
 
             this.cdr.detectChanges();
 
@@ -313,87 +401,41 @@ export class ProductPage implements OnInit, OnDestroy {
           }
 
 
-          /* ==============================
-             SET CURRENT PRODUCT
-          ============================== */
+          /*
+           * Display the selected product as the
+           * main product.
+           */
 
-          this.product =
-            foundProduct;
+          this.setMainProduct(selectedProduct);
 
 
           /*
-           * Reset product state.
+           * Other vendor products are cached locally.
+           * No additional product API call is required
+           * when selecting another product.
            */
 
-          this.selectedImageIndex = 0;
-
-          this.quantity = 1;
-
-
-          /* ==============================
-             CHECK CART STATE
-          ============================== */
-
-          this.checkCartState(
-            foundProduct.productStoreId
-          );
-
-
-          /* ==============================
-             EXPLORE MORE
-          ============================== */
-
-          /*
-           * Exclude every store entry having
-           * the same productId.
-           */
-
-          this.exploreProducts =
-            this.products.filter(
-              product =>
-                product.productId !==
-                this.product!.productId
-            );
-
-
-          console.log(
-            'Current Product:',
-            this.product
-          );
-
-
-          console.log(
-            'Explore More:',
-            this.exploreProducts
-          );
+          this.updateExploreProducts();
 
 
           this.isLoading = false;
+          this.errorMessage = '';
 
           this.cdr.detectChanges();
-
-
-          /* ==============================
-             START IMAGE SLIDER
-          ============================== */
 
           this.startImageSlider();
 
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
-            'Product Details API Error:',
+            'All Vendor Products Error:',
             error
           );
 
-
-          this.products = [];
-
           this.product = null;
-
+          this.allVendorProducts = [];
           this.exploreProducts = [];
 
           this.isLoading = false;
@@ -401,240 +443,318 @@ export class ProductPage implements OnInit, OnDestroy {
           this.errorMessage =
             error?.error?.message ||
             error?.message ||
-            'Unable to load product.';
-
-
-          /*
-           * Make sure no previous product
-           * slider is still running.
-           */
+            'Unable to load vendor products.';
 
           this.stopImageSlider();
-
 
           this.cdr.detectChanges();
 
         }
 
       });
-
   }
 
 
-  /* =====================================
-     CHECK CART STATE
-     ===================================== */
+  /* =========================================================
+     SET MAIN PRODUCT
 
-  private checkCartState(
-    productStoreId: number
-  ): void {
+     Used for:
+     1. Initially selected product
+     2. Product selected from category products
+
+     No product API call here.
+  ========================================================= */
+
+  private setMainProduct(product: Product): void {
+
+    this.product = product;
+
+    this.selectedImageIndex = 0;
+    this.quantity = 1;
+
+    this.isAddingToCart = false;
+    this.isAddedToCart = false;
+
+    this.exploreAddingProductStoreId = null;
+
+    this.stopImageSlider();
+
+    this.checkCartState(product.productStoreId);
 
     /*
-     * First check whether CartService
-     * already has the current cart.
+     * Select the category belonging to the main product.
      */
 
-    const currentCart =
-      this.cartService.getCurrentCart();
+    this.selectCategoryForProduct(product);
+
+    this.cdr.detectChanges();
+
+    this.startImageSlider();
+  }
 
 
-    if (currentCart) {
+  /* =========================================================
+     SELECT THE CATEGORY FOR A PRODUCT
+  ========================================================= */
 
-      this.isAddedToCart =
-        currentCart.items?.some(
-          item =>
-            item.productStoreId ===
-            productStoreId
-        ) ?? false;
+  private selectCategoryForProduct(product: Product): void {
 
-
-      /*
-       * Keep existing UI state in sync.
-       */
-
-      this.addedToCart =
-        this.isAddedToCart;
-
-
-      this.cdr.detectChanges();
-
+    if (this.categories.length === 0) {
       return;
     }
 
+    const productCategoryName =
+      (product.categoryName || '').trim().toLowerCase();
 
-    /*
-     * If there is no cart currently loaded,
-     * check whether a cart token exists.
-     */
+    const matchingCategory = this.categories.find(
+      category =>
+        category.categoryName.trim().toLowerCase() ===
+        productCategoryName
+    );
 
-    const cartToken =
-      this.cartService.getCartToken();
-
-
-    /*
-     * No token means the user has never
-     * created a cart.
-     */
-
-    if (!cartToken) {
-
-      this.isAddedToCart = false;
-
-      this.addedToCart = false;
-
-      this.cdr.detectChanges();
-
+    if (matchingCategory) {
+      this.selectedCategoryId = matchingCategory.categoryId;
+      this.centerCategory(matchingCategory.categoryId);
       return;
-
     }
 
-
     /*
-     * A token exists, so retrieve the
-     * current cart to determine whether
-     * this product was already added.
+     * If the product category is not returned by the
+     * categories API, keep the current selection when
+     * possible. Otherwise select the first category.
      */
+
+    if (
+      this.selectedCategoryId === null &&
+      this.categories.length > 0
+    ) {
+      this.selectedCategoryId =
+        this.categories[0].categoryId;
+
+      this.centerCategory(this.selectedCategoryId);
+    }
+  }
+
+
+  /* =========================================================
+     UPDATE OTHER PRODUCTS
+
+     Uses the already-loaded products.
+     No API call.
+  ========================================================= */
+
+  private updateExploreProducts(): void {
+
+    if (!this.product) {
+      this.exploreProducts = [];
+      return;
+    }
+
+    this.exploreProducts =
+      this.allVendorProducts.filter(
+        item =>
+          Number(item.productStoreId) !==
+          Number(this.product!.productStoreId)
+      );
+
+    this.cdr.detectChanges();
+  }
+
+
+  /* =========================================================
+     CATEGORY SELECTION
+  ========================================================= */
+
+  selectCategory(category: ProductCategory): void {
+
+    if (
+      this.selectedCategoryId === category.categoryId
+    ) {
+      this.centerCategory(category.categoryId);
+      return;
+    }
+
+    this.selectedCategoryId = category.categoryId;
+
+    this.centerCategory(category.categoryId);
+
+    this.cdr.detectChanges();
+  }
+
+
+  /* =========================================================
+     CENTER THE SELECTED CATEGORY
+  ========================================================= */
+
+private centerCategory(categoryId: number): void {
+  requestAnimationFrame(() => {
+    const scroller = this.categoryScroller?.nativeElement;
+
+    if (!scroller) {
+      return;
+    }
+
+    const selectedElement =
+      scroller.querySelector<HTMLButtonElement>(
+        `[data-category-id="${categoryId}"]`
+      );
+
+    if (!selectedElement) {
+      return;
+    }
+
+    const scrollLeft =
+      selectedElement.offsetLeft -
+      (scroller.clientWidth - selectedElement.offsetWidth) / 2;
+
+    scroller.scrollTo({
+      left: Math.max(
+        0,
+        Math.min(
+          scrollLeft,
+          scroller.scrollWidth - scroller.clientWidth
+        )
+      ),
+      behavior: 'smooth'
+    });
+  });
+}
+
+onCategoryScroll(): void {
+  if (this.categoryScrollFrame !== null) {
+    return;
+  }
+
+  this.categoryScrollFrame = requestAnimationFrame(() => {
+    this.categoryScrollFrame = null;
+
+    const scroller = this.categoryScroller?.nativeElement;
+
+    if (!scroller) {
+      return;
+    }
+
+    const elements = Array.from(
+      scroller.querySelectorAll<HTMLButtonElement>(
+        '[data-category-id]'
+      )
+    );
+
+    if (elements.length === 0) {
+      return;
+    }
+
+    const scrollerRect = scroller.getBoundingClientRect();
+    const centerX = scrollerRect.left + scrollerRect.width / 2;
+
+    let closestId: number | null = null;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    for (const element of elements) {
+      const rect = element.getBoundingClientRect();
+      const elementCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - elementCenter);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestId = Number(element.dataset['categoryId']);
+      }
+    }
+
+    if (
+      closestId !== null &&
+      closestId !== this.selectedCategoryId
+    ) {
+      this.selectedCategoryId = closestId;
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+
+  /* =========================================================
+     CART STATE
+  ========================================================= */
+
+  private checkCartState(productStoreId: number): void {
 
     this.cartService
       .getCart()
       .subscribe({
 
-        next: (cart) => {
+        next: cart => {
 
           this.isAddedToCart =
-            cart.items?.some(
-              item =>
-                item.productStoreId ===
-                productStoreId
+            cart.stores?.some(
+              store =>
+                store.items?.some(
+                  item =>
+                    Number(item.productStoreId) ===
+                    Number(productStoreId)
+                ) ?? false
             ) ?? false;
 
-
-          this.addedToCart =
-            this.isAddedToCart;
-
-
           this.cdr.detectChanges();
-
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
             'Check Cart State Error:',
             error
           );
 
-
-          /*
-           * Do not block the product page
-           * if cart retrieval fails.
-           */
-
           this.isAddedToCart = false;
 
-          this.addedToCart = false;
-
           this.cdr.detectChanges();
-
         }
 
       });
-
   }
 
 
-  /* =====================================
-     START IMAGE SLIDER
-     ===================================== */
+  /* =========================================================
+     IMAGE SLIDER
+  ========================================================= */
 
   startImageSlider(): void {
 
-    /*
-     * Always clear an existing interval
-     * before creating a new one.
-     */
-
     this.stopImageSlider();
-
-
-    /*
-     * No slider needed if there is only
-     * one image or no images.
-     */
 
     if (
       !this.product?.images ||
       this.product.images.length <= 1
     ) {
-
       return;
-
     }
 
+    this.imageInterval = setInterval(() => {
 
-    this.imageInterval =
-      setInterval(() => {
+      if (
+        !this.product?.images ||
+        this.product.images.length <= 1
+      ) {
+        return;
+      }
 
-        if (
-          !this.product?.images ||
-          this.product.images.length <= 1
-        ) {
+      this.selectedImageIndex =
+        (this.selectedImageIndex + 1) %
+        this.product.images.length;
 
-          return;
+      this.cdr.detectChanges();
 
-        }
-
-
-        /*
-         * Move to the next image.
-         *
-         * When the last image is reached,
-         * return to the first image.
-         */
-
-        this.selectedImageIndex =
-          (
-            this.selectedImageIndex + 1
-          ) %
-          this.product.images.length;
-
-
-        /*
-         * Force the view to update.
-         */
-
-        this.cdr.detectChanges();
-
-      }, 5000);
-
+    }, 4000);
   }
 
-
-  /* =====================================
-     STOP IMAGE SLIDER
-     ===================================== */
 
   stopImageSlider(): void {
 
-    if (
-      this.imageInterval !== null
-    ) {
-
-      clearInterval(
-        this.imageInterval
-      );
-
+    if (this.imageInterval !== null) {
+      clearInterval(this.imageInterval);
       this.imageInterval = null;
-
     }
-
   }
 
-
-  /* =====================================
-     GET CURRENT IMAGE
-     ===================================== */
 
   getCurrentImage(): string {
 
@@ -642,469 +762,269 @@ export class ProductPage implements OnInit, OnDestroy {
       !this.product?.images ||
       this.product.images.length === 0
     ) {
-
       return 'assets/images/rectangle-image.png';
-
     }
 
-
     return (
-      this.product
-        .images[
-          this.selectedImageIndex
-        ]
-        ?.imageUrl
-      ||
+      this.product.images[this.selectedImageIndex]?.imageUrl ||
       'assets/images/rectangle-image.png'
     );
-
   }
 
 
-  /* =====================================
-     SELECT IMAGE
-     ===================================== */
-
-  selectImage(
-    index: number
-  ): void {
+  selectImage(index: number): void {
 
     if (!this.product) {
-
       return;
-
     }
-
 
     if (
       !this.product.images ||
       this.product.images.length === 0
     ) {
-
       return;
-
     }
-
 
     if (
       index < 0 ||
       index >= this.product.images.length
     ) {
-
       return;
-
     }
 
-
-    this.selectedImageIndex =
-      index;
-
-
-    /*
-     * Restart automatic slider.
-     *
-     * Selected image stays visible for
-     * another 5 seconds.
-     */
+    this.selectedImageIndex = index;
 
     this.startImageSlider();
 
-
     this.cdr.detectChanges();
-
   }
 
-
-  /* =====================================
-     PREVIOUS IMAGE
-     ===================================== */
 
   previousImage(): void {
 
     if (!this.product) {
-
       return;
-
     }
-
 
     if (
       !this.product.images ||
-      this.product.images.length === 0
+      this.product.images.length <= 1
     ) {
-
       return;
-
     }
 
-
-    if (
-      this.selectedImageIndex === 0
-    ) {
-
+    if (this.selectedImageIndex === 0) {
       this.selectedImageIndex =
         this.product.images.length - 1;
-
     } else {
-
       this.selectedImageIndex--;
-
     }
-
-
-    /*
-     * Restart automatic slider.
-     */
 
     this.startImageSlider();
 
-
     this.cdr.detectChanges();
-
   }
 
-
-  /* =====================================
-     NEXT IMAGE
-     ===================================== */
 
   nextImage(): void {
 
     if (!this.product) {
-
       return;
-
     }
-
 
     if (
       !this.product.images ||
-      this.product.images.length === 0
+      this.product.images.length <= 1
     ) {
-
       return;
-
     }
-
 
     if (
       this.selectedImageIndex ===
       this.product.images.length - 1
     ) {
-
       this.selectedImageIndex = 0;
-
     } else {
-
       this.selectedImageIndex++;
-
     }
-
-
-    /*
-     * Restart automatic slider.
-     */
 
     this.startImageSlider();
 
-
     this.cdr.detectChanges();
-
   }
 
 
-  /* =====================================
-     INCREASE QUANTITY
-     ===================================== */
+  /* =========================================================
+     QUANTITY
+  ========================================================= */
 
   increaseQuantity(): void {
 
     if (!this.product) {
-
       return;
-
     }
-
-
-    /*
-     * Do not allow quantity to go above
-     * available product stock.
-     */
 
     if (
-      this.quantity <
-      this.product.stockQuantity
+      this.quantity < this.product.stockQuantity
     ) {
-
       this.quantity++;
-
     }
-
   }
 
-
-  /* =====================================
-     DECREASE QUANTITY
-     ===================================== */
 
   decreaseQuantity(): void {
 
-    if (
-      this.quantity > 1
-    ) {
-
+    if (this.quantity > 1) {
       this.quantity--;
-
     }
-
   }
 
 
-  /* =====================================
-     ADD TO CART
-     ===================================== */
+  /* =========================================================
+     MAIN PRODUCT - ADD TO CART
+  ========================================================= */
 
   addToCart(): void {
 
-    /*
-     * Product must exist.
-     */
-
     if (!this.product) {
-
       return;
-
     }
-
-
-    /*
-     * Prevent another request if:
-     *
-     * 1. The current request is still running.
-     * 2. This product is already in cart.
-     */
 
     if (
       this.isAddingToCart ||
       this.isAddedToCart
     ) {
-
       return;
-
     }
-
-
-    /*
-     * Product store ID is REQUIRED by
-     * the Add To Cart API.
-     */
 
     const productStoreId =
       this.product.productStoreId;
 
-
-    /*
-     * Quantity selected by the user.
-     */
-
-    const quantity =
-      this.quantity;
-
-
-    /*
-     * Basic safety check.
-     */
+    const quantity = this.quantity;
 
     if (
       quantity < 1 ||
-      quantity >
-      this.product.stockQuantity
+      quantity > this.product.stockQuantity
     ) {
-
       this.errorMessage =
         'Please select a valid quantity.';
 
       this.cdr.detectChanges();
 
       return;
-
     }
 
-
-    console.log(
-      'Adding product to cart:',
-      {
-        productStoreId,
-        quantity
-      }
-    );
-
-
-    /*
-     * Clear previous error.
-     */
-
     this.errorMessage = '';
-
-
-    /*
-     * Show loading state.
-     */
-
     this.isAddingToCart = true;
 
     this.cdr.detectChanges();
 
-
-    /*
-     * CartService automatically decides
-     * whether the request should contain:
-     *
-     * First product:
-     *
-     * {
-     *   productStoreId,
-     *   quantity
-     * }
-     *
-     * Later products:
-     *
-     * {
-     *   cartToken,
-     *   productStoreId,
-     *   quantity
-     * }
-     */
-
     this.cartService
-      .addToCart(
-        productStoreId,
-        quantity
-      )
+      .addToCart(productStoreId, quantity)
       .subscribe({
 
-        next: (response) => {
+        next: response => {
 
           console.log(
             'Add To Cart Response:',
             response
           );
 
-
-          /*
-           * Request completed successfully.
-           */
-
           this.isAddingToCart = false;
-
-
-          /*
-           * Permanently mark this product
-           * as added while this product page
-           * is open.
-           *
-           * CartService also has the latest
-           * cart response now.
-           */
-
           this.isAddedToCart = true;
 
-          this.addedToCart = true;
-
-
-          /*
-           * Make sure the UI updates immediately.
-           */
+          if (this.product) {
+            this.product.alreadyAdded = true;
+          }
 
           this.cdr.detectChanges();
-
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
             'Add To Cart Error:',
             error
           );
 
-
-          /*
-           * Restore button after failure.
-           */
-
           this.isAddingToCart = false;
-
           this.isAddedToCart = false;
-
-          this.addedToCart = false;
-
-
-          /*
-           * Display backend error if available.
-           */
 
           this.errorMessage =
             error?.error?.message ||
             error?.message ||
             'Unable to add product to cart. Please try again.';
 
-
           this.cdr.detectChanges();
-
         }
 
       });
-
   }
 
 
-  /* =====================================
-     OPEN EXPLORE PRODUCT
-     ===================================== */
+  /* =========================================================
+     OPEN A PRODUCT FROM THE SELECTED CATEGORY
 
-  openProduct(
-    product: Product
-  ): void {
+     Uses cached products.
+     No additional product API call.
+  ========================================================= */
 
-    this.router.navigate([
-      '/tabs/product',
-      product.productStoreId
-    ]);
+  openProduct(product: Product): void {
 
+    if (!product?.productStoreId) {
+      return;
+    }
+
+    this.setMainProduct(product);
+
+    this.updateExploreProducts();
+
+    setTimeout(() => {
+      this.scrollToTop();
+    }, 0);
   }
 
 
-  /* =====================================
-     TRACK PRODUCTS
-     ===================================== */
+  /* =========================================================
+     SCROLL TO TOP
+  ========================================================= */
 
-  trackProduct(
-    index: number,
-    product: Product
-  ): number {
+  private async scrollToTop(): Promise<void> {
 
-    return product.productStoreId;
+    if (!this.content) {
+      return;
+    }
 
+    await this.content.scrollToTop(300);
   }
 
 
-  /* =====================================
+  /* =========================================================
+     BACK
+  ========================================================= */
+
+  goBack(): void {
+
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      this.router.navigate(['/home']);
+    }
+  }
+
+
+  /* =========================================================
      DESTROY
-     ===================================== */
+  ========================================================= */
 
   ngOnDestroy(): void {
 
-    /*
-     * Stop the image slider when leaving
-     * the Product Details page.
-     *
-     * This prevents the interval from
-     * continuing in the background.
-     */
-
     this.stopImageSlider();
 
+    if (this.categoryScrollFrame !== null) {
+      cancelAnimationFrame(this.categoryScrollFrame);
+      this.categoryScrollFrame = null;
+    }
   }
 
 }

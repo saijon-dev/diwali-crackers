@@ -29,14 +29,14 @@ import {
 
 import {
   ProductService,
-  VendorProduct
+  VendorProduct,
+    LookupUnit
 } from '../../../services/product.service';
 
 
 @Component({
   selector: 'app-admin-edit',
   templateUrl: './admin-edit.page.html',
-  styleUrls: ['./admin-edit.page.scss'],
   standalone: true,
   imports: [
     IonContent,
@@ -57,6 +57,20 @@ export class AdminEditPage implements OnInit {
   isSaving = false;
 
   selectedImageIndex = 0;
+
+
+
+  /*
+ * =====================================================
+ * PACK UNITS
+ * =====================================================
+ */
+
+packUnits: LookupUnit[] = [];
+
+isLoadingPackUnits = false;
+
+packUnitErrorMessage = '';
 
 
   /*
@@ -117,6 +131,8 @@ export class AdminEditPage implements OnInit {
 
 
     this.productId = Number(id);
+
+      this.loadPackUnits()
 
     this.loadProduct();
 
@@ -632,6 +648,11 @@ export class AdminEditPage implements OnInit {
 
     };
 
+    const images =
+  this.product.images && this.product.images.length > 0
+    ? this.product.images
+    : null;
+
 
     console.log(
       'PUT Product Data:',
@@ -728,5 +749,58 @@ export class AdminEditPage implements OnInit {
     ]);
 
   }
+
+  removeExistingImage(index: number): void {
+  if (!this.product?.images) {
+    return;
+  }
+
+  this.product.images.splice(index, 1);
+
+  if (this.product.images.length === 0) {
+    this.selectedImageIndex = 0;
+  } else if (this.selectedImageIndex >= this.product.images.length) {
+    this.selectedImageIndex = this.product.images.length - 1;
+  }
+}
+
+
+// =====================================================
+// LOAD PACK UNITS
+// =====================================================
+
+loadPackUnits(): void {
+  this.isLoadingPackUnits = true;
+  this.packUnitErrorMessage = '';
+
+  this.cdr.detectChanges();
+
+  this.productService.getPackUnits().subscribe({
+    next: (response) => {
+      console.log('Pack Units API Response:', response);
+
+      this.packUnits = (response ?? []).filter(
+        unit => unit.status === 'ACTIVE'
+      );
+
+      this.isLoadingPackUnits = false;
+      this.cdr.detectChanges();
+    },
+
+    error: (error) => {
+      console.error('Load Pack Units Error:', error);
+
+      this.packUnits = [];
+
+      this.packUnitErrorMessage =
+        error?.error?.message ||
+        error?.message ||
+        'Unable to load pack units. Please try again.';
+
+      this.isLoadingPackUnits = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
 }

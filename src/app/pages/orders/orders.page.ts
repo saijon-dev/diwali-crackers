@@ -2,6 +2,7 @@ import {
   Component,
   ChangeDetectorRef
 } from '@angular/core';
+import { finalize } from 'rxjs';
 
 import {
   NgClass,
@@ -53,7 +54,6 @@ import { CartService } from '../../services/cart.service';
 
   templateUrl: './orders.page.html',
 
-  styleUrls: ['./orders.page.scss'],
 
   imports: [
     FormsModule,
@@ -324,49 +324,28 @@ next: (response) => {
      ORDER HISTORY
   ==================================================== */
 
-  private loadOrderHistory(
-    orderId: number
-  ): void {
+private loadOrderHistory(orderId: number): void {
+  this.isLoadingDetails = true;
+  this.orderHistory = [];
 
-    this.orderService
-      .getOrderHistory(
-        orderId,
-        this.searchedMobile
-      )
-      .subscribe({
-
-        next: (response) => {
-
-          this.orderHistory =
-            response ?? [];
-
-          this.isLoadingDetails =
-            false;
-
-          this.cdr.detectChanges();
-
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'GET ORDER HISTORY ERROR:',
-            error
-          );
-
-          this.orderHistory = [];
-
-          this.isLoadingDetails =
-            false;
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
-  }
+  this.orderService
+    .getOrderHistory(orderId, this.searchedMobile)
+    .pipe(
+      finalize(() => {
+        this.isLoadingDetails = false;
+        this.cdr.detectChanges();
+      })
+    )
+    .subscribe({
+      next: (response) => {
+        this.orderHistory = response ?? [];
+      },
+      error: (error) => {
+        console.error('GET ORDER HISTORY ERROR:', error);
+        this.orderHistory = [];
+      }
+    });
+}
 
 
   /* ====================================================
@@ -615,5 +594,34 @@ next: (response) => {
     );
 
   }
+
+  goBack(): void {
+
+  if (this.showDetails) {
+
+    // Order Details → My Orders
+    this.backToOrders();
+    return;
+
+  }
+
+  if (this.hasSearched) {
+
+    // My Orders → Find My Orders
+    this.hasSearched = false;
+    this.selectedOrder = null;
+    this.orderHistory = [];
+    this.orders = [];
+    this.searchedMobile = '';
+    this.errorMessage = '';
+
+    return;
+
+  }
+
+  // Find My Orders → Home
+  window.history.back();
+
+}
 
 }

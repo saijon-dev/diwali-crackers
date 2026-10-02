@@ -2,672 +2,1531 @@
   [fullscreen]="true"
   class="!bg-white"
 >
-
-  <!-- =====================================================
-       HOME PAGE
-       ===================================================== -->
-
-  <div
-    class="relative min-h-full overflow-visible bg-white px-3 sm:px-4"
-  >
-
-    <!-- ===================================================
-         HEADER
-         =================================================== -->
-
-    <header
-      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-visible bg-[#8f071f] px-10 shadow-none sm:-mx-4"
-    >
-
-      <!-- LEFT DEEPAS -->
-
-      <img
-        src="assets/images/left-deepas.png"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute left-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
-      />
-
-
-      <!-- RIGHT DEEPAS -->
-
-      <img
-        src="assets/images/right-deepas.png"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute right-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
-      />
-
-
-      <!-- BRAND -->
-
-      <div
-        class="relative z-20 flex flex-col items-center justify-center leading-none"
-      >
-
-        <div
-          class="flex items-center gap-2"
-        >
-
-          <span
-            class="font-serif text-[19px] font-bold text-[#f7df9d]"
-          >
-            ✦
-          </span>
-
-          <span
-            class="font-serif text-[22px] font-bold tracking-[0.5px] text-[#fff8dc] sm:text-[24px]"
-          >
-            DIWALI
-          </span>
-
-          <span
-            class="font-serif text-[19px] font-bold text-[#f7df9d]"
-          >
-            ✦
-          </span>
-
-        </div>
-
-
-        <span
-          class="mt-1 font-serif text-[9px] font-semibold tracking-[0.3px] text-[#fff8dc] sm:text-[10px]"
-        >
-          Light Up Your Celebrations
-        </span>
-
-      </div>
-
-    </header>
-
-
-    <!-- ===================================================
-         SEARCH BAR
-         =================================================== -->
-
-    <div
-      class="sticky top-[68px] z-40 -mx-3 bg-[#8f071f] px-3 pb-3 pt-3 sm:-mx-4 sm:px-4"
-    >
-
-      <ion-searchbar
-        placeholder="Search for crackers, categories..."
-        (click)="openSearch()"
-        class="!h-[44px] !p-0"
-        style="
-          --background: #fffdf5;
-          --color: #4a1820;
-          --placeholder-color: #a28d8d;
-          --icon-color: #8f071f;
-          --border-radius: 12px;
-          --box-shadow: 0 3px 12px rgba(80, 20, 20, 0.08);
-          --border-width: 0;
-          --border-style: none;
-        "
-      >
-      </ion-searchbar>
-
-    </div>
-
-
-    <!-- ===================================================
-         CATEGORY FEATURE PANEL
-         =================================================== -->
-
-    <section
-      class="relative -mx-3 mb-5 h-[330px] overflow-hidden rounded-b-[30px] bg-[#8f071f] px-4 pb-5 pt-4 sm:-mx-4 sm:px-6"
-    >
-
-      <!-- =================================================
-           BRIGHT LANTERN GLOW
-           ================================================= -->
-
-      <div
-        class="pointer-events-none absolute left-[8px] top-[-20px] z-0 h-[130px] w-[130px] rounded-full bg-[radial-gradient(circle,rgba(255,220,130,0)_0%,rgba(239,82,90,0.1)_35%,rgba(143,7,31,0)_5%)] blur-[3px]"
-      ></div>
-
-
-      <!-- =================================================
-           LEFT LANTERN DECORATION
-           ================================================= -->
-
-      <img
-        src="assets/images/left-lantern.png"
-        alt=""
-        aria-hidden="true"
-        class="pointer-events-none absolute left-[10px] top-[25px] z-[5] h-[70px] w-auto select-none object-contain opacity-100"
-      />
-
-
-      <!-- BRIGHTER CENTRAL AREA -->
-
-      <div
-        class="pointer-events-none absolute left-1/2 top-[45px] z-0 h-[210px] w-[82%] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(211,52,72,0.48)_0%,rgba(181,28,53,0.28)_38%,rgba(143,7,31,0)_75%)]"
-      ></div>
-
-
-      <!-- ADDITIONAL SOFT LIGHT -->
-
-      <div
-        class="pointer-events-none absolute left-[20%] top-[85px] z-0 h-[110px] w-[110px] rounded-full bg-[#d83b55]/20 blur-3xl"
-      ></div>
-
-      <div
-        class="pointer-events-none absolute right-[10%] top-[70px] z-0 h-[120px] w-[120px] rounded-full bg-[#d83b55]/20 blur-3xl"
-      ></div>
-
-
-      <!-- =================================================
-           CATEGORY HEADER + QUOTE
-           ================================================= -->
-
-      <div
-        class="relative z-10 mb-4 h-[68px] w-full"
-      >
-
-        <!-- CATEGORY TITLE -->
-
-        <div
-          class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
-        >
-
-          <h2
-            class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
-          >
-            CATEGORIES
-          </h2>
-
-        </div>
-
-
-        <!-- CATEGORY QUOTE -->
-
-        <div
-          class="absolute left-0 top-[37px] flex w-full items-center justify-center"
-        >
-
-          <p
-            class="m-0 text-center font-serif text-[9px] font-semibold italic leading-none tracking-[0.15px] text-[#f7df9d] sm:text-[10px]"
-          >
-            Find the best there is!
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <!-- =================================================
-           CATEGORY HORIZONTAL SCROLLER
-           ================================================= -->
-
-      <div
-        class="relative z-10 w-full overflow-x-auto overflow-y-hidden pb-3 scrollbar-hide"
-      >
-
-        <div
-          class="flex w-max min-w-full items-stretch justify-center gap-5 px-2"
-        >
-
-          <!-- CATEGORY LOADING -->
-
-          @if (isLoadingCategories) {
-
-            <div
-              class="flex h-[155px] min-w-[300px] items-center justify-center"
-            >
-
-              <div
-                class="h-7 w-7 animate-spin rounded-full border-2 border-[#d99532] border-t-[#fff8dc]"
-              ></div>
-
-            </div>
-
-          }
-
-
-          <!-- CATEGORY ERROR -->
-
-          @else if (categoryErrorMessage) {
-
-            <div
-              class="flex h-[155px] min-w-[300px] flex-col items-center justify-center"
-            >
-
-              <p
-                class="mb-2 font-sans text-[11px] font-semibold text-[#fff8dc]"
-              >
-                {{ categoryErrorMessage }}
-              </p>
-
-              <button
-                type="button"
-                (click)="loadCategories()"
-                class="rounded-full border border-[#f7df9d] bg-transparent px-4 py-1.5 font-sans text-[10px] font-bold text-[#fff8dc]"
-              >
-                Try Again
-              </button>
-
-            </div>
-
-          }
-
-
-          <!-- CATEGORY CARDS -->
-
-          @else {
-
-            @for (
-              category of categories;
-              track category.categoryId
-            ) {
-
-              <button
-                type="button"
-                (click)="selectCategory(category.categoryId)"
-                class="!rounded-[16px] flex h-[150px] w-[105px] shrink-0 flex-col overflow-hidden border border-[#eadfcb] bg-[#fffdf7] p-1.5 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-150 active:scale-[0.98] sm:h-[160px] sm:w-[115px]"
-              >
-
-                <!-- CATEGORY IMAGE -->
-
-                <div
-                  class="h-[105px] w-full shrink-0 overflow-hidden !rounded-[20px] bg-[#fffaf0] sm:h-[112px]"
-                >
-
-                  @if (category.imageUrl) {
-
-                    <img
-                      [src]="category.imageUrl"
-                      [alt]="category.categoryName"
-                      class="block h-full w-full !rounded-[14px] object-cover"
-                    />
-
-                  } @else {
-
-                    <div
-                      class="flex h-full w-full items-center justify-center !rounded-[20px] bg-[#f8edd6] text-[#a58b82]"
-                    >
-
-                      <ion-icon
-                        name="image-outline"
-                        class="text-[26px]"
-                      ></ion-icon>
-
-                    </div>
-
-                  }
-
-                </div>
-
-
-                <!-- CATEGORY NAME -->
-
-                <div
-                  class="flex flex-1 items-center justify-center px-1"
-                >
-
-                  <span
-                    class="line-clamp-2 w-full text-center font-sans text-[10px] font-extrabold leading-[1.15] text-[#4a1820] sm:text-[11px]"
-                  >
-                    {{ category.categoryName }}
-                  </span>
-
-                </div>
-
-              </button>
-
-            }
-
-          }
-
-        </div>
-
-      </div>
-
-
-      <!-- SCROLL INDICATOR -->
-
-      @if (
-        !isLoadingCategories &&
-        !categoryErrorMessage &&
-        categories.length > 3
-      ) {
-
-        <div
-          class="pointer-events-none absolute right-2 top-[157px] z-30 flex h-7 w-7 items-center justify-center rounded-full bg-[#fff8dc] shadow-[0_2px_8px_rgba(40,0,10,0.25)]"
-        >
-
-          <span
-            class="font-sans text-[15px] font-extrabold text-[#8f071f]"
-          >
-            →
-          </span>
-
-        </div>
-
-      }
-
-
-      <!-- LOGIN -->
-
-      <div
-        class="absolute bottom-4 left-0 z-20 flex w-full items-center justify-center"
-      >
-
-        <button
-          type="button"
-          (click)="goToAdminLogin()"
-          class="flex items-center gap-2 border-0 bg-transparent px-3 py-1 font-serif text-[16px] font-bold text-[#fff8dc] transition-transform duration-150 active:scale-95 sm:text-[17px]"
-        >
-
-          <span
-            class="text-[9px] text-[#f7df9d]"
-          >
-            ✦
-          </span>
-
-          <span>
-            Login
-          </span>
-
-          <span
-            class="text-[9px] text-[#f7df9d]"
-          >
-            ✦
-          </span>
-
-        </button>
-
-      </div>
-
-    </section>
-
-
-<!-- =================================================
-     MAIN CONTENT
-     ================================================= -->
-
-<main
-  class="relative z-10 pb-32"
+<div
+  class="relative flex w-full max-w-full flex-col overflow-x-clip bg-white px-3 sm:px-4"
 >
+    <!-- =====================================================
+         SEARCH MODE
+    ===================================================== -->
 
-  <!-- =================================================
-       NEW ARRIVALS
-       ================================================= -->
-
-  <section
-    class="relative"
-  >
-
-    <!-- NEW ARRIVALS TITLE -->
-
-    <div
-      class="mb-3 flex w-full items-center justify-start"
-    >
-
-      <h2
-        class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#8f071f] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
-      >
-        NEW ARRIVALS
-      </h2>
-
-    </div>
-
-
-    <!-- =================================================
-         PRODUCT LOADING
-         ================================================= -->
-
-    @if (isLoadingProducts) {
+    @if (isSearchMode) {
 
       <div
-        class="flex w-full flex-col items-center justify-center py-10 text-center"
+        class="flex min-h-full flex-col"
       >
 
-        <div
-          class="mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#ead8b9] border-t-[#8f071f]"
-        ></div>
+        <!-- ===================================================
+             SEARCH HEADER
+        =================================================== -->
 
-        <p
-          class="font-sans text-[12px] font-semibold text-[#806b68]"
+        <header
+          class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
         >
-          Loading crackers...
-        </p>
 
-      </div>
-
-    }
-
-
-    <!-- =================================================
-         PRODUCT ERROR
-         ================================================= -->
-
-    @if (
-      !isLoadingProducts &&
-      productErrorMessage
-    ) {
-
-      <div
-        class="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
-      >
-
-        <p
-          class="mb-3 font-sans text-[12px] font-semibold text-[#806b68]"
-        >
-          {{ productErrorMessage }}
-        </p>
-
-        <button
-          type="button"
-          (click)="loadProducts()"
-          class="rounded-[12px] border-0 bg-[#8f071f] px-5 py-2.5 font-sans text-[11px] font-extrabold text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform active:scale-95"
-        >
-          Try Again
-        </button>
-
-      </div>
-
-    }
-
-
-    <!-- =================================================
-         PRODUCT GRID
-         ================================================= -->
-
-    @if (
-      !isLoadingProducts &&
-      !productErrorMessage
-    ) {
-
-      <div
-        class="grid grid-cols-2 items-stretch gap-2.5 sm:gap-3"
-      >
-
-        @for (
-          product of products;
-          track product.productStoreId
-        ) {
-
-          <!-- ===========================================
-               PRODUCT CARD
-               =========================================== -->
-
-          <article
-            class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_4px_12px_rgba(86,48,10,0.08)] transition-transform duration-150 active:scale-[0.98]"
-            (click)="openProduct(product)"
+          <button
+            type="button"
+            (click)="closeSearch()"
+            aria-label="Back"
+            class="relative z-30 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
           >
 
-            <!-- =========================================
-                 PRODUCT IMAGE
-                 ========================================= -->
+            <ion-icon
+              name="arrow-back-outline"
+              class="!text-[24px]"
+            ></ion-icon>
+
+          </button>
+
+
+          <div
+            class="relative z-20 ml-2 min-w-0 flex-1 pr-[48px] sm:pr-[58px]"
+          >
 
             <div
-              class="h-[155px] w-full shrink-0 overflow-hidden bg-[#f7f3df] sm:h-[190px]"
+              class="flex !h-[44px] w-full items-center overflow-hidden !rounded-[13px] !border !border-[#b3123b] !bg-[#b3123b] px-3 shadow-[0_3px_10px_rgba(70,0,15,0.16)]"
             >
 
-              @if (
-                product.images &&
-                product.images.length > 0
-              ) {
+              <ion-icon
+                name="search-outline"
+                class="mr-2 shrink-0 !text-[19px] !text-[#fff8dc]"
+              ></ion-icon>
 
-                <img
-                  [src]="product.images[0].imageUrl"
-                  [alt]="product.productName"
-                  class="block h-full w-full object-cover"
-                />
 
-              } @else {
+              <input
+                type="text"
+                [(ngModel)]="searchText"
+                placeholder="Search crackers, categories..."
+                autofocus
+                (keyup.enter)="searchProducts()"
+                class="min-w-0 flex-1 !border-0 !bg-transparent !p-0 !font-sans !text-[12px] !font-medium !text-[#fff8dc] !outline-none placeholder:!text-[#f4c8cf] sm:!text-[13px]"
+              />
 
-                <div
-                  class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#99917e]"
+
+              @if (searchText) {
+
+                <button
+                  type="button"
+                  (click)="clearSearch()"
+                  aria-label="Clear search"
+                  class="ml-1 flex !h-[28px] !w-[28px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-[#8f071f] !p-0 !text-[#fff8dc]"
                 >
 
                   <ion-icon
-                    name="image-outline"
-                    class="text-[32px]"
+                    name="close-outline"
+                    class="!text-[17px]"
                   ></ion-icon>
 
-                </div>
+                </button>
 
               }
 
             </div>
 
-<!-- =========================================
-     PRODUCT INFORMATION
-     ========================================= -->
+          </div>
 
-<div
-  class="flex flex-1 flex-col p-[10px]"
+
+          <img
+            src="assets/images/right-deepas.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+          />
+
+        </header>
+
+
+        <!-- ===================================================
+             SEARCH BODY
+        =================================================== -->
+
+<main
+  class="relative z-10 min-h-[calc(100dvh-76px)] pb-2"
 >
 
-  <!-- CATEGORY -->
+          @if (!hasSearched) {
 
-  <span
-    class="block truncate font-sans text-[9px] font-bold uppercase tracking-[0.3px] text-[#9e2020]"
+            @if (recentSearches.length > 0) {
+
+              <section
+                class="mb-6 pt-5"
+              >
+
+                <div
+                  class="mb-3 flex w-full items-center justify-between"
+                >
+
+                  <h2
+                    class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-black"
+                  >
+                    Recent Searches
+                  </h2>
+
+
+                  <button
+                    type="button"
+                    (click)="clearRecentSearches()"
+                    class="!border-0 !bg-transparent !p-1 !font-sans !text-[10px] !font-bold !text-[#8f071f]"
+                  >
+                    Clear
+                  </button>
+
+                </div>
+
+
+                <div
+                  class="flex flex-col gap-2"
+                >
+
+                  @for (
+                    search of recentSearches;
+                    track search
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="selectRecentSearch(search)"
+                      class="flex !min-h-[42px] w-full items-center justify-between !rounded-[12px] !border-0 !bg-[#fffdf7] px-3 !font-sans !text-left !text-[11px] !font-semibold !text-[#17233c] !shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
+                    >
+
+                      <span
+                        class="flex min-w-0 items-center gap-2"
+                      >
+
+                        <ion-icon
+                          name="search-outline"
+                          class="shrink-0 !text-[16px] !text-[#8f071f]"
+                        ></ion-icon>
+
+                        <span
+                          class="truncate"
+                        >
+                          {{ search }}
+                        </span>
+
+                      </span>
+
+
+                      <span
+                        role="button"
+                        tabindex="0"
+                        (click)="removeRecentSearch(search, $event)"
+                        class="ml-2 flex !h-[25px] !w-[25px] shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#f1e5e5] !font-sans !text-[17px] !font-normal !text-[#8f071f]"
+                      >
+                        ×
+                      </span>
+
+                    </button>
+
+                  }
+
+                </div>
+
+              </section>
+
+            }
+
+
+            <section
+              class="mb-7 pt-5"
+            >
+
+              <div
+                class="mb-3 flex w-full items-center justify-between"
+              >
+
+                <h2
+                  class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-black"
+                >
+                  Popular Searches
+                </h2>
+
+              </div>
+
+
+              <div
+                class="flex flex-wrap gap-2"
+              >
+
+                @for (
+                  search of popularSearches;
+                  track search
+                ) {
+
+                  <button
+                    type="button"
+                    (click)="selectPopularSearch(search)"
+                    class="!min-h-[34px] !rounded-[18px] !border !border-[#eadfcb] !bg-[#fffdf7] !px-3 !py-1 !font-sans !text-[10px] !font-bold !text-[#17233c] !shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95"
+                  >
+                    {{ search }}
+                  </button>
+
+                }
+
+              </div>
+
+            </section>
+
+
+            <section
+              class="flex min-h-[300px] flex-col items-center justify-center px-5 text-center"
+            >
+
+              <div
+                class="mb-4 flex !h-[68px] !w-[68px] items-center justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+              >
+
+                <ion-icon
+                  name="search-outline"
+                  class="!text-[30px]"
+                ></ion-icon>
+
+              </div>
+
+
+              <h3
+                class="!m-0 !mb-1 !font-sans !text-[18px] !font-black !leading-tight !text-[#17233c]"
+              >
+                Find Your Favourite Crackers
+              </h3>
+
+
+              <p
+                class="!m-0 max-w-[270px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+              >
+                Search for crackers or categories
+                to explore our collection.
+              </p>
+
+            </section>
+
+          }
+
+
+          @if (
+            hasSearched &&
+            isSearching
+          ) {
+
+            <section
+              class="flex min-h-[calc(100vh-76px)] flex-col items-center justify-center gap-3 text-center"
+            >
+
+              <div
+                class="h-8 w-8 animate-spin rounded-full border-[3px] border-[#ead8b9] border-t-[#8f071f]"
+              ></div>
+
+
+              <p
+                class="!m-0 !font-sans !text-[11px] !font-semibold !text-[#806b68]"
+              >
+                Searching products...
+              </p>
+
+            </section>
+
+          }
+
+
+          @if (
+            hasSearched &&
+            !isSearching &&
+            errorMessage
+          ) {
+
+            <section
+              class="flex min-h-[calc(100vh-76px)] flex-col items-center justify-center px-5 text-center"
+            >
+
+              <div
+                class="mb-3 flex !h-[58px] !w-[58px] items-center justify-center !rounded-full !bg-[#f8e5e7] !text-[#8f071f]"
+              >
+
+                <ion-icon
+                  name="close-outline"
+                  class="!text-[28px]"
+                ></ion-icon>
+
+              </div>
+
+
+              <h3
+                class="!m-0 !mb-1 !font-sans !text-[18px] !font-black !text-[#17233c]"
+              >
+                Something went wrong
+              </h3>
+
+
+              <p
+                class="!m-0 !mb-4 max-w-[260px] !font-sans !text-[10px] !font-medium !text-[#806b68]"
+              >
+                {{ errorMessage }}
+              </p>
+
+
+              <button
+                type="button"
+                (click)="searchProducts()"
+                class="!min-h-[36px] !rounded-[18px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)]"
+              >
+                Try Again
+              </button>
+
+            </section>
+
+          }
+
+
+          @if (
+            hasSearched &&
+            !isSearching &&
+            !errorMessage
+          ) {
+
+            <div
+              class="mb-3 flex w-full items-center justify-between gap-2 pt-5"
+            >
+
+              <div
+                class="min-w-0"
+              >
+
+                <h2
+                  class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-black"
+                >
+                  Search Results
+                </h2>
+
+
+                <p
+                  class="!m-[3px_0_0] truncate !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Results for
+                  <strong
+                    class="!font-bold !text-[#8f071f]"
+                  >
+                    "{{ searchText }}"
+                  </strong>
+                </p>
+
+              </div>
+
+
+              <span
+                class="flex !h-[25px] min-w-[25px] items-center justify-center !rounded-[13px] !bg-[#8f071f] !px-2 !font-sans !text-[9px] !font-extrabold !text-[#fff8dc]"
+              >
+                {{ totalResults }}
+              </span>
+
+            </div>
+
+@if (searchResults.length > 0) {
+
+  <section
+    class="grid grid-cols-3 items-stretch gap-[10px] pb-8 sm:gap-[12px]"
   >
-    {{ product.categoryName }}
-  </span>
-
-
-  <!-- PRODUCT NAME -->
-
-<!-- PRODUCT NAME -->
-
-<h3
-  class="!m-[2px_0_6px] !min-h-[34px] !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c] !line-clamp-2 sm:!text-[13px]"
->
-  {{ product.productName }}
-</h3>
-
-
-  <!-- PRICE -->
-
-  <div
-    class="mb-2 mt-1 flex items-center gap-1.5"
-  >
-
-    @if (
-      product.mrp >
-      product.sellingPrice
+    @for (
+      product of searchResults;
+      track product.productStoreId
     ) {
 
-      <span
-        class="font-sans text-[8px] font-normal text-[#99917e] line-through sm:text-[9px]"
+      <article
+        class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
+        (click)="openProduct(product)"
       >
-        ₹{{ product.mrp }}
-      </span>
 
-    }
+        <!-- PRODUCT IMAGE -->
 
-    <span
-      class="font-sans text-[12px] font-extrabold text-[#d51425] sm:text-[13px]"
-    >
-      ₹{{ product.sellingPrice }}
-    </span>
+        <div
+          class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[118px]"
+        >
 
-  </div>
+          @if (
+            product.images &&
+            product.images.length > 0
+          ) {
 
-<!-- ADD TO CART -->
+            <img
+              [src]="product.images[0].imageUrl"
+              [alt]="product.productName"
+              class="block h-full w-full object-cover"
+              loading="lazy"
+            />
 
-<button
-  type="button"
-  [disabled]="
-    !product.isAvailable ||
-    product.stockQuantity <= 0
-  "
-  (click)="
-    $event.stopPropagation();
-    addToCart(product)
-  "
-  class="mt-auto flex !h-[34px] !min-h-[34px] !w-full !items-center !justify-center !gap-[5px] !rounded-[14px] !border-0 !bg-[#8f071f] !px-2 !font-sans !text-[10px] !font-bold !text-[#fff8dc] !shadow-[0_3px_7px_rgba(100,0,20,0.14)] transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:!bg-[#d7c8c4] disabled:!text-[#8b7773] disabled:!shadow-none sm:!h-[36px] sm:!min-h-[36px] sm:!text-[11px]"
->
-  <ion-icon
-    name="cart-outline"
-    class="text-[14px]"
-  ></ion-icon>
+          }
 
-  Add to Cart
-</button>
+          @else {
 
-</div>
+            <div
+              class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+            >
 
-          </article>
+              <ion-icon
+                name="image-outline"
+                class="!text-[25px] !text-[#806b68]"
+              ></ion-icon>
 
-        }
+            </div>
+
+          }
+
+        </div>
 
 
-        <!-- =================================================
-             NO PRODUCTS
-             ================================================= -->
+        <!-- PRODUCT DETAILS -->
 
-        @if (products.length === 0) {
+        <div
+          class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+        >
+
+          <!-- PRODUCT NAME + ADD -->
 
           <div
-            class="col-span-2 flex flex-col items-center justify-center px-4 py-12 text-center"
+            class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
           >
 
-            <ion-icon
-              name="image-outline"
-              class="mb-2 text-[34px] text-[#b29d95]"
-            ></ion-icon>
-
-            <p
-              class="font-sans text-[12px] font-semibold text-[#806b68]"
+            <h3
+              class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[11px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
             >
-              No products available.
-            </p>
+              {{ product.productName }}
+            </h3>
+
+
+            <!-- ADD BUTTON -->
+
+            <button
+              type="button"
+              aria-label="Add to cart"
+              [disabled]="
+                !product.isAvailable ||
+                product.stockQuantity <= 0 ||
+                isProductAdded(product.productStoreId)
+              "
+              (click)="
+                $event.stopPropagation();
+                addToCart(product)
+              "
+              class="mt-[1px] flex !h-[29px] !w-[29px] shrink-0 !items-center !justify-center !rounded-[9px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[#fff8dc] shadow-[0_2px_5px_rgba(143,7,31,0.20)] transition-transform duration-150 active:scale-90 disabled:!cursor-default disabled:!bg-[#d7c8c4] disabled:!text-[#8b7773] disabled:!opacity-100 disabled:!shadow-none"
+            >
+
+              <ion-icon
+                name="add-outline"
+                class="!text-[19px]"
+              ></ion-icon>
+
+            </button>
 
           </div>
 
-        }
 
-      </div>
+          <!-- PRICE -->
+
+          <div
+            class="mt-[2px] flex items-center gap-[4px]"
+          >
+
+            @if (
+              product.mrp >
+              product.sellingPrice
+            ) {
+
+              <span
+                class="font-sans text-[6px] text-[#99917e] line-through"
+              >
+                ₹{{ product.mrp }}
+              </span>
+
+            }
+
+            <span
+              class="font-sans text-[10px] font-bold text-[#ef0b1c]"
+            >
+              ₹{{ product.sellingPrice }}
+            </span>
+
+          </div>
+
+
+          <!-- STOCK -->
+
+          <div
+            class="mt-[3px] flex items-center"
+          >
+
+            @if (
+              product.stockQuantity <= 0
+            ) {
+
+              <span
+                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+              ></span>
+
+              <span
+                class="font-sans text-[7px] font-medium text-[#9e2020]"
+              >
+                Out of Stock
+              </span>
+
+            }
+
+            @else if (
+              product.stockQuantity <= 10
+            ) {
+
+              <span
+                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+              ></span>
+
+              <span
+                class="font-sans text-[7px] font-medium text-[#9e2020]"
+              >
+                Minimum Stock
+              </span>
+
+            }
+
+            @else {
+
+              <span
+                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#24722d]"
+              ></span>
+
+              <span
+                class="font-sans text-[7px] font-medium text-[#24722d]"
+              >
+                In Stock
+              </span>
+
+            }
+
+          </div>
+
+        </div>
+
+      </article>
 
     }
 
   </section>
 
-</main>
+}
 
 
-    <!-- ===================================================
-         END-OF-PAGE DIWALI DESIGN
-         =================================================== -->
+            @if (searchResults.length === 0) {
+
+              <section
+                class="flex min-h-[calc(100vh-76px)] flex-col items-center justify-center px-5 text-center"
+              >
+
+                <div
+                  class="mb-4 flex !h-[70px] !w-[70px] items-center justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+                >
+
+                  <ion-icon
+                    name="search-outline"
+                    class="!text-[31px]"
+                  ></ion-icon>
+
+                </div>
+
+
+                <h3
+                  class="!m-0 !mb-1 !font-sans !text-[19px] !font-black !text-[#17233c]"
+                >
+                  No Products Found
+                </h3>
+
+
+                <p
+                  class="!m-0 !mb-4 max-w-[280px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+                >
+                  We couldn't find any products
+                  matching "{{ searchText }}".
+                </p>
+
+
+                <button
+                  type="button"
+                  (click)="clearSearch()"
+                  class="!min-h-[37px] !rounded-[19px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc]"
+                >
+                  Try Another Search
+                </button>
+
+              </section>
+
+            }
+
+          }
+
+        </main>
+
+
+        <!-- ===================================================
+             SEARCH BOTTOM DESIGN
+        =================================================== -->
+<div
+  class="pointer-events-none relative z-0 mt-0 -mx-3 min-h-[190px] w-[calc(100%+24px)] max-w-full shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+>
+  <img
+    src="assets/images/newDesignBg.png"
+    alt=""
+    aria-hidden="true"
+    class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+  />
+</div>
+
+      </div>
+
+    }
+
+
+    <!-- =====================================================
+         NORMAL HOME MODE
+    ===================================================== -->
+
+    @if (!isSearchMode) {
+
+      <!-- ===================================================
+           HEADER
+      =================================================== -->
+
+      <header
+        class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-visible bg-[#8f071f] px-10 shadow-none sm:-mx-4"
+      >
+
+        <!-- LEFT DEEPAS -->
+
+        <img
+          src="assets/images/left-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute left-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
+        />
+
+
+        <button
+          type="button"
+          (click)="goToAdminLogin()"
+          aria-label="Login"
+          class="absolute left-[52px] top-1/2 z-30 flex h-[32px] w-[32px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        >
+
+          <ion-icon
+            name="person-circle-outline"
+            class="!text-[23px]"
+          ></ion-icon>
+
+        </button>
+
+
+        <!-- CUSTOMER ACTIONS -->
+
+        <div
+          class="absolute right-2 top-0 z-30 flex h-[76px] items-center gap-1"
+        >
+
+          <!-- CART -->
+
+          <ion-button
+            id="home-cart-button"
+            type="button"
+            fill="clear"
+            aria-label="Cart"
+            (click)="openCart()"
+            class="relative !m-0 !h-[40px] !w-[40px] !p-0 !text-[#fff8dc]"
+          >
+
+            <ion-icon
+              slot="icon-only"
+              name="cart-outline"
+              class="!text-[24px]"
+            ></ion-icon>
+
+            @if (cartCount > 0) {
+
+              <ion-badge
+                class="absolute right-[-1px] top-[-1px] !flex !h-[17px] !min-w-[17px] !items-center !justify-center !rounded-full !border-2 !border-[#8f071f] !bg-[#f7df9d] !px-1 !font-sans !text-[8px] !font-extrabold !text-[#8f071f]"
+              >
+                {{ cartCount }}
+              </ion-badge>
+
+            }
+
+          </ion-button>
+
+
+          <!-- ORDERS -->
+
+          <ion-button
+            id="home-orders-button"
+            type="button"
+            fill="clear"
+            aria-label="Orders"
+            (click)="openOrders()"
+            class="!m-0 !h-[49px] !w-[40px] !p-0 !text-[#fff8dc]"
+          >
+
+            <ion-icon
+              slot="icon-only"
+              name="receipt-outline"
+              class="!text-[23px]"
+            ></ion-icon>
+
+          </ion-button>
+
+        </div>
+
+
+        <!-- BRAND -->
+
+        <div
+          class="relative z-20 flex flex-col items-center justify-center leading-none"
+        >
+
+          <div
+            class="flex items-center gap-2"
+          >
+
+            <span
+              class="font-serif text-[19px] font-bold text-[#f7df9d]"
+            >
+              ✦
+            </span>
+
+            <span
+              class="font-serif text-[22px] font-bold tracking-[0.5px] text-[#fff8dc] sm:text-[24px]"
+            >
+              DIWALI
+            </span>
+
+            <span
+              class="font-serif text-[19px] font-bold text-[#f7df9d]"
+            >
+              ✦
+            </span>
+
+          </div>
+
+
+          <span
+            class="mt-1 font-serif text-[9px] font-semibold tracking-[0.3px] text-[#fff8dc] sm:text-[10px]"
+          >
+            Light Up Your Celebrations
+          </span>
+
+        </div>
+
+      </header>
+
+
+      <!-- ===================================================
+           SEARCH BAR
+      =================================================== -->
+
+      <div
+        class="sticky top-[68px] z-40 -mx-3 bg-[#8f071f] px-3 pb-3 pt-3 sm:-mx-4 sm:px-4"
+      >
+
+        <ion-searchbar
+          placeholder="Search for crackers, categories..."
+          (click)="openSearch()"
+          class="!h-[44px] !p-0"
+          style="
+            --background: #fffdf5;
+            --color: #4a1820;
+            --placeholder-color: #a28d8d;
+            --icon-color: #8f071f;
+            --border-radius: 12px;
+            --box-shadow: 0 3px 12px rgba(80, 20, 20, 0.08);
+            --border-width: 0;
+            --border-style: none;
+          "
+        >
+        </ion-searchbar>
+
+      </div>
+
+
+      <!-- ===================================================
+           CATEGORY FEATURE PANEL
+      =================================================== -->
+
+      <div class="relative">
+
+        <!-- LEFT FLOWERS -->
+
+        <img
+          src="assets/images/flowers-left.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute left-[-10px] top-[260px] z-10 h-[110px] w-auto select-none object-contain"
+        />
+
+
+        <!-- RIGHT FLOWERS -->
+
+        <img
+          src="assets/images/right-flowers.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-[-4px] top-[260px] z-10 h-[85px] w-auto select-none object-contain"
+        />
+
+
+        <!-- CATEGORY FEATURE PANEL -->
+
+        <section
+          class="relative z-20 -mx-3 mb-5 h-[280px] overflow-visible px-4 pb-5 pt-4 sm:-mx-4 sm:h-[292px] sm:px-6"
+          style="
+            background:
+              linear-gradient(
+                180deg,
+                rgba(143, 7, 31, 0) 0%,
+                rgba(143, 7, 31, 0.10) 18%,
+                rgba(143, 7, 31, 0.30) 38%,
+                rgba(143, 7, 31, 0.54) 58%,
+                rgba(143, 7, 31, 0.78) 80%,
+                rgba(143, 7, 31, 1) 100%
+              ),
+              radial-gradient(
+                ellipse 100% 82% at 100% 0%,
+                #c51f45 0%,
+                #bc1a40 18%,
+                #b3163b 35%,
+                #a81135 52%,
+                #9d0c2f 70%,
+                #950927 84%,
+                #8f071f 100%
+              );
+          "
+        >
+
+          <!-- FIREWORK -->
+
+          <img
+            src="assets/images/fireworks-design.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute right-[-1px] top-[-12px] z-[2] h-[120px] w-auto select-none object-contain opacity-[0.2] grayscale"
+          />
+
+
+          <!-- RIGHT LANTERN -->
+
+          <img
+            src="assets/images/right-lantern.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute right-[24px] top-[18px] z-[2] h-[25px] w-auto select-none object-contain opacity-[0.9]"
+          />
+
+
+          <!-- LEFT LANTERN -->
+
+          <img
+            src="assets/images/left-lantern.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute left-[10px] top-[25px] z-[5] h-[70px] w-auto select-none object-contain opacity-100"
+          />
+
+
+          <!-- SOFT LIGHT -->
+
+          <div
+            class="pointer-events-none absolute left-[12%] top-[105px] z-0 h-[150px] w-[150px] rounded-full bg-[#c72e4b]/[0.06] blur-3xl"
+          ></div>
+
+          <div
+            class="pointer-events-none absolute right-[20%] top-[100px] z-0 h-[160px] w-[160px] rounded-full bg-[#c72e4b]/[0.055] blur-3xl"
+          ></div>
+
+
+          <!-- CATEGORY HEADER -->
+
+          <div
+            class="relative z-10 mb-4 h-[68px] w-full"
+          >
+
+            <div
+              class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
+            >
+
+              <h2
+                class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
+              >
+                CATEGORIES
+              </h2>
+
+            </div>
+
+
+            <div
+              class="absolute left-0 top-[37px] flex w-full items-center justify-center"
+            >
+
+              <p
+                class="m-0 text-center font-serif text-[9px] font-semibold italic leading-none tracking-[0.15px] text-[#f7df9d] sm:text-[10px]"
+              >
+                Find the best there is!
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <!-- CATEGORY SCROLLER -->
+
+<div
+  #categoryScroller
+  class="relative z-10 w-full max-w-full overflow-x-auto overflow-y-visible py-2 scrollbar-hide"
+  (scroll)="onCategoryScroll()"
+>
+  <div
+    class="flex w-max min-w-full items-stretch justify-start gap-5 px-[calc(50%-52.5px)] sm:px-[calc(50%-57.5px)]"
+  >
+    <!-- Keep your existing loading and error conditions here -->
+
+    @if (!isLoadingCategories && !categoryErrorMessage) {
+      @for (category of categories; track category.categoryId) {
+        <button
+          type="button"
+          (click)="selectCategory(category.categoryId)"
+          [attr.data-category-id]="category.categoryId"
+          [class.scale-110]="centeredCategoryId === category.categoryId"
+          [class.scale-95]="centeredCategoryId !== category.categoryId"
+          class="category-card relative flex h-[135px] w-[105px] shrink-0 flex-col overflow-hidden !rounded-[16px] border border-[#eadfcb] bg-[#fffdf7]/90 px-3 pt-2 pb-0 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-300 ease-in-out active:scale-95 sm:h-[145px] sm:w-[115px]"
+        >
+          <img
+            src="assets/images/card-bg.png"
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.4]"
+          />
+
+          <div class="relative z-10 flex h-full flex-col">
+            <div class="flex h-[22px] w-full shrink-0 items-center justify-center px-1">
+              <span
+                class="line-clamp-2 w-full translate-y-2 text-center font-sans text-[11px] font-bold leading-[1.15] text-[#4a1820]"
+              >
+                {{ category.categoryName }}
+              </span>
+            </div>
+
+            <div
+              class="mt-3 h-[101px] w-full shrink-0 overflow-hidden !rounded-[10px] bg-[#fffaf0] p-2 sm:h-[108px]"
+            >
+              @if (category.imageUrl) {
+                <img
+                  [src]="category.imageUrl"
+                  [alt]="category.categoryName"
+                  class="block h-full w-full !rounded-[6px] object-cover"
+                />
+              } @else {
+                <div
+                  class="flex h-full w-full items-center justify-center !rounded-[6px] bg-[#f8edd6] text-[#a58b82]"
+                >
+                  <ion-icon name="image-outline" class="text-[26px]"></ion-icon>
+                </div>
+              }
+            </div>
+          </div>
+        </button>
+      }
+    }
+  </div>
+</div>
+
+          @if (
+            !isLoadingCategories &&
+            !categoryErrorMessage &&
+            categories.length > 3
+          ) {
+
+            <div
+              class="pointer-events-none absolute right-2 top-[157px] z-30 flex h-7 w-7 items-center justify-center rounded-full bg-[#fff8dc] shadow-[0_2px_8px_rgba(40,0,10,0.25)]"
+            >
+
+              <span
+                class="font-sans text-[15px] font-extrabold text-[#8f071f]"
+              >
+                →
+              </span>
+
+            </div>
+
+          }
+
+        </section>
+
+      </div>
+
+
+      <!-- ===================================================
+           MAIN CONTENT
+      =================================================== -->
+<main class="relative z-10 flex flex-col !pb-0">
+
+        <!-- =================================================
+             VENDORS
+        ================================================= -->
+
+        <section
+          class="relative z-20 -mt-[-11px] pt-0"
+        >
+
+          <!-- SECTION HEADING -->
+
+         <div class="mb-3 -mt-[12px] flex w-full flex-col items-center justify-center">
+  <h2
+    class="!m-0 !font-sans !text-[19px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+  >
+    STORES
+  </h2>
+
+  <p
+    class="!mb-0 !mt-[5px] !font-serif !text-[10px] !italic !font-medium !leading-tight !tracking-[0.2px] !text-[#806b68]"
+  >
+    Discover festive crackers from our stores
+  </p>
+</div>
+
+
+          <!-- HORIZONTAL VENDOR SCROLLER -->
+
+          <div
+            class="-mx-3 overflow-x-auto overflow-y-hidden px-3 scrollbar-hide sm:-mx-4 sm:px-4"
+          >
+
+            <div
+              class="flex w-max gap-3 pb-1"
+            >
+
+              @for (
+                vendor of vendors;
+                track vendor.storeId
+              ) {
+
+                <!-- VENDOR CARD -->
+
+                <article
+                  role="button"
+                  tabindex="0"
+                  (click)="openVendor(vendor)"
+                  class="relative flex w-[160px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-gradient-to-b from-[#c51f45] via-[#a90d32] to-[#8f071f] shadow-[0_4px_12px_rgba(100,0,20,0.16)]"
+                >
+
+                  <!-- LIGHT / STRING DESIGN -->
+
+                  <img
+                    src="assets/images/vendor-lights.png"
+                    alt=""
+                    aria-hidden="true"
+                    class="pointer-events-none absolute left-0 top-[-7px] z-10 h-[42px] w-full select-none object-cover object-top opacity-[0.9]"
+                  />
+
+
+                  <!-- VENDOR IMAGE AREA -->
+
+                  <div
+                    class="relative z-20 mx-auto mt-[38px] h-[105px] w-[calc(100%-20px)] overflow-hidden rounded-[12px] bg-[#f7f3df] shadow-[0_2px_7px_rgba(50,0,10,0.15)]"
+                  >
+
+                    @if (vendor.storeImageUrl) {
+
+                      <img
+                        [src]="vendor.storeImageUrl"
+                        [alt]="vendor.storeName"
+                        class="block h-full w-full object-cover"
+                        loading="lazy"
+                      />
+
+                    }
+
+                    @else {
+
+                      <div
+                        class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#8f071f]"
+                      >
+
+                        <ion-icon
+                          name="image-outline"
+                          class="!text-[32px]"
+                        ></ion-icon>
+
+                      </div>
+
+                    }
+
+                  </div>
+
+
+                  <!-- VENDOR DETAILS -->
+
+                  <div
+                    class="relative z-20 flex min-h-[94px] flex-col px-3 pb-4 pt-3"
+                  >
+
+                    <h3
+                      class="!m-0 !font-sans !text-[14px] !font-bold !leading-[1.25] !tracking-[-0.15px] !text-[#fff8dc]"
+                    >
+                      {{ vendor.storeName }}
+                    </h3>
+
+
+                    <div
+                      class="mt-[7px] flex items-start gap-1.5"
+                    >
+
+                      <ion-icon
+                        name="location-outline"
+                        class="mt-[1px] shrink-0 !text-[13px] !text-[#f8e8df]"
+                      ></ion-icon>
+
+
+                      <p
+                        class="line-clamp-3 !m-0 !font-sans !text-[10px] !font-semibold !leading-[1.35] !tracking-[-0.05px] !text-[#f8e8df]"
+                      >
+                        {{ vendor.address }}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================
+             NEW ARRIVALS
+        ================================================= -->
+
+     <!-- =================================================
+     NEW ARRIVALS
+================================================= -->
+
+<section
+  id="new-arrivals"
+  class="flex flex-col pt-[18px]"
+>
+
+  <!-- SECTION HEADING -->
+
+  <div
+    class="mb-3 flex w-full items-center justify-start"
+  >
+
+    <h2
+      class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+    >
+      NEW ARRIVALS
+    </h2>
+
+  </div>
+
+
+  <!-- INITIAL LOADING -->
+
+  @if (isLoadingProducts) {
 
     <div
-      class="pointer-events-none relative z-0 -mx-3 mt-5 w-[calc(100%+24px)] overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+      class="flex w-full flex-col items-center justify-center py-10 text-center"
     >
 
-      <img
-        src="assets/images/newDesignBg.png"
-        alt=""
-        aria-hidden="true"
-        class="block h-auto w-[175%] max-w-none opacity-[0.18]"
-      />
+      <div
+        class="mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#ead8b9] border-t-[#8f071f]"
+      ></div>
+
+      <p
+        class="font-sans text-[12px] font-semibold text-[#806b68]"
+      >
+        Loading crackers...
+      </p>
 
     </div>
 
+  }
+
+
+  <!-- ERROR -->
+
+  @if (
+    !isLoadingProducts &&
+    productErrorMessage
+  ) {
+
+    <div
+      class="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
+    >
+
+      <p
+        class="mb-3 font-sans text-[12px] font-semibold text-[#806b68]"
+      >
+        {{ productErrorMessage }}
+      </p>
+
+
+      <button
+        type="button"
+        (click)="loadProducts(0)"
+        class="rounded-[12px] border-0 bg-[#8f071f] px-5 py-2.5 font-sans text-[11px] font-extrabold text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform active:scale-95"
+      >
+        Try Again
+      </button>
+
+    </div>
+
+  }
+
+
+  <!-- PRODUCTS -->
+
+  @if (
+    !isLoadingProducts &&
+    !productErrorMessage
+  ) {
+
+    @if (products.length > 0) {
+
+      <!--
+        TWO ROW HORIZONTAL PRODUCT LIST
+
+        Each column contains 2 products.
+        The list scrolls horizontally.
+      -->
+
+      <div
+        class="overflow-x-auto overflow-y-hidden scrollbar-hide"
+      >
+
+        <div
+          class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+        >
+
+          @for (
+            product of products;
+            track product.productStoreId
+          ) {
+
+            <!-- PRODUCT CARD -->
+
+            <article
+              class="flex h-full w-[105px] min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98] sm:w-[115px]"
+              (click)="openProduct(product)"
+            >
+
+              <!-- PRODUCT IMAGE -->
+
+              <div
+                class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[92px]"
+              >
+
+                @if (
+                  product.images &&
+                  product.images.length > 0
+                ) {
+
+                  <img
+                    [src]="product.images[0].imageUrl"
+                    [alt]="product.productName"
+                    class="block h-full w-full object-cover"
+                    loading="lazy"
+                  />
+
+                }
+
+                @else {
+
+                  <div
+                    class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                  >
+
+                    <ion-icon
+                      name="image-outline"
+                      class="!text-[23px] !text-[#806b68]"
+                    ></ion-icon>
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- PRODUCT DETAILS -->
+
+              <div
+                class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+              >
+
+                <!-- PRODUCT NAME -->
+
+                <h3
+                  class="!m-0 min-h-[29px] w-full !overflow-hidden !font-sans !text-[10px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[11px]"
+                >
+                  {{ product.productName }}
+                </h3>
+
+
+                <!-- PRICE -->
+
+                <div
+                  class="mt-[4px] flex min-w-0 items-center gap-[3px]"
+                >
+
+                  @if (
+                    product.mrp >
+                    product.sellingPrice
+                  ) {
+
+                    <span
+                      class="truncate font-sans text-[6px] text-[#99917e] line-through"
+                    >
+                      ₹{{ product.mrp }}
+                    </span>
+
+                  }
+
+
+                  <span
+                    class="truncate font-sans text-[9px] font-bold text-[#ef0b1c]"
+                  >
+                    ₹{{ product.sellingPrice }}
+                  </span>
+
+                </div>
+
+
+                <!-- STOCK -->
+
+                <div
+                  class="mt-[3px] flex min-w-0 items-center"
+                >
+
+                  @if (
+                    product.stockQuantity <= 0
+                  ) {
+
+                    <span
+                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+                    ></span>
+
+                    <span
+                      class="truncate font-sans text-[6px] font-medium text-[#9e2020]"
+                    >
+                      Out of Stock
+                    </span>
+
+                  }
+
+                  @else if (
+                    product.stockQuantity <= 10
+                  ) {
+
+                    <span
+                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+                    ></span>
+
+                    <span
+                      class="truncate font-sans text-[6px] font-medium text-[#9e2020]"
+                    >
+                      Minimum Stock
+                    </span>
+
+                  }
+
+                  @else {
+
+                    <span
+                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#24722d]"
+                    ></span>
+
+                    <span
+                      class="truncate font-sans text-[6px] font-medium text-[#24722d]"
+                    >
+                      In Stock
+                    </span>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+
+          <!-- SEE MORE -->
+
+       @if (
+  productsTotalPages > 0 &&
+  productsPage <
+    productsTotalPages - 1
+) {
+
+  <div
+    class="row-span-2 flex w-[58px] items-center justify-center"
+  >
+
+    <button
+      type="button"
+      (click)="nextProductsPage()"
+      [disabled]="isChangingProductPage"
+      class="!border-0 !bg-transparent !p-0 !font-sans !text-[9px] !font-extrabold !text-[#8f071f] transition-transform duration-150 active:scale-95 disabled:!opacity-50"
+    >
+
+      @if (isChangingProductPage) {
+
+        <span>
+          Loading...
+        </span>
+
+      }
+
+      @else {
+
+        <span>
+          SEE MORE →
+        </span>
+
+      }
+
+    </button>
+
   </div>
+
+}
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- NO PRODUCTS -->
+
+    @if (products.length === 0) {
+
+      <div
+        class="flex w-full flex-col items-center justify-center px-4 py-12 text-center"
+      >
+
+        <ion-icon
+          name="image-outline"
+          class="mb-2 !text-[34px] !text-[#b29d95]"
+        ></ion-icon>
+
+        <p
+          class="!m-0 font-sans text-[12px] font-semibold text-[#806b68]"
+        >
+          No products available.
+        </p>
+
+      </div>
+
+    }
+
+  }
+
+</section>
+
+      </main>
+
+
+      <!-- ===================================================
+           HOME BOTTOM DESIGN
+      =================================================== -->
+
+<div
+  class="pointer-events-none relative z-0 -mx-3 mt-0 h-[58px] w-[calc(100%+24px)] max-w-full shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+>
+  <img
+    src="assets/images/newDesignBg.png"
+    alt=""
+    aria-hidden="true"
+    class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+  />
+</div>
+
+    }
+
+  </div>
+
+
+  <!-- FLOATING CART -->
+
+  <app-floating-cart></app-floating-cart>
 
 </ion-content>

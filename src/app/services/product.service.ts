@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
+
 import {
   HttpClient,
   HttpParams
 } from '@angular/common/http';
 
-import { Observable, from } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { Observable, from, of } from 'rxjs';
+
+import {
+  switchMap,
+  map
+} from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+
 import { LocationStateService } from './location-state.service';
 
 
@@ -22,7 +28,20 @@ export interface ProductImage {
 
 
 /* =========================================================
-   CUSTOMER PRODUCT
+   PACK UNIT LOOKUP
+========================================================= */
+
+export interface LookupUnit {
+  displayName: string;
+  lookupCode: string;
+  lookupId: number;
+  lookupValue: string;
+  status: string;
+}
+
+
+/* =========================================================
+   PRODUCT
 ========================================================= */
 
 export interface Product {
@@ -43,6 +62,7 @@ export interface Product {
   stockQuantity: number;
   isAvailable: boolean;
   storeName: string;
+  storeImageUrl?: string | null;
   storeAddress: string;
   city: string;
   state: string;
@@ -55,7 +75,7 @@ export interface Product {
 
 
 /* =========================================================
-   CUSTOMER PRODUCT PAGE RESPONSE
+   PAGINATED PRODUCT RESPONSE
 ========================================================= */
 
 export interface ProductPageResponse {
@@ -112,65 +132,22 @@ export interface CategoryData {
    VENDOR PRODUCT
 ========================================================= */
 
-export interface VendorProduct {
-  productId: number;
-  productStoreId: number;
-  productCode: string;
-  productName: string;
-  categoryId: number;
-  categoryName: string;
-  brandName: string;
-  description: string;
-  isKidsSpecial: boolean;
-  size: string;
-  packQuantity: number;
-  packUnit: string;
-  mrp: number;
-  sellingPrice: number;
-  stockQuantity: number;
-  isAvailable: boolean;
-  storeName: string;
-  storeImageUrl: string | null;
-  storeAddress: string;
-  city: string;
-  state: string;
-  pincode: string;
-  contactNumber: string;
-  images: ProductImage[];
-  badge: string | null;
-  alreadyAdded: boolean;
-}
+/*
+ * Vendor products currently have the same product structure.
+ *
+ * storeImageUrl is optional on Product because customer
+ * product responses do not necessarily contain it.
+ *
+ * This avoids maintaining a second duplicate product interface.
+ */
+export type VendorProduct = Product;
 
 
 /* =========================================================
    VENDOR PRODUCT PAGE
 ========================================================= */
 
-export interface VendorProductPage {
-  content: VendorProduct[];
-  empty: boolean;
-  first: boolean;
-  last: boolean;
-  number: number;
-  numberOfElements: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-
-  pageable?: {
-    offset: number;
-    pageNumber: number;
-    pageSize: number;
-    paged: boolean;
-    unpaged: boolean;
-  };
-
-  sort?: {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-  };
-}
+export type VendorProductPage = ProductPageResponse;
 
 
 /* =========================================================
@@ -222,6 +199,58 @@ export interface AdminProductResponse {
 
 
 /* =========================================================
+   ADMIN PRODUCT LIST ITEM
+========================================================= */
+
+export interface AdminProductListItem {
+  productId: number;
+  productCode: string;
+  productName: string;
+  categoryId: number;
+  categoryName: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  imageUrl: string;
+  alreadyAdded: boolean;
+}
+
+
+/* =========================================================
+   ADMIN PRODUCT LIST RESPONSE
+========================================================= */
+
+export interface AdminProductListResponse {
+  content: AdminProductListItem[];
+  empty: boolean;
+  first: boolean;
+  last: boolean;
+  number: number;
+  numberOfElements: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+
+  pageable?: {
+    offset: number;
+    pageNumber: number;
+    pageSize: number;
+    paged: boolean;
+    unpaged: boolean;
+    sort?: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+  };
+
+  sort?: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+}
+
+
+/* =========================================================
    PRODUCT SERVICE
 ========================================================= */
 
@@ -232,33 +261,141 @@ export class ProductService {
 
   private readonly apiUrl = environment.apiUrl;
 
+  /*
+   * Development/testing mode.
+   *
+   * false:
+   * - no GPS request
+   * - no nearby stores request
+   * - /products called directly
+   *
+   * true:
+   * - location is initialized
+   * - nearby stores are checked
+   * - products are filtered by deliverable stores
+   */
+  private readonly LOCATION_FILTERING_ENABLED = false;
+
+
+  /* =======================================================
+     CUSTOMER PRODUCT CACHE
+  ======================================================= */
+
+  /*
+   * Cache is keyed by:
+   *
+   * page + size
+   *
+   * Example:
+   *
+   * "0_12" → first 12 products
+   * "1_12" → second 12 products
+   */
+  private readonly productPageCache =
+    new Map<string, ProductPageResponse>();
+
+
+    private readonly productDetailsCache =
+  new Map<number, Product>();
+
+
+  /*
+   * Categories do not change every time the user navigates
+   * between customer pages, so keep them in memory.
+   */
+  private categoriesCache: Category[] | null = null;
+
+
   constructor(
-    private http: HttpClient,
-    private locationStateService: LocationStateService
+    private readonly http: HttpClient,
+    private readonly locationStateService: LocationStateService
   ) {}
 
 
+
+
+
+  
   /* =========================================================
      CUSTOMER PRODUCTS
-
-     Location filtering is centralized here.
-
-     Flow:
-
-     GPS Location
-          ↓
-     Nearby Stores API
-          ↓
-     Stores where deliversToCustomer = true
-          ↓
-     Product API
-          ↓
-     Filter products by storeName
-          ↓
-     Customer pages receive only allowed products
   ========================================================= */
 
-  getProducts(): Observable<ProductPageResponse> {
+  getProducts(
+    page: number = 0,
+    size: number = 12
+  ): Observable<ProductPageResponse> {
+
+    const cacheKey = `${page}_${size}`;
+
+    const cachedResponse =
+      this.productPageCache.get(cacheKey);
+
+    /*
+     * If this exact page was already loaded,
+     * return it without making another HTTP request.
+     */
+    if (cachedResponse) {
+      return of(cachedResponse);
+    }
+
+
+    const params =
+      new HttpParams()
+        .set('page', page)
+        .set('size', size);
+
+
+    const request$ =
+      this.LOCATION_FILTERING_ENABLED
+        ? this.getProductsWithLocation(params)
+        : this.http.get<ProductPageResponse>(
+            `${this.apiUrl}/products`,
+            { params }
+          );
+
+
+    return request$.pipe(
+      map(response => {
+
+        /*
+         * Cache the completed response.
+         *
+         * Only successful API responses are cached.
+         */
+        this.productPageCache.set(
+          cacheKey,
+          response
+        );
+
+        return response;
+
+      })
+    );
+
+  }
+
+
+
+  getStoreProducts(
+  storeId: number,
+  page: number = 0,
+  size: number = 10
+): Observable<ProductPageResponse> {
+
+  return this.http.get<ProductPageResponse>(
+    `${this.apiUrl}/stores/product-stores/${storeId}/store-products?page=${page}&size=${size}`
+  );
+
+}
+
+
+  /* =========================================================
+     CUSTOMER PRODUCTS WITH LOCATION
+  ========================================================= */
+
+  private getProductsWithLocation(
+    params: HttpParams
+  ): Observable<ProductPageResponse> {
 
     return from(
       this.locationStateService.initializeLocation()
@@ -266,56 +403,182 @@ export class ProductService {
 
       switchMap(() =>
         this.http.get<ProductPageResponse>(
-          `${this.apiUrl}/products`
+          `${this.apiUrl}/products`,
+          { params }
         )
       ),
 
       map(response => {
 
         const products =
-          this.locationStateService.filterProductsByNearbyStores(
-            response?.content || []
-          );
+          this.locationStateService
+            .filterProductsByNearbyStores(
+              response?.content ?? []
+            );
+
 
         return {
           ...response,
 
           content: products,
 
-          numberOfElements: products.length,
+          numberOfElements:
+            products.length,
 
-          empty: products.length === 0
+          empty:
+            products.length === 0
+
         };
+
       })
+
     );
+
+  }
+
+
+  /* =========================================================
+     SINGLE PRODUCT
+  ========================================================= */
+
+  /*
+   * IMPORTANT:
+   *
+   * This API uses productId.
+   *
+   * Product Details must use this method instead of
+   * loading a paginated /products response and searching
+   * through the current Home page.
+   */
+getProduct(
+  productId: number
+): Observable<Product> {
+
+  const cachedProduct =
+    this.productDetailsCache.get(
+      productId
+    );
+
+
+  if (cachedProduct) {
+
+    return of(
+      cachedProduct
+    );
+
+  }
+
+
+  return this.http
+    .get<Product>(
+      `${this.apiUrl}/products/${productId}`
+    )
+    .pipe(
+
+      map(product => {
+
+        this.productDetailsCache.set(
+          productId,
+          product
+        );
+
+        return product;
+
+      })
+
+    );
+
+}
+
+
+clearProductDetailsCache(): void {
+  this.productDetailsCache.clear();
+}
+
+
+  /* =========================================================
+     VENDOR PRODUCTS FOR PRODUCT DETAILS
+  ========================================================= */
+
+  getVendorProductsByProductStoreId(
+    productStoreId: number
+  ): Observable<ProductPageResponse> {
+
+    return this.http.get<ProductPageResponse>(
+      `${this.apiUrl}/products/${productStoreId}/vendor-products`
+    );
+
+  }
+
+
+  /* =========================================================
+     ALL VENDOR PRODUCTS
+  ========================================================= */
+
+  getAllVendorProducts(
+    productStoreId: number
+  ): Observable<ProductPageResponse> {
+
+    return this.http.get<ProductPageResponse>(
+      `${this.apiUrl}/${productStoreId}/all-vendor-products`
+    );
+
+  }
+
+
+  /* =========================================================
+     PRODUCTS BY CATEGORY
+  ========================================================= */
+
+  getProductsByCategory(
+    categoryId: number
+  ): Observable<ProductPageResponse> {
+
+    return this.http.get<ProductPageResponse>(
+      `${this.apiUrl}/products/category/${categoryId}`
+    );
+
   }
 
 
   /* =========================================================
      SEARCH PRODUCTS
-
-     Search also uses the same nearby-store filtering.
-
-     Therefore a customer cannot search and get products
-     from a store that does not deliver to their location.
   ========================================================= */
 
   searchProducts(
     search: string,
     page: number = 0,
-    size: number = 10
+    size: number = 18
   ): Observable<VendorProductPage> {
 
-    let params = new HttpParams()
-      .set('page', page)
-      .set('size', size);
+    let params =
+      new HttpParams()
+        .set('page', page)
+        .set('size', size);
 
-    if (search.trim()) {
-      params = params.set(
-        'search',
-        search.trim()
-      );
+
+    const trimmedSearch =
+      search.trim();
+
+
+    if (trimmedSearch) {
+      params =
+        params.set(
+          'search',
+          trimmedSearch
+        );
     }
+
+
+    if (!this.LOCATION_FILTERING_ENABLED) {
+
+      return this.http.get<VendorProductPage>(
+        `${this.apiUrl}/products`,
+        { params }
+      );
+
+    }
+
 
     return from(
       this.locationStateService.initializeLocation()
@@ -331,38 +594,90 @@ export class ProductService {
       map(response => {
 
         const products =
-          this.locationStateService.filterProductsByNearbyStores(
-            response?.content || []
-          );
+          this.locationStateService
+            .filterProductsByNearbyStores(
+              response?.content ?? []
+            );
+
 
         return {
           ...response,
 
           content: products,
 
-          numberOfElements: products.length,
+          numberOfElements:
+            products.length,
 
-          empty: products.length === 0
+          empty:
+            products.length === 0
+
         };
+
       })
+
     );
+
   }
 
 
   /* =========================================================
      CATEGORIES
-
-     Categories are still returned normally.
-
-     We are NOT filtering categories here because category
-     filtering was not part of the nearby-store requirement.
   ========================================================= */
 
   getCategories(): Observable<Category[]> {
 
+    /*
+     * Return cached categories if they have already
+     * been loaded during this application session.
+     */
+    if (this.categoriesCache) {
+      return of(this.categoriesCache);
+    }
+
+
     return this.http.get<Category[]>(
       `${this.apiUrl}/categories`
+    ).pipe(
+
+      map(categories => {
+
+        this.categoriesCache =
+          categories ?? [];
+
+        return this.categoriesCache;
+
+      })
+
     );
+
+  }
+
+
+  /* =========================================================
+     CLEAR CUSTOMER CACHE
+  ========================================================= */
+
+  /*
+   * These are explicit methods.
+   *
+   * We do NOT call them during normal navigation.
+   *
+   * They can later be called after an operation that
+   * genuinely changes customer product/category data.
+   */
+  clearProductCache(): void {
+    this.productPageCache.clear();
+  }
+
+
+  clearCategoryCache(): void {
+    this.categoriesCache = null;
+  }
+
+
+  clearCustomerCache(): void {
+    this.clearProductCache();
+    this.clearCategoryCache();
   }
 
 
@@ -375,19 +690,26 @@ export class ProductService {
     image: File
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const categoryBlob = new Blob(
-      [JSON.stringify(categoryData)],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const categoryBlob =
+      new Blob(
+        [
+          JSON.stringify(categoryData)
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'categoryData',
       categoryBlob
     );
+
 
     formData.append(
       'image',
@@ -395,10 +717,12 @@ export class ProductService {
       image.name
     );
 
+
     return this.http.post(
       `${this.apiUrl}/categories`,
       formData
     );
+
   }
 
 
@@ -412,19 +736,26 @@ export class ProductService {
     image: File
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const categoryDataBlob = new Blob(
-      [JSON.stringify(categoryData)],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const categoryDataBlob =
+      new Blob(
+        [
+          JSON.stringify(categoryData)
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'categoryData',
       categoryDataBlob
     );
+
 
     formData.append(
       'image',
@@ -432,20 +763,17 @@ export class ProductService {
       image.name
     );
 
+
     return this.http.put(
       `${this.apiUrl}/categories/${categoryId}`,
       formData
     );
+
   }
 
 
   /* =========================================================
      VENDOR PRODUCTS
-     
-     IMPORTANT:
-     Vendor products are NOT filtered by customer location.
-
-     Vendor should see their own products.
   ========================================================= */
 
   getVendorProducts(): Observable<VendorProductPage> {
@@ -453,6 +781,7 @@ export class ProductService {
     return this.http.get<VendorProductPage>(
       `${this.apiUrl}/vendor/products`
     );
+
   }
 
 
@@ -465,23 +794,28 @@ export class ProductService {
     images: File[]
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const productsBlob = new Blob(
-      [
-        JSON.stringify({
-          products: products
-        })
-      ],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const productsBlob =
+      new Blob(
+        [
+          JSON.stringify({
+            products
+          })
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'products',
       productsBlob
     );
+
 
     images.forEach(image => {
 
@@ -493,10 +827,12 @@ export class ProductService {
 
     });
 
+
     return this.http.post(
       `${this.apiUrl}/vendor/products/bulk`,
       formData
     );
+
   }
 
 
@@ -510,19 +846,26 @@ export class ProductService {
     images: File[] = []
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const productDataBlob = new Blob(
-      [JSON.stringify(productData)],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const productDataBlob =
+      new Blob(
+        [
+          JSON.stringify(productData)
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'productData',
       productDataBlob
     );
+
 
     images.forEach(image => {
 
@@ -534,10 +877,25 @@ export class ProductService {
 
     });
 
+
     return this.http.put(
       `${this.apiUrl}/vendor/products/${productId}`,
       formData
     );
+
+  }
+
+
+  /* =========================================================
+     ADMIN PRODUCT MASTER LIST
+  ========================================================= */
+
+  getAdminProductsV(): Observable<AdminProductListResponse> {
+
+    return this.http.get<AdminProductListResponse>(
+      `${this.apiUrl}/vendor/products/master`
+    );
+
   }
 
 
@@ -550,6 +908,7 @@ export class ProductService {
     return this.http.get<AdminProductResponse>(
       `${this.apiUrl}/admin/products`
     );
+
   }
 
 
@@ -566,19 +925,26 @@ export class ProductService {
     image: File
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const productDataBlob = new Blob(
-      [JSON.stringify(productData)],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const productDataBlob =
+      new Blob(
+        [
+          JSON.stringify(productData)
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'productData',
       productDataBlob
     );
+
 
     formData.append(
       'image',
@@ -586,10 +952,12 @@ export class ProductService {
       image.name
     );
 
+
     return this.http.post(
       `${this.apiUrl}/admin/products`,
       formData
     );
+
   }
 
 
@@ -607,19 +975,26 @@ export class ProductService {
     image?: File
   ): Observable<any> {
 
-    const formData = new FormData();
+    const formData =
+      new FormData();
 
-    const productDataBlob = new Blob(
-      [JSON.stringify(productData)],
-      {
-        type: 'application/json'
-      }
-    );
+
+    const productDataBlob =
+      new Blob(
+        [
+          JSON.stringify(productData)
+        ],
+        {
+          type: 'application/json'
+        }
+      );
+
 
     formData.append(
       'productData',
       productDataBlob
     );
+
 
     if (image) {
 
@@ -631,9 +1006,24 @@ export class ProductService {
 
     }
 
+
     return this.http.put(
       `${this.apiUrl}/admin/products/${productId}`,
       formData
     );
+
   }
+
+
+
+  /* =========================================================
+   PACK UNIT LOOKUPS
+========================================================= */
+
+getPackUnits(): Observable<LookupUnit[]> {
+  return this.http.get<LookupUnit[]>(
+    `${this.apiUrl}/lookups/units`
+  );
+}
+
 }

@@ -20,6 +20,8 @@ export interface VendorOrderItem {
 
   orderItemId: number;
 
+  orderStoreId?: number;
+
   productId: number;
 
   productName: string;
@@ -50,6 +52,8 @@ export interface VendorOrderItem {
 export interface VendorOrder {
 
   orderId: number;
+
+    orderStoreId?: number;
 
   customerName: string;
 
@@ -184,16 +188,47 @@ export class VendorOrderService {
   /* ====================================================
      CONFIRM ORDER
   ==================================================== */
+  /* ====================================================
+     UPDATE VENDOR ORDER STATUS
+  ==================================================== */
 
-  confirmOrder(
-    orderId: number
+  updateOrderStatus(
+    orderId: number,
+    status: string
   ): Observable<any> {
-
     return this.http.put(
-      `${this.apiUrl}/vendor/orders/${orderId}/confirm`,
-      {}
+      `${this.apiUrl}/vendor/orders/${orderId}/status`,
+      { status }
     );
-
   }
+
+  /* ====================================================
+     CONFIRM ORDER — BACKWARD COMPATIBILITY
+  ==================================================== */
+
+  confirmOrder(orderId: number): Observable<any> {
+    return this.updateOrderStatus(orderId, 'CONFIRMED');
+  }
+
+
+  /* ====================================================
+   VERIFY DELIVERY OTP
+==================================================== */
+
+verifyDeliveryOtp(
+  orderId: number,
+  customerMobile: string,
+  otp: string,
+  orderStoreId: number
+): Observable<any> {
+  const params = new HttpParams()
+    .set('customerMobile', customerMobile);
+
+  return this.http.post(
+    `${this.apiUrl}/orders/${orderId}/verify-delivery-otp`,
+    { otp, orderStoreId },
+    { params }
+  );
+}
 
 }

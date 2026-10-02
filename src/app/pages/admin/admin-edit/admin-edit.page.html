@@ -1,897 +1,705 @@
-<ion-content [fullscreen]="true">
 
-  <div class="edit-page">
+<ion-content [fullscreen]="true" class="!bg-white">
+  <div class="relative flex min-h-[100dvh] flex-col overflow-visible bg-white px-3 font-sans text-[#17233c] sm:px-4">
 
+    <!-- DIWALI SIDE DECORATIONS -->
 
-    <!-- =====================================
-         DIWALI HEADER
-    ====================================== -->
+    <img
+      src="assets/images/left-bg.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none fixed left-0 top-[24%] z-0 hidden h-auto w-[62px] select-none object-contain opacity-[0.12] sm:block md:w-[85px]"
+    />
 
-    <div class="page-header">
+    <img
+      src="assets/images/right-bg.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none fixed right-0 top-[42%] z-0 hidden h-auto w-[62px] select-none object-contain opacity-[0.12] sm:block md:w-[85px]"
+    />
 
-      <img
-        class="header-decoration header-decoration-left"
-        src="assets/images/top-left.png"
-        alt=""
-      />
+    <!-- HEADER -->
 
-      <img
-        class="header-decoration header-decoration-right"
-        src="assets/images/top-right.png"
-        alt=""
-      />
-
+    <header class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-start overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4">
 
       <button
         type="button"
-        class="back-button"
+        aria-label="Go back"
         (click)="goBack()"
+        class="relative z-30 mr-2 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-
-        <ion-icon
-          name="arrow-back-outline"
-        ></ion-icon>
-
+        <ion-icon name="arrow-back-outline" class="!text-[23px]"></ion-icon>
       </button>
 
-
-      <div class="header-content">
-
-        <div class="header-brand">
-          DIWALI
-        </div>
-
-        <h1>
+      <div class="relative z-20 flex min-w-0 flex-1 flex-col justify-center leading-none">
+        <h1 class="!m-0 truncate !font-sans !text-[19px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]">
           Edit Product
         </h1>
 
-        <span class="product-id">
+        <p class="!m-[5px_0_0] truncate !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]">
           Product ID: {{ productId }}
-        </span>
-
-      </div>
-
-    </div>
-
-
-
-    <!-- =====================================
-         LOADING
-    ====================================== -->
-
-    @if (isLoading) {
-
-      <div class="state-container">
-
-        <div class="loading-spinner"></div>
-
-        <p>
-          Loading product...
         </p>
-
       </div>
-
-    }
-
-
-
-    <!-- =====================================
-         ERROR
-    ====================================== -->
-
-    @if (!isLoading && errorMessage) {
-
-      <div class="state-container error-state">
-
-        <ion-icon
-          name="close-outline"
-        ></ion-icon>
-
-        <p>
-          {{ errorMessage }}
-        </p>
-
-        <button
-          type="button"
-          class="retry-button"
-          (click)="loadProduct()"
-        >
-          Try Again
-        </button>
-
-      </div>
-
-    }
-
-
-
-    <!-- =====================================
-         PRODUCT
-    ====================================== -->
-
-    @if (!isLoading && product) {
-
-      <div class="edit-container">
-
-
-      <!-- =================================
-     IMAGE SECTION
-================================== -->
-
-<section class="image-card">
-
-  <div class="section-heading">
-
-    <span class="heading-decoration">
-      ✦
-    </span>
-
-    <h2>
-      Product Images
-    </h2>
-
-    <span class="heading-decoration">
-      ✦
-    </span>
-
-  </div>
-
-
-  <!-- MAIN IMAGE -->
-
-  <div class="main-image-wrapper">
-
-    @if (
-      product.images &&
-      product.images.length > 0
-    ) {
 
       <img
-        class="main-product-image"
-        [src]="getExistingImageUrl()"
-        [alt]="product.productName"
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto max-w-[100px] select-none object-contain opacity-[0.85] sm:max-w-[125px]"
       />
+    </header>
 
-    } @else {
+    <!-- MAIN CONTENT -->
 
-      <div class="no-image">
+    <main class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-8 pt-4">
 
-        <ion-icon
-          name="image-outline"
-        ></ion-icon>
+      <!-- INTRODUCTION -->
 
-        <span>
-          No Image Available
-        </span>
+      <section class="mb-4 px-1">
+        <p class="!m-0 !font-sans !text-[9px] !font-bold uppercase tracking-[1.2px] !text-[#9e2020]">
+          Product Management
+        </p>
 
-      </div>
+        <h2 class="!m-[5px_0_0] !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c] sm:!text-[24px]">
+          Edit Product Details
+        </h2>
 
-    }
+        <p class="!m-[6px_0_0] max-w-[440px] !font-sans !text-[11px] !font-medium !leading-[1.55] !text-[#806b68]">
+          Update product information, images, pricing, stock and store details.
+        </p>
+      </section>
 
-  </div>
+      <!-- LOADING STATE -->
 
+      @if (isLoading) {
+        <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
+          <div class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"></div>
 
-  <!-- EXISTING IMAGE THUMBNAILS -->
+          <h2 class="!m-0 !font-sans !text-[14px] !font-bold !text-[#17233c]">
+            Loading product...
+          </h2>
 
-  @if (
-    product.images &&
-    product.images.length > 0
-  ) {
-
-    <div class="thumbnail-row">
-
-      @for (
-        image of product.images;
-        track image.productImageId
-      ) {
-
-        <button
-          type="button"
-          class="thumbnail-button"
-          [class.selected]="
-            selectedImageIndex === $index
-          "
-          (click)="selectImage($index)"
-        >
-
-          <img
-            [src]="image.imageUrl"
-            [alt]="product.productName"
-          />
-
-        </button>
-
+          <p class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+            Please wait while product details are loaded.
+          </p>
+        </section>
       }
 
-    </div>
+      <!-- ERROR STATE -->
 
-  }
+      @if (!isLoading && errorMessage) {
+        <section class="flex flex-col items-center justify-center rounded-[14px] border border-[#f2c7ca] bg-[#fff3f3] px-5 py-10 text-center">
 
-
-  <!-- =================================
-       ADD NEW IMAGES
-  ================================== -->
-
-  <div class="image-upload-section">
-
-    <div class="upload-heading">
-
-      <span>
-        Add / Replace Images
-      </span>
-
-    </div>
-
-
-    <label
-      class="image-upload-button"
-    >
-
-      <ion-icon
-        name="add-outline"
-      ></ion-icon>
-
-      <span>
-        Choose Images
-      </span>
-
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        (change)="onImageSelected($event)"
-      />
-
-    </label>
-
-
-    <p class="upload-hint">
-      You can select multiple images.
-    </p>
-
-
-    <!-- NEW IMAGE PREVIEWS -->
-
-    @if (
-      newImagePreviews.length > 0
-    ) {
-
-      <div class="new-images-section">
-
-        <div class="new-images-heading">
-
-          New Images
-          ({{ newImagePreviews.length }})
-
-        </div>
-
-
-        <div class="new-image-grid">
-
-          @for (
-            preview of newImagePreviews;
-            track $index
-          ) {
-
-            <div
-              class="new-image-item"
-            >
-
-              <img
-                [src]="preview"
-                alt="New product image"
-              />
-
-
-              <button
-                type="button"
-                class="remove-image-button"
-                (click)="removeNewImage($index)"
-              >
-
-                <ion-icon
-                  name="close-outline"
-                ></ion-icon>
-
-              </button>
-
-            </div>
-
-          }
-
-        </div>
-
-
-        <button
-          type="button"
-          class="clear-images-button"
-          (click)="clearNewImages()"
-        >
-          Remove selected images
-        </button>
-
-      </div>
-
-    }
-
-  </div>
-
-</section>
-
-
-        <!-- =================================
-             BASIC INFORMATION
-        ================================== -->
-
-        <section class="edit-card">
-
-          <div class="section-heading">
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-            <h2>
-              Product Information
-            </h2>
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
+          <div class="mb-3 flex !h-[52px] !w-[52px] !items-center !justify-center !rounded-full !bg-[#fbe1e3] !text-[#b3123b]">
+            <ion-icon name="close-outline" class="!text-[27px]"></ion-icon>
           </div>
 
+          <h2 class="!m-0 !font-sans !text-[16px] !font-extrabold !text-[#17233c]">
+            Unable to load product
+          </h2>
 
-          <div class="form-grid">
+          <p class="!m-[7px_0_16px] max-w-[320px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+            {{ errorMessage }}
+          </p>
 
+          <button
+            type="button"
+            (click)="loadProduct()"
+            class="flex min-h-[40px] !items-center !justify-center !rounded-[11px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.98]"
+          >
+            Try Again
+          </button>
+        </section>
+      }
 
-            <div class="form-field full-width">
+      <!-- PRODUCT EDIT FORM -->
 
-              <label>
-                Product Name
-              </label>
+      @if (!isLoading && product) {
 
-              <input
-                type="text"
-                [(ngModel)]="product.productName"
-              />
+        <!-- PRODUCT INFORMATION -->
 
-            </div>
+        <section class="rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
+         
 
-            <div class="form-field">
+          <div class="mb-4">
+            <label for="editProductName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Product Name
+            </label>
 
-              <label>
+            <input
+              id="editProductName"
+              type="text"
+              [(ngModel)]="product.productName"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
+
+          <div class="mb-4 grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editProductCode" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Product Code
               </label>
 
               <input
+                id="editProductCode"
                 type="text"
                 [(ngModel)]="product.productCode"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editBrandName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Brand Name
               </label>
 
               <input
+                id="editBrandName"
                 type="text"
                 [(ngModel)]="product.brandName"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
+          </div>
 
-
-            <div class="form-field">
-
-              <label>
+          <div class="mb-4 grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editCategory" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Category
               </label>
 
               <input
+                id="editCategory"
                 type="text"
                 [(ngModel)]="product.categoryName"
                 readonly
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#f8f4ed] px-2.5 !font-sans !text-[11px] !font-medium text-[#806b68] outline-none sm:px-3 sm:!text-[12px]"
               />
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editSize" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Size
               </label>
 
               <input
+                id="editSize"
                 type="text"
                 [(ngModel)]="product.size"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
+          </div>
 
+          <div class="mb-4">
+            <label for="editDescription" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Description
+            </label>
 
-            <div class="form-field full-width">
+            <textarea
+              id="editDescription"
+              rows="4"
+              [(ngModel)]="product.description"
+              class="w-full resize-y rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 py-2.5 !font-sans !text-[12px] !font-medium leading-[1.55] text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            ></textarea>
+          </div>
 
-              <label>
-                Description
-              </label>
-
-              <textarea
-                rows="4"
-                [(ngModel)]="product.description"
-              ></textarea>
-
-            </div>
-
-
-            <div class="form-field">
-
-              <label>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editKidsSpecial" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Kids Special
               </label>
 
-              <select
-                [(ngModel)]="product.isKidsSpecial"
-              >
-
-                <option [ngValue]="true">
-                  Yes
-                </option>
-
-                <option [ngValue]="false">
-                  No
-                </option>
-
-              </select>
-
+              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
+                <select
+                  id="editKidsSpecial"
+                  [(ngModel)]="product.isKidsSpecial"
+                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
+                >
+                  <option [ngValue]="true">Yes</option>
+                  <option [ngValue]="false">No</option>
+                </select>
+              </div>
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editAvailability" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Availability
               </label>
 
-              <select
-                [(ngModel)]="product.isAvailable"
-              >
-
-                <option [ngValue]="true">
-                  Available
-                </option>
-
-                <option [ngValue]="false">
-                  Not Available
-                </option>
-
-              </select>
-
+              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
+                <select
+                  id="editAvailability"
+                  [(ngModel)]="product.isAvailable"
+                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
+                >
+                  <option [ngValue]="true">Available</option>
+                  <option [ngValue]="false">Not Available</option>
+                </select>
+              </div>
             </div>
-
           </div>
 
         </section>
 
+        <!-- PACK INFORMATION -->
 
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
-        <!-- =================================
-             PACK INFORMATION
-        ================================== -->
+          <div class="mb-5 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="cube-outline" class="!text-[21px]"></ion-icon>
+            </div>
 
-        <section class="edit-card">
-
-          <div class="section-heading">
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-            <h2>
-              Pack Information
-            </h2>
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
+            <div>
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Pack Information
+              </h2>
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Configure product packaging
+              </p>
+            </div>
           </div>
 
-
-          <div class="form-grid">
-
-            <div class="form-field">
-
-              <label>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editPackQuantity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Pack Quantity
               </label>
 
               <input
+                id="editPackQuantity"
                 type="number"
                 min="1"
                 [(ngModel)]="product.packQuantity"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
               />
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editPackUnit" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Pack Unit
               </label>
 
-              <select
-                [(ngModel)]="product.packUnit"
-              >
-
-                <option value="PACK">
-                  PACK
-                </option>
-
-                <option value="BOX">
-                  BOX
-                </option>
-
-                <option value="PIECE">
-                  PIECE
-                </option>
-
-              </select>
-
+              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
+                <select
+                  id="editPackUnit"
+                  [(ngModel)]="product.packUnit"
+                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
+                >
+                  <option value="PACK">PACK</option>
+                  <option value="BOX">BOX</option>
+                  <option value="PIECE">PIECE</option>
+                </select>
+              </div>
             </div>
-
           </div>
 
         </section>
 
+        <!-- PRICING AND STOCK -->
 
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
-        <!-- =================================
-             PRICE & STOCK
-        ================================== -->
+          <div class="mb-5 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !font-sans !text-[19px] !font-bold !text-[#8f071f]">
+              ₹
+            </div>
 
-        <section class="edit-card">
-
-          <div class="section-heading">
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-            <h2>
-              Price & Stock
-            </h2>
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
+            <div>
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Pricing &amp; Stock
+              </h2>
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Manage pricing and availability
+              </p>
+            </div>
           </div>
 
-
-          <div class="form-grid">
-
-
-            <div class="form-field">
-
-              <label>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editMrp" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 MRP
               </label>
 
-              <div class="currency-input">
-
-                <span>₹</span>
+              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
+                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
 
                 <input
+                  id="editMrp"
                   type="number"
                   min="0"
                   [(ngModel)]="product.mrp"
+                  class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none"
                 />
-
               </div>
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editSellingPrice" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Selling Price
               </label>
 
-              <div class="currency-input">
-
-                <span>₹</span>
+              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
+                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
 
                 <input
+                  id="editSellingPrice"
                   type="number"
                   min="0"
                   [(ngModel)]="product.sellingPrice"
+                  class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none"
                 />
-
               </div>
-
             </div>
+          </div>
 
+          <div class="mt-4">
+            <label for="editStockQuantity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Stock Quantity
+            </label>
 
-            <div class="form-field">
+            <input
+              id="editStockQuantity"
+              type="number"
+              min="0"
+              [(ngModel)]="product.stockQuantity"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
 
-              <label>
-                Stock Quantity
-              </label>
+          <div class="mt-4">
+            <label for="editBadge" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Badge
+            </label>
 
-              <input
-                type="number"
-                min="0"
-                [(ngModel)]="product.stockQuantity"
-              />
-
-            </div>
-
-
-            <div class="form-field">
-
-              <label>
-                Badge
-              </label>
-
-              <input
-                type="text"
-                [(ngModel)]="product.badge"
-                placeholder="Example: Trending"
-              />
-
-            </div>
-
+            <input
+              id="editBadge"
+              type="text"
+              [(ngModel)]="product.badge"
+              placeholder="Example: Trending"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
           </div>
 
         </section>
 
+        <!-- STORE INFORMATION -->
 
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
-        <!-- =================================
-             STORE INFORMATION
-        ================================== -->
+          <div class="mb-5 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="storefront-outline" class="!text-[21px]"></ion-icon>
+            </div>
 
-        <section class="edit-card">
-
-          <div class="section-heading">
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
-            <h2>
-              Store Information
-            </h2>
-
-            <span class="heading-decoration">
-              ✦
-            </span>
-
+            <div>
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Store Information
+              </h2>
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Review store and contact details
+              </p>
+            </div>
           </div>
 
+          <div class="mb-4">
+            <label for="editStoreName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Store Name
+            </label>
 
-          <div class="form-grid">
+            <input
+              id="editStoreName"
+              type="text"
+              [(ngModel)]="product.storeName"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
 
+          <div class="mb-4">
+            <label for="editStoreAddress" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+              Store Address
+            </label>
 
-            <div class="form-field full-width">
+            <input
+              id="editStoreAddress"
+              type="text"
+              [(ngModel)]="product.storeAddress"
+              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
+            />
+          </div>
 
-              <label>
-                Store Name
-              </label>
-
-              <input
-                type="text"
-                [(ngModel)]="product.storeName"
-              />
-
-            </div>
-
-
-            <div class="form-field full-width">
-
-              <label>
-                Store Address
-              </label>
-
-              <input
-                type="text"
-                [(ngModel)]="product.storeAddress"
-              />
-
-            </div>
-
-
-            <div class="form-field">
-
-              <label>
+          <div class="mb-4 grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editCity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 City
               </label>
 
               <input
+                id="editCity"
                 type="text"
                 [(ngModel)]="product.city"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editState" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 State
               </label>
 
               <input
+                id="editState"
                 type="text"
                 [(ngModel)]="product.state"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
+          </div>
 
-
-            <div class="form-field">
-
-              <label>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="min-w-0">
+              <label for="editPincode" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Pincode
               </label>
 
               <input
+                id="editPincode"
                 type="text"
                 [(ngModel)]="product.pincode"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
 
-
-            <div class="form-field">
-
-              <label>
+            <div class="min-w-0">
+              <label for="editContactNumber" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
                 Contact Number
               </label>
 
               <input
+                id="editContactNumber"
                 type="text"
                 [(ngModel)]="product.contactNumber"
+                class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
-
             </div>
-
           </div>
 
         </section>
 
+  
 
 
-        <!-- =================================
-             SYSTEM INFORMATION
-        ================================== -->
+        <!-- PRODUCT IMAGES - MOVED TO THE LAST -->
 
-        <section class="edit-card system-card">
+        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
-          <div class="section-heading">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="image-outline" class="!text-[21px]"></ion-icon>
+            </div>
 
-            <span class="heading-decoration">
-              ✦
-            </span>
+            <div class="min-w-0 flex-1">
+              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+                Product Images
+              </h2>
 
-            <h2>
-              Product Details
+              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                Add, replace or remove product images
+              </p>
+            </div>
+          </div>
+
+          <!-- ADD / REPLACE IMAGES -->
+
+          <div class="border-b border-[#f0e4d7] pb-4">
+
+            <h3 class="!m-0 !font-sans !text-[12px] !font-extrabold !text-[#17233c]">
+              Add / Replace Images
+            </h3>
+
+            <p class="!m-[5px_0_12px] !font-sans !text-[10px] !font-medium !leading-[1.45] !text-[#806b68]">
+              Select one or more images for this product.
+            </p>
+
+            <label class="flex min-h-[115px] cursor-pointer flex-col items-center justify-center rounded-[12px] border border-dashed border-[#d9c4b2] bg-[#fffdf7] px-4 py-4 text-center transition duration-200 hover:border-[#b3123b] hover:bg-[#fffaf3] active:scale-[0.99]">
+
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                (change)="onImageSelected($event)"
+                class="hidden"
+              />
+
+              <div class="mb-2 flex !h-[37px] !w-[37px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+                <ion-icon name="add-outline" class="!text-[22px]"></ion-icon>
+              </div>
+
+              <span class="!font-sans !text-[11px] !font-bold !text-[#17233c]">
+                Choose Images
+              </span>
+
+              <span class="mt-1 !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                JPG, PNG or WEBP
+              </span>
+            </label>
+
+            <p class="!m-[7px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+              You can select multiple images.
+            </p>
+
+            <!-- NEW IMAGE PREVIEWS -->
+
+            @if (newImagePreviews.length > 0) {
+              <div class="mt-4 rounded-[12px] border border-[#ead8b9] bg-[#fffdf7] p-3">
+
+                <div class="mb-3 flex items-center justify-between gap-2">
+                  <h3 class="!m-0 !font-sans !text-[11px] !font-extrabold !text-[#17233c]">
+                    New Images
+                  </h3>
+
+                  <span class="rounded-full bg-[#f7e9bd] px-2.5 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]">
+                    {{ newImagePreviews.length }}
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  @for (preview of newImagePreviews; track $index) {
+                    <div class="relative aspect-square min-w-0 overflow-hidden rounded-[10px] border border-[#ead8b9] bg-white p-1">
+
+                      <img
+                        [src]="preview"
+                        alt="New product image"
+                        class="block h-full w-full rounded-[7px] object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        [attr.aria-label]="'Remove selected image ' + ($index + 1)"
+                        (click)="removeNewImage($index)"
+                        class="absolute right-1.5 top-1.5 flex !h-[25px] !w-[25px] !items-center !justify-center !rounded-full !border !border-white/70 !bg-[#8f071f] !p-0 !text-white shadow-sm transition duration-150 active:scale-90"
+                      >
+                        <ion-icon name="close-outline" class="!text-[15px]"></ion-icon>
+                      </button>
+
+                    </div>
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  (click)="clearNewImages()"
+                  class="mt-3 flex min-h-[36px] w-full !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#b3123b] transition duration-150 active:scale-[0.99]"
+                >
+                  Remove selected images
+                </button>
+
+              </div>
+            }
+
+          </div>
+
+          <!-- EXISTING IMAGES -->
+
+          @if (product.images && product.images.length > 0) {
+            <div class="mt-4">
+
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <label class="block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+                  Existing Images
+                </label>
+
+                <span class="rounded-full bg-[#f7e9bd] px-2 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]">
+                  {{ product.images.length }}
+                </span>
+              </div>
+
+              <div class="flex flex-wrap gap-3">
+                @for (image of product.images; track image.productImageId; let i = $index) {
+                  <div class="relative h-[72px] w-[72px] shrink-0 rounded-[10px] border border-[#eadfd5] bg-white p-1">
+
+                    <img
+                      [src]="image.imageUrl"
+                      [alt]="product.productName"
+                      class="h-full w-full rounded-[7px] object-cover"
+                    />
+
+                    <button
+                      type="button"
+                      (click)="removeExistingImage(i)"
+                      [attr.aria-label]="'Remove existing image ' + (i + 1)"
+                      class="absolute -right-2 -top-2 flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-full !border-2 !border-white !bg-[#b3123b] !p-0 !text-white shadow-md transition duration-150 hover:!bg-[#8f071f] active:scale-90"
+                    >
+                      <ion-icon name="close-outline" class="!text-[15px]"></ion-icon>
+                    </button>
+
+                  </div>
+                }
+              </div>
+
+            </div>
+          } @else {
+            <div class="mt-4 rounded-[10px] border border-dashed border-[#e1d7d2] bg-[#fffdf7] px-3 py-4 text-center">
+              <p class="!m-0 !font-sans !text-[10px] !font-medium !text-[#806b68]">
+                No existing images. You can add images using the box above.
+              </p>
+            </div>
+          }
+
+        </section>
+
+      }
+
+      
+        <!-- UPDATE PRODUCT -->
+
+        <section class="mt-4 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+
+          <div class="mb-4 text-center">
+            <div class="mb-2 !font-sans !text-[13px] !font-bold tracking-[3px] !text-[#b3123b]">
+              ✦ &nbsp; ✦ &nbsp; ✦
+            </div>
+
+            <h2 class="!m-0 !font-sans !text-[14px] !font-extrabold !text-[#17233c]">
+              Save Your Changes
             </h2>
 
-            <span class="heading-decoration">
-              ✦
-            </span>
-
+            <p class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+              Review the updated details before saving.
+            </p>
           </div>
-
-
-          <div class="form-grid">
-
-
-            <div class="form-field">
-
-              <label>
-                Product ID
-              </label>
-
-              <input
-                type="text"
-                [value]="product.productId"
-                readonly
-              />
-
-            </div>
-
-
-            <div class="form-field">
-
-              <label>
-                Product Store ID
-              </label>
-
-              <input
-                type="text"
-                [value]="product.productStoreId"
-                readonly
-              />
-
-            </div>
-
-
-            <div class="form-field">
-
-              <label>
-                Category ID
-              </label>
-
-              <input
-                type="text"
-                [value]="product.categoryId"
-                readonly
-              />
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-
-        <!-- =================================
-             UPDATE
-        ================================== -->
-
-        <div class="update-section">
-
-          <div class="update-decoration">
-            ✦ &nbsp; ✦ &nbsp; ✦
-          </div>
-
 
           <button
             type="button"
-            class="update-button"
             [disabled]="isSaving"
             (click)="updateProduct()"
+            class="flex min-h-[47px] w-full !items-center !justify-center gap-2 !rounded-[12px] !border-0 !bg-[#b3123b] px-4 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_4px_12px_rgba(143,7,31,0.18)] transition duration-200 hover:!bg-[#8f071f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            style="--background: #b3123b; --background-activated: #8f071f; --color: #fff8dc;"
           >
-
             @if (isSaving) {
-
-              <span>
-                Updating...
-              </span>
-
+              <span class="h-4 w-4 animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"></span>
+              <span>Updating...</span>
             } @else {
-
-              <ion-icon
-                name="save-outline"
-              ></ion-icon>
-
-              <span>
-                Update Product
-              </span>
-
+              <ion-icon name="save-outline" class="!text-[18px]"></ion-icon>
+              <span>Update Product</span>
             }
-
           </button>
 
-        </div>
+        </section>
 
+      <!-- BOTTOM DIWALI DECORATION -->
 
+      <div class="pointer-events-none relative z-0 -mx-3 mt-5 w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
+        <img
+          src="assets/images/newDesignBg.png"
+          alt=""
+          aria-hidden="true"
+          class="block h-auto w-[175%] max-w-none select-none opacity-[0.18]"
+        />
       </div>
 
-    }
-
+    </main>
   </div>
-
 </ion-content>

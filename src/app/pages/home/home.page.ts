@@ -1,33 +1,69 @@
 import {
+  ChangeDetectorRef,
   Component,
-  OnInit,
-  ChangeDetectorRef
+  OnDestroy,
+  OnInit
 } from '@angular/core';
 
-import { LocationService } from '../../services/location.service';
+import {
+  FormsModule
+} from '@angular/forms';
 
-import { FormsModule } from '@angular/forms';
+import { ElementRef, ViewChild } from '@angular/core';
 
 import {
+  IonBadge,
+  IonButton,
   IonContent,
-  IonSearchbar,
   IonIcon,
-  IonButton
+  IonPopover,
+  IonSearchbar
 } from '@ionic/angular';
 
 import {
-  imageOutline
-} from 'ionicons/icons';
-
-import { addIcons } from 'ionicons';
-
-import { Router } from '@angular/router';
+  addIcons
+} from 'ionicons';
 
 import {
-  ProductService,
+  addOutline,
+  arrowBackOutline,
+  cartOutline,
+  closeOutline,
+  imageOutline,
+  receiptOutline,
+  searchOutline,
+  arrowForwardOutline,
+  locationOutline,
+  personCircleOutline
+} from 'ionicons/icons';
+
+import {
+  Router
+} from '@angular/router';
+
+import {
+  Subscription,
+  finalize
+} from 'rxjs';
+
+import {
+  Category,
   Product,
-  Category
+  ProductService
 } from '../../services/product.service';
+
+import {
+  CartService
+} from '../../services/cart.service';
+
+import {
+  StoreVendor,
+  VendorService
+} from '../../services/vendor.service';
+
+import {
+  FloatingCartComponent
+} from '../../components/floating-cart/floating-cart.component';
 
 
 @Component({
@@ -38,26 +74,79 @@ import {
   standalone: true,
 
   imports: [
+    FormsModule,
+
     IonContent,
     IonSearchbar,
     IonIcon,
-    FormsModule,
-    IonButton
+    IonButton,
+    IonBadge,
+    IonPopover,
+
+    FloatingCartComponent
   ]
 })
-export class HomePage implements OnInit {
+export class HomePage
+  implements OnInit, OnDestroy {
 
 
-  /* =====================================
+  /* ====================================================
      SEARCH
-     ===================================== */
+  ==================================================== */
+isSearchMode = false;
+searchText = '';
+searchResults: Product[] = [];
+isSearching = false;
+hasSearched = false;
+errorMessage = '';
+currentPage = 0;
+pageSize = 18;
+totalResults = 0;
 
-  searchText = '';
+private searchRequestId = 0;
 
 
-  /* =====================================
+  /* ====================================================
+     NEW ARRIVALS PAGINATION
+  ==================================================== */
+
+ /* ====================================================
+   NEW ARRIVALS PAGINATION
+==================================================== */
+
+productsPage = 0;
+
+productsPageSize = 12;
+
+productsTotalPages = 0;
+
+isChangingProductPage = false;
+
+
+  /* ====================================================
+     RECENT SEARCHES
+  ==================================================== */
+
+  recentSearches: string[] = [];
+
+
+  /* ====================================================
+     POPULAR SEARCHES
+  ==================================================== */
+
+  popularSearches: string[] = [
+    'Sparklers',
+    'Flower Pots',
+    'Rockets',
+    'Chakkars',
+    'Gift Boxes',
+    'Launchers'
+  ];
+
+
+  /* ====================================================
      CATEGORIES
-     ===================================== */
+  ==================================================== */
 
   categories: Category[] = [];
 
@@ -66,9 +155,20 @@ export class HomePage implements OnInit {
   categoryErrorMessage = '';
 
 
-  /* =====================================
-     PRODUCTS FROM API
-     ===================================== */
+  /* ====================================================
+     VENDORS
+  ==================================================== */
+
+  vendors: StoreVendor[] = [];
+
+  isVendorsLoading = false;
+
+  vendorErrorMessage = '';
+
+
+  /* ====================================================
+     PRODUCTS
+  ==================================================== */
 
   products: Product[] = [];
 
@@ -77,87 +177,621 @@ export class HomePage implements OnInit {
   productErrorMessage = '';
 
 
+  /* ====================================================
+     CART
+  ==================================================== */
+
+  cartCount = 0;
+
+  private cartSubscription?: Subscription;
+
+
   constructor(
-    private router: Router,
-    private productService: ProductService,
-    private cdr: ChangeDetectorRef,
-    private locationService: LocationService
+    private readonly router: Router,
+
+    private readonly productService: ProductService,
+
+    private readonly cartService: CartService,
+
+    private readonly vendorService: VendorService,
+
+    private readonly cdr: ChangeDetectorRef
   ) {
 
     addIcons({
-      imageOutline
+
+      imageOutline,
+
+      cartOutline,
+
+      receiptOutline,
+
+      addOutline,
+
+      arrowBackOutline,
+
+      searchOutline,
+
+      closeOutline,
+
+      arrowForwardOutline,
+
+      locationOutline,
+
+      personCircleOutline
+
     });
 
   }
 
 
-async testLocation(): Promise<void> {
-
-  alert('BUTTON CLICKED');
-
-  console.log('BUTTON CLICKED');
-
-  try {
-
-    alert('Requesting location...');
-
-    const location =
-      await this.locationService.getCurrentLocation();
-
-    console.log(
-      'USER LOCATION:',
-      location
-    );
-
-    alert(
-      `Location received\n\nLatitude: ${location.latitude}\nLongitude: ${location.longitude}`
-    );
-
-  } catch (error) {
-
-    console.error(
-      'LOCATION ERROR:',
-      error
-    );
-
-    alert(
-      'Location Error:\n' +
-      JSON.stringify(error)
-    );
-
-  }
-
-}
-
-  /* =====================================
-     INITIAL LOAD
-     ===================================== */
+  /* ====================================================
+     INIT
+  ==================================================== */
 
   ngOnInit(): void {
 
+    this.loadRecentSearches();
+
     this.loadCategories();
 
-    this.loadProducts();
+    this.loadVendors();
+
+    this.loadProducts(0);
+
+    this.cartSubscription =
+      this.cartService.cart$
+        .subscribe(cart => {
+
+          this.cartCount =
+            Number(
+              cart?.totalItems ?? 0
+            );
+
+          this.cdr.detectChanges();
+
+        });
 
   }
 
 
-  /* =====================================
-     PAGE ENTER
-     ===================================== */
+  /* ====================================================
+     DESTROY
+  ==================================================== */
 
-  ionViewWillEnter(): void {
+  ngOnDestroy(): void {
 
-    this.loadCategories();
-
-    this.loadProducts();
+    this.cartSubscription?.unsubscribe();
 
   }
 
 
-  /* =====================================
-     GET ALL CATEGORIES
-     ===================================== */
+  /* ====================================================
+     SEARCH MODE
+  ==================================================== */
+
+ openSearch(): void {
+
+  this.isSearchMode = true;
+
+  this.hasSearched = false;
+
+  this.isSearching = false;
+
+  this.errorMessage = '';
+
+  this.searchResults = [];
+
+  this.totalResults = 0;
+
+  this.loadRecentSearches();
+
+  this.cdr.detectChanges();
+
+}
+
+
+  /* ====================================================
+     CLOSE SEARCH
+  ==================================================== */
+
+  closeSearch(): void {
+
+    this.isSearchMode = false;
+
+    this.searchText = '';
+
+    this.searchResults = [];
+
+    this.hasSearched = false;
+
+    this.isSearching = false;
+
+    this.errorMessage = '';
+
+    this.totalResults = 0;
+
+  }
+
+
+
+
+
+  @ViewChild('categoryScroller')
+categoryScroller!: ElementRef<HTMLElement>;
+
+centeredCategoryId: number | null = null;
+
+onCategoryScroll(): void {
+  const scroller = this.categoryScroller?.nativeElement;
+
+  if (!scroller) {
+    return;
+  }
+
+  const cards = scroller.querySelectorAll<HTMLElement>(
+    '.category-card'
+  );
+
+  if (cards.length === 0) {
+    return;
+  }
+
+  const scrollerRect = scroller.getBoundingClientRect();
+  const centerX = scrollerRect.left + scrollerRect.width / 2;
+
+  let closestCard: HTMLElement | undefined;
+  let closestDistance = Number.POSITIVE_INFINITY;
+
+  cards.forEach((card: HTMLElement) => {
+    const rect = card.getBoundingClientRect();
+    const cardCenter = rect.left + rect.width / 2;
+    const distance = Math.abs(centerX - cardCenter);
+
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestCard = card;
+    }
+  });
+
+  if (!closestCard) {
+    return;
+  }
+
+  const categoryId = closestCard.getAttribute('data-category-id');
+
+  if (categoryId !== null) {
+    this.centeredCategoryId = Number(categoryId);
+  }
+}
+
+
+private centerInitialCategory(): void {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const scroller = this.categoryScroller?.nativeElement;
+
+      if (!scroller || this.categories.length === 0) {
+        return;
+      }
+
+      // Center the second category initially.
+      const initialCategory = this.categories[1] ?? this.categories[0];
+
+      const categoryCard = scroller.querySelector<HTMLElement>(
+        `[data-category-id="${initialCategory.categoryId}"]`
+      );
+
+      if (!categoryCard) {
+        return;
+      }
+
+      const scrollerRect = scroller.getBoundingClientRect();
+      const cardRect = categoryCard.getBoundingClientRect();
+
+      const cardCenter =
+        cardRect.left - scrollerRect.left + cardRect.width / 2;
+
+      scroller.scrollLeft += cardCenter - scroller.clientWidth / 2;
+
+      this.centeredCategoryId = initialCategory.categoryId;
+
+      this.cdr.detectChanges();
+    });
+  });
+}
+
+  /* ====================================================
+     LOAD RECENT SEARCHES
+  ==================================================== */
+
+  loadRecentSearches(): void {
+
+    const stored =
+      localStorage.getItem(
+        'recentSearches'
+      );
+
+
+    if (!stored) {
+
+      this.recentSearches = [];
+
+      return;
+
+    }
+
+
+    try {
+
+      const parsed =
+        JSON.parse(stored);
+
+
+      this.recentSearches =
+        Array.isArray(parsed)
+          ? parsed
+          : [];
+
+    } catch {
+
+      this.recentSearches = [];
+
+    }
+
+  }
+
+
+  /* ====================================================
+     SAVE RECENT SEARCH
+  ==================================================== */
+
+  saveRecentSearch(
+    search: string
+  ): void {
+
+    const value =
+      search.trim();
+
+
+    if (!value) {
+      return;
+    }
+
+
+    this.recentSearches =
+      this.recentSearches.filter(
+        item =>
+          item.toLowerCase() !==
+          value.toLowerCase()
+      );
+
+
+    this.recentSearches.unshift(
+      value
+    );
+
+
+    this.recentSearches =
+      this.recentSearches.slice(
+        0,
+        5
+      );
+
+
+    localStorage.setItem(
+      'recentSearches',
+      JSON.stringify(
+        this.recentSearches
+      )
+    );
+
+  }
+
+
+  /* ====================================================
+     SEARCH PRODUCTS
+  ==================================================== */
+/* ====================================================
+   SEARCH PRODUCTS
+==================================================== */
+
+searchProducts(
+  searchValue?: string
+): void {
+
+  const value =
+    (
+      searchValue ??
+      this.searchText
+    ).trim();
+
+
+  if (!value) {
+
+    this.searchResults = [];
+
+    this.hasSearched = false;
+
+    this.isSearching = false;
+
+    this.errorMessage = '';
+
+    this.totalResults = 0;
+
+    this.cdr.detectChanges();
+
+    return;
+  }
+
+
+  /*
+   * Create a unique ID for this search.
+   *
+   * This prevents an older API response from
+   * changing the state of a newer search.
+   */
+
+  const requestId =
+    ++this.searchRequestId;
+
+
+  this.searchText = value;
+
+  this.currentPage = 0;
+
+  this.hasSearched = true;
+
+  this.isSearching = true;
+
+  this.errorMessage = '';
+
+  this.searchResults = [];
+
+  this.totalResults = 0;
+
+
+  this.saveRecentSearch(value);
+
+
+  /*
+   * Immediately show the loader.
+   */
+
+  this.cdr.detectChanges();
+
+
+  this.productService
+    .searchProducts(
+      value,
+      this.currentPage,
+      this.pageSize
+    )
+    .subscribe({
+
+      next: response => {
+
+        console.log(
+          'SEARCH NEXT RECEIVED:',
+          response
+        );
+
+
+        /*
+         * Ignore response from an older search.
+         */
+
+        if (
+          requestId !==
+          this.searchRequestId
+        ) {
+
+          return;
+
+        }
+
+
+        this.searchResults =
+          response?.content ?? [];
+
+
+        this.totalResults =
+          response?.totalElements ??
+          this.searchResults.length;
+
+
+        /*
+         * Give Angular the completed
+         * response state on the next
+         * event-loop cycle.
+         */
+
+        setTimeout(() => {
+
+          if (
+            requestId !==
+            this.searchRequestId
+          ) {
+
+            return;
+
+          }
+
+
+          this.isSearching = false;
+
+
+          console.log(
+            'SEARCH LOADING STOPPED:',
+            this.isSearching
+          );
+
+
+          this.cdr.detectChanges();
+
+        }, 0);
+
+      },
+
+
+      error: error => {
+
+        console.error(
+          'Search Products Error:',
+          error
+        );
+
+
+        if (
+          requestId !==
+          this.searchRequestId
+        ) {
+
+          return;
+
+        }
+
+
+        this.searchResults = [];
+
+        this.totalResults = 0;
+
+        this.errorMessage =
+          error?.error?.message ||
+          error?.message ||
+          'Unable to search products.';
+
+
+        setTimeout(() => {
+
+          if (
+            requestId !==
+            this.searchRequestId
+          ) {
+
+            return;
+
+          }
+
+
+          this.isSearching = false;
+
+
+          console.log(
+            'SEARCH LOADING STOPPED AFTER ERROR:',
+            this.isSearching
+          );
+
+
+          this.cdr.detectChanges();
+
+        }, 0);
+
+      }
+
+    });
+
+}
+
+
+  /* ====================================================
+     RECENT SEARCH
+  ==================================================== */
+
+  selectRecentSearch(
+    search: string
+  ): void {
+
+    this.searchText = search;
+
+    this.searchProducts(search);
+
+  }
+
+
+  /* ====================================================
+     POPULAR SEARCH
+  ==================================================== */
+
+  selectPopularSearch(
+    search: string
+  ): void {
+
+    this.searchText = search;
+
+    this.searchProducts(search);
+
+  }
+
+
+  /* ====================================================
+     CLEAR SEARCH
+  ==================================================== */
+
+  clearSearch(): void {
+
+    this.searchText = '';
+
+    this.searchResults = [];
+
+    this.hasSearched = false;
+
+    this.isSearching = false;
+
+    this.totalResults = 0;
+
+    this.errorMessage = '';
+
+  }
+
+
+  /* ====================================================
+     REMOVE RECENT SEARCH
+  ==================================================== */
+
+  removeRecentSearch(
+    search: string,
+    event: Event
+  ): void {
+
+    event.stopPropagation();
+
+
+    this.recentSearches =
+      this.recentSearches.filter(
+        item =>
+          item !== search
+      );
+
+
+    localStorage.setItem(
+      'recentSearches',
+      JSON.stringify(
+        this.recentSearches
+      )
+    );
+
+  }
+
+
+  /* ====================================================
+     CLEAR RECENT SEARCHES
+  ==================================================== */
+
+  clearRecentSearches(): void {
+
+    this.recentSearches = [];
+
+    localStorage.removeItem(
+      'recentSearches'
+    );
+
+  }
+
+
+  /* ====================================================
+     LOAD CATEGORIES
+  ==================================================== */
 
   loadCategories(): void {
 
@@ -167,54 +801,39 @@ async testLocation(): Promise<void> {
 
     this.cdr.detectChanges();
 
-
     this.productService
       .getCategories()
       .subscribe({
 
-        next: (response) => {
+      
+next: response => {
+  this.categories = response ?? [];
 
-          console.log(
-            'Categories API Response:',
-            response
-          );
+  this.isLoadingCategories = false;
 
+  this.cdr.detectChanges();
 
-          this.categories =
-            response ?? [];
+  // Initially center the second category after rendering.
+  this.centerInitialCategory();
+},
 
-
-          console.log(
-            'Categories Loaded:',
-            this.categories
-          );
-
-
-          this.isLoadingCategories = false;
-
-          this.cdr.detectChanges();
-
-        },
-
-
-        error: (error) => {
+        error: error => {
 
           console.error(
             'Categories API Error:',
             error
           );
 
-
           this.categories = [];
 
-          this.isLoadingCategories = false;
+          this.isLoadingCategories =
+            false;
 
           this.categoryErrorMessage =
             error?.error?.message ||
             error?.message ||
             'Unable to load categories.';
 
-
           this.cdr.detectChanges();
 
         }
@@ -224,73 +843,50 @@ async testLocation(): Promise<void> {
   }
 
 
-  /* =====================================
-     GET ALL PRODUCTS
-     ===================================== */
+  /* ====================================================
+     LOAD VENDORS
+  ==================================================== */
 
-  loadProducts(): void {
+  loadVendors(): void {
 
-    this.isLoadingProducts = true;
+    this.isVendorsLoading = true;
 
-    this.productErrorMessage = '';
+    this.vendorErrorMessage = '';
 
     this.cdr.detectChanges();
 
-
-    this.productService
-      .getProducts()
+    this.vendorService
+      .getStores(0, 10)
       .subscribe({
 
-        next: (response) => {
+        next: response => {
 
-          console.log(
-            'Products API Response:',
-            response
-          );
+          this.vendors =
+            response?.content ?? [];
 
-
-          /*
-           * Backend response:
-           *
-           * {
-           *   content: [...]
-           * }
-           */
-
-          this.products =
-            response?.content || [];
-
-
-          console.log(
-            'Products Loaded:',
-            this.products
-          );
-
-
-          this.isLoadingProducts = false;
+          this.isVendorsLoading =
+            false;
 
           this.cdr.detectChanges();
 
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
-            'Products API Error:',
+            'Vendors API Error:',
             error
           );
 
+          this.vendors = [];
 
-          this.products = [];
+          this.isVendorsLoading =
+            false;
 
-          this.isLoadingProducts = false;
-
-          this.productErrorMessage =
+          this.vendorErrorMessage =
             error?.error?.message ||
             error?.message ||
-            'Unable to load products.';
-
+            'Unable to load vendors.';
 
           this.cdr.detectChanges();
 
@@ -301,9 +897,480 @@ async testLocation(): Promise<void> {
   }
 
 
-  /* =====================================
+  /* ====================================================
+     LOAD PRODUCTS
+  ==================================================== */
+/* ====================================================
+   LOAD PRODUCTS
+==================================================== */
+
+loadProducts(
+  page: number = 0
+): void {
+
+  if (page < 0) {
+    page = 0;
+  }
+
+
+  if (
+    this.productsTotalPages > 0 &&
+    page >= this.productsTotalPages
+  ) {
+
+    return;
+
+  }
+
+
+  if (this.isChangingProductPage) {
+    return;
+  }
+
+
+  this.isChangingProductPage = true;
+
+  this.productErrorMessage = '';
+
+
+  /*
+   * Show the main loader only for the
+   * first product request.
+   */
+
+  if (
+    page === 0 &&
+    this.products.length === 0
+  ) {
+
+    this.isLoadingProducts = true;
+
+  }
+
+
+  this.cdr.detectChanges();
+
+
+  this.productService
+    .getProducts(
+      page,
+      this.productsPageSize
+    )
+    .subscribe({
+
+      next: response => {
+
+        const newProducts =
+          response?.content ?? [];
+
+
+        /*
+         * First page:
+         * replace the existing list.
+         */
+
+        if (page === 0) {
+
+          this.products =
+            [...newProducts];
+
+        }
+
+
+        /*
+         * Next pages:
+         * append new products.
+         *
+         * productStoreId prevents
+         * accidental duplicates.
+         */
+
+        else {
+
+          const existingIds =
+            new Set(
+              this.products.map(
+                product =>
+                  Number(
+                    product.productStoreId
+                  )
+              )
+            );
+
+
+          const productsToAppend =
+            newProducts.filter(
+              product =>
+                !existingIds.has(
+                  Number(
+                    product.productStoreId
+                  )
+                )
+            );
+
+
+          this.products = [
+            ...this.products,
+            ...productsToAppend
+          ];
+
+        }
+
+
+        this.productsPage =
+          response?.number ?? page;
+
+
+        this.productsTotalPages =
+          response?.totalPages ?? 0;
+
+
+        this.isLoadingProducts =
+          false;
+
+
+        this.isChangingProductPage =
+          false;
+
+
+        this.productErrorMessage = '';
+
+
+        this.cdr.detectChanges();
+
+      },
+
+
+      error: error => {
+
+        console.error(
+          'Products API Error:',
+          error
+        );
+
+
+        this.isLoadingProducts = false;
+
+        this.isChangingProductPage = false;
+
+
+        this.productErrorMessage =
+          error?.error?.message ||
+          error?.message ||
+          'Unable to load products.';
+
+
+        this.cdr.detectChanges();
+
+      }
+
+    });
+
+}
+
+
+  /* ====================================================
+     NEXT PRODUCTS PAGE
+  ==================================================== */
+/* ====================================================
+   SEE MORE PRODUCTS
+==================================================== */
+
+nextProductsPage(): void {
+
+  if (this.isChangingProductPage) {
+    return;
+  }
+
+
+  if (
+    this.productsTotalPages <= 0 ||
+    this.productsPage >=
+      this.productsTotalPages - 1
+  ) {
+
+    return;
+
+  }
+
+
+  this.loadProducts(
+    this.productsPage + 1
+  );
+
+}
+
+
+  /* ====================================================
+     PREVIOUS PRODUCTS PAGE
+  ==================================================== */
+
+  previousProductsPage(): void {
+
+    if (this.isChangingProductPage) {
+      return;
+    }
+
+
+    if (this.productsPage <= 0) {
+      return;
+    }
+
+
+    this.loadProducts(
+      this.productsPage - 1
+    );
+
+
+    this.scrollToNewArrivals();
+
+  }
+
+
+  /* ====================================================
+     SPECIFIC PRODUCTS PAGE
+  ==================================================== */
+
+  goToProductsPage(
+    page: number
+  ): void {
+
+    if (this.isChangingProductPage) {
+      return;
+    }
+
+
+    if (
+      page < 0 ||
+      page >= this.productsTotalPages
+    ) {
+
+      return;
+
+    }
+
+
+    if (page === this.productsPage) {
+      return;
+    }
+
+
+    this.loadProducts(page);
+
+    this.scrollToNewArrivals();
+
+  }
+
+
+  /* ====================================================
+     SCROLL TO NEW ARRIVALS
+  ==================================================== */
+
+  private scrollToNewArrivals(): void {
+
+    setTimeout(() => {
+
+      const element =
+        document.getElementById(
+          'new-arrivals'
+        );
+
+
+      if (!element) {
+        return;
+      }
+
+
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+    }, 50);
+
+  }
+
+
+  /* ====================================================
+     PRODUCT CART STATE
+  ==================================================== */
+
+  isProductAdded(
+    productStoreId: number
+  ): boolean {
+
+    const product =
+      this.findProduct(
+        productStoreId
+      );
+
+
+    if (
+      product?.alreadyAdded === true
+    ) {
+
+      return true;
+
+    }
+
+
+    return this.cartService
+      .isProductInCart(
+        productStoreId
+      );
+
+  }
+
+
+  private findProduct(
+    productStoreId: number
+  ): Product | undefined {
+
+    const id =
+      Number(productStoreId);
+
+
+    return this.products.find(
+      product =>
+        Number(product.productStoreId) === id
+    );
+
+  }
+
+
+  /* ====================================================
+     ADD TO CART
+  ==================================================== */
+
+  addToCart(
+    product: Product
+  ): void {
+
+    const productStoreId =
+      Number(
+        product.productStoreId
+      );
+
+
+    if (
+      !product.isAvailable ||
+      Number(product.stockQuantity) <= 0
+    ) {
+
+      return;
+
+    }
+
+
+    if (
+      this.isProductAdded(
+        productStoreId
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    this.cartService
+      .addToCart(
+        productStoreId,
+        1
+      )
+      .subscribe({
+
+        next: response => {
+
+          this.cartCount =
+            Number(
+              response?.totalItems ?? 0
+            );
+
+
+          const currentProduct =
+            this.findProduct(
+              productStoreId
+            );
+
+
+          if (currentProduct) {
+
+            currentProduct.alreadyAdded =
+              true;
+
+          }
+
+        },
+
+        error: error => {
+
+          console.error(
+            'Failed to add product to cart:',
+            error
+          );
+
+        }
+
+      });
+
+  }
+
+
+  /* ====================================================
+     OPEN PRODUCT
+  ==================================================== */
+
+openProduct(
+  product: Product
+): void {
+
+  if (!product?.productStoreId) {
+    return;
+  }
+
+  this.router.navigate([
+    '/product',
+    product.productStoreId
+  ]);
+
+}
+
+
+  /* ====================================================
+     CATEGORY
+  ==================================================== */
+
+  selectCategory(
+    categoryId: number
+  ): void {
+
+    if (
+      !categoryId ||
+      !Number.isInteger(categoryId) ||
+      categoryId <= 0
+    ) {
+
+      return;
+
+    }
+
+
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {
+          categoryId
+        }
+      }
+    );
+
+  }
+
+
+  /* ====================================================
      ADMIN LOGIN
-     ===================================== */
+  ==================================================== */
 
   goToAdminLogin(): void {
 
@@ -314,87 +1381,47 @@ async testLocation(): Promise<void> {
   }
 
 
-  /* =====================================
-     OPEN PRODUCT
-     ===================================== */
+  /* ====================================================
+     VENDOR
+  ==================================================== */
 
-  openProduct(
-    product: Product
+  openVendor(
+    vendor: StoreVendor
   ): void {
 
-    /*
-     * productStoreId identifies
-     * the exact store-specific product.
-     */
-
-    this.router.navigate([
-      '/tabs/product',
-      product.productStoreId
-    ]);
-
-  }
-
-
-  /* =====================================
-     CATEGORY CLICK
-     ===================================== */
-
-selectCategory(categoryId: number): void {
-
-  this.router.navigate(
-    ['/tabs/categories'],
-    {
-      queryParams: {
-        categoryId: categoryId
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {
+          storeId: vendor.storeId
+        }
       }
-    }
-  );
-
-}
-
-
-  /* =====================================
-     ADD TO CART
-     ===================================== */
-
-  addToCart(
-    product: Product
-  ): void {
-
-    /*
-     * Temporary frontend action.
-     * Cart API will be connected later.
-     */
-
-    console.log(
-      'Added to cart:',
-      product
     );
 
   }
 
 
-  /* =====================================
-     OPEN ALL CATEGORIES
-     ===================================== */
+  /* ====================================================
+     CART
+  ==================================================== */
 
-  openCategories(): void {
+  openCart(): void {
 
     this.router.navigate([
-      '/tabs/categories'
+      '/cart'
     ]);
 
   }
 
 
-  /* =====================================
-     OPEN SEARCH
-     ===================================== */
+  /* ====================================================
+     ORDERS
+  ==================================================== */
 
-  openSearch(): void {
+  openOrders(): void {
 
     this.router.navigate([
-      '/tabs/search'
+      '/orders'
     ]);
 
   }

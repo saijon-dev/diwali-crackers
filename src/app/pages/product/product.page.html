@@ -1,666 +1,521 @@
+
 <ion-content
   [fullscreen]="true"
-  class="product-content"
+  class="!bg-white [--padding-bottom:0px] [--offset-bottom:0px]"
 >
+  <div class="flex min-h-[100dvh] flex-col bg-white">
 
-  <div class="product-page">
+    <!-- HEADER: Common 76px header -->
+    <header
+      class="sticky top-[-8px] z-50 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-2"
+    >
+      <button
+        type="button"
+        (click)="goBack()"
+        aria-label="Back"
+        class="relative z-30 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+      </button>
 
+      <div class="relative z-20 ml-[2px] min-w-0 flex-1">
+        <h1
+          class="!m-0 truncate !font-serif !text-[20px] !font-bold !leading-none !tracking-[0.2px] !text-[#fff8dc] sm:!text-[22px]"
+        >
+          {{ product?.storeName || 'Product Details' }}
+        </h1>
+      </div>
 
-    <!-- =========================
-         HEADER
-    ========================== -->
-
-    <header class="product-header">
-
-      <ion-back-button
-        class="back-button"
-        defaultHref="/tabs/home"
-        text="">
-      </ion-back-button>
-
-      <h1>
-        Product Details
-      </h1>
-
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-[120px] select-none object-contain object-right opacity-95 sm:w-[135px]"
+      />
     </header>
 
-
-    <!-- =========================
-         LOADING
-    ========================== -->
-
+    <!-- LOADING -->
     @if (isLoading) {
-
-      <main class="product-container">
-
-        <div class="product-loading">
-
-          <p>
+      <main
+        class="mx-auto flex min-h-0 w-full max-w-[620px] flex-1 flex-col px-3 pt-[4px] sm:px-4 sm:pt-[6px]"
+      >
+        <div class="flex flex-1 items-center justify-center">
+          <p class="!m-0 font-sans text-[12px] font-medium text-[#806b68]">
             Loading product...
           </p>
-
         </div>
-
       </main>
-
     }
 
-
-    <!-- =========================
-         ERROR
-    ========================== -->
-
-    @if (
-      !isLoading &&
-      errorMessage
-    ) {
-
-      <main class="product-container">
-
-        <div class="product-error">
-
-          <p>
+    <!-- ERROR -->
+    @if (!isLoading && errorMessage) {
+      <main
+        class="mx-auto flex min-h-0 w-full max-w-[620px] flex-1 flex-col px-3 pt-[16px] sm:px-4"
+      >
+        <div
+          class="rounded-[18px] bg-white px-4 py-8 text-center shadow-[0_3px_10px_rgba(143,7,31,0.06)]"
+        >
+          <p class="!m-0 font-sans text-[12px] font-medium text-[#9e2020]">
             {{ errorMessage }}
           </p>
-
         </div>
-
       </main>
-
     }
 
+    <!-- PRODUCT -->
+    @if (!isLoading && !errorMessage && product) {
+      <main
+        class="mx-auto flex min-h-0 w-full max-w-[620px] flex-1 flex-col px-3 pt-[2px] sm:px-4"
+      >
 
-    <!-- =========================
-         PRODUCT
-    ========================== -->
-
-    @if (
-      !isLoading &&
-      !errorMessage &&
-      product
-    ) {
-
-      <main class="product-container">
-
-
-        <!-- =========================
-             IMAGE GALLERY
-        ========================== -->
-
-        <section class="image-section">
-
-          <div class="main-image-container">
-
-
-            <!-- Previous -->
-
-            @if (
-              product.images &&
-              product.images.length > 1
-            ) {
-
+        <!-- IMAGE GALLERY -->
+        <section class="mb-[8px]">
+          <div
+            class="relative flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[18px] bg-white shadow-[0_4px_14px_rgba(143,7,31,0.08)] sm:h-[300px]"
+          >
+            @if (product.images && product.images.length > 1) {
               <button
                 type="button"
-                class="image-arrow left"
                 (click)="previousImage()"
                 aria-label="Previous image"
+                class="absolute left-[9px] top-1/2 z-20 flex !h-[34px] !w-[34px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-white !p-0 !text-[#8f071f] shadow-[0_3px_8px_rgba(143,7,31,0.14)] transition-transform duration-150 active:scale-90"
               >
-
                 <ion-icon
-                  name="chevron-back-outline">
-                </ion-icon>
-
+                  name="chevron-back-outline"
+                  class="!text-[19px]"
+                ></ion-icon>
               </button>
-
             }
 
-
-            <!-- Main Image -->
-
-            @if (
-              product.images &&
-              product.images.length > 0
-            ) {
-
+            @if (product.images && product.images.length > 0) {
               <img
-                class="main-product-image"
                 [src]="getCurrentImage()"
                 [alt]="product.productName"
-              >
-
+                class="block h-full w-full object-contain"
+              />
             } @else {
-
-              <div
-                class="main-product-image product-image-placeholder"
-              >
-
+              <div class="flex h-full w-full items-center justify-center bg-white">
                 <ion-icon
-                  name="image-outline">
-                </ion-icon>
-
+                  name="image-outline"
+                  class="!text-[38px] !text-[#9e2020]"
+                ></ion-icon>
               </div>
-
             }
 
-
-            <!-- Next -->
-
-            @if (
-              product.images &&
-              product.images.length > 1
-            ) {
-
+            @if (product.images && product.images.length > 1) {
               <button
                 type="button"
-                class="image-arrow right"
                 (click)="nextImage()"
                 aria-label="Next image"
+                class="absolute right-[9px] top-1/2 z-20 flex !h-[34px] !w-[34px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-white !p-0 !text-[#8f071f] shadow-[0_3px_8px_rgba(143,7,31,0.14)] transition-transform duration-150 active:scale-90"
               >
-
                 <ion-icon
-                  name="chevron-forward-outline">
-                </ion-icon>
-
+                  name="chevron-forward-outline"
+                  class="!text-[19px]"
+                ></ion-icon>
               </button>
-
             }
-
           </div>
 
-
-          <!-- =========================
-               THUMBNAILS
-          ========================== -->
-
-          @if (
-            product.images &&
-            product.images.length > 1
-          ) {
-
-            <div class="thumbnail-row">
-
-              @for (
-                image of product.images;
-                track image.productImageId
-              ) {
-
+          @if (product.images && product.images.length > 1) {
+            <div class="mt-[9px] flex gap-[8px] overflow-x-auto px-[2px] pb-[2px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              @for (image of product.images; track image.productImageId) {
                 <button
                   type="button"
-                  class="thumbnail"
-                  [class.selected]="
-                    selectedImageIndex === $index
-                  "
                   (click)="selectImage($index)"
+                  class="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[10px] border-2 border-transparent bg-white p-[2px] transition-colors duration-200"
+                  [class.!border-[#b3123b]]="selectedImageIndex === $index"
                 >
-
                   <img
                     [src]="image.imageUrl"
                     [alt]="product.productName"
-                  >
-
+                    class="block h-full w-full rounded-[7px] object-cover"
+                  />
                 </button>
-
               }
-
             </div>
-
           }
-
         </section>
 
+        <!-- PRODUCT INFORMATION -->
+        <section
+          class="rounded-[18px] bg-white p-[12px] shadow-[0_4px_14px_rgba(143,7,31,0.07)]"
+        >
+          <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,0.95fr)] gap-[8px]">
 
-        <!-- =========================
-             PRODUCT INFORMATION
-        ========================== -->
-
-        <section class="product-info-card">
-
-
-          <!-- Category -->
-
-          <span class="category-badge">
-
-            {{ product.categoryName }}
-
-          </span>
-
-
-          <!-- Product Name -->
-
-          <h2>
-
-            {{ product.productName }}
-
-          </h2>
-
-
-          <!-- Price -->
-
-          <div class="price-row">
-
-            @if (
-              product.mrp >
-              product.sellingPrice
-            ) {
-
-              <span class="old-price">
-
-                ₹{{ product.mrp }}
-
+            <!-- LEFT: PRODUCT DETAILS -->
+            <div class="min-w-0">
+              <span
+                class="inline-flex max-w-full rounded-full bg-white px-[9px] py-[5px] !font-sans !text-[9px] !font-bold !text-[#8f071f] shadow-[0_2px_7px_rgba(143,7,31,0.06)]"
+              >
+                {{ product.categoryName }}
               </span>
 
-            }
+              <h2
+                class="!mb-[7px] !mt-[9px] !font-sans !text-[16px] !font-bold !leading-[1.3] !tracking-[-0.2px] !text-[#17233c]"
+              >
+                {{ product.productName }}
+              </h2>
 
-            <span class="new-price">
+              <div class="mb-[8px] flex flex-wrap items-center gap-[5px]">
+                @if (product.mrp > product.sellingPrice) {
+                  <span
+                    class="font-sans text-[10px] font-medium text-[#99917e] line-through"
+                  >
+                    ₹{{ product.mrp }}
+                  </span>
+                }
 
-              ₹{{ product.sellingPrice }}
+                <span class="font-sans text-[17px] font-extrabold text-[#b3123b]">
+                  ₹{{ product.sellingPrice }}
+                </span>
+              </div>
 
-            </span>
+              <p
+                class="!m-0 break-words font-sans text-[10px] font-normal leading-[1.5] text-[#625d68]"
+              >
+                {{ product.description }}
+              </p>
+            </div>
 
+            <!-- RIGHT: BRAND, SIZE, PACK AND QUANTITY -->
+            <div class="flex min-w-0 flex-col gap-[5px] pt-[1px]">
+              <div
+                class="rounded-[10px] bg-white px-[8px] py-[7px] shadow-[0_2px_8px_rgba(143,7,31,0.05)]"
+              >
+                <span class="block font-sans text-[8px] text-[#806b68]">
+                  Brand
+                </span>
+
+                <strong
+                  class="mt-[3px] block truncate font-sans text-[10px] font-bold text-[#17233c]"
+                >
+                  {{ product.brandName }}
+                </strong>
+              </div>
+
+              <div class="grid grid-cols-2 gap-[5px]">
+                <div
+                  class="min-w-0 rounded-[10px] bg-white px-[7px] py-[7px] shadow-[0_2px_8px_rgba(143,7,31,0.05)]"
+                >
+                  <span class="block font-sans text-[8px] text-[#806b68]">
+                    Size
+                  </span>
+
+                  <strong
+                    class="mt-[3px] block truncate font-sans text-[10px] font-bold text-[#17233c]"
+                  >
+                    {{ product.size }}
+                  </strong>
+                </div>
+
+                <div
+                  class="min-w-0 rounded-[10px] bg-white px-[7px] py-[7px] shadow-[0_2px_8px_rgba(143,7,31,0.05)]"
+                >
+                  <span class="block font-sans text-[8px] text-[#806b68]">
+                    Pack
+                  </span>
+
+                  <strong
+                    class="mt-[3px] block truncate font-sans text-[10px] font-bold text-[#17233c]"
+                  >
+                    {{ product.packQuantity }} {{ product.packUnit }}
+                  </strong>
+                </div>
+              </div>
+
+              <!-- COMPACT QUANTITY CONTROLS -->
+              @if (product.isAvailable && product.stockQuantity > 0) {
+                <div class="mt-[2px] flex items-center justify-end">
+                  <div
+                    class="flex h-[32px] items-center gap-[9px] rounded-[10px] bg-white px-[4px] shadow-[0_2px_8px_rgba(143,7,31,0.05)]"
+                  >
+                    <button
+                      type="button"
+                      (click)="decreaseQuantity()"
+                      [disabled]="quantity <= 1"
+                      aria-label="Decrease quantity"
+                      class="flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-[7px] !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] transition-opacity duration-200 disabled:!opacity-40"
+                    >
+                      <ion-icon
+                        name="remove-outline"
+                        class="!text-[14px]"
+                      ></ion-icon>
+                    </button>
+
+                    <span
+                      class="min-w-[12px] text-center font-sans text-[12px] font-bold text-[#17233c]"
+                    >
+                      {{ quantity }}
+                    </span>
+
+                    <button
+                      type="button"
+                      (click)="increaseQuantity()"
+                      [disabled]="quantity >= product.stockQuantity"
+                      aria-label="Increase quantity"
+                      class="flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-[7px] !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] transition-opacity duration-200 disabled:!opacity-40"
+                    >
+                      <ion-icon
+                        name="add-outline"
+                        class="!text-[14px]"
+                      ></ion-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
 
-
-          <!-- Description -->
-
-          <p class="description">
-
-            {{ product.description }}
-
-          </p>
-
-
-          <!-- Product Details -->
-
-          <div class="product-meta">
-
-
-            <div class="meta-item">
-
-              <span>
-                Brand
-              </span>
-
-              <strong>
-                {{ product.brandName }}
-              </strong>
-
-            </div>
-
-
-            <div class="meta-item">
-
-              <span>
-                Size
-              </span>
-
-              <strong>
-                {{ product.size }}
-              </strong>
-
-            </div>
-
-
-            <div class="meta-item">
-
-              <span>
-                Pack
-              </span>
-
-              <strong>
-                {{ product.packQuantity }}
-                {{ product.packUnit }}
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <!-- =========================
-               STOCK
-          ========================== -->
-
-          <div class="stock-row">
-
-            @if (
-              product.isAvailable &&
-              product.stockQuantity > 0
-            ) {
-
-              <span class="stock-available">
+          <!-- STOCK INFORMATION -->
+          <div
+            class="mt-[10px] flex items-center gap-[8px] border-t border-[#efd4d8] pt-[8px]"
+          >
+            @if (product.isAvailable && product.stockQuantity > 0) {
+              <span class="font-sans text-[10px] font-bold text-[#24722d]">
                 In Stock
               </span>
 
-              <span class="stock-count">
-                {{ product.stockQuantity }}
-                available
+              <span class="font-sans text-[9px] text-[#806b68]">
+                {{ product.stockQuantity }} available
               </span>
-
             } @else {
-
-              <span class="stock-out">
+              <span class="font-sans text-[10px] font-bold text-[#9e2020]">
                 Out of Stock
               </span>
-
             }
-
           </div>
-
-
-          <!-- =========================
-               QUANTITY
-          ========================== -->
-
-          @if (
-            product.isAvailable &&
-            product.stockQuantity > 0
-          ) {
-
-            <div class="quantity-section">
-
-              <span class="quantity-label">
-                Quantity
-              </span>
-
-
-              <div class="quantity-control">
-
-                <button
-                  type="button"
-                  (click)="decreaseQuantity()"
-                  [disabled]="quantity <= 1"
-                  aria-label="Decrease quantity"
-                >
-
-                  <ion-icon
-                    name="remove-outline">
-                  </ion-icon>
-
-                </button>
-
-
-                <span>
-                  {{ quantity }}
-                </span>
-
-
-                <button
-                  type="button"
-                  (click)="increaseQuantity()"
-                  [disabled]="
-                    quantity >=
-                    product.stockQuantity
-                  "
-                  aria-label="Increase quantity"
-                >
-
-                  <ion-icon
-                    name="add-outline">
-                  </ion-icon>
-
-                </button>
-
-              </div>
-
-            </div>
-
-          }
-
         </section>
 
+        <!-- SHOP DETAILS WITH ADD TO CART ON THE RIGHT -->
+      <!-- SHOP DETAILS + SEPARATE ADD TO CART BUTTON -->
+<div class="mt-[7px] flex items-stretch gap-[10px]">
 
-        <!-- =========================
-             ADD TO CART
-        ========================== -->
+  <!-- SHOP DETAILS CARD -->
+  <section
+    class="w-[60%] min-w-0 rounded-[18px] bg-white p-[12px] shadow-[0_4px_14px_rgba(143,7,31,0.07)]"
+  >
+    <h2
+      class="!m-0 !font-sans !text-[15px] !font-black !leading-tight !tracking-[-0.2px] !text-black"
+    >
+      Shop Details
+    </h2>
 
-        @if (
-          product.isAvailable &&
-          product.stockQuantity > 0
-        ) {
+    <h3
+      class="!mb-[4px] !mt-[7px] truncate !font-sans !text-[11px] !font-bold !text-[#b3123b]"
+    >
+      {{ product.storeName }}
+    </h3>
 
-          <section class="cart-section">
+    <p class="!my-[2px] break-words font-sans text-[9px] text-[#625d68]">
+      {{ product.storeAddress }}
+    </p>
 
-            <button
-              type="button"
-              class="add-cart-button"
-              [class.added]="addedToCart"
-              (click)="addToCart()"
-            >
+    <p class="!my-[2px] break-words font-sans text-[9px] text-[#625d68]">
+      {{ product.city }}, {{ product.state }} - {{ product.pincode }}
+    </p>
 
-              @if (addedToCart) {
+    <p class="!my-[2px] break-words font-sans text-[9px] text-[#625d68]">
+      {{ product.contactNumber }}
+    </p>
+  </section>
 
-                <ion-icon
-                  name="checkmark-circle-outline">
-                </ion-icon>
-
-                <span>
-                  Added to Cart
-                </span>
-
-              } @else {
-
-                <ion-icon
-                  name="cart-outline">
-                </ion-icon>
-
-                <span>
-                  Add to Cart
-                </span>
-
-              }
-
-            </button>
-
-          </section>
-
+  <!-- SEPARATE ADD TO CART BUTTON -->
+  @if (product.isAvailable && product.stockQuantity > 0) {
+    <div class="flex min-w-0 flex-1 items-center justify-center">
+      <button
+        type="button"
+        (click)="addToCart()"
+        [disabled]="isAddingToCart || isAddedToCart"
+        class="flex min-h-[40px] w-full items-center justify-center gap-[5px] !rounded-[12px] !border-0 bg-[#b3123b] px-[8px] !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_5px_12px_rgba(143,7,31,0.20)] transition-all duration-200 active:scale-[0.97] disabled:cursor-default disabled:opacity-70 sm:!text-[11px]"
+        [class.!bg-[#8f071f]]="isAddedToCart"
+      >
+        @if (isAddedToCart) {
+          <ion-icon
+            name="checkmark-circle-outline"
+            class="shrink-0 !text-[15px]"
+          ></ion-icon>
+          <span class="text-center">
+            Added to Cart
+          </span>
+        } @else {
+          <ion-icon
+            name="cart-outline"
+            class="shrink-0 !text-[15px]"
+          ></ion-icon>
+          <span class="text-center">
+            {{ isAddingToCart ? 'Adding...' : 'Add to Cart' }}
+          </span>
         }
+      </button>
+    </div>
+  }
 
+</div>
 
-        <!-- =========================
-             SHOP INFORMATION
-        ========================== -->
+     <!-- CATEGORY SELECTOR -->
+@if (categories.length > 0) {
+  <section class="mt-[16px]">
+    <div
+      #categoryScroller
+      class="flex w-full items-center overflow-x-auto py-[10px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [scroll-behavior:smooth] [scroll-snap-type:x_proximity]"
+      (scroll)="onCategoryScroll()"
+    >
+      <!-- Leading space allows the first category to reach the center -->
+      <div class="w-1/2 shrink-0" aria-hidden="true"></div>
 
-        <section class="shop-details-card">
+      @for (category of categories; track category.categoryId) {
+        <button
+          #categoryItem
+          type="button"
+          (click)="selectCategory(category)"
+          [attr.data-category-id]="category.categoryId"
+          [class.!text-[17px]]="
+            selectedCategoryId === category.categoryId
+          "
+          [class.!font-black]="
+            selectedCategoryId === category.categoryId
+          "
+          [class.!opacity-100]="
+            selectedCategoryId === category.categoryId
+          "
+          [class.!scale-100]="
+            selectedCategoryId === category.categoryId
+          "
+          [class.!text-[11px]]="
+            selectedCategoryId !== category.categoryId
+          "
+          [class.!font-bold]="
+            selectedCategoryId !== category.categoryId
+          "
+          [class.!opacity-55]="
+            selectedCategoryId !== category.categoryId
+          "
+          [class.!scale-[0.96]]="
+            selectedCategoryId !== category.categoryId
+          "
+          class="mx-[12px] shrink-0 whitespace-nowrap rounded-none border-0 bg-transparent px-[4px] py-[3px] !font-sans !leading-tight !text-black transition-all duration-300 ease-in-out [scroll-snap-align:center]"
+        >
+          {{ category.categoryName }}
+        </button>
+      }
 
-          <h2>
-            Shop Details
-          </h2>
+      <!-- Trailing space allows the last category to reach the center -->
+      <div class="w-1/2 shrink-0" aria-hidden="true"></div>
+    </div>
+  </section>
+}
 
-
-          <h3>
-            {{ product.storeName }}
-          </h3>
-
-
-          <p>
-            {{ product.storeAddress }}
-          </p>
-
-
-          <p>
-            {{ product.city }},
-            {{ product.state }}
-            - {{ product.pincode }}
-          </p>
-
-
-          <p>
-            {{ product.contactNumber }}
-          </p>
-
-        </section>
-
-
-        <!-- =========================
-             EXPLORE MORE
-        ========================== -->
-
-        <section class="explore-section">
-
-
-          <div class="explore-title">
-
-            <img
-              src="assets/images/exploreMore.png"
-              alt="Explore More"
-            >
-
-          </div>
-
-
-          <!-- =========================
-               EXPLORE PRODUCT GRID
-          ========================== -->
-
-          <div class="explore-grid">
-
-            @for (
-              productItem of exploreProducts;
-              track productItem.productStoreId
-            ) {
-
-              <article
-                class="explore-product-card"
-                (click)="openProduct(productItem)"
-              >
-
-
-                <!-- Product Image -->
-
-                <div class="explore-image">
-
-                  @if (
-                    productItem.images &&
-                    productItem.images.length > 0
-                  ) {
-
-                    <img
-                      [src]="productItem.images[0].imageUrl"
-                      [alt]="productItem.productName"
+        <!-- PRODUCTS FOR THE SELECTED CATEGORY -->
+        @if (selectedCategoryId !== null) {
+          <section class="mt-[5px]">
+            @if (categoryProducts.length > 0) {
+              <div class="grid grid-cols-3 gap-[10px] sm:gap-[12px]">
+                @for (
+                  productItem of categoryProducts;
+                  track productItem.productStoreId
+                ) {
+                  <article
+                    (click)="openProduct(productItem)"
+                    class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-white shadow-[0_3px_10px_rgba(143,7,31,0.07)] transition-transform duration-150 active:scale-[0.98]"
+                  >
+                    <!-- PRODUCT IMAGE -->
+                    <div
+                      class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-white sm:h-[118px]"
                     >
-
-                  } @else {
-
-                    <div class="product-image-placeholder">
-
-                      <ion-icon
-                        name="image-outline">
-                      </ion-icon>
-
+                      @if (productItem.images?.length) {
+                        <img
+                          [src]="productItem.images[0].imageUrl"
+                          [alt]="productItem.productName"
+                          class="block h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      } @else {
+                        <div class="flex h-full w-full items-center justify-center bg-white">
+                          <ion-icon
+                            name="image-outline"
+                            class="!text-[25px] !text-[#9e2020]"
+                          ></ion-icon>
+                        </div>
+                      }
                     </div>
 
-                  }
+                    <!-- PRODUCT NAME, PRICE AND STOCK -->
+                    <div class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]">
+                      <h3
+                        class="!m-0 min-h-[34px] min-w-0 overflow-hidden !font-sans !text-[11px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
+                      >
+                        {{ productItem.productName }}
+                      </h3>
 
-                </div>
+                      <div class="mt-[4px] flex flex-wrap items-center gap-[4px]">
+                        @if (productItem.mrp > productItem.sellingPrice) {
+                          <span
+                            class="font-sans text-[6px] text-[#99917e] line-through"
+                          >
+                            ₹{{ productItem.mrp }}
+                          </span>
+                        }
 
+                        <span class="font-sans text-[10px] font-bold text-[#b3123b]">
+                          ₹{{ productItem.sellingPrice }}
+                        </span>
+                      </div>
 
-                <!-- Product Info -->
-
-                <div class="explore-info">
-
-
-                  <!-- Category -->
-
-                  <span class="explore-category">
-
-                    {{ productItem.categoryName }}
-
-                  </span>
-
-
-                  <!-- Name -->
-
-                  <h3>
-
-                    {{ productItem.productName }}
-
-                  </h3>
-
-
-                  <!-- Price -->
-
-                  <div class="explore-price">
-
-                    @if (
-                      productItem.mrp >
-                      productItem.sellingPrice
-                    ) {
-
-                      <span class="explore-old-price">
-
-                        ₹{{ productItem.mrp }}
-
-                      </span>
-
-                    }
-
-                    <span class="explore-new-price">
-
-                      ₹{{ productItem.sellingPrice }}
-
-                    </span>
-
-                  </div>
-
-
-                  <!-- Add To Cart -->
-
-                  <button
-                    type="button"
-                    class="small-cart-button"
-                    [disabled]="
-                      !productItem.isAvailable ||
-                      productItem.stockQuantity <= 0
-                    "
-                    (click)="$event.stopPropagation()"
-                  >
-
-                    <ion-icon
-                      name="cart-outline">
-                    </ion-icon>
-
-                    Add to Cart
-
-                  </button>
-
-                </div>
-
-              </article>
-
-            }
-
-
-            <!-- No Explore Products -->
-
-            @if (
-              exploreProducts.length === 0
-            ) {
-
-              <div class="no-explore-products">
-
-                <p>
-                  No more products available.
-                </p>
-
+                      <div class="mt-[3px] flex items-center">
+                        @if (
+                          !productItem.isAvailable ||
+                          productItem.stockQuantity <= 0
+                        ) {
+                          <span class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"></span>
+                          <span class="font-sans text-[7px] font-medium text-[#9e2020]">
+                            Out of Stock
+                          </span>
+                        } @else if (productItem.stockQuantity <= 10) {
+                          <span class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"></span>
+                          <span class="font-sans text-[7px] font-medium text-[#9e2020]">
+                            Minimum Stock
+                          </span>
+                        } @else {
+                          <span class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#24722d]"></span>
+                          <span class="font-sans text-[7px] font-medium text-[#24722d]">
+                            In Stock
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </article>
+                }
               </div>
-
+            } @else {
+              <div class="py-[18px] text-center">
+                <p class="!m-0 font-sans text-[11px] font-medium text-[#806b68]">
+                  No products available in this category.
+                </p>
+              </div>
             }
+          </section>
+        }
 
+        <!-- BOTTOM DESIGN -->
+        <div class="mt-auto pt-[10px]">
+          <div
+            class="pointer-events-none -mx-3 w-[calc(100%+1.5rem)] overflow-hidden sm:-mx-4 sm:w-[calc(100%+2rem)]"
+          >
+            <img
+              src="assets/images/newDesignBg.png"
+              alt=""
+              aria-hidden="true"
+              class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+            />
           </div>
-
-        </section>
-
-
+        </div>
       </main>
-
     }
-
-
-    <!-- =========================
-         BOTTOM DECORATION
-    ========================== -->
-
-
   </div>
 
+  <app-floating-cart></app-floating-cart>
 </ion-content>

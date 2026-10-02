@@ -1,362 +1,295 @@
-<ion-content
-  class="orders-content"
-  [fullscreen]="true">
+<ion-content [fullscreen]="true" class="!bg-white">
 
-  <div class="orders-page">
+  <div class="flex min-h-[100dvh] flex-col overflow-x-clip bg-[#fffdf7] px-3 sm:px-4">
+
+    <!-- HEADER -->
 
 
-    <!-- =================================================
-         HEADER
-    ================================================= -->
+<header
+  class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
+>
+  <!-- Back Button -->
 
-    <header class="orders-header">
 
+<button
+  type="button"
+  aria-label="Go back"
+  (click)="goBack()"
+  class="absolute left-2 top-1/2 z-[60] flex !h-10 !w-10 -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] active:scale-90"
+>
+  <ion-icon
+    name="arrow-back-outline"
+    class="!text-[25px] !text-[#fff8dc]"
+  ></ion-icon>
+</button>
+  <!-- Header Title -->
+  <div class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none">
+    <h1 class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !text-[#fff8dc] sm:!text-[22px]">
       @if (showDetails) {
-
-        <button
-          type="button"
-          class="back-button"
-          (click)="backToOrders()">
-
-          <ion-icon
-            name="arrow-back-outline">
-          </ion-icon>
-
-        </button>
-
+        Order Details
+      } @else {
+        Orders
       }
+    </h1>
 
+    <p class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !text-[#f7df9d] sm:!text-[10px]">
+      @if (showDetails) {
+        View customer order details
+      } @else {
+        Manage your received orders
+      }
+    </p>
+  </div>
 
-      <div class="header-title">
+  <!-- Decorative Image -->
+  <img
+    src="assets/images/right-deepas.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-90"
+  />
+</header>
 
-        <h1>
-
-          @if (showDetails) {
-
-            Order Details
-
-          } @else {
-
-            Orders
-
-          }
-
-        </h1>
-
-        <p>
-
-          @if (showDetails) {
-
-            View customer order details
-
-          } @else {
-
-            Manage your received orders
-
-          }
-
-        </p>
-
-      </div>
-
-    </header>
-
-
-
-    <!-- =================================================
-         ORDER LIST
-    ================================================= -->
+    <!-- ORDER LIST -->
 
     @if (!showDetails) {
 
-      <main class="orders-container">
+      <main class="mx-auto flex w-full max-w-[760px] flex-1 flex-col">
+
+        <!-- TABS -->
+
+       
+<div class="mt-4 grid grid-cols-2 gap-2 !rounded-[6px] bg-[#f7e9bd] p-1">
+
+  <button
+    type="button"
+    (click)="changeView('new')"
+    [class]="currentView === 'new'
+      ? '!min-h-[40px] !rounded-[4px] !bg-[#8f071f] px-3 py-2.5 font-sans text-[12px] font-bold text-[#fff8dc] shadow-sm'
+      : '!min-h-[40px] !rounded-[4px] !bg-transparent px-3 py-2.5 font-sans text-[12px] font-bold text-[#806b68]'">
+
+    New
+    <span class="ml-1">{{ newOrders.length }}</span>
+
+  </button>
+
+  <button
+    type="button"
+    (click)="changeView('confirmed')"
+    [class]="currentView === 'confirmed'
+      ? '!min-h-[40px] !rounded-[4px] !bg-[#8f071f] px-3 py-2.5 font-sans text-[12px] font-bold text-[#fff8dc] shadow-sm'
+      : '!min-h-[40px] !rounded-[4px] !bg-transparent px-3 py-2.5 font-sans text-[12px] font-bold text-[#806b68]'">
+
+    Confirmed
+    <span class="ml-1">{{ confirmedOrders.length }}</span>
+
+  </button>
+
+</div>
 
 
-        <!-- =============================================
-             NEW / CONFIRMED OPTIONS
-        ============================================== -->
-
-        <div class="order-tabs">
-
-          <button
-            type="button"
-            class="order-tab"
-            [class.active]="currentView === 'new'"
-            (click)="changeView('new')">
-
-            New
-
-            <span class="tab-count">
-              {{ newOrders.length }}
-            </span>
-
-          </button>
-
-
-          <button
-            type="button"
-            class="order-tab"
-            [class.active]="currentView === 'confirmed'"
-            (click)="changeView('confirmed')">
-
-            Confirmed
-
-            <span class="tab-count">
-              {{ confirmedOrders.length }}
-            </span>
-
-          </button>
-
-        </div>
-
-
-
-        <!-- =============================================
-             ERROR
-        ============================================== -->
+        <!-- ERROR MESSAGE -->
 
         @if (errorMessage) {
-
-          <div class="error-box">
-
+          <div class="mt-3 rounded-[10px] border border-red-100 bg-red-50 px-3 py-2.5 font-sans text-[11px] font-medium leading-[1.45] text-red-700">
             {{ errorMessage }}
-
           </div>
+        }
 
+        @if (successMessage) {
+          <div class="mt-3 rounded-[10px] border border-green-100 bg-green-50 px-3 py-2.5 font-sans text-[11px] font-medium leading-[1.45] text-green-800">
+            {{ successMessage }}
+          </div>
         }
 
 
+        <!-- LOADING -->
 
-        <!-- =============================================
-             NO ORDERS
-        ============================================== -->
+        @if (isLoading && currentOrders.length === 0) {
+          <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
 
-        @if (
-          !isLoading &&
-          currentOrders.length === 0
-        ) {
+            <div class="mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#ead8b9] border-t-[#8f071f]"></div>
 
-          <section class="empty-orders">
-
-            <div class="empty-orders-icon">
-
-              <ion-icon
-                name="receipt-outline">
-              </ion-icon>
-
-            </div>
-
-
-            <h2>
-
-              @if (currentView === 'new') {
-
-                No New Orders
-
-              } @else {
-
-                No Confirmed Orders
-
-              }
-
-            </h2>
-
-
-            <p>
-
-              @if (currentView === 'new') {
-
-                New customer orders received by your shop will appear here.
-
-              } @else {
-
-                Orders that you confirm will appear here.
-
-              }
-
+            <p class="!m-0 !font-sans !text-[11px] !font-semibold !text-[#806b68]">
+              Loading orders...
             </p>
 
           </section>
-
         }
 
 
+        <!-- EMPTY STATE -->
 
-        <!-- =============================================
-             ORDER CARDS
-        ============================================== -->
+        @if (!isLoading && currentOrders.length === 0) {
+          <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
 
-        @if (
-          !isLoading &&
-          currentOrders.length > 0
-        ) {
+            <div class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="receipt-outline" class="!text-[31px]"></ion-icon>
+            </div>
 
-          <section class="orders-list">
+            <h2 class="!m-0 !font-sans !text-[20px] !font-extrabold !text-[#17233c]">
+              @if (currentView === 'new') {
+                No New Orders
+              } @else {
+                No Confirmed Orders
+              }
+            </h2>
 
-            @for (
-              order of currentOrders;
-              track order.orderId
-            ) {
+            <p class="!m-[8px_0_0] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+              @if (currentView === 'new') {
+                New customer orders received by your shop will appear here.
+              } @else {
+                Orders that you confirm will appear here.
+              }
+            </p>
 
-              <article
-                class="order-card"
-                (click)="openOrder(order)">
-
-
-                <!-- =================================
-                     IMAGE
-                ================================== -->
-
-                <div class="order-image">
-
-                  @if (
-                    order.items.length > 0 &&
-                    order.items[0].storeImageUrl
-                  ) {
-
-                    <img
-                      [src]="order.items[0].storeImageUrl"
-                      [alt]="order.items[0].productName">
-
-                  } @else {
-
-                    <div class="image-placeholder">
-
-                      <ion-icon
-                        name="cube-outline">
-                      </ion-icon>
-
-                    </div>
-
-                  }
-
-                </div>
+          </section>
+        }
 
 
+        <!-- ORDER CARDS -->
 
-                <!-- =================================
-                     DETAILS
-                ================================== -->
+        @if (!isLoading && currentOrders.length > 0) {
 
-                <div class="order-details">
+          <section class="w-full pb-8 pt-5">
 
+            <div class="mb-3">
+              <h2 class="!m-0 !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]">
+                {{ currentView === 'new' ? 'New Orders' : 'Confirmed Orders' }}
+              </h2>
+
+              <p class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+                {{ currentOrders.length }}
+                {{ currentOrders.length === 1 ? 'order' : 'orders' }}
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+
+              @for (order of currentOrders; track order.orderId) {
+
+                <article
+                  class="cursor-pointer rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.985]"
+                  (click)="openOrder(order)">
 
                   <!-- TOP -->
 
-                  <div class="order-top">
+                  <div class="flex items-start gap-3">
 
-                    <div class="order-title">
+                    <!-- IMAGE -->
 
-                      <span class="order-label">
-                        ORDER #{{ order.orderId }}
-                      </span>
+                    <div class="flex h-[76px] w-[76px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-[#f7f3df]">
 
-                      <h3>
+                      @if (order.items.length > 0 && order.items[0].storeImageUrl) {
+                        <img
+                          [src]="order.items[0].storeImageUrl"
+                          [alt]="order.items[0].productName"
+                          loading="lazy"
+                          class="h-full w-full object-cover"
+                        />
+                      } @else {
+                        <div class="flex h-full w-full items-center justify-center bg-[#f7e9bd]">
+                          <ion-icon name="cube-outline" class="!text-[28px] !text-[#806b68]"></ion-icon>
+                        </div>
+                      }
 
-                        @if (
-                          order.items.length === 1
-                        ) {
+                    </div>
 
-                          {{ order.items[0].productName }}
+
+                    <!-- DETAILS -->
+
+                    <div class="min-w-0 flex-1">
+
+                      <div class="flex items-start justify-between gap-2">
+
+                        <div class="min-w-0">
+
+                          <span class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]">
+                            Order #{{ order.orderId }}
+                          </span>
+
+                          <h3 class="!m-[4px_0_0] !font-sans !text-[13px] !font-bold !leading-tight !text-[#17233c]">
+                            @if (order.items.length === 1) {
+                              {{ order.items[0].productName }}
+                            } @else {
+                              {{ order.items.length }} Items
+                            }
+                          </h3>
+
+                        </div>
+
+                        <span
+                          [class]="'flex shrink-0 items-center gap-1 rounded-full px-2 py-1 font-sans text-[8px] font-bold ' + getStatusClass(order.vendorStatus)">
+
+                          <ion-icon [name]="getStatusIcon(order.vendorStatus)" class="!text-[12px]"></ion-icon>
+
+                          {{ formatStatus(order.vendorStatus) }}
+
+                        </span>
+
+                      </div>
+
+
+                      <div class="mt-2">
+
+                        @if (order.items.length === 1) {
+
+                          @if (order.items[0].brandName) {
+                            <span class="block truncate !font-sans !text-[10px] !font-semibold !text-[#9e2020]">
+                              {{ order.items[0].brandName }}
+                            </span>
+                          }
+
+                          <small class="mt-1 block !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                            {{ order.items[0].size }}
+
+                            @if (order.items[0].packQuantity) {
+                              • {{ order.items[0].packQuantity }} {{ order.items[0].packUnit }}
+                            }
+                          </small>
 
                         } @else {
 
-                          {{ order.items.length }} Items
+                          <span class="block !font-sans !text-[10px] !font-medium !text-[#806b68]">
+                            Multiple products
+                          </span>
+
+                          <small class="block !font-sans !text-[9px] !font-medium !text-[#806b68]">
+                            {{ order.items.length }} products in this order
+                          </small>
 
                         }
 
-                      </h3>
-
-                    </div>
-
-
-                    <div
-                      class="status-badge"
-                      [class]="getStatusClass(order.vendorStatus)">
-
-                      <ion-icon
-                        [name]="getStatusIcon(order.vendorStatus)">
-                      </ion-icon>
-
-                      {{ order.vendorStatus }}
+                      </div>
 
                     </div>
 
                   </div>
 
 
+                  <!-- CUSTOMER AND DATE -->
 
-                  <!-- PRODUCT INFO -->
+                  <div class="mt-3.5 grid grid-cols-2 gap-3 border-t border-[#f1e9db] pt-3">
 
-                  <div class="order-product-info">
+                    <div class="min-w-0">
 
-                    @if (
-                      order.items.length === 1
-                    ) {
-
-                      <span>
-
-                        {{ order.items[0].brandName }}
-
-                      </span>
-
-
-                      <small>
-
-                        {{ order.items[0].size }}
-
-                        @if (
-                          order.items[0].packQuantity
-                        ) {
-
-                          •
-                          {{ order.items[0].packQuantity }}
-                          {{ order.items[0].packUnit }}
-
-                        }
-
-                      </small>
-
-                    } @else {
-
-                      <span>
-                        Multiple products
-                      </span>
-
-                      <small>
-                        {{ order.items.length }} products in this order
-                      </small>
-
-                    }
-
-                  </div>
-
-
-
-                  <!-- CUSTOMER -->
-
-                  <div class="customer-row">
-
-                    <div>
-
-                      <span>
+                      <span class="block !font-sans !text-[8px] !font-medium !text-[#806b68]">
                         Customer
                       </span>
 
-                      <strong>
+                      <strong class="mt-1 block truncate !font-sans !text-[10px] !font-semibold !text-[#17233c]">
                         {{ order.customerName }}
                       </strong>
 
                     </div>
 
+                    <div class="min-w-0 text-right">
 
-                    <div>
-
-                      <span>
+                      <span class="block !font-sans !text-[8px] !font-medium !text-[#806b68]">
                         Order Date
                       </span>
 
-                      <strong>
+                      <strong class="mt-1 block !font-sans !text-[10px] !font-semibold !text-[#17233c]">
                         {{ formatDate(order.createdAt) }}
                       </strong>
 
@@ -365,77 +298,61 @@
                   </div>
 
 
+                  <!-- FOOTER -->
 
-                  <!-- BOTTOM -->
+                  <div class="mt-3 flex items-center justify-between gap-3">
 
-                  <div class="order-bottom">
+                    <div>
 
-                    <div class="order-total">
-
-                      <span>
+                      <span class="block !font-sans !text-[8px] !font-medium !text-[#806b68]">
                         Your Total
                       </span>
 
-                      <strong>
+                      <strong class="block !font-sans !text-[16px] !font-extrabold !text-[#8f071f]">
                         ₹{{ order.vendorTotalAmount | number:'1.2-2' }}
                       </strong>
 
                     </div>
 
 
-                    @if (
-                      currentView === 'new'
-                    ) {
+                    @if (currentView === 'new') {
 
-                      <button
-                        type="button"
-                        class="confirm-button"
-                        [disabled]="
-                          confirmingOrderId === order.orderId
-                        "
-                        (click)="
-                          confirmOrder($event, order)
-                        ">
 
-                        <ion-icon
-                          name="checkmark-circle-outline">
-                        </ion-icon>
+<button
+  type="button"
+  [disabled]="confirmingOrderId !== null || updatingStatusOrderId !== null"
+  (click)="confirmOrder($event, order)"
+  class="flex !min-h-[42px] min-w-[112px] shrink-0 items-center justify-center !rounded-[5px] !border-0 !bg-[#b3123b] px-4 py-2 font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.14)] transition-colors hover:!bg-[#8f071f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60">
 
-                        @if (
-                          confirmingOrderId === order.orderId
-                        ) {
+  @if (confirmingOrderId === order.orderId) {
+    Confirming...
+  } @else {
+    Confirm Order
+  }
 
-                          Confirming...
-
-                        } @else {
-
-                          Confirm Order
-
-                        }
-
-                      </button>
+</button>
 
                     } @else {
 
-                      <div class="view-details">
+                      <button
+                        type="button"
+                        (click)="openOrder(order)"
+                        class="flex min-h-[35px] items-center gap-1 border-0 bg-transparent px-1 font-sans text-[10px] font-bold text-[#b3123b]">
 
                         View Details
+                        <ion-icon name="chevron-forward-outline" class="!text-[14px]"></ion-icon>
 
-                        <ion-icon
-                          name="chevron-forward-outline">
-                        </ion-icon>
-
-                      </div>
+                      </button>
 
                     }
 
                   </div>
 
-                </div>
+                </article>
 
-              </article>
+              }
 
-            }
+            </div>
 
           </section>
 
@@ -443,73 +360,63 @@
 
       </main>
 
+
+      <!-- BOTTOM DECORATION -->
+
+      <div class="pointer-events-none -mx-3 mt-auto w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
+        <img
+          src="assets/images/newDesignBg.png"
+          alt=""
+          aria-hidden="true"
+          class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+        />
+      </div>
+
     }
 
 
+    <!-- ORDER DETAILS -->
 
-    <!-- =================================================
-         ORDER DETAILS
-    ================================================= -->
+    @if (showDetails && selectedOrder) {
 
-    @if (
-      showDetails &&
-      selectedOrder
-    ) {
+      <main class="mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-6 pt-4">
 
-      <main class="orders-container details-container">
+        <!-- SUMMARY -->
 
+        <section class="rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
 
-        <!-- =============================================
-             ORDER SUMMARY
-        ============================================== -->
+          <div class="flex items-start justify-between gap-3">
 
-        <section class="detail-card summary-card">
+            <div class="min-w-0">
 
-          <div class="summary-top">
-
-            <div>
-
-              <span class="order-label">
-                ORDER #{{ selectedOrder.orderId }}
+              <span class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]">
+                Order #{{ selectedOrder.orderId }}
               </span>
 
-              <h2>
+              <h2 class="!m-[5px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]">
                 Order Summary
               </h2>
 
             </div>
 
+            <span
+              [class]="'flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1.5 font-sans text-[9px] font-bold ' + getStatusClass(selectedOrder.vendorStatus)">
 
-            <div
-              class="status-badge large-status"
-              [class]="
-                getStatusClass(
-                  selectedOrder.vendorStatus
-                )
-              ">
+              <ion-icon [name]="getStatusIcon(selectedOrder.vendorStatus)" class="!text-[13px]"></ion-icon>
 
-              <ion-icon
-                [name]="
-                  getStatusIcon(
-                    selectedOrder.vendorStatus
-                  )
-                ">
-              </ion-icon>
+              {{ formatStatus(selectedOrder.vendorStatus) }}
 
-              {{ selectedOrder.vendorStatus }}
-
-            </div>
+            </span>
 
           </div>
 
+          <div class="mt-4 flex items-center justify-between">
 
-          <div class="summary-total">
-
-            <span>
+            <span class="!font-sans !text-[10px] !font-medium !text-[#806b68]">
               Your Total
             </span>
 
-            <strong>
+            <strong class="!font-sans !text-[19px] !font-extrabold !text-[#8f071f]">
               ₹{{ selectedOrder.vendorTotalAmount | number:'1.2-2' }}
             </strong>
 
@@ -518,263 +425,183 @@
         </section>
 
 
+        <!-- CUSTOMER DETAILS -->
 
-        <!-- =============================================
-             CUSTOMER
-        ============================================== -->
+        <section class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
 
-        <section class="detail-card">
+          <div class="flex items-center gap-2.5">
 
-          <div class="detail-heading">
-
-            <div class="detail-heading-icon">
-
-              <ion-icon
-                name="call-outline">
-              </ion-icon>
-
+            <div class="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#f7e9bd] text-[#8f071f]">
+              <ion-icon name="call-outline" class="!text-[18px]"></ion-icon>
             </div>
 
-            <h2>
+            <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]">
               Customer Details
             </h2>
 
           </div>
 
+          <div class="mt-4 space-y-3.5">
 
-          <div class="detail-row">
+            <div>
+              <span class="block !font-sans !text-[9px] !font-medium !text-[#806b68]">Name</span>
+              <strong class="mt-1 block !font-sans !text-[11px] !font-semibold !text-[#17233c]">
+                {{ selectedOrder.customerName }}
+              </strong>
+            </div>
 
-            <span>
-              Name
-            </span>
+            <div>
+              <span class="block !font-sans !text-[9px] !font-medium !text-[#806b68]">Mobile</span>
+              <strong class="mt-1 block !font-sans !text-[11px] !font-semibold !text-[#17233c]">
+                {{ selectedOrder.customerMobile }}
+              </strong>
+            </div>
 
-            <strong>
-              {{ selectedOrder.customerName }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail-row">
-
-            <span>
-              Mobile
-            </span>
-
-            <strong>
-              {{ selectedOrder.customerMobile }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail-row address-row">
-
-            <span>
-              Delivery Address
-            </span>
-
-            <strong>
-              {{ selectedOrder.deliveryAddress }}
-            </strong>
+            <div>
+              <span class="block !font-sans !text-[9px] !font-medium !text-[#806b68]">Delivery Address</span>
+              <strong class="mt-1 block !font-sans !text-[11px] !font-semibold !leading-[1.45] !text-[#17233c]">
+                {{ selectedOrder.deliveryAddress }}
+              </strong>
+            </div>
 
           </div>
 
         </section>
 
 
+        <!-- ORDER INFORMATION -->
 
-        <!-- =============================================
-             ORDER INFORMATION
-        ============================================== -->
+        <section class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
 
-        <section class="detail-card">
+          <div class="flex items-center gap-2.5">
 
-          <div class="detail-heading">
-
-            <div class="detail-heading-icon">
-
-              <ion-icon
-                name="receipt-outline">
-              </ion-icon>
-
+            <div class="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#f7e9bd] text-[#8f071f]">
+              <ion-icon name="receipt-outline" class="!text-[18px]"></ion-icon>
             </div>
 
-            <h2>
+            <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]">
               Order Information
             </h2>
 
           </div>
 
+          <div class="mt-4 space-y-3.5">
 
-          <div class="detail-row">
+            <div class="flex items-start justify-between gap-4">
+              <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">Order Date</span>
+              <strong class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]">
+                {{ formatDateTime(selectedOrder.createdAt) }}
+              </strong>
+            </div>
 
-            <span>
-              Order Date
-            </span>
+            <div class="flex items-start justify-between gap-4">
+              <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">Expected Delivery</span>
+              <strong class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]">
+                {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+              </strong>
+            </div>
 
-            <strong>
-              {{ formatDateTime(selectedOrder.createdAt) }}
-            </strong>
+            <div class="flex items-start justify-between gap-4">
+              <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">Payment Method</span>
+              <strong class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]">
+                {{ selectedOrder.paymentMethod }}
+              </strong>
+            </div>
 
-          </div>
+            <div class="flex items-start justify-between gap-4">
+              <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">Order Status</span>
+              <strong class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]">
+                {{ formatStatus(selectedOrder.status) }}
+              </strong>
+            </div>
 
-
-          <div class="detail-row">
-
-            <span>
-              Expected Delivery
-            </span>
-
-            <strong>
-              {{ formatDate(selectedOrder.expectedDeliveryDate) }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail-row">
-
-            <span>
-              Payment
-            </span>
-
-            <strong>
-              {{ selectedOrder.paymentMethod }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail-row">
-
-            <span>
-              Order Status
-            </span>
-
-            <strong>
-              {{ selectedOrder.status }}
-            </strong>
-
-          </div>
-
-
-          <div class="detail-row">
-
-            <span>
-              Vendor Status
-            </span>
-
-            <strong>
-              {{ selectedOrder.vendorStatus }}
-            </strong>
+            <div class="flex items-start justify-between gap-4">
+              <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">Vendor Status</span>
+              <strong class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]">
+                {{ formatStatus(selectedOrder.vendorStatus) }}
+              </strong>
+            </div>
 
           </div>
 
         </section>
 
 
+        <!-- ORDERED ITEMS -->
 
-        <!-- =============================================
-             ITEMS
-        ============================================== -->
+        <section class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
 
-        <section class="detail-card">
+          <div class="flex items-center gap-2.5">
 
-          <div class="detail-heading">
-
-            <div class="detail-heading-icon">
-
-              <ion-icon
-                name="cube-outline">
-              </ion-icon>
-
+            <div class="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#f7e9bd] text-[#8f071f]">
+              <ion-icon name="cube-outline" class="!text-[18px]"></ion-icon>
             </div>
 
-            <h2>
+            <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]">
               Ordered Items
             </h2>
 
           </div>
 
+          <div class="mt-3.5">
 
-          <div class="detail-items">
+            @for (item of selectedOrder.items; track item.orderItemId) {
 
-            @for (
-              item of selectedOrder.items;
-              track item.orderItemId
-            ) {
+              <div class="flex items-start gap-3 border-b border-[#f1e9db] py-3 last:border-b-0">
 
-              <div class="detail-item">
+                <div class="flex h-[68px] w-[68px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-[#f7f3df]">
 
-
-                <div class="detail-item-image">
-
-                  @if (
-                    item.storeImageUrl
-                  ) {
-
+                  @if (item.storeImageUrl) {
                     <img
                       [src]="item.storeImageUrl"
-                      [alt]="item.productName">
-
+                      [alt]="item.productName"
+                      loading="lazy"
+                      class="block h-full w-full object-cover"
+                    />
                   } @else {
-
-                    <div class="detail-image-placeholder">
-
-                      <ion-icon
-                        name="cube-outline">
-                      </ion-icon>
-
+                    <div class="flex h-full w-full items-center justify-center bg-[#f7e9bd]">
+                      <ion-icon name="cube-outline" class="!text-[26px] !text-[#806b68]"></ion-icon>
                     </div>
-
                   }
 
                 </div>
 
+                <div class="min-w-0 flex-1">
 
-                <div class="detail-item-info">
-
-                  <h3>
+                  <h3 class="!m-0 !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c]">
                     {{ item.productName }}
                   </h3>
 
                   @if (item.brandName) {
-
-                    <p>
+                    <p class="!m-[3px_0_0] !font-sans !text-[9px] !font-semibold !text-[#9e2020]">
                       {{ item.brandName }}
                     </p>
-
                   }
 
-                  <span>
+                  <small class="mt-1 block !font-sans !text-[9px] !font-medium !text-[#806b68]">
 
-                    {{ item.size }}
-
-                    @if (
-                      item.packQuantity
-                    ) {
-
-                      •
-                      {{ item.packQuantity }}
-                      {{ item.packUnit }}
-
+                    @if (item.size) {
+                      {{ item.size }}
                     }
 
-                  </span>
+                    @if (item.packQuantity) {
+                      @if (item.size) { • }
+                      {{ item.packQuantity }} {{ item.packUnit }}
+                    }
 
-                </div>
+                  </small>
 
+                  <div class="mt-2 flex items-center justify-between gap-3">
 
-                <div class="detail-item-price">
+                    <span class="!font-sans !text-[9px] !font-medium !text-[#806b68]">
+                      Qty: {{ item.quantity }}
+                    </span>
 
-                  <span>
-                    Qty: {{ item.quantity }}
-                  </span>
+                    <strong class="!font-sans !text-[13px] !font-extrabold !text-[#8f071f]">
+                      ₹{{ item.subtotal | number:'1.2-2' }}
+                    </strong>
 
-                  <strong>
-                    ₹{{ item.subtotal | number:'1.2-2' }}
-                  </strong>
+                  </div>
 
                 </div>
 
@@ -784,14 +611,13 @@
 
           </div>
 
+          <div class="mt-3 flex items-center justify-between border-t border-[#eadfca] pt-3">
 
-          <div class="items-total">
-
-            <span>
+            <span class="!font-sans !text-[11px] !font-bold !text-[#17233c]">
               Your Total
             </span>
 
-            <strong>
+            <strong class="!font-sans !text-[17px] !font-extrabold !text-[#8f071f]">
               ₹{{ selectedOrder.vendorTotalAmount | number:'1.2-2' }}
             </strong>
 
@@ -800,68 +626,210 @@
         </section>
 
 
+        <!-- UPDATE STATUS -->
 
-        <!-- =============================================
-             VENDOR STATUS
-        ============================================== -->
+       <!-- UPDATE ORDER STATUS -->
 
-        <section class="detail-card status-update-card">
+<section class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
 
-          <div class="detail-heading">
+  <div class="flex items-center gap-2.5">
+    <div class="flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-[#f7e9bd] text-[#8f071f]">
+      <ion-icon name="time-outline" class="!text-[18px]"></ion-icon>
+    </div>
 
-            <div class="detail-heading-icon">
+    <div>
+      <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]">
+        Update Order Status
+      </h2>
+      <p class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+        Select the current order stage
+      </p>
+    </div>
+  </div>
 
-              <ion-icon
-                name="time-outline">
-              </ion-icon>
+  <div class="mt-4">
+    <label class="mb-2 block !font-sans !text-[10px] !font-bold !text-[#17233c]">
+      Vendor Status
+    </label>
 
-            </div>
+    <ion-select
+      interface="popover"
+      [value]="pendingStatus"
+      [disabled]="updatingStatusOrderId !== null || statusUpdateComplete"
+      (ionChange)="onStatusSelection($event.detail.value)"
+      placeholder="Select order status"
+      class="min-h-[46px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 font-sans text-[12px] font-semibold text-[#17233c]">
 
-            <div>
+      @for (status of statusOptions; track status) {
+        <ion-select-option [value]="status">
+          {{ formatStatus(status) }}
+        </ion-select-option>
+      }
 
-              <h2>
-                Update Order Status
-              </h2>
-
-              <p>
-                Vendor order status
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="status-placeholder">
-
-            <ion-icon
-              name="alert-circle-outline">
-            </ion-icon>
-
-            <p>
-              Status options will be connected here once the vendor status API is provided.
-            </p>
-
-          </div>
-
-        </section>
+    </ion-select>
+  </div>
 
 
+  <!-- DELIVERY OTP -->
 
-        <button
-          type="button"
-          class="back-orders-button"
-          (click)="backToOrders()">
+  @if (pendingStatus === 'OUT_FOR_DELIVERY') {
 
-          <ion-icon
-            name="arrow-back-outline">
-          </ion-icon>
+    <div class="mt-5 rounded-[12px] border border-[#ead9b6] bg-[#fffaf0] p-3.5">
 
-          Back to Orders
+      <div class="flex items-start gap-2.5">
 
-        </button>
+        <div class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-[#f7e9bd] text-[#8f071f]">
+          <ion-icon name="shield-checkmark-outline" class="!text-[19px]"></ion-icon>
+        </div>
 
+        <div class="min-w-0 flex-1">
+          <h3 class="!m-0 !font-sans !text-[13px] !font-extrabold !text-[#17233c]">
+            Delivery Verification
+          </h3>
+
+          <p class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]">
+            The customer will receive a delivery OTP when the order status is updated to Out For Delivery. Ask the customer for that 6-digit code before completing delivery.
+          </p>
+        </div>
+
+      </div>
+
+
+      <!-- SIX OTP BLOCKS -->
+
+      <label class="mb-2 mt-5 block !font-sans !text-[10px] !font-bold !text-[#17233c]">
+        Customer Received OTP
+      </label>
+
+      <div class="grid grid-cols-6 gap-2">
+
+        @for (digit of deliveryOtpDigits; track $index) {
+
+          <ion-input
+            [value]="deliveryOtpDigits[$index]"
+            type="tel"
+            inputmode="numeric"
+            maxlength="1"
+            [disabled]="isVerifyingOtp || !statusUpdateComplete"
+            aria-label="OTP digit {{ $index + 1 }}"
+            (ionInput)="onOtpInput($event.detail.value, $index)"
+            class="!h-[45px] !min-h-[45px] !rounded-[9px] !border !border-[#e1d7d2] !bg-white !p-0 text-center !font-sans !text-[18px] !font-extrabold !text-[#8f071f]">
+          </ion-input>
+
+        }
+
+      </div>
+
+      @if (!statusUpdateComplete) {
+        <p class="!m-[8px_0_0] !font-sans !text-[9px] !font-medium !leading-[1.4] !text-[#806b68]">
+          Update the order status first. OTP verification becomes available after the status update succeeds.
+        </p>
+      }
+
+
+      <!-- OTP ERROR -->
+
+      @if (otpErrorMessage) {
+        <p class="!m-[10px_0_0] rounded-[8px] bg-red-50 px-3 py-2 !font-sans !text-[10px] !font-medium !leading-[1.4] !text-red-700">
+          {{ otpErrorMessage }}
+        </p>
+      }
+
+
+      <!-- OTP SUCCESS -->
+
+      @if (otpSuccessMessage) {
+        <p class="!m-[10px_0_0] rounded-[8px] bg-green-50 px-3 py-2 !font-sans !text-[10px] !font-medium !leading-[1.4] !text-green-800">
+          {{ otpSuccessMessage }}
+        </p>
+      }
+
+
+      <!-- CONFIRM OTP -->
+
+      <ion-button
+        expand="block"
+        [disabled]="
+          !statusUpdateComplete ||
+          isVerifyingOtp ||
+          deliveryOtpDigits.join('').length !== 6
+        "
+        (click)="verifyDeliveryOtp()"
+        class="mt-4 !h-[42px] !rounded-[11px] !font-sans !text-[11px] !font-bold !text-[#fff8dc]"
+        style="--background: #8f071f; --background-activated: #6f0618; --color: #fff8dc;">
+
+        <ion-icon name="shield-checkmark-outline" slot="start" class="!text-[17px]"></ion-icon>
+
+        @if (isVerifyingOtp) {
+          Verifying OTP...
+        } @else {
+          Confirm OTP
+        }
+
+      </ion-button>
+
+    </div>
+
+  }
+
+
+  <!-- STATUS UPDATE FEEDBACK -->
+
+  @if (errorMessage) {
+    <p class="!m-[10px_0_0] rounded-[9px] bg-red-50 px-3 py-2 font-sans text-[10px] font-medium leading-[1.4] text-red-700">
+      {{ errorMessage }}
+    </p>
+  }
+
+  @if (successMessage) {
+    <p class="!m-[10px_0_0] rounded-[9px] bg-green-50 px-3 py-2 font-sans text-[10px] font-medium leading-[1.4] text-green-800">
+      {{ successMessage }}
+    </p>
+  }
+
+</section>
+
+
+<!-- BOTTOM ACTION BUTTON -->
+
+<ion-button
+  expand="block"
+  [disabled]="updatingStatusOrderId !== null"
+  (click)="saveStatusOrBack()"
+  class="mt-4 !h-[46px] !rounded-[12px] !font-sans !text-[12px] !font-bold !text-[#fff8dc]"
+  style="--background: #b3123b; --background-activated: #8f071f; --color: #fff8dc;">
+
+  @if (statusUpdateComplete) {
+
+    <ion-icon name="arrow-back-outline" slot="start" class="!text-[17px]"></ion-icon>
+    Back to Orders
+
+  } @else {
+
+    <ion-icon name="checkmark-circle-outline" slot="start" class="!text-[17px]"></ion-icon>
+
+    @if (updatingStatusOrderId === selectedOrder.orderId) {
+      Updating Status...
+    } @else {
+      Update Order Status
+    }
+
+  }
+
+</ion-button>
       </main>
+
+
+      <!-- DETAILS BOTTOM DECORATION -->
+
+      <div class="pointer-events-none -mx-3 mt-auto w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
+        <img
+          src="assets/images/newDesignBg.png"
+          alt=""
+          aria-hidden="true"
+          class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+        />
+      </div>
 
     }
 

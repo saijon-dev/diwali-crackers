@@ -8,7 +8,40 @@ export const routes: Routes = [
       import('./pages/splash/splash.page')
         .then(m => m.SplashPage)
   },
+  {
+    path: 'home',
+    loadComponent: () =>
+      import('./pages/home/home.page')
+        .then(m => m.HomePage)
+  },
+    {
+    path: 'cart',
+    loadComponent: () =>
+      import('./pages/cart/cart.page')
+        .then(m => m.CartPage)
+  },
+    {
+    path: 'categories',
+    loadComponent: () =>
+      import('./pages/categories/categories.page')
+        .then(m => m.CategoriesPage)
+  },
+   {
+    path: 'product/:id',
+    loadComponent: () =>
+      import('./pages/product/product.page')
+        .then(m => m.ProductPage)
+  },
+  {
+  path: 'orders',
+  loadComponent: () =>
+    import('./pages/orders/orders.page')
+      .then(m => m.OrdersPage)
+},
 
+
+
+  
   {
     path: 'admin-login',
     loadComponent: () =>

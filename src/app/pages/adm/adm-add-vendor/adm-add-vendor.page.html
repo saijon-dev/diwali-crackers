@@ -1,29 +1,27 @@
+
 <ion-content
   [fullscreen]="true"
   class="adm-add-vendor-content">
 
-  <!-- ================================= -->
   <!-- STATIC SIDE DECORATIONS -->
-  <!-- ================================= -->
 
   <img
     src="assets/images/left-bg.png"
     alt=""
+    aria-hidden="true"
     class="side-decoration side-decoration-left"
   />
 
   <img
     src="assets/images/right-bg.png"
     alt=""
+    aria-hidden="true"
     class="side-decoration side-decoration-right"
   />
 
-
   <div class="adm-add-vendor-page">
 
-    <!-- ================================= -->
-    <!-- TOP HEADER -->
-    <!-- ================================= -->
+    <!-- HEADER -->
 
     <header class="add-vendor-header">
 
@@ -37,442 +35,447 @@
 
       </button>
 
-
       <div class="header-content">
-
-        <h1>
-          Add Vendor
-        </h1>
-
-        <p>
-          Add a new cracker vendor
-        </p>
-
+        <h1>Add Vendor</h1>
+        <p>Add a new cracker vendor</p>
       </div>
 
     </header>
 
-
-    <!-- ================================= -->
     <!-- FORM -->
-    <!-- ================================= -->
 
     <form
       [formGroup]="vendorForm"
       (ngSubmit)="addVendor()"
       novalidate>
 
-
-      <!-- ================================= -->
-      <!-- BASIC INFORMATION -->
-      <!-- ================================= -->
+      <!-- VENDOR INFORMATION -->
 
       <section class="form-card">
 
         <div class="section-heading">
-
-          <h2>
-            Vendor Information
-          </h2>
-
-          <p>
-            Enter the vendor's personal details
-          </p>
-
+          <h2>Vendor Information</h2>
+          <p>Enter the vendor's personal details</p>
         </div>
-
 
         <!-- NAME -->
 
         <div class="form-group">
 
-          <label>
-            Vendor Name
-          </label>
+          <label for="vendor-name">Vendor Name</label>
 
           <div class="input-wrapper">
-
             <ion-icon
               name="person-outline"
               class="input-icon">
             </ion-icon>
 
             <input
+              id="vendor-name"
               type="text"
               formControlName="name"
               placeholder="Enter vendor name"
-              autocomplete="name" />
-
+              autocomplete="name"
+            />
           </div>
 
           @if (name?.invalid && name?.touched) {
-
             <div class="error-message">
-
               @if (name?.errors?.['required']) {
-                Vendor name is required
+                Vendor name is required.
               }
-
               @if (name?.errors?.['minlength']) {
-                Enter at least 2 characters
+                Enter at least 2 characters.
               }
-
             </div>
-
           }
 
         </div>
-
 
         <!-- EMAIL -->
 
         <div class="form-group">
 
-          <label>
-            Email Address
-          </label>
+          <label for="vendor-email">Email Address</label>
 
           <div class="input-wrapper">
-
             <ion-icon
               name="mail-outline"
               class="input-icon">
             </ion-icon>
 
             <input
+              id="vendor-email"
               type="email"
               formControlName="email"
               placeholder="Enter email address"
-              autocomplete="email" />
-
+              autocomplete="email"
+            />
           </div>
 
           @if (email?.invalid && email?.touched) {
-
             <div class="error-message">
-
               @if (email?.errors?.['required']) {
-                Email is required
+                Email is required.
               }
-
               @if (email?.errors?.['email']) {
-                Enter a valid email address
+                Enter a valid email address.
               }
-
             </div>
-
           }
 
         </div>
 
-
-        <!-- MOBILE -->
+        <!-- MOBILE NUMBER -->
 
         <div class="form-group">
 
-          <label>
-            Mobile Number
-          </label>
+          <label for="vendor-mobile">Mobile Number</label>
 
           <div class="input-wrapper">
-
             <ion-icon
               name="call-outline"
               class="input-icon">
             </ion-icon>
 
             <input
+              id="vendor-mobile"
               type="tel"
               formControlName="mobileNumber"
               placeholder="Enter 10-digit mobile number"
               inputmode="numeric"
               maxlength="10"
-              autocomplete="tel" />
-
+              autocomplete="tel"
+            />
           </div>
 
           @if (mobileNumber?.invalid && mobileNumber?.touched) {
-
             <div class="error-message">
-
               @if (mobileNumber?.errors?.['required']) {
-                Mobile number is required
+                Mobile number is required.
               }
-
               @if (mobileNumber?.errors?.['pattern']) {
-                Enter a valid 10-digit mobile number
+                Enter a valid 10-digit mobile number.
               }
-
             </div>
-
           }
 
         </div>
 
-
-        <!-- PASSWORD -->
-
       </section>
 
-
-      <!-- ================================= -->
       <!-- SHOP INFORMATION -->
-      <!-- ================================= -->
 
       <section class="form-card">
 
         <div class="section-heading">
-
-          <h2>
-            Shop Information
-          </h2>
-
-          <p>
-            Enter the vendor's store details
-          </p>
-
+          <h2>Shop Information</h2>
+          <p>Enter the vendor's store details</p>
         </div>
-
 
         <!-- STORE NAME -->
 
         <div class="form-group">
 
-          <label>
-            Store Name
-          </label>
+          <label for="store-name">Store Name</label>
 
           <div class="input-wrapper">
-
             <ion-icon
               name="storefront-outline"
               class="input-icon">
             </ion-icon>
 
             <input
+              id="store-name"
               type="text"
               formControlName="storeName"
               placeholder="Enter store name"
-              autocomplete="organization" />
-
+              autocomplete="organization"
+            />
           </div>
 
           @if (storeName?.invalid && storeName?.touched) {
-
             <div class="error-message">
-
               @if (storeName?.errors?.['required']) {
-                Store name is required
+                Store name is required.
               }
-
               @if (storeName?.errors?.['minlength']) {
-                Enter at least 2 characters
+                Enter at least 2 characters.
               }
-
             </div>
-
           }
 
         </div>
 
+        <!-- STORE IMAGE -->
+
+        <div class="form-group">
+
+          <label for="store-image">Store Image</label>
+
+          <div class="image-upload-card">
+
+            @if (imagePreview) {
+
+              <div class="image-preview-container">
+
+                <img
+                  [src]="imagePreview"
+                  alt="Selected store preview"
+                  class="store-image-preview"
+                />
+
+                <button
+                  type="button"
+                  class="remove-image-button"
+                  aria-label="Remove selected image"
+                  [disabled]="isLoading"
+                  (click)="removeImage(storeImageInput)">
+
+                  <ion-icon name="trash-outline"></ion-icon>
+
+                </button>
+
+              </div>
+
+              <p class="image-file-name">
+                {{ selectedImage?.name }}
+              </p>
+
+            } @else {
+
+              <label
+                for="store-image"
+                class="image-upload-placeholder">
+
+                <span class="image-upload-icon">
+                  <ion-icon name="image-outline"></ion-icon>
+                </span>
+
+                <span class="image-upload-title">
+                  Choose store image
+                </span>
+
+                <span class="image-upload-description">
+                  JPG, PNG or WEBP · Maximum 5 MB
+                </span>
+
+              </label>
+
+            }
+
+            <input
+              #storeImageInput
+              id="store-image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="image-file-input"
+              [disabled]="isLoading"
+              (change)="onImageSelected($event)"
+            />
+
+            @if (imagePreview) {
+              <label
+                for="store-image"
+                class="change-image-button">
+
+                <ion-icon name="image-outline"></ion-icon>
+                Change Image
+
+              </label>
+            }
+
+          </div>
+
+          @if (imageError) {
+            <div class="error-message">
+              {{ imageError }}
+            </div>
+          }
+
+        </div>
 
         <!-- ADDRESS -->
 
         <div class="form-group">
 
-          <label>
-            Address
-          </label>
+          <label for="store-address">Address</label>
 
           <div class="input-wrapper textarea-wrapper">
-
             <ion-icon
               name="home-outline"
               class="input-icon textarea-icon">
             </ion-icon>
 
             <textarea
+              id="store-address"
               formControlName="address"
               placeholder="Enter shop address"
               rows="3">
             </textarea>
-
           </div>
 
           @if (address?.invalid && address?.touched) {
-
             <div class="error-message">
-
               @if (address?.errors?.['required']) {
-                Address is required
+                Address is required.
               }
-
               @if (address?.errors?.['minlength']) {
-                Enter a valid address
+                Enter a valid address.
               }
-
             </div>
-
           }
 
         </div>
-
 
         <!-- STATE -->
 
         <div class="form-group">
 
-          <label>
-            State
-          </label>
+          <label for="store-state">State</label>
 
           <div class="select-wrapper">
-
             <ion-icon
               name="map-outline"
               class="select-icon">
             </ion-icon>
 
-            <select formControlName="state">
-
+            <select id="store-state" formControlName="state">
               @for (stateOption of states; track stateOption) {
-
                 <option [value]="stateOption">
                   {{ stateOption }}
                 </option>
-
               }
-
             </select>
-
           </div>
 
         </div>
-
 
         <!-- CITY -->
 
         <div class="form-group">
 
-          <label>
-            City
-          </label>
+          <label for="store-city">City</label>
 
           <div class="select-wrapper">
-
             <ion-icon
               name="location-outline"
               class="select-icon">
             </ion-icon>
 
-            <select formControlName="city">
-
+            <select id="store-city" formControlName="city">
               @for (cityOption of cities; track cityOption) {
-
                 <option [value]="cityOption">
                   {{ cityOption }}
                 </option>
-
               }
-
             </select>
-
           </div>
 
         </div>
-
 
         <!-- PINCODE -->
 
         <div class="form-group">
 
-          <label>
-            Pincode
-          </label>
+          <label for="store-pincode">Pincode</label>
 
           <div class="input-wrapper">
-
             <ion-icon
               name="location-outline"
               class="input-icon">
             </ion-icon>
 
             <input
+              id="store-pincode"
               type="tel"
               formControlName="pincode"
               placeholder="Enter 6-digit pincode"
               inputmode="numeric"
               maxlength="6"
-              autocomplete="postal-code" />
-
+              autocomplete="postal-code"
+            />
           </div>
 
           @if (pincode?.invalid && pincode?.touched) {
-
             <div class="error-message">
-
               @if (pincode?.errors?.['required']) {
-                Pincode is required
+                Pincode is required.
               }
-
               @if (pincode?.errors?.['pattern']) {
-                Enter a valid 6-digit pincode
+                Enter a valid 6-digit pincode.
               }
-
             </div>
+          }
 
+        </div>
+
+        <!-- DELIVERY RADIUS -->
+
+        <div class="form-group">
+
+          <label for="delivery-radius">
+            Delivery Radius (KM)
+          </label>
+
+          <div class="input-wrapper">
+            <ion-icon
+              name="location-outline"
+              class="input-icon">
+            </ion-icon>
+
+            <input
+              id="delivery-radius"
+              type="number"
+              formControlName="deliveryRadiusKm"
+              placeholder="Enter delivery radius"
+              min="1"
+              max="500"
+              step="0.5"
+              inputmode="decimal"
+            />
+          </div>
+
+          @if (
+            deliveryRadiusKm?.invalid &&
+            deliveryRadiusKm?.touched
+          ) {
+            <div class="error-message">
+              @if (deliveryRadiusKm?.errors?.['required']) {
+                Delivery radius is required.
+              }
+              @if (deliveryRadiusKm?.errors?.['min']) {
+                Delivery radius must be at least 1 KM.
+              }
+              @if (deliveryRadiusKm?.errors?.['max']) {
+                Delivery radius cannot exceed 500 KM.
+              }
+            </div>
           }
 
         </div>
 
       </section>
 
-
-      <!-- ================================= -->
-      <!-- API SUCCESS -->
-      <!-- ================================= -->
+      <!-- SUCCESS MESSAGE -->
 
       @if (successMessage) {
-
         <div class="success-message">
-
-          <ion-icon
-            name="checkmark-circle-outline">
-          </ion-icon>
-
-          <span>
-            {{ successMessage }}
-          </span>
-
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ successMessage }}</span>
         </div>
-
       }
 
-
-      <!-- ================================= -->
-      <!-- API ERROR -->
-      <!-- ================================= -->
+      <!-- ERROR MESSAGE -->
 
       @if (errorMessage) {
-
         <div class="api-error-message">
-
-          <ion-icon
-            name="close-outline">
-          </ion-icon>
-
-          <span>
-            {{ errorMessage }}
-          </span>
-
+          <ion-icon name="close-outline"></ion-icon>
+          <span>{{ errorMessage }}</span>
         </div>
-
       }
 
-
-      <!-- ================================= -->
       <!-- ACTION BUTTONS -->
-      <!-- ================================= -->
 
       <section class="form-actions">
 
@@ -483,13 +486,9 @@
           (click)="clearForm()">
 
           <ion-icon name="close-outline"></ion-icon>
-
-          <span>
-            Clear
-          </span>
+          <span>Clear</span>
 
         </button>
-
 
         <button
           type="submit"
@@ -497,19 +496,10 @@
           [disabled]="isLoading">
 
           @if (isLoading) {
-
-            <span>
-              Adding...
-            </span>
-
+            <span>Adding...</span>
           } @else {
-
             <ion-icon name="checkmark-circle-outline"></ion-icon>
-
-            <span>
-              Add Vendor
-            </span>
-
+            <span>Add Vendor</span>
           }
 
         </button>
