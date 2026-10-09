@@ -91,12 +91,27 @@ export const TAB_ROUTES: Routes = [
         .then(m => m.AdminEditPage)
   },
 
+
+  {
+  path: 'vend-combo-add',
+  loadComponent: () =>
+    import('../pages/admin/vend-combo-add/vend-combo-add.page')
+      .then(m => m.VendComboAddPage)
+},
+
   {
   path: 'vend-orders',
   loadComponent: () =>
     import('../pages/admin/vend-orders/vend-orders.page')
       .then(m => m.VendOrdersPage)
 },
+  {
+  path: 'shop',
+  loadComponent: () =>
+    import('../pages/admin/shop/shop.page')
+      .then(m => m.ShopPage)
+},
+
 
 
   /* =========================================

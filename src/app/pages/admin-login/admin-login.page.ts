@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
+  OnDestroy,
   ViewChild
 } from '@angular/core';
 
@@ -30,29 +31,24 @@ import {
 
 import { addIcons } from 'ionicons';
 
-
 import { AuthService } from '../../services/auth.service';
 
 
 @Component({
   selector: 'app-vendor-login',
-
   templateUrl: './admin-login.page.html',
-
   styleUrls: ['./admin-login.page.scss'],
-
   standalone: true,
-
   imports: [
     CommonModule,
     ReactiveFormsModule,
     IonContent,
     IonIcon,
     IonInput,
-    IonButton,
+    IonButton
   ]
 })
-export class AdminLoginPage {
+export class AdminLoginPage implements OnDestroy {
 
   /* =========================================
      OTP INPUT REFERENCE
@@ -87,6 +83,15 @@ export class AdminLoginPage {
   ];
 
   otpFocusedIndex = -1;
+
+
+  /* =========================================
+     OTP TIMER
+  ========================================= */
+
+  otpTimeRemaining = 0;
+
+  private otpTimer: ReturnType<typeof setInterval> | null = null;
 
 
   /* =========================================
@@ -151,6 +156,176 @@ export class AdminLoginPage {
 
 
   /* =========================================
+     OTP TIMER
+  ========================================= */
+
+  private startOtpTimer(): void {
+
+    this.clearOtpTimer();
+
+    this.otpTimeRemaining = 60;
+
+    this.cdr.detectChanges();
+
+
+    this.otpTimer = setInterval(() => {
+
+      if (this.otpTimeRemaining > 0) {
+
+        this.otpTimeRemaining--;
+
+        this.cdr.detectChanges();
+
+      }
+
+
+      if (this.otpTimeRemaining === 0) {
+
+        this.clearOtpTimer();
+
+        this.cdr.detectChanges();
+
+      }
+
+    }, 1000);
+
+  }
+
+
+  private clearOtpTimer(): void {
+
+    if (this.otpTimer !== null) {
+
+      clearInterval(this.otpTimer);
+
+      this.otpTimer = null;
+
+    }
+
+  }
+
+
+  get formattedOtpTime(): string {
+
+    const seconds = this.otpTimeRemaining;
+
+    return `00:${seconds.toString().padStart(2, '0')}`;
+
+  }
+
+
+  /* =========================================
+     RESEND OTP
+  ========================================= */
+
+  resendOtp(): void {
+
+    if (
+      !this.isOtpStep ||
+      this.otpTimeRemaining > 0 ||
+      this.isLoading
+    ) {
+      return;
+    }
+
+
+    this.errorMessage = '';
+
+    this.isLoading = true;
+
+    this.cdr.detectChanges();
+
+
+    const mobileNumber =
+      this.mobileNumber?.value;
+
+
+    this.authService
+      .login({
+        mobileNumber
+      })
+      .subscribe({
+
+        next: (response) => {
+
+          this.isLoading = false;
+
+
+          if (response?.success === true) {
+
+            /* ==============================
+               CLEAR OLD OTP
+            ============================== */
+
+            this.otp?.reset();
+
+            this.otpDigits = [
+              '',
+              '',
+              '',
+              '',
+              '',
+              ''
+            ];
+
+            this.otpFocusedIndex = -1;
+
+
+            /* ==============================
+               START NEW 60 SECOND TIMER
+            ============================== */
+
+            this.startOtpTimer();
+
+
+            this.errorMessage = '';
+
+            this.cdr.detectChanges();
+
+
+            /* ==============================
+               FOCUS OTP
+            ============================== */
+
+            setTimeout(() => {
+
+              this.focusOtpInput();
+
+            }, 150);
+
+
+            return;
+
+          }
+
+
+          this.errorMessage =
+            response?.message ||
+            'Unable to resend OTP. Please try again.';
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          this.isLoading = false;
+
+          this.errorMessage =
+            error?.error?.message ||
+            'Unable to resend OTP. Please try again.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+
+  /* =========================================
      OTP INPUT
   ========================================= */
 
@@ -160,9 +335,7 @@ export class AdminLoginPage {
       event?.detail?.value ?? '';
 
 
-    /*
-     * Allow only numbers.
-     */
+    /* Allow only numbers */
 
     value =
       value
@@ -171,9 +344,7 @@ export class AdminLoginPage {
         .slice(0, 6);
 
 
-    /*
-     * Keep the FormControl synchronized.
-     */
+    /* Keep FormControl synchronized */
 
     if (this.otp?.value !== value) {
 
@@ -187,9 +358,7 @@ export class AdminLoginPage {
     }
 
 
-    /*
-     * Update the six visual boxes.
-     */
+    /* Update six visual boxes */
 
     this.otpDigits =
       Array.from(
@@ -201,9 +370,7 @@ export class AdminLoginPage {
       );
 
 
-    /*
-     * Determine which box should look active.
-     */
+    /* Determine active box */
 
     if (value.length < 6) {
 
@@ -217,10 +384,7 @@ export class AdminLoginPage {
     }
 
 
-    /*
-     * Clear API error when user starts
-     * entering a new OTP.
-     */
+    /* Clear API error */
 
     if (value.length > 0) {
 
@@ -306,9 +470,9 @@ export class AdminLoginPage {
       this.authService.getRole();
 
 
-    /* =========================================
+    /* =====================================
        ADMIN
-    ========================================= */
+    ===================================== */
 
     if (role === 'ADMIN') {
 
@@ -321,9 +485,9 @@ export class AdminLoginPage {
     }
 
 
-    /* =========================================
+    /* =====================================
        VENDOR
-    ========================================= */
+    ===================================== */
 
     if (role === 'VENDOR') {
 
@@ -336,9 +500,9 @@ export class AdminLoginPage {
     }
 
 
-    /* =========================================
+    /* =====================================
        UNKNOWN ROLE
-    ========================================= */
+    ===================================== */
 
     this.errorMessage =
       'Invalid user role. Please contact the administrator.';
@@ -359,9 +523,9 @@ export class AdminLoginPage {
     this.errorMessage = '';
 
 
-    /* =========================================
+    /* =====================================
        VALIDATE FORM
-    ========================================= */
+    ===================================== */
 
     if (this.loginForm.invalid) {
 
@@ -374,9 +538,9 @@ export class AdminLoginPage {
     }
 
 
-    /* =========================================
+    /* =====================================
        LOADING
-    ========================================= */
+    ===================================== */
 
     this.isLoading = true;
 
@@ -390,9 +554,9 @@ export class AdminLoginPage {
       this.otp?.value;
 
 
-    /* =========================================
+    /* =====================================
        REQUEST
-    ========================================= */
+    ===================================== */
 
     const request = this.isOtpStep
       ? {
@@ -404,9 +568,9 @@ export class AdminLoginPage {
         };
 
 
-    /* =========================================
+    /* =====================================
        API
-    ========================================= */
+    ===================================== */
 
     this.authService
       .login(request)
@@ -417,17 +581,17 @@ export class AdminLoginPage {
           this.isLoading = false;
 
 
-          /* =====================================
+          /* =================================
              API SUCCESS
-          ===================================== */
+          ================================= */
 
           if (response?.success === true) {
 
 
-            /* ===================================
+            /* ===============================
                FIRST STEP
                OTP SENT
-            =================================== */
+            =============================== */
 
             if (!this.isOtpStep) {
 
@@ -436,9 +600,7 @@ export class AdminLoginPage {
               this.otp?.reset();
 
 
-              /*
-               * Clear visual OTP boxes.
-               */
+              /* Clear visual OTP boxes */
 
               this.otpDigits = [
                 '',
@@ -452,13 +614,16 @@ export class AdminLoginPage {
               this.otpFocusedIndex = -1;
 
 
-              /*
-               * Make OTP required.
-               */
+              /* Make OTP required */
 
               this.otp?.setValidators([
+
                 Validators.required,
-                Validators.pattern('^[0-9]{6}$')
+
+                Validators.pattern(
+                  '^[0-9]{6}$'
+                )
+
               ]);
 
               this.otp?.updateValueAndValidity();
@@ -466,13 +631,20 @@ export class AdminLoginPage {
 
               this.errorMessage = '';
 
+
+              /* =============================
+                 START 60 SECOND TIMER
+              ============================= */
+
+              this.startOtpTimer();
+
+
               this.cdr.detectChanges();
 
 
-              /*
-               * Focus OTP input after the
-               * OTP section has rendered.
-               */
+              /* =============================
+                 FOCUS OTP INPUT
+              ============================= */
 
               setTimeout(() => {
 
@@ -485,13 +657,10 @@ export class AdminLoginPage {
             }
 
 
-            /* ===================================
+            /* ===============================
                SECOND STEP
                OTP VERIFIED
-
-               AuthService has already stored
-               the access token and role.
-            =================================== */
+            =============================== */
 
             this.redirectByRole();
 
@@ -500,9 +669,9 @@ export class AdminLoginPage {
           }
 
 
-          /* =====================================
+          /* =================================
              API FAILURE
-          ===================================== */
+          ================================= */
 
           this.errorMessage =
             response?.message ||
@@ -517,9 +686,9 @@ export class AdminLoginPage {
         },
 
 
-        /* =====================================
+        /* ===================================
            HTTP ERROR
-        ===================================== */
+        =================================== */
 
         error: (error) => {
 
@@ -548,14 +717,16 @@ export class AdminLoginPage {
 
   changeMobileNumber(): void {
 
+    this.clearOtpTimer();
+
+    this.otpTimeRemaining = 0;
+
     this.isOtpStep = false;
 
     this.otp?.reset();
 
 
-    /*
-     * Clear OTP boxes.
-     */
+    /* Clear OTP boxes */
 
     this.otpDigits = [
       '',
@@ -569,12 +740,14 @@ export class AdminLoginPage {
     this.otpFocusedIndex = -1;
 
 
-    /*
-     * Remove OTP required validator.
-     */
+    /* Remove OTP required validator */
 
     this.otp?.setValidators([
-      Validators.pattern('^[0-9]{6}$')
+
+      Validators.pattern(
+        '^[0-9]{6}$'
+      )
+
     ]);
 
     this.otp?.updateValueAndValidity();
@@ -593,9 +766,22 @@ export class AdminLoginPage {
 
   goToHome(): void {
 
+    this.clearOtpTimer();
+
     this.router.navigate([
       '/home'
     ]);
+
+  }
+
+
+  /* =========================================
+     COMPONENT DESTROY
+  ========================================= */
+
+  ngOnDestroy(): void {
+
+    this.clearOtpTimer();
 
   }
 

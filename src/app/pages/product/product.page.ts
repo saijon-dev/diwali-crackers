@@ -34,7 +34,8 @@ import {
   removeOutline,
   checkmarkCircleOutline,
   checkmarkOutline,
-  imageOutline
+  imageOutline,
+  callOutline,
 } from 'ionicons/icons';
 
 import { CartService } from '../../services/cart.service';
@@ -116,6 +117,13 @@ export class ProductPage implements OnInit, OnDestroy {
   private categoryScrollFrame: number | null = null;
 
 
+  /* =========================================================
+     CATEGORY LOADING
+  ========================================================= */
+
+  isCategoriesLoading = false;
+
+
   /*
    * Only products belonging to the selected category
    * are displayed below the category selector.
@@ -124,6 +132,7 @@ export class ProductPage implements OnInit, OnDestroy {
    */
 
   get categoryProducts(): Product[] {
+
     if (this.selectedCategoryId === null) {
       return [];
     }
@@ -209,7 +218,8 @@ export class ProductPage implements OnInit, OnDestroy {
       removeOutline,
       checkmarkCircleOutline,
       checkmarkOutline,
-      imageOutline
+      imageOutline,
+      callOutline
     });
   }
 
@@ -219,14 +229,6 @@ export class ProductPage implements OnInit, OnDestroy {
   ========================================================= */
 
   ngOnInit(): void {
-
-    /*
-     * Load the categories independently from the
-     * vendor products API.
-     */
-
-    this.loadCategories();
-
 
     this.route.paramMap.subscribe(params => {
 
@@ -239,89 +241,141 @@ export class ProductPage implements OnInit, OnDestroy {
        * 22 = productStoreId
        */
 
-      const productStoreId = Number(params.get('id'));
+      const productStoreId =
+        Number(params.get('id'));
 
-      if (!productStoreId || productStoreId <= 0) {
-        this.errorMessage = 'Invalid product.';
+
+      if (
+        !productStoreId ||
+        productStoreId <= 0
+      ) {
+
+        this.errorMessage =
+          'Invalid product.';
+
         this.isLoading = false;
+
         this.cdr.detectChanges();
+
         return;
       }
 
-      this.loadVendorProducts(productStoreId);
+
+      /* =========================================
+         LOAD ONLY VENDOR-USED CATEGORIES
+      ========================================= */
+
+      this.loadCategories(
+        productStoreId
+      );
+
+
+      /* =========================================
+         LOAD VENDOR PRODUCTS
+      ========================================= */
+
+      this.loadVendorProducts(
+        productStoreId
+      );
 
     });
+
   }
 
 
   /* =========================================================
-     LOAD CATEGORIES
+     LOAD CATEGORIES FOR PRODUCT STORE
+
+     Only categories currently used by this vendor's
+     products are returned.
 
      API:
-     GET /api/categories
+     GET /api/categories/product-stores/{productStoreId}/categories
   ========================================================= */
 
-  private loadCategories(): void {
+  private loadCategories(productStoreId: number): void {
 
-    this.http
-      .get<any>(`${environment.apiUrl}/categories`)
+    this.isCategoriesLoading = true;
+
+    this.productService
+      .getCategoriesByProductStore(productStoreId)
       .subscribe({
 
-        next: response => {
+        next: categories => {
 
-          const categoryResponse =
-            Array.isArray(response)
-              ? response
-              : response?.content ??
-                response?.categories ??
-                response?.data ??
-                [];
-
-          this.categories = categoryResponse
-            .map((category: any) => ({
-              categoryId: Number(
-                category.categoryId ?? category.id
-              ),
+          this.categories = categories
+            .map(category => ({
+              categoryId: Number(category.categoryId),
               categoryName: String(
-                category.categoryName ?? category.name ?? ''
+                category.categoryName || ''
               ).trim()
             }))
-            .filter(
-              (category: ProductCategory) =>
-                Number.isFinite(category.categoryId) &&
-                category.categoryId > 0 &&
-                category.categoryName.length > 0
+            .filter(category =>
+              Number.isFinite(category.categoryId) &&
+              category.categoryId > 0 &&
+              category.categoryName.length > 0
             );
 
-          /*
-           * If the main product is already loaded,
-           * select its category. Otherwise, select
-           * the first category when available.
-           */
+
+          /* =========================================
+             SELECT PRODUCT CATEGORY
+          ========================================= */
 
           if (this.product) {
-            this.selectCategoryForProduct(this.product);
-          } else if (this.categories.length > 0) {
+
+            this.selectCategoryForProduct(
+              this.product
+            );
+
+          }
+          else if (this.categories.length > 0) {
+
             this.selectedCategoryId =
               this.categories[0].categoryId;
 
-            this.centerCategory(this.selectedCategoryId);
           }
 
+
+          this.isCategoriesLoading = false;
+
           this.cdr.detectChanges();
+
+
+          /*
+           * Center only after Angular has rendered
+           * the category buttons.
+           */
+
+          if (this.selectedCategoryId !== null) {
+
+            this.centerCategory(
+              this.selectedCategoryId
+            );
+
+          }
 
         },
 
+
         error: error => {
-          console.error('Categories API Error:', error);
+
+          console.error(
+            'Vendor Categories API Error:',
+            error
+          );
 
           this.categories = [];
+
           this.selectedCategoryId = null;
 
+          this.isCategoriesLoading = false;
+
           this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
 
@@ -339,21 +393,27 @@ export class ProductPage implements OnInit, OnDestroy {
     this.stopImageSlider();
 
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.product = null;
+
     this.exploreProducts = [];
+
     this.allVendorProducts = [];
 
     this.selectedImageIndex = 0;
+
     this.quantity = 1;
 
     this.isAddingToCart = false;
+
     this.isAddedToCart = false;
 
     this.exploreAddingProductStoreId = null;
 
     this.cdr.detectChanges();
+
 
     this.productService
       .getAllVendorProducts(selectedProductStoreId)
@@ -365,6 +425,7 @@ export class ProductPage implements OnInit, OnDestroy {
             'All Vendor Products Response:',
             response
           );
+
 
           this.allVendorProducts =
             response?.content ?? [];
@@ -389,9 +450,11 @@ export class ProductPage implements OnInit, OnDestroy {
           if (!selectedProduct) {
 
             this.product = null;
+
             this.exploreProducts = [];
 
             this.isLoading = false;
+
             this.errorMessage =
               'Unable to find the selected product.';
 
@@ -419,6 +482,7 @@ export class ProductPage implements OnInit, OnDestroy {
 
 
           this.isLoading = false;
+
           this.errorMessage = '';
 
           this.cdr.detectChanges();
@@ -426,6 +490,7 @@ export class ProductPage implements OnInit, OnDestroy {
           this.startImageSlider();
 
         },
+
 
         error: error => {
 
@@ -435,7 +500,9 @@ export class ProductPage implements OnInit, OnDestroy {
           );
 
           this.product = null;
+
           this.allVendorProducts = [];
+
           this.exploreProducts = [];
 
           this.isLoading = false;
@@ -452,6 +519,7 @@ export class ProductPage implements OnInit, OnDestroy {
         }
 
       });
+
   }
 
 
@@ -470,9 +538,11 @@ export class ProductPage implements OnInit, OnDestroy {
     this.product = product;
 
     this.selectedImageIndex = 0;
+
     this.quantity = 1;
 
     this.isAddingToCart = false;
+
     this.isAddedToCart = false;
 
     this.exploreAddingProductStoreId = null;
@@ -490,6 +560,7 @@ export class ProductPage implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     this.startImageSlider();
+
   }
 
 
@@ -513,10 +584,17 @@ export class ProductPage implements OnInit, OnDestroy {
     );
 
     if (matchingCategory) {
-      this.selectedCategoryId = matchingCategory.categoryId;
-      this.centerCategory(matchingCategory.categoryId);
+
+      this.selectedCategoryId =
+        matchingCategory.categoryId;
+
+      this.centerCategory(
+        matchingCategory.categoryId
+      );
+
       return;
     }
+
 
     /*
      * If the product category is not returned by the
@@ -528,11 +606,16 @@ export class ProductPage implements OnInit, OnDestroy {
       this.selectedCategoryId === null &&
       this.categories.length > 0
     ) {
+
       this.selectedCategoryId =
         this.categories[0].categoryId;
 
-      this.centerCategory(this.selectedCategoryId);
+      this.centerCategory(
+        this.selectedCategoryId
+      );
+
     }
+
   }
 
 
@@ -546,7 +629,9 @@ export class ProductPage implements OnInit, OnDestroy {
   private updateExploreProducts(): void {
 
     if (!this.product) {
+
       this.exploreProducts = [];
+
       return;
     }
 
@@ -558,6 +643,7 @@ export class ProductPage implements OnInit, OnDestroy {
       );
 
     this.cdr.detectChanges();
+
   }
 
 
@@ -570,15 +656,24 @@ export class ProductPage implements OnInit, OnDestroy {
     if (
       this.selectedCategoryId === category.categoryId
     ) {
-      this.centerCategory(category.categoryId);
+
+      this.centerCategory(
+        category.categoryId
+      );
+
       return;
     }
 
-    this.selectedCategoryId = category.categoryId;
 
-    this.centerCategory(category.categoryId);
+    this.selectedCategoryId =
+      category.categoryId;
+
+    this.centerCategory(
+      category.categoryId
+    );
 
     this.cdr.detectChanges();
+
   }
 
 
@@ -586,90 +681,142 @@ export class ProductPage implements OnInit, OnDestroy {
      CENTER THE SELECTED CATEGORY
   ========================================================= */
 
-private centerCategory(categoryId: number): void {
-  requestAnimationFrame(() => {
-    const scroller = this.categoryScroller?.nativeElement;
+  private centerCategory(categoryId: number): void {
 
-    if (!scroller) {
-      return;
-    }
+    requestAnimationFrame(() => {
 
-    const selectedElement =
-      scroller.querySelector<HTMLButtonElement>(
-        `[data-category-id="${categoryId}"]`
-      );
+      const scroller =
+        this.categoryScroller?.nativeElement;
 
-    if (!selectedElement) {
-      return;
-    }
+      if (!scroller) {
+        return;
+      }
 
-    const scrollLeft =
-      selectedElement.offsetLeft -
-      (scroller.clientWidth - selectedElement.offsetWidth) / 2;
+      const selectedElement =
+        scroller.querySelector<HTMLButtonElement>(
+          `[data-category-id="${categoryId}"]`
+        );
 
-    scroller.scrollTo({
-      left: Math.max(
-        0,
-        Math.min(
-          scrollLeft,
-          scroller.scrollWidth - scroller.clientWidth
-        )
-      ),
-      behavior: 'smooth'
+      if (!selectedElement) {
+        return;
+      }
+
+      const scrollLeft =
+        selectedElement.offsetLeft -
+        (scroller.clientWidth -
+          selectedElement.offsetWidth) / 2;
+
+      scroller.scrollTo({
+
+        left: Math.max(
+          0,
+          Math.min(
+            scrollLeft,
+            scroller.scrollWidth -
+              scroller.clientWidth
+          )
+        ),
+
+        behavior: 'smooth'
+
+      });
+
     });
-  });
-}
 
-onCategoryScroll(): void {
-  if (this.categoryScrollFrame !== null) {
-    return;
   }
 
-  this.categoryScrollFrame = requestAnimationFrame(() => {
-    this.categoryScrollFrame = null;
 
-    const scroller = this.categoryScroller?.nativeElement;
+  /* =========================================================
+     CATEGORY SCROLL
+  ========================================================= */
 
-    if (!scroller) {
+  onCategoryScroll(): void {
+
+    if (this.categoryScrollFrame !== null) {
       return;
     }
 
-    const elements = Array.from(
-      scroller.querySelectorAll<HTMLButtonElement>(
-        '[data-category-id]'
-      )
-    );
+    this.categoryScrollFrame =
+      requestAnimationFrame(() => {
 
-    if (elements.length === 0) {
-      return;
-    }
+        this.categoryScrollFrame = null;
 
-    const scrollerRect = scroller.getBoundingClientRect();
-    const centerX = scrollerRect.left + scrollerRect.width / 2;
+        const scroller =
+          this.categoryScroller?.nativeElement;
 
-    let closestId: number | null = null;
-    let closestDistance = Number.POSITIVE_INFINITY;
+        if (!scroller) {
+          return;
+        }
 
-    for (const element of elements) {
-      const rect = element.getBoundingClientRect();
-      const elementCenter = rect.left + rect.width / 2;
-      const distance = Math.abs(centerX - elementCenter);
+        const elements =
+          Array.from(
+            scroller.querySelectorAll<HTMLButtonElement>(
+              '[data-category-id]'
+            )
+          );
 
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestId = Number(element.dataset['categoryId']);
-      }
-    }
+        if (elements.length === 0) {
+          return;
+        }
 
-    if (
-      closestId !== null &&
-      closestId !== this.selectedCategoryId
-    ) {
-      this.selectedCategoryId = closestId;
-      this.cdr.detectChanges();
-    }
-  });
-}
+        const scrollerRect =
+          scroller.getBoundingClientRect();
+
+        const centerX =
+          scrollerRect.left +
+          scrollerRect.width / 2;
+
+        let closestId: number | null = null;
+
+        let closestDistance =
+          Number.POSITIVE_INFINITY;
+
+
+        for (const element of elements) {
+
+          const rect =
+            element.getBoundingClientRect();
+
+          const elementCenter =
+            rect.left +
+            rect.width / 2;
+
+          const distance =
+            Math.abs(
+              centerX -
+              elementCenter
+            );
+
+          if (distance < closestDistance) {
+
+            closestDistance =
+              distance;
+
+            closestId =
+              Number(
+                element.dataset['categoryId']
+              );
+
+          }
+
+        }
+
+
+        if (
+          closestId !== null &&
+          closestId !== this.selectedCategoryId
+        ) {
+
+          this.selectedCategoryId =
+            closestId;
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
 
 
   /* =========================================================
@@ -695,7 +842,9 @@ onCategoryScroll(): void {
             ) ?? false;
 
           this.cdr.detectChanges();
+
         },
+
 
         error: error => {
 
@@ -707,9 +856,11 @@ onCategoryScroll(): void {
           this.isAddedToCart = false;
 
           this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
 
@@ -744,15 +895,22 @@ onCategoryScroll(): void {
       this.cdr.detectChanges();
 
     }, 4000);
+
   }
 
 
   stopImageSlider(): void {
 
     if (this.imageInterval !== null) {
-      clearInterval(this.imageInterval);
+
+      clearInterval(
+        this.imageInterval
+      );
+
       this.imageInterval = null;
+
     }
+
   }
 
 
@@ -762,13 +920,18 @@ onCategoryScroll(): void {
       !this.product?.images ||
       this.product.images.length === 0
     ) {
+
       return 'assets/images/rectangle-image.png';
+
     }
 
     return (
-      this.product.images[this.selectedImageIndex]?.imageUrl ||
+      this.product.images[
+        this.selectedImageIndex
+      ]?.imageUrl ||
       'assets/images/rectangle-image.png'
     );
+
   }
 
 
@@ -797,6 +960,7 @@ onCategoryScroll(): void {
     this.startImageSlider();
 
     this.cdr.detectChanges();
+
   }
 
 
@@ -814,15 +978,20 @@ onCategoryScroll(): void {
     }
 
     if (this.selectedImageIndex === 0) {
+
       this.selectedImageIndex =
         this.product.images.length - 1;
+
     } else {
+
       this.selectedImageIndex--;
+
     }
 
     this.startImageSlider();
 
     this.cdr.detectChanges();
+
   }
 
 
@@ -843,14 +1012,19 @@ onCategoryScroll(): void {
       this.selectedImageIndex ===
       this.product.images.length - 1
     ) {
+
       this.selectedImageIndex = 0;
+
     } else {
+
       this.selectedImageIndex++;
+
     }
 
     this.startImageSlider();
 
     this.cdr.detectChanges();
+
   }
 
 
@@ -865,10 +1039,14 @@ onCategoryScroll(): void {
     }
 
     if (
-      this.quantity < this.product.stockQuantity
+      this.quantity <
+      this.product.stockQuantity
     ) {
+
       this.quantity++;
+
     }
+
   }
 
 
@@ -877,6 +1055,7 @@ onCategoryScroll(): void {
     if (this.quantity > 1) {
       this.quantity--;
     }
+
   }
 
 
@@ -900,27 +1079,38 @@ onCategoryScroll(): void {
     const productStoreId =
       this.product.productStoreId;
 
-    const quantity = this.quantity;
+    const quantity =
+      this.quantity;
+
 
     if (
       quantity < 1 ||
-      quantity > this.product.stockQuantity
+      quantity >
+      this.product.stockQuantity
     ) {
+
       this.errorMessage =
         'Please select a valid quantity.';
 
       this.cdr.detectChanges();
 
       return;
+
     }
 
+
     this.errorMessage = '';
+
     this.isAddingToCart = true;
 
     this.cdr.detectChanges();
 
+
     this.cartService
-      .addToCart(productStoreId, quantity)
+      .addToCart(
+        productStoreId,
+        quantity
+      )
       .subscribe({
 
         next: response => {
@@ -931,14 +1121,19 @@ onCategoryScroll(): void {
           );
 
           this.isAddingToCart = false;
+
           this.isAddedToCart = true;
 
           if (this.product) {
+
             this.product.alreadyAdded = true;
+
           }
 
           this.cdr.detectChanges();
+
         },
+
 
         error: error => {
 
@@ -948,6 +1143,7 @@ onCategoryScroll(): void {
           );
 
           this.isAddingToCart = false;
+
           this.isAddedToCart = false;
 
           this.errorMessage =
@@ -956,9 +1152,11 @@ onCategoryScroll(): void {
             'Unable to add product to cart. Please try again.';
 
           this.cdr.detectChanges();
+
         }
 
       });
+
   }
 
 
@@ -982,6 +1180,7 @@ onCategoryScroll(): void {
     setTimeout(() => {
       this.scrollToTop();
     }, 0);
+
   }
 
 
@@ -996,6 +1195,7 @@ onCategoryScroll(): void {
     }
 
     await this.content.scrollToTop(300);
+
   }
 
 
@@ -1006,10 +1206,15 @@ onCategoryScroll(): void {
   goBack(): void {
 
     if (window.history.length > 1) {
+
       window.history.back();
+
     } else {
+
       this.router.navigate(['/home']);
+
     }
+
   }
 
 
@@ -1021,10 +1226,29 @@ onCategoryScroll(): void {
 
     this.stopImageSlider();
 
-    if (this.categoryScrollFrame !== null) {
-      cancelAnimationFrame(this.categoryScrollFrame);
+    if (
+      this.categoryScrollFrame !== null
+    ) {
+
+      cancelAnimationFrame(
+        this.categoryScrollFrame
+      );
+
       this.categoryScrollFrame = null;
+
     }
+
   }
+
+
+  callStore(): void {
+  const contactNumber = this.product?.contactNumber?.trim();
+
+  if (!contactNumber) {
+    return;
+  }
+
+  window.location.href = `tel:${contactNumber}`;
+}
 
 }

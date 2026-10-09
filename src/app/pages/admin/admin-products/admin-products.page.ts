@@ -13,7 +13,8 @@ import {
   IonIcon,
   IonBackButton,
   IonSelect,
-  IonSelectOption
+  IonSelectOption,
+  ToastController
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -28,7 +29,10 @@ import {
   imageOutline,
   cloudUploadOutline,
   chevronDownOutline,
-  arrowBackOutline
+  arrowBackOutline,
+  cameraOutline,
+  checkmarkCircleOutline,
+  alertCircleOutline
 } from 'ionicons/icons';
 
 import {
@@ -73,6 +77,8 @@ isLoadingPackUnits = false;
 packUnitErrorMessage = '';
 
   isAddProductView = false;
+
+  showLogoutConfirmation = false;
 
 
 
@@ -197,7 +203,8 @@ packUnitErrorMessage = '';
   constructor(
     private router: Router,
     private productService: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastController: ToastController
   ) {
     addIcons({
       addOutline,
@@ -209,7 +216,10 @@ packUnitErrorMessage = '';
       imageOutline,
       cloudUploadOutline,
       chevronDownOutline,
-      arrowBackOutline
+      arrowBackOutline,
+      cameraOutline,
+      checkmarkCircleOutline,
+      alertCircleOutline
     });
   }
 
@@ -453,73 +463,106 @@ packUnitErrorMessage = '';
    * =====================================================
    */
 
-  addCategory(): void {
-    this.categorySuccessMessage = '';
-    this.categoryAddErrorMessage = '';
+addCategory(): void {
+  this.categorySuccessMessage = '';
+  this.categoryAddErrorMessage = '';
 
-    if (!this.newCategoryName.trim()) {
-      this.categoryAddErrorMessage =
-        'Please enter category name.';
-
-      this.cdr.detectChanges();
-      return;
-    }
-
-    if (!this.newCategoryDescription.trim()) {
-      this.categoryAddErrorMessage =
-        'Please enter category description.';
-
-      this.cdr.detectChanges();
-      return;
-    }
-
-    if (!this.newCategoryImage) {
-      this.categoryAddErrorMessage =
-        'Please select a category image.';
-
-      this.cdr.detectChanges();
-      return;
-    }
-
-    const categoryData = {
-      categoryName: this.newCategoryName.trim(),
-      description: this.newCategoryDescription.trim()
-    };
-
-    console.log('Category Data:', categoryData);
-    console.log('Category Image:', this.newCategoryImage);
-
-    this.isAddingCategory = true;
+  if (!this.newCategoryName.trim()) {
+    this.categoryAddErrorMessage = 'Please enter category name.';
     this.cdr.detectChanges();
+    return;
+  }
 
-    this.productService
-      .addCategory(categoryData, this.newCategoryImage)
-      .subscribe({
-        next: (response) => {
-          console.log('Add Category Response:', response);
+  if (!this.newCategoryDescription.trim()) {
+    this.categoryAddErrorMessage = 'Please enter category description.';
+    this.cdr.detectChanges();
+    return;
+  }
 
-          this.isAddingCategory = false;
+  if (!this.newCategoryImage) {
+    this.categoryAddErrorMessage = 'Please select a category image.';
+    this.cdr.detectChanges();
+    return;
+  }
 
-          this.categorySuccessMessage =
-            response?.message ||
-            'Category added successfully.';
+  const categoryData = {
+    categoryName: this.newCategoryName.trim(),
+    description: this.newCategoryDescription.trim()
+  };
+
+  this.isAddingCategory = true;
+  this.cdr.detectChanges();
+
+  this.productService
+    .addCategory(
+      categoryData,
+      this.newCategoryImage
+    )
+    .subscribe({
+      next: (response) => {
+        console.log('Add Category Response:', response);
+
+        this.isAddingCategory = false;
+
+        const backendMessage =
+          response?.message?.toString().trim();
+
+        if (response?.success === false) {
+          this.categoryAddErrorMessage =
+            backendMessage ||
+            'Unable to add category. Please try again later.';
 
           this.cdr.detectChanges();
+          return;
+        }
 
-          this.productService.getCategories().subscribe({
+        this.categorySuccessMessage =
+          backendMessage ||
+          'Category added successfully.';
+
+        /*
+         * ProductService.addCategory() already clears
+         * the category cache after successful POST.
+         */
+        this.productService.clearCategoryCache();
+
+        /*
+         * Fetch the latest categories.
+         */
+        this.productService
+          .getCategories()
+          .subscribe({
             next: (categories) => {
-              console.log('Updated Categories:', categories);
-
-              this.categories = categories || [];
-
-              const createdCategory = this.categories.find(
-                category =>
-                  category.categoryName.trim().toLowerCase() ===
-                  categoryData.categoryName.trim().toLowerCase()
+              console.log(
+                'Updated Categories:',
+                categories
               );
 
+              /*
+               * Replace the dropdown data immediately.
+               */
+              this.categories = [...(categories ?? [])];
+
+              /*
+               * Find the newly created category.
+               */
+              const createdCategory =
+                this.categories.find(
+                  category =>
+                    category.categoryName
+                      ?.trim()
+                      .toLowerCase() ===
+                    categoryData.categoryName
+                      .trim()
+                      .toLowerCase()
+                );
+
+              /*
+               * Automatically select the new category.
+               */
               if (createdCategory) {
-                this.categoryId = createdCategory.categoryId;
+                this.categoryId =
+                  createdCategory.categoryId;
 
                 console.log(
                   'New Category Selected:',
@@ -527,47 +570,62 @@ packUnitErrorMessage = '';
                 );
               }
 
+              /*
+               * Force Angular/Ionic to rebuild the
+               * ion-select options.
+               */
+              this.cdr.detectChanges();
+
+              /*
+               * Clear add-category fields.
+               */
               this.newCategoryName = '';
               this.newCategoryDescription = '';
               this.newCategoryImage = null;
               this.newCategoryImagePreview = '';
 
-              this.cdr.detectChanges();
-
+              /*
+               * Close add-category panel.
+               */
               setTimeout(() => {
                 this.showCategoryBox = false;
-                this.categorySuccessMessage = '';
-
                 this.cdr.detectChanges();
               }, 700);
             },
 
             error: (error) => {
-              console.error('Refresh Categories Error:', error);
+              console.error(
+                'Refresh Categories Error:',
+                error
+              );
 
-              this.categorySuccessMessage =
-                'Category added successfully.';
+              this.categoryAddErrorMessage =
+                error?.error?.message ||
+                error?.message ||
+                'Category was added, but the category list could not be refreshed. Please try again later.';
 
-              this.isAddingCategory = false;
               this.cdr.detectChanges();
             }
           });
-        },
+      },
 
-        error: (error) => {
-          console.error('Add Category Error:', error);
+      error: (error) => {
+        console.error(
+          'Add Category Error:',
+          error
+        );
 
-          this.isAddingCategory = false;
+        this.isAddingCategory = false;
 
-          this.categoryAddErrorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to add category.';
+        this.categoryAddErrorMessage =
+          error?.error?.message ||
+          error?.message ||
+          'Unable to add category. Please try again later.';
 
-          this.cdr.detectChanges();
-        }
-      });
-  }
+        this.cdr.detectChanges();
+      }
+    });
+}
 
   /*
    * =====================================================
@@ -650,6 +708,102 @@ packUnitErrorMessage = '';
     input.value = '';
   }
 
+
+
+
+  /* =====================================================
+   TAKE PRODUCT PICTURE
+===================================================== */
+
+async takeProductPicture(): Promise<void> {
+
+  /*
+   * Clear any previous image error.
+   */
+  this.errorMessage = '';
+
+
+  /*
+   * Open the native camera through ProductService.
+   */
+  const file =
+    await this.productService.takePicture();
+
+
+  /*
+   * User cancelled the camera or camera
+   * did not return an image.
+   */
+  if (!file) {
+
+    return;
+
+  }
+
+
+  /*
+   * Make sure the returned file is an image.
+   */
+  if (!file.type.startsWith('image/')) {
+
+    this.errorMessage =
+      'The captured file is not a valid image.';
+
+    this.cdr.detectChanges();
+
+    return;
+
+  }
+
+
+  /*
+   * Add the camera image to the SAME
+   * selectedImages array used by
+   * normal file selection.
+   */
+  this.selectedImages.push(
+    file
+  );
+
+
+  /*
+   * Create a preview for the captured image.
+   *
+   * This uses the exact same imagePreviews
+   * array as the normal image picker.
+   */
+  const reader =
+    new FileReader();
+
+
+  reader.onload = () => {
+
+    if (
+      typeof reader.result === 'string'
+    ) {
+
+      this.imagePreviews.push(
+        reader.result
+      );
+
+    }
+
+
+    this.cdr.detectChanges();
+
+  };
+
+
+  reader.readAsDataURL(file);
+
+
+  console.log(
+    'Camera image added:',
+    file
+  );
+
+}
+
   /*
    * =====================================================
    * REMOVE SELECTED IMAGE
@@ -683,148 +837,197 @@ packUnitErrorMessage = '';
    * =====================================================
    */
 
-  addProduct(): void {
-    this.successMessage = '';
-    this.errorMessage = '';
+addProduct(): void {
+  this.successMessage = '';
+  this.errorMessage = '';
 
-    if (!this.productName.trim()) {
-      this.errorMessage = 'Please enter product name.';
-      return;
-    }
-
-    if (!this.categoryId) {
-      this.errorMessage = 'Please select a category.';
-      return;
-    }
-
-    if (!this.description.trim()) {
-      this.errorMessage = 'Please enter product description.';
-      return;
-    }
-
-    if (!this.brandName.trim()) {
-      this.errorMessage = 'Please enter brand name.';
-      return;
-    }
-
-    if (!this.size.trim()) {
-      this.errorMessage = 'Please enter product size.';
-      return;
-    }
-
-    if (
-      this.packQuantity === null ||
-      !Number.isFinite(this.packQuantity) ||
-      this.packQuantity <= 0 ||
-      !Number.isInteger(this.packQuantity)
-    ) {
-      this.errorMessage =
-        'Please enter a valid pack quantity greater than 0.';
-      return;
-    }
-
-    if (!this.packUnit.trim()) {
-      this.errorMessage = 'Please select pack unit.';
-      return;
-    }
-
-    if (this.mrp === null || this.mrp < 0) {
-      this.errorMessage = 'Please enter a valid MRP.';
-      return;
-    }
-
-    if (this.sellingPrice === null || this.sellingPrice < 0) {
-      this.errorMessage = 'Please enter a valid selling price.';
-      return;
-    }
-
-    if (
-      this.stockQuantity === null ||
-      !Number.isFinite(this.stockQuantity) ||
-      this.stockQuantity <= 0 ||
-      !Number.isInteger(this.stockQuantity)
-    ) {
-      this.errorMessage =
-        'Please enter a valid stock quantity greater than 0.';
-      return;
-    }
-
-    if (this.selectedImages.length === 0) {
-      this.errorMessage =
-        'Please select at least one product image.';
-      return;
-    }
-
-    const imageIndexes = this.selectedImages.map(
-      (_, index) => index
-    );
-
-    const productData: ProductData = {
-      productName: this.productName.trim(),
-      categoryId: Number(this.categoryId),
-      description: this.description.trim(),
-      brandName: this.brandName.trim(),
-      isKidsSpecial: this.isKidsSpecial,
-      size: this.size.trim(),
-      packQuantity: Number(this.packQuantity),
-      packUnit: this.packUnit.trim(),
-      mrp: Number(this.mrp),
-      sellingPrice: Number(this.sellingPrice),
-      stockQuantity: Number(this.stockQuantity),
-      imageIndexes
-    };
-
-    console.log('Product Data:', productData);
-    console.log('Selected Images:', this.selectedImages);
-    console.log('Image Indexes:', imageIndexes);
-
-    this.isLoading = true;
-    this.cdr.detectChanges();
-
-    this.productService
-      .addProduct([productData], this.selectedImages)
-      .subscribe({
-        next: (response) => {
-          this.isLoading = false;
-
-          console.log('Add Product Response:', response);
-
-          if (response?.success === false) {
-            this.errorMessage =
-              response.message || 'Failed to add product.';
-
-            this.cdr.detectChanges();
-            return;
-          }
-
-          this.successMessage =
-            response?.message || 'Product added successfully.';
-
-          this.selectedImages = [];
-          this.imagePreviews = [];
-
-          /*
-           * Refresh the catalogue while keeping the form visible.
-           */
-          this.loadAdminProducts();
-
-          this.cdr.detectChanges();
-        },
-
-        error: (error) => {
-          this.isLoading = false;
-
-          console.error('Add Product Error:', error);
-
-          this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to add product. Please try again.';
-
-          this.cdr.detectChanges();
-        }
-      });
+  if (this.isLoading) {
+    return;
   }
+
+  if (!this.productName.trim()) {
+    this.errorMessage = 'Please enter product name.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (!this.categoryId) {
+    this.errorMessage = 'Please select a category.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (!this.description.trim()) {
+    this.errorMessage = 'Please enter product description.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (!this.brandName.trim()) {
+    this.errorMessage = 'Please enter brand name.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (!this.size.trim()) {
+    this.errorMessage = 'Please enter product size.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (
+    this.packQuantity === null ||
+    !Number.isFinite(this.packQuantity) ||
+    this.packQuantity <= 0 ||
+    !Number.isInteger(this.packQuantity)
+  ) {
+    this.errorMessage =
+      'Please enter a valid pack quantity greater than 0.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (!this.packUnit?.trim()) {
+    this.errorMessage = 'Please select pack unit.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (
+    this.mrp === null ||
+    !Number.isFinite(this.mrp) ||
+    this.mrp < 0
+  ) {
+    this.errorMessage = 'Please enter a valid MRP.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (
+    this.sellingPrice === null ||
+    !Number.isFinite(this.sellingPrice) ||
+    this.sellingPrice < 0
+  ) {
+    this.errorMessage = 'Please enter a valid selling price.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (
+    this.stockQuantity === null ||
+    !Number.isFinite(this.stockQuantity) ||
+    this.stockQuantity <= 0 ||
+    !Number.isInteger(this.stockQuantity)
+  ) {
+    this.errorMessage =
+      'Please enter a valid stock quantity greater than 0.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  if (this.selectedImages.length === 0) {
+    this.errorMessage =
+      'Please select at least one product image.';
+    void this.showToast(this.errorMessage);
+    return;
+  }
+
+  const imageIndexes = this.selectedImages.map(
+    (_, index) => index
+  );
+
+  const productData: ProductData = {
+    productName: this.productName.trim(),
+    categoryId: Number(this.categoryId),
+    description: this.description.trim(),
+    brandName: this.brandName.trim(),
+    isKidsSpecial: this.isKidsSpecial,
+    size: this.size.trim(),
+    packQuantity: Number(this.packQuantity),
+    packUnit: this.packUnit.trim(),
+    mrp: Number(this.mrp),
+    sellingPrice: Number(this.sellingPrice),
+    stockQuantity: Number(this.stockQuantity),
+    imageIndexes
+  };
+
+  console.log('Product Data:', productData);
+  console.log('Selected Images:', this.selectedImages);
+  console.log('Image Indexes:', imageIndexes);
+
+  this.isLoading = true;
+  this.cdr.detectChanges();
+
+  this.productService
+    .addProduct([productData], this.selectedImages)
+    .subscribe({
+      next: (response) => {
+        console.log('Add Product Response:', response);
+
+        this.isLoading = false;
+
+        const backendMessage =
+          response?.message?.toString().trim();
+
+        if (
+          response?.success === false ||
+          response?.success === null
+        ) {
+          this.errorMessage =
+            backendMessage ||
+            'Unable to add product. Please try again later.';
+
+          this.cdr.detectChanges();
+          void this.showToast(this.errorMessage);
+          return;
+        }
+
+        this.successMessage =
+          backendMessage || 'Product added successfully.';
+
+        this.selectedImages = [];
+        this.imagePreviews = [];
+
+        this.cdr.detectChanges();
+
+        this.router.navigate(['/tabs/vend-products'], {
+          state: {
+            toastMessage: this.successMessage,
+            toastType: 'success'
+          }
+        });
+      },
+
+      error: (error) => {
+        console.error('Add Product Error:', error);
+
+        this.isLoading = false;
+
+        const body = error?.error;
+        let backendMessage = '';
+
+        if (body && typeof body === 'object') {
+          backendMessage =
+            body.message ||
+            body.error ||
+            body.details ||
+            '';
+        } else if (typeof body === 'string') {
+          backendMessage = body;
+        }
+
+        this.errorMessage =
+          (typeof backendMessage === 'string'
+            ? backendMessage.trim()
+            : '') ||
+          error?.message ||
+          'Unable to add product. Please try again later.';
+
+        this.cdr.detectChanges();
+        void this.showToast(this.errorMessage);
+      }
+    });
+}
 
   /*
    * =====================================================
@@ -953,6 +1156,33 @@ loadPackUnits(): void {
     localStorage.removeItem('smartlearn_role');
     localStorage.removeItem('smartlearn_user_id');
 
-    this.router.navigate(['/admin-login']);
+    this.router.navigate(['/home']);
   }
+
+
+  confirmLogout(): void {
+  this.showLogoutConfirmation = true;
+}
+
+cancelLogout(): void {
+  this.showLogoutConfirmation = false;
+}
+
+
+private async showToast(
+  message: string,
+  isSuccess = false
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'middle',
+    cssClass: 'diwali-toast',
+    icon: isSuccess
+      ? 'checkmark-circle-outline'
+      : 'alert-circle-outline'
+  });
+
+  await toast.present();
+}
 }

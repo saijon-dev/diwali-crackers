@@ -1,0 +1,276 @@
+<ion-content [fullscreen]="true" class="!bg-white">
+  <div
+    class="relative min-h-full w-full overflow-x-clip bg-white px-3 pb-6 sm:px-4"
+  >
+    <!-- Scrollable area before the header -->
+
+
+    <!-- STICKY HEADER -->
+   <header
+  class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-2 sm:-mx-4"
+>
+      <button
+        type="button"
+        aria-label="Back"
+        (click)="goBack()"
+        class="flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc]"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+      </button>
+
+      <div class="min-w-0 flex-1">
+        <h1
+          class="!m-0 !font-serif !text-[22px] !font-bold !leading-tight !text-[#fff8dc] sm:!text-[24px]"
+        >
+          Store Profile
+        </h1>
+
+        <p
+          class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[11px]"
+        >
+          View your store details
+        </p>
+      </div>
+    </header>
+
+    <!-- LOADING -->
+    @if (isLoading) {
+      <section
+        class="flex min-h-[55vh] flex-col items-center justify-center text-center"
+      >
+        <div
+          class="h-8 w-8 animate-spin rounded-full border-[3px] border-[#f0d9c5] border-t-[#8f071f]"
+        ></div>
+
+        <p
+          class="mt-3 !font-sans !text-[11px] !font-medium !text-[#806b68]"
+        >
+          Loading store details...
+        </p>
+      </section>
+    }
+
+    <!-- ERROR -->
+    @else if (errorMessage) {
+      <section
+        class="mx-auto flex min-h-[55vh] max-w-[420px] flex-col items-center justify-center px-4 text-center"
+      >
+        <h2
+          class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+        >
+          Store Details Unavailable
+        </h2>
+
+        <p
+          class="!mt-2 !font-sans !text-[11px] !leading-[1.5] !text-[#806b68]"
+        >
+          {{ errorMessage }}
+        </p>
+
+        <button
+          type="button"
+          (click)="retryLoading()"
+          class="mt-4 !min-h-[40px] !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc]"
+        >
+          Try Again
+        </button>
+      </section>
+    }
+
+    <!-- STORE PROFILE -->
+    @else if (store) {
+      <main
+        class="mx-auto w-full max-w-[760px] pt-4"
+      >
+
+        <!-- STORE IMAGE AND NAME -->
+        <section
+          class="overflow-hidden rounded-[15px] bg-white shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
+          @if (store.storeImageUrl) {
+            <div
+              class="h-[190px] w-full overflow-hidden bg-[#f5f5f5] sm:h-[270px]"
+            >
+              <img
+                [src]="store.storeImageUrl"
+                [alt]="store.storeName"
+                class="block h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          }
+
+          <div class="px-4 py-4 sm:px-5">
+            <h2
+              class="!m-0 break-words !font-serif !text-[22px] !font-bold !leading-tight !text-[#17233c] sm:!text-[27px]"
+            >
+              {{ store.storeName }}
+            </h2>
+
+            <p
+              class="!m-[8px_0_0] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#9e2020] sm:!text-[12px]"
+            >
+              Fireworks for a Brighter Diwali
+            </p>
+          </div>
+        </section>
+
+        <!-- STORE INFORMATION -->
+        <section
+          class="mt-4 rounded-[15px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+        >
+          <h2
+            class="!m-0 !font-serif !text-[21px] !font-bold !text-[#8f071f] sm:!text-[24px]"
+          >
+            Store Information
+          </h2>
+
+          <div class="mt-3">
+
+            <!-- STORE NAME -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 border-b border-[#e8e3dc] py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                Store Name
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-semibold !leading-[1.45] !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.storeName }}
+              </span>
+            </div>
+
+            <!-- ADDRESS -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 border-b border-[#e8e3dc] py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                Address
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-semibold !leading-[1.5] !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.address }}
+              </span>
+            </div>
+
+            <!-- CITY -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 border-b border-[#e8e3dc] py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                City
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-semibold !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.city }}
+              </span>
+            </div>
+
+            <!-- STATE -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 border-b border-[#e8e3dc] py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                State
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-semibold !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.state }}
+              </span>
+            </div>
+
+            <!-- PINCODE -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 border-b border-[#e8e3dc] py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                Pincode
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-semibold !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.pincode }}
+              </span>
+            </div>
+
+            <!-- DELIVERY RADIUS -->
+            <div
+              class="grid grid-cols-[minmax(95px,0.8fr)_minmax(0,1.5fr)] gap-3 py-3"
+            >
+              <span
+                class="!font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+              >
+                Delivery Radius
+              </span>
+
+              <span
+                class="break-words !font-sans !text-[12px] !font-bold !text-[#17233c] sm:!text-[15px]"
+              >
+                {{ store.deliveryRadiusKm }} km
+              </span>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- DELIVERY INFORMATION -->
+        <section
+          class="mt-4 flex items-center justify-between gap-4 rounded-[14px] bg-[#fff0ec] px-4 py-5"
+        >
+          <div class="min-w-0">
+            <p
+              class="!m-0 !font-sans !text-[11px] !font-medium !text-[#626b7c] sm:!text-[13px]"
+            >
+              We deliver within
+            </p>
+
+            <p
+              class="!m-[5px_0_0] !font-sans !text-[25px] !font-extrabold !leading-tight !text-[#b3123b] sm:!text-[30px]"
+            >
+              {{ store.deliveryRadiusKm }} km
+            </p>
+
+            <p
+              class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !text-[#626b7c] sm:!text-[12px]"
+            >
+              from our store
+            </p>
+          </div>
+
+          <div
+            class="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full bg-white text-[#b3123b] sm:h-[88px] sm:w-[88px]"
+          >
+            <ion-icon
+              name="storefront-outline"
+              class="!text-[32px] sm:!text-[38px]"
+            ></ion-icon>
+          </div>
+        </section>
+
+      </main>
+    }
+
+  </div>
+</ion-content>

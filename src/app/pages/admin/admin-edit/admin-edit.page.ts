@@ -6,7 +6,10 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  IonSelect,
+  IonSelectOption,
+  ToastController
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -24,15 +27,39 @@ import {
   saveOutline,
   closeOutline,
   addOutline,
-  trashOutline
+  trashOutline,
+  cameraOutline,
+  checkmarkCircleOutline,
+  alertCircleOutline
 } from 'ionicons/icons';
 
 import {
   ProductService,
   VendorProduct,
-    LookupUnit
+  LookupUnit
 } from '../../../services/product.service';
 
+
+// =====================================================
+// EDIT IMAGE MODEL
+// =====================================================
+
+interface EditImage {
+
+  type: 'existing' | 'new';
+
+  url: string;
+
+  file?: File;
+
+  productImageId?: number;
+
+}
+
+
+// =====================================================
+// COMPONENT
+// =====================================================
 
 @Component({
   selector: 'app-admin-edit',
@@ -41,14 +68,28 @@ import {
   imports: [
     IonContent,
     IonIcon,
-    FormsModule
+    FormsModule,
+    IonSelect,
+    IonSelectOption
   ]
 })
+
+
 export class AdminEditPage implements OnInit {
 
-  productId!: number;
+
+  // =====================================================
+  // PRODUCT
+  // =====================================================
+
+  productStoreId!: number;
 
   product: VendorProduct | null = null;
+
+
+  // =====================================================
+  // PAGE STATE
+  // =====================================================
 
   isLoading = true;
 
@@ -56,52 +97,96 @@ export class AdminEditPage implements OnInit {
 
   isSaving = false;
 
+
+  // =====================================================
+  // IMAGE STATE
+  // =====================================================
+
   selectedImageIndex = 0;
 
 
-
   /*
- * =====================================================
- * PACK UNITS
- * =====================================================
- */
-
-packUnits: LookupUnit[] = [];
-
-isLoadingPackUnits = false;
-
-packUnitErrorMessage = '';
-
-
-  /*
-   * Newly selected image files.
+   * IMPORTANT:
    *
-   * Existing backend images are NOT stored here.
-   * They remain inside product.images.
+   * This is now the SINGLE source of truth
+   * for images on the edit screen.
+   *
+   * It contains BOTH:
+   *
+   * 1. Existing backend images
+   * 2. Newly selected/captured images
+   *
+   * If an existing image is removed from this array,
+   * it will NOT be included in the update.
    */
+
+  editImages: EditImage[] = [];
+
+
+  /*
+   * Newly added files.
+   *
+   * This contains only actual File objects.
+   */
+
   selectedImages: File[] = [];
 
+  removedImageIds: number[] = [];
+
 
   /*
-   * Preview URLs for newly selected images.
+   * Kept for compatibility with the existing
+   * page/template if referenced elsewhere.
+   *
+   * The actual combined UI now uses editImages.
    */
+
   newImagePreviews: string[] = [];
 
+
+  // =====================================================
+  // PACK UNITS
+  // =====================================================
+
+  packUnits: LookupUnit[] = [];
+
+  isLoadingPackUnits = false;
+
+  packUnitErrorMessage = '';
+
+
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastController: ToastController
   ) {
 
     addIcons({
+
       arrowBackOutline,
+
       imageOutline,
+
       saveOutline,
+
       closeOutline,
+
       addOutline,
-      trashOutline
+
+      trashOutline,
+
+      cameraOutline,
+
+      checkmarkCircleOutline,
+
+      alertCircleOutline
+
     });
 
   }
@@ -127,12 +212,30 @@ packUnitErrorMessage = '';
       this.cdr.detectChanges();
 
       return;
+
     }
 
 
-    this.productId = Number(id);
+    this.productStoreId =
+      Number(id);
 
-      this.loadPackUnits()
+
+    /*
+     * Pack units are independent of the product.
+     *
+     * This API can still be called.
+     */
+
+    this.loadPackUnits();
+
+
+    /*
+     * IMPORTANT:
+     *
+     * This does NOT call getVendorProducts().
+     *
+     * Product is obtained from router state.
+     */
 
     this.loadProduct();
 
@@ -140,7 +243,7 @@ packUnitErrorMessage = '';
 
 
   // =====================================================
-  // LOAD PRODUCT
+  // LOAD PRODUCT FROM ROUTER STATE
   // =====================================================
 
   loadProduct(): void {
@@ -153,124 +256,126 @@ packUnitErrorMessage = '';
 
 
     /*
-     * TEMPORARY:
+     * Product was passed from vend-products page:
      *
-     * Get all vendor products and find the
-     * requested product.
-     *
-     * Later this can be replaced with:
-     *
-     * GET /api/vendor/products/{id}
+     * this.router.navigate(
+     *   ['/tabs/admin-edit', product.productId],
+     *   {
+     *     state: {
+     *       product
+     *     }
+     *   }
+     * );
      */
 
-    this.productService
-      .getVendorProducts()
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Vendor Products Response:',
-            response
-          );
+    const stateProduct =
+      history.state?.product as
+      VendorProduct | undefined;
 
 
-          const products =
-            response?.content ?? [];
+    /*
+     * Make sure the product in state matches
+     * the URL product ID.
+     */
+
+    if (
+      stateProduct &&
+      Number(stateProduct.productStoreId) ===
+        this.productStoreId
+    ) {
 
 
-          const selectedProduct =
-            products.find(
-              product =>
-                Number(product.productId) ===
-                this.productId
-            );
+      /*
+       * Create a separate copy.
+       */
+
+      this.product = {
+
+        ...stateProduct,
+
+        images: [
+          ...(stateProduct.images ?? [])
+        ]
+
+      };
 
 
-          if (!selectedProduct) {
+      // =================================================
+      // RESET IMAGE STATE
+      // =================================================
 
-            this.product = null;
+      this.selectedImageIndex = 0;
 
-            this.errorMessage =
-              'Product not found.';
+      this.selectedImages = [];
 
-            this.isLoading = false;
-
-            this.cdr.detectChanges();
-
-            return;
-          }
+      this.newImagePreviews = [];
 
 
-          /*
-           * Create a separate copy.
-           *
-           * IMPORTANT:
-           * Existing images are preserved.
-           *
-           * The new API structure is:
-           *
-           * images: [
-           *   {
-           *     productImageId,
-           *     imageUrl
-           *   }
-           * ]
-           */
+      /*
+       * IMPORTANT:
+       *
+       * Convert all existing backend images into
+       * the combined editImages array.
+       */
 
-          this.product = {
+      this.editImages =
+        (this.product.images ?? []).map(
+          image => ({
 
-            ...selectedProduct,
+            type: 'existing' as const,
 
-            images: [
-              ...(selectedProduct.images ?? [])
-            ]
+            url: image.imageUrl,
 
-          };
+            productImageId:
+              image.productImageId
+
+          })
+        );
 
 
-          this.selectedImageIndex = 0;
+      this.errorMessage = '';
 
-          this.selectedImages = [];
+      this.isLoading = false;
 
-          this.newImagePreviews = [];
-
-          this.isLoading = false;
-
-          this.cdr.detectChanges();
+      this.cdr.detectChanges();
 
 
-          console.log(
-            'Selected Product:',
-            this.product
-          );
-
-        },
+      console.log(
+        'Edit Product Loaded From Router State:',
+        this.product
+      );
 
 
-        error: (error) => {
-
-          console.error(
-            'Load Product Error:',
-            error
-          );
+      console.log(
+        'Combined Edit Images:',
+        this.editImages
+      );
 
 
-          this.product = null;
+      return;
 
-          this.isLoading = false;
-
-          this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to load product.';
+    }
 
 
-          this.cdr.detectChanges();
+    /*
+     * We intentionally DO NOT call:
+     *
+     * this.productService.getVendorProducts()
+     *
+     * because that would download every vendor
+     * product again.
+     */
 
-        }
+    this.product = null;
 
-      });
+    this.editImages = [];
+
+    this.errorMessage =
+      'Product details are unavailable. Please open the product again from My Products.';
+
+    this.isLoading = false;
+
+    this.cdr.detectChanges();
 
   }
 
@@ -281,16 +386,9 @@ packUnitErrorMessage = '';
 
   selectImage(index: number): void {
 
-    if (!this.product?.images?.length) {
-
-      return;
-
-    }
-
-
     if (
       index < 0 ||
-      index >= this.product.images.length
+      index >= this.editImages.length
     ) {
 
       return;
@@ -298,19 +396,20 @@ packUnitErrorMessage = '';
     }
 
 
-    this.selectedImageIndex = index;
+    this.selectedImageIndex =
+      index;
 
   }
 
 
   // =====================================================
-  // PREVIOUS EXISTING IMAGE
+  // PREVIOUS IMAGE
   // =====================================================
 
   previousImage(): void {
 
     if (
-      !this.product?.images?.length
+      this.editImages.length === 0
     ) {
 
       return;
@@ -323,7 +422,7 @@ packUnitErrorMessage = '';
     ) {
 
       this.selectedImageIndex =
-        this.product.images.length - 1;
+        this.editImages.length - 1;
 
     } else {
 
@@ -335,13 +434,13 @@ packUnitErrorMessage = '';
 
 
   // =====================================================
-  // NEXT EXISTING IMAGE
+  // NEXT IMAGE
   // =====================================================
 
   nextImage(): void {
 
     if (
-      !this.product?.images?.length
+      this.editImages.length === 0
     ) {
 
       return;
@@ -351,7 +450,7 @@ packUnitErrorMessage = '';
 
     if (
       this.selectedImageIndex ===
-      this.product.images.length - 1
+      this.editImages.length - 1
     ) {
 
       this.selectedImageIndex = 0;
@@ -366,13 +465,13 @@ packUnitErrorMessage = '';
 
 
   // =====================================================
-  // GET EXISTING IMAGE URL
+  // GET SELECTED IMAGE URL
   // =====================================================
 
   getExistingImageUrl(): string {
 
     if (
-      !this.product?.images?.length
+      this.editImages.length === 0
     ) {
 
       return 'assets/images/rectangle-image.png';
@@ -381,10 +480,9 @@ packUnitErrorMessage = '';
 
 
     return (
-      this.product.images[
+      this.editImages[
         this.selectedImageIndex
-      ]?.imageUrl
-      ||
+      ]?.url ||
       'assets/images/rectangle-image.png'
     );
 
@@ -392,7 +490,7 @@ packUnitErrorMessage = '';
 
 
   // =====================================================
-  // IMAGE UPLOAD
+  // ADD IMAGES FROM DEVICE
   // =====================================================
 
   onImageSelected(event: Event): void {
@@ -427,24 +525,43 @@ packUnitErrorMessage = '';
 
 
     /*
-     * Add newly selected files.
-     *
-     * Existing backend images are untouched.
-     */
-
-    this.selectedImages.push(
-      ...imageFiles
-    );
-
-
-    /*
-     * Generate previews for new images.
+     * Add each new file to the combined
+     * editImages array.
      */
 
     imageFiles.forEach(file => {
 
       const previewUrl =
         URL.createObjectURL(file);
+
+
+      /*
+       * Combined image list.
+       */
+
+      this.editImages.push({
+
+        type: 'new',
+
+        url: previewUrl,
+
+        file
+
+      });
+
+
+      /*
+       * Actual files sent during update.
+       */
+
+      this.selectedImages.push(
+        file
+      );
+
+
+      /*
+       * Keep preview array for compatibility.
+       */
 
       this.newImagePreviews.push(
         previewUrl
@@ -454,10 +571,8 @@ packUnitErrorMessage = '';
 
 
     /*
-     * Reset file input.
-     *
-     * This allows the same file to be selected
-     * again if necessary.
+     * Reset input so the same image can
+     * be selected again.
      */
 
     input.value = '';
@@ -465,18 +580,24 @@ packUnitErrorMessage = '';
 
     this.cdr.detectChanges();
 
+
+    console.log(
+      'Combined Images After Upload:',
+      this.editImages
+    );
+
   }
 
 
   // =====================================================
-  // REMOVE NEW IMAGE
+  // REMOVE IMAGE FROM COMBINED LIST
   // =====================================================
 
-  removeNewImage(index: number): void {
+  removeEditImage(index: number): void {
 
     if (
       index < 0 ||
-      index >= this.newImagePreviews.length
+      index >= this.editImages.length
     ) {
 
       return;
@@ -484,258 +605,533 @@ packUnitErrorMessage = '';
     }
 
 
+    const image =
+      this.editImages[index];
+
+
     /*
-     * Release object URL.
+     * ===================================================
+     * NEW IMAGE
+     * ===================================================
+     *
+     * Remove the File because it should no longer
+     * be sent to the backend.
      */
 
-    const preview =
-      this.newImagePreviews[index];
+    if (
+      image.type === 'new'
+    ) {
+
+      /*
+       * Release object URL.
+       */
+
+      if (image.url) {
+
+        URL.revokeObjectURL(
+          image.url
+        );
+
+      }
 
 
-    if (preview) {
+      /*
+       * Find the corresponding File.
+       */
 
-      URL.revokeObjectURL(preview);
+      if (image.file) {
+
+        const fileIndex =
+          this.selectedImages.findIndex(
+            file =>
+              file === image.file
+          );
+
+
+        if (fileIndex !== -1) {
+
+          this.selectedImages.splice(
+            fileIndex,
+            1
+          );
+
+        }
+
+      }
+
+
+      /*
+       * Remove from preview list.
+       */
+
+      const previewIndex =
+        this.newImagePreviews.indexOf(
+          image.url
+        );
+
+
+      if (previewIndex !== -1) {
+
+        this.newImagePreviews.splice(
+          previewIndex,
+          1
+        );
+
+      }
 
     }
 
 
     /*
-     * Remove preview.
+     * ===================================================
+     * EXISTING IMAGE
+     * ===================================================
+     *
+     * We DO NOT delete it from S3 here.
+     *
+     * We simply remove it from editImages.
+     *
+     * Therefore it will not be included in the
+     * final update request.
      */
 
-    this.newImagePreviews.splice(
-      index,
-      1
-    );
 
 
     /*
-     * Remove corresponding file.
+     * Keep selected image index valid.
      */
+// =====================================================
+// EXISTING IMAGE
+// =====================================================
 
-    this.selectedImages.splice(
-      index,
-      1
-    );
+if (
+  image.type === 'existing' &&
+  image.productImageId != null
+) {
+  // Record the image ID for the backend.
+  // Avoid adding the same ID more than once.
+  if (!this.removedImageIds.includes(image.productImageId)) {
+    this.removedImageIds.push(image.productImageId);
+  }
+}
+
+// Remove from the preview list.
+this.editImages.splice(index, 1);
+
+// Keep selected image index valid.
+if (this.editImages.length === 0) {
+  this.selectedImageIndex = 0;
+} else if (
+  this.selectedImageIndex >= this.editImages.length
+) {
+  this.selectedImageIndex = this.editImages.length - 1;
+}
+
+this.cdr.detectChanges();
+
+console.log('Removed Image IDs:', this.removedImageIds);
+console.log('Combined Images After Remove:', this.editImages);
+  }
 
 
-    this.cdr.detectChanges();
+  // =====================================================
+  // REMOVE NEW IMAGE
+  //
+  // Kept for compatibility if old HTML calls it.
+  // =====================================================
+
+  removeNewImage(index: number): void {
+
+    const newImages =
+      this.editImages.filter(
+        image =>
+          image.type === 'new'
+      );
+
+
+    if (
+      index < 0 ||
+      index >= newImages.length
+    ) {
+
+      return;
+
+    }
+
+
+    const image =
+      newImages[index];
+
+
+    const combinedIndex =
+      this.editImages.indexOf(
+        image
+      );
+
+
+    if (
+      combinedIndex !== -1
+    ) {
+
+      this.removeEditImage(
+        combinedIndex
+      );
+
+    }
 
   }
 
 
   // =====================================================
-  // CLEAR NEW IMAGES
+  // REMOVE EXISTING IMAGE
+  //
+  // Kept for compatibility.
+  // =====================================================
+
+  removeExistingImage(
+    index: number
+  ): void {
+
+    const existingImages =
+      this.editImages.filter(
+        image =>
+          image.type === 'existing'
+      );
+
+
+    if (
+      index < 0 ||
+      index >= existingImages.length
+    ) {
+
+      return;
+
+    }
+
+
+    const image =
+      existingImages[index];
+
+
+    const combinedIndex =
+      this.editImages.indexOf(
+        image
+      );
+
+
+    if (
+      combinedIndex !== -1
+    ) {
+
+      this.removeEditImage(
+        combinedIndex
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // CLEAR NEW IMAGES ONLY
+  //
+  // Existing images remain untouched.
   // =====================================================
 
   clearNewImages(): void {
 
-    this.newImagePreviews.forEach(
-      preview =>
-        URL.revokeObjectURL(preview)
+    /*
+     * Find new images from the combined array.
+     */
+
+    const newImages =
+      this.editImages.filter(
+        image =>
+          image.type === 'new'
+      );
+
+
+    newImages.forEach(
+      image => {
+
+        if (image.url) {
+
+          URL.revokeObjectURL(
+            image.url
+          );
+
+        }
+
+      }
     );
 
 
-    this.newImagePreviews = [];
+    /*
+     * Remove all new images from
+     * combined array.
+     */
+
+    this.editImages =
+      this.editImages.filter(
+        image =>
+          image.type === 'existing'
+      );
+
+
+    /*
+     * Clear newly selected files.
+     */
 
     this.selectedImages = [];
+
+    this.newImagePreviews = [];
+
+
+    /*
+     * Keep selected index valid.
+     */
+
+    if (
+      this.selectedImageIndex >=
+      this.editImages.length
+    ) {
+
+      this.selectedImageIndex =
+        Math.max(
+          0,
+          this.editImages.length - 1
+        );
+
+    }
 
 
     this.cdr.detectChanges();
 
   }
+
+
+  // =====================================================
+  // CONVERT EXISTING IMAGE URL TO FILE
+  // =====================================================
+
+
+
+
+  // =====================================================
+  // PREPARE ALL IMAGES FOR UPDATE
+  // =====================================================
+
+
 
 
   // =====================================================
   // UPDATE PRODUCT
   // =====================================================
 
-  updateProduct(): void {
+updateProduct(): void {
 
-    if (!this.product) {
+  if (!this.product) {
+    return;
+  }
 
+  if (this.isSaving) {
+    return;
+  }
+
+  this.isSaving = true;
+  this.errorMessage = '';
+
+  this.cdr.detectChanges();
+
+
+  // =====================================================
+  // PRODUCT DATA
+  // =====================================================
+
+  const productData = {
+
+    productName:
+      this.product.productName,
+
+    categoryId:
+      Number(this.product.categoryId),
+
+    description:
+      this.product.description,
+
+    brandName:
+      this.product.brandName,
+
+    isKidsSpecial:
+      this.product.isKidsSpecial,
+
+    size:
+      this.product.size,
+
+    packQuantity:
+      Number(this.product.packQuantity),
+
+    packUnit:
+      this.product.packUnit,
+
+    mrp:
+      Number(this.product.mrp),
+
+    sellingPrice:
+      Number(this.product.sellingPrice),
+
+    stockQuantity:
+      Number(this.product.stockQuantity),
+
+        removeImageIds: [...this.removedImageIds]
+
+  };
+
+
+  // =====================================================
+  // EXISTING IMAGES TO KEEP
+  // =====================================================
+
+  const existingImageIds =
+    this.editImages
+      .filter(
+        image =>
+          image.type === 'existing' &&
+          image.productImageId != null
+      )
+      .map(
+        image =>
+          image.productImageId!
+      );
+
+
+  // =====================================================
+  // NEW IMAGES
+  // =====================================================
+
+  const newImages =
+    this.editImages
+      .filter(
+        image =>
+          image.type === 'new' &&
+          image.file
+      )
+      .map(
+        image =>
+          image.file!
+      );
+
+
+  console.log(
+    'PUT Product Data:',
+    productData
+  );
+
+  console.log(
+    'Existing Image IDs:',
+    existingImageIds
+  );
+
+  console.log(
+    'New Images:',
+    newImages
+  );
+
+
+  // =====================================================
+  // UPDATE PRODUCT
+  // =====================================================
+
+  this.productService
+    .updateVendorProduct(
+      this.productStoreId,
+      productData,
+
+      newImages
+    )
+  .subscribe({
+
+  next: (response) => {
+    console.log('Product Update Response:', response);
+
+    this.isSaving = false;
+
+    // Handle unsuccessful responses even when HTTP status is 200.
+    if (response?.success === false) {
+      this.errorMessage =
+        response?.message?.toString().trim() ||
+        'Unable to update product. Please try again.';
+
+      this.cdr.detectChanges();
+
+      void this.showToast(this.errorMessage);
       return;
-
     }
 
-
-    if (this.isSaving) {
-
-      return;
-
-    }
-
-
-    this.isSaving = true;
-
-    this.errorMessage = '';
+    // Update succeeded.
+    const successMessage =
+      response?.message?.toString().trim() ||
+      'Product updated successfully.';
 
     this.cdr.detectChanges();
 
+    // Navigate back to vendor products only on success.
+    this.router.navigate(['/tabs/vend-products'], {
+      state: {
+        toastMessage: successMessage,
+        toastType: 'success'
+      }
+    });
+  },
 
-    /*
-     * Product information.
-     *
-     * Existing images are NOT included here.
-     *
-     * Existing backend images remain untouched.
-     *
-     * Newly selected images are sent separately
-     * through the images[] FormData field.
-     */
+  error: (error) => {
+    console.error('Update Product Error:', error);
 
-    const productData = {
+    this.isSaving = false;
 
-      productName:
-        this.product.productName,
+    const responseBody = error?.error;
+    let backendMessage = '';
 
-      productCode:
-        this.product.productCode,
+    if (
+      responseBody &&
+      typeof responseBody === 'object'
+    ) {
+      if (
+        typeof responseBody.message === 'string' &&
+        responseBody.message.trim()
+      ) {
+        backendMessage = responseBody.message.trim();
+      } else if (
+        typeof responseBody.error === 'string' &&
+        responseBody.error.trim()
+      ) {
+        backendMessage = responseBody.error.trim();
+      } else if (
+        typeof responseBody.details === 'string' &&
+        responseBody.details.trim()
+      ) {
+        backendMessage = responseBody.details.trim();
+      }
+    } else if (
+      typeof responseBody === 'string' &&
+      responseBody.trim()
+    ) {
+      backendMessage = responseBody.trim();
+    }
 
-      categoryId:
-        this.product.categoryId,
+    this.errorMessage =
+      backendMessage ||
+      error?.message ||
+      'Unable to update product. Please try again later.';
 
-      brandName:
-        this.product.brandName,
+    this.cdr.detectChanges();
 
-      description:
-        this.product.description,
-
-      isKidsSpecial:
-        this.product.isKidsSpecial,
-
-      size:
-        this.product.size,
-
-      packQuantity:
-        this.product.packQuantity,
-
-      packUnit:
-        this.product.packUnit,
-
-      mrp:
-        this.product.mrp,
-
-      sellingPrice:
-        this.product.sellingPrice,
-
-      stockQuantity:
-        this.product.stockQuantity,
-
-      isAvailable:
-        this.product.isAvailable,
-
-      badge:
-        this.product.badge,
-
-      storeName:
-        this.product.storeName,
-
-      storeAddress:
-        this.product.storeAddress,
-
-      city:
-        this.product.city,
-
-      state:
-        this.product.state,
-
-      pincode:
-        this.product.pincode,
-
-      contactNumber:
-        this.product.contactNumber
-
-    };
-
-    const images =
-  this.product.images && this.product.images.length > 0
-    ? this.product.images
-    : null;
-
-
-    console.log(
-      'PUT Product Data:',
-      productData
-    );
-
-
-    console.log(
-      'Existing Images:',
-      this.product.images
-    );
-
-
-    console.log(
-      'New Images:',
-      this.selectedImages
-    );
-
-
-    /*
-     * Send PUT request.
-     *
-     * Existing images are NOT removed.
-     *
-     * Only newly selected image files are sent.
-     */
-
-    this.productService
-      .updateVendorProduct(
-        this.productId,
-        productData,
-        this.selectedImages
-      )
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Product Update Response:',
-            response
-          );
-
-
-          this.isSaving = false;
-
-          this.cdr.detectChanges();
-
-
-          /*
-           * Return to My Products.
-           */
-
-          this.router.navigate([
-            '/tabs/vend-products'
-          ]);
-
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'Update Product Error:',
-            error
-          );
-
-
-          this.isSaving = false;
-
-
-          this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to update product.';
-
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
+    void this.showToast(this.errorMessage);
   }
+
+});
+
+}
 
 
   // =====================================================
@@ -750,57 +1146,183 @@ packUnitErrorMessage = '';
 
   }
 
-  removeExistingImage(index: number): void {
-  if (!this.product?.images) {
-    return;
+
+  // =====================================================
+  // LOAD PACK UNITS
+  // =====================================================
+
+  loadPackUnits(): void {
+
+    this.isLoadingPackUnits = true;
+
+    this.packUnitErrorMessage = '';
+
+    this.cdr.detectChanges();
+
+
+    this.productService
+      .getPackUnits()
+      .subscribe({
+
+        next: (response) => {
+
+          console.log(
+            'Pack Units API Response:',
+            response
+          );
+
+
+          this.packUnits =
+            (response ?? []).filter(
+              unit =>
+                unit.status === 'ACTIVE'
+            );
+
+
+          this.isLoadingPackUnits = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+
+        error: (error) => {
+
+          console.error(
+            'Load Pack Units Error:',
+            error
+          );
+
+
+          this.packUnits = [];
+
+
+          this.packUnitErrorMessage =
+            error?.error?.message ||
+            error?.message ||
+            'Unable to load pack units. Please try again.';
+
+
+          this.isLoadingPackUnits = false;
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
   }
 
-  this.product.images.splice(index, 1);
 
-  if (this.product.images.length === 0) {
-    this.selectedImageIndex = 0;
-  } else if (this.selectedImageIndex >= this.product.images.length) {
-    this.selectedImageIndex = this.product.images.length - 1;
-  }
-}
+  // =====================================================
+  // TAKE PRODUCT PICTURE
+  // =====================================================
+
+  async takeProductPicture(): Promise<void> {
+
+    this.errorMessage = '';
 
 
-// =====================================================
-// LOAD PACK UNITS
-// =====================================================
+    const file =
+      await this.productService.takePicture();
 
-loadPackUnits(): void {
-  this.isLoadingPackUnits = true;
-  this.packUnitErrorMessage = '';
 
-  this.cdr.detectChanges();
+    /*
+     * User cancelled camera.
+     */
 
-  this.productService.getPackUnits().subscribe({
-    next: (response) => {
-      console.log('Pack Units API Response:', response);
+    if (!file) {
 
-      this.packUnits = (response ?? []).filter(
-        unit => unit.status === 'ACTIVE'
-      );
+      return;
 
-      this.isLoadingPackUnits = false;
-      this.cdr.detectChanges();
-    },
-
-    error: (error) => {
-      console.error('Load Pack Units Error:', error);
-
-      this.packUnits = [];
-
-      this.packUnitErrorMessage =
-        error?.error?.message ||
-        error?.message ||
-        'Unable to load pack units. Please try again.';
-
-      this.isLoadingPackUnits = false;
-      this.cdr.detectChanges();
     }
+
+
+    /*
+     * Validate file.
+     */
+
+    if (
+      !file.type.startsWith('image/')
+    ) {
+
+      this.errorMessage =
+        'The captured file is not a valid image.';
+
+      this.cdr.detectChanges();
+
+      return;
+
+    }
+
+
+    /*
+     * Create preview URL.
+     */
+
+    const previewUrl =
+      URL.createObjectURL(file);
+
+
+    /*
+     * Add to combined image list.
+     */
+
+    this.editImages.push({
+
+      type: 'new',
+
+      url: previewUrl,
+
+      file
+
+    });
+
+
+    /*
+     * Add to actual files.
+     */
+
+    this.selectedImages.push(
+      file
+    );
+
+
+    /*
+     * Compatibility preview list.
+     */
+
+    this.newImagePreviews.push(
+      previewUrl
+    );
+
+
+    this.cdr.detectChanges();
+
+
+    console.log(
+      'Combined Images After Camera:',
+      this.editImages
+    );
+
+  }
+
+
+  private async showToast(
+  message: string,
+  isSuccess: boolean = false
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'middle',
+    cssClass: 'diwali-toast',
+    icon: isSuccess
+      ? 'checkmark-circle-outline'
+      : 'alert-circle-outline'
   });
+
+  await toast.present();
 }
 
 }

@@ -1,6 +1,8 @@
 import {
   ChangeDetectorRef,
-  Component
+  Component,
+  QueryList,
+  ViewChildren
 } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
@@ -12,7 +14,8 @@ import {
   IonSelect,
   IonSelectOption,
   IonInput,
-  IonBackButton
+  IonBackButton,
+  ToastController
 } from '@ionic/angular';
 
 import { DecimalPipe } from '@angular/common';
@@ -62,7 +65,7 @@ type VendorOrderStatus =
     IonSelectOption,
     DecimalPipe,
     IonInput,
-    IonBackButton
+    IonBackButton,
   ]
 })
 export class VendOrdersPage {
@@ -74,6 +77,9 @@ export class VendOrdersPage {
 statusUpdateComplete = false;
 
 deliveryOtpDigits: string[] = ['', '', '', '', '', ''];
+
+@ViewChildren(IonInput)
+otpInputs!: QueryList<IonInput>;
 isVerifyingOtp = false;
 otpErrorMessage = '';
 otpSuccessMessage = '';
@@ -85,8 +91,8 @@ otpSuccessMessage = '';
 
   selectedOrder: VendorOrder | null = null;
   showDetails = false;
-
-  isLoading = false;
+isLoadingNewOrders = false;
+isLoadingConfirmedOrders = false;
   confirmingOrderId: number | null = null;
   updatingStatusOrderId: number | null = null;
 
@@ -102,7 +108,8 @@ otpSuccessMessage = '';
 
   constructor(
     private readonly vendorOrderService: VendorOrderService,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly toastController: ToastController
   ) {
     addIcons({
       receiptOutline,
@@ -138,41 +145,85 @@ otpSuccessMessage = '';
     this.loadConfirmedOrders();
   }
 
-  loadNewOrders(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+loadNewOrders(): void {
 
-    this.vendorOrderService.getReceivedOrders(0, 10).subscribe({
+  this.isLoadingNewOrders = true;
+
+  this.errorMessage = '';
+
+  this.cdr.detectChanges();
+
+  this.vendorOrderService
+    .getReceivedOrders(0, 10)
+    .subscribe({
+
       next: (response) => {
-        this.newOrders = response?.content ?? [];
-        this.isLoading = false;
+
+        this.newOrders =
+          response?.content ?? [];
+
+        this.isLoadingNewOrders = false;
+
         this.cdr.detectChanges();
+
       },
+
       error: (error) => {
-        console.error('GET VENDOR RECEIVED ORDERS ERROR:', error);
+
+        console.error(
+          'GET VENDOR RECEIVED ORDERS ERROR:',
+          error
+        );
 
         this.newOrders = [];
-        this.isLoading = false;
-        this.errorMessage = 'Unable to load new orders.';
-        this.cdr.detectChanges();
-      }
-    });
-  }
 
-  loadConfirmedOrders(): void {
-    this.vendorOrderService.getConfirmedOrders(0, 10).subscribe({
-      next: (response) => {
-        this.confirmedOrders = response?.content ?? [];
+        this.isLoadingNewOrders = false;
+
+        this.errorMessage =
+          'Unable to load new orders.';
+
         this.cdr.detectChanges();
+
+      }
+
+    });
+}
+loadConfirmedOrders(): void {
+
+  this.isLoadingConfirmedOrders = true;
+
+  this.vendorOrderService
+    .getConfirmedOrders(0, 10)
+    .subscribe({
+
+      next: (response) => {
+
+        this.confirmedOrders =
+          response?.content ?? [];
+
+        this.isLoadingConfirmedOrders = false;
+
+        this.cdr.detectChanges();
+
       },
+
       error: (error) => {
-        console.error('GET VENDOR CONFIRMED ORDERS ERROR:', error);
+
+        console.error(
+          'GET VENDOR CONFIRMED ORDERS ERROR:',
+          error
+        );
 
         this.confirmedOrders = [];
+
+        this.isLoadingConfirmedOrders = false;
+
         this.cdr.detectChanges();
+
       }
+
     });
-  }
+}
 
   /* ====================================================
      VIEW AND CURRENT ORDERS
@@ -191,6 +242,12 @@ otpSuccessMessage = '';
       ? this.confirmedOrders
       : this.newOrders;
   }
+
+  get isCurrentViewLoading(): boolean {
+  return this.currentView === 'new'
+    ? this.isLoadingNewOrders
+    : this.isLoadingConfirmedOrders;
+}
 
 openOrder(order: VendorOrder): void {
   this.selectedOrder = order;
@@ -230,44 +287,68 @@ backToOrders(): void {
      CONFIRM ORDER
   ==================================================== */
 
-  confirmOrder(event: Event, order: VendorOrder): void {
-    event.stopPropagation();
+confirmOrder(event: Event, order: VendorOrder): void {
+  event.stopPropagation();
 
-    if (
-      this.confirmingOrderId !== null ||
-      this.updatingStatusOrderId !== null
-    ) {
-      return;
-    }
-
-    this.confirmingOrderId = order.orderId;
-    this.errorMessage = '';
-    this.successMessage = '';
-
-    this.vendorOrderService
-      .updateOrderStatus(order.orderId, 'CONFIRMED')
-      .subscribe({
-        next: () => {
-          this.confirmingOrderId = null;
-
-          this.newOrders = this.newOrders.filter(
-            item => item.orderId !== order.orderId
-          );
-
-          this.successMessage = `Order #${order.orderId} confirmed.`;
-
-          this.loadConfirmedOrders();
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('CONFIRM VENDOR ORDER ERROR:', error);
-
-          this.confirmingOrderId = null;
-          this.errorMessage = 'Unable to confirm this order. Please try again.';
-          this.cdr.detectChanges();
-        }
-      });
+  if (
+    this.confirmingOrderId !== null ||
+    this.updatingStatusOrderId !== null
+  ) {
+    return;
   }
+
+  this.confirmingOrderId = order.orderId;
+  this.errorMessage = '';
+  this.successMessage = '';
+
+  this.vendorOrderService
+    .updateOrderStatus(order.orderId, 'CONFIRMED')
+    .subscribe({
+      next: () => {
+        this.confirmingOrderId = null;
+
+        this.newOrders = this.newOrders.filter(
+          item => item.orderId !== order.orderId
+        );
+
+        this.currentView = 'confirmed';
+        this.showDetails = false;
+        this.selectedOrder = null;
+
+        this.successMessage =
+          `Order #${order.orderId} confirmed.`;
+
+        this.loadConfirmedOrders();
+
+        void this.showOrderToast(
+          this.successMessage,
+          true
+        );
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+        console.error(
+          'CONFIRM VENDOR ORDER ERROR:',
+          error
+        );
+
+        this.confirmingOrderId = null;
+
+        const message =
+          error?.error?.message ||
+          error?.error?.error ||
+          'Unable to confirm this order. Please try again.';
+
+        this.errorMessage = message;
+
+        void this.showOrderToast(message, false);
+
+        this.cdr.detectChanges();
+      }
+    });
+}
 
 /* ====================================================
    SELECT STATUS — NO API CALL
@@ -283,14 +364,13 @@ onStatusSelection(status: VendorOrderStatus): void {
 /* ====================================================
    UPDATE STATUS BUTTON / BACK BUTTON
 ==================================================== */
+/* ====================================================
+   UPDATE STATUS
+   ==================================================== */
 
 saveStatusOrBack(): void {
-  if (!this.selectedOrder) {
-    return;
-  }
 
-  if (this.statusUpdateComplete) {
-    this.backToOrders();
+  if (!this.selectedOrder) {
     return;
   }
 
@@ -315,6 +395,7 @@ saveStatusOrBack(): void {
   }
 
   this.updatingStatusOrderId = order.orderId;
+
   this.errorMessage = '';
   this.successMessage = '';
   this.otpErrorMessage = '';
@@ -323,52 +404,138 @@ saveStatusOrBack(): void {
   this.vendorOrderService
     .updateOrderStatus(order.orderId, status)
     .subscribe({
+
       next: () => {
+
         order.vendorStatus = status;
 
         this.updateOrderInList(this.newOrders, order);
         this.updateOrderInList(this.confirmedOrders, order);
 
         this.updatingStatusOrderId = null;
-        this.statusUpdateComplete = true;
+
         this.successMessage =
           `Order #${order.orderId} updated to ${this.formatStatus(status)}.`;
 
-        if (status === 'CONFIRMED') {
-          this.newOrders = this.newOrders.filter(
-            item => item.orderId !== order.orderId
-          );
+          
+void this.showOrderToast(
+  this.successMessage,
+  true
+);
+
+
+        /*
+         * If the order is moved to OUT_FOR_DELIVERY,
+         * stay on the details page because OTP verification
+         * is required.
+         */
+        if (status === 'OUT_FOR_DELIVERY') {
+
+          this.statusUpdateComplete = true;
+
+          this.loadConfirmedOrders();
+
+          this.cdr.detectChanges();
+
+          return;
         }
 
+        /*
+         * For all other status updates, automatically
+         * return to Confirmed Orders.
+         */
         this.loadConfirmedOrders();
+
+        this.showDetails = false;
+        this.selectedOrder = null;
+        this.currentView = 'confirmed';
+
+        this.pendingStatus = '';
+        this.statusUpdateComplete = false;
+
+        this.deliveryOtpDigits = ['', '', '', '', '', ''];
+
         this.cdr.detectChanges();
       },
-      error: (error) => {
-        console.error('UPDATE VENDOR ORDER STATUS ERROR:', error);
 
-        this.updatingStatusOrderId = null;
-        this.errorMessage =
-          'Unable to update the order status. Please try again.';
+      error: (error) => {
+
+       
+const message =
+  error?.error?.message ||
+  error?.error?.error ||
+  'Unable to update the order status. Please try again.';
+
+this.errorMessage = message;
+
+void this.showOrderToast(message, false);
+
         this.cdr.detectChanges();
       }
+
     });
 }
-
+/* ====================================================
+   OTP INPUT
+==================================================== */
+/* ====================================================
+   OTP INPUT
+==================================================== */
+/* ====================================================
+   OTP INPUT
+==================================================== */
 /* ====================================================
    OTP INPUT
 ==================================================== */
 
-onOtpInput(value: string | number | null | undefined, index: number): void {
-  const digit = String(value ?? '').replace(/\D/g, '').slice(-1);
+async onOtpInput(
+  value: string | number | null | undefined,
+  index: number
+): Promise<void> {
+
+  const digit = String(value ?? '')
+    .replace(/\D/g, '')
+    .slice(-1);
+
   this.deliveryOtpDigits[index] = digit;
+
   this.otpErrorMessage = '';
+
+  /*
+   * If a digit was entered, automatically move
+   * the cursor to the next OTP block.
+   */
+  if (digit && index < 5) {
+
+    /*
+     * Wait for Ionic to finish processing the
+     * current ion-input event.
+     */
+    await new Promise(resolve =>
+      setTimeout(resolve, 50)
+    );
+
+    const inputs = this.otpInputs.toArray();
+
+    const nextInput = inputs[index + 1];
+
+    if (nextInput) {
+      await nextInput.setFocus();
+    }
+  }
+
+  this.cdr.detectChanges();
 }
+/* ====================================================
+   VERIFY DELIVERY OTP
+==================================================== */
 
 /* ====================================================
    VERIFY DELIVERY OTP
 ==================================================== */
 
 verifyDeliveryOtp(): void {
+
   const order = this.selectedOrder;
 
   if (!order) {
@@ -378,7 +545,8 @@ verifyDeliveryOtp(): void {
   const otp = this.deliveryOtpDigits.join('');
 
   if (otp.length !== 6) {
-    this.otpErrorMessage = 'Please enter the complete 6-digit OTP.';
+    this.otpErrorMessage =
+      'Please enter the complete 6-digit OTP.';
     return;
   }
 
@@ -393,29 +561,83 @@ verifyDeliveryOtp(): void {
   }
 
   this.isVerifyingOtp = true;
+
   this.otpErrorMessage = '';
   this.otpSuccessMessage = '';
 
-  this.vendorOrderService.verifyDeliveryOtp(
-    order.orderId,
-    order.customerMobile,
-    otp,
-    order.orderStoreId
-  ).subscribe({
-    next: () => {
-      this.isVerifyingOtp = false;
-      this.otpSuccessMessage = 'Delivery OTP verified successfully.';
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('DELIVERY OTP VERIFICATION ERROR:', error);
+  this.vendorOrderService
+    .verifyDeliveryOtp(
+      order.orderId,
+      order.customerMobile,
+      otp,
+      order.orderStoreId
+    )
+    .subscribe({
 
-      this.isVerifyingOtp = false;
-      this.otpErrorMessage =
-        'Unable to verify the OTP. Please check it and try again.';
-      this.cdr.detectChanges();
-    }
-  });
+      next: () => {
+
+        this.isVerifyingOtp = false;
+
+        /*
+         * OTP verification means delivery is completed.
+         */
+        order.vendorStatus = 'DELIVERED';
+
+        this.updateOrderInList(
+          this.confirmedOrders,
+          order
+        );
+
+        /*
+         * Refresh confirmed orders from backend.
+         */
+        this.loadConfirmedOrders();
+
+        /*
+         * Automatically return to Confirmed Orders.
+         */
+        this.showDetails = false;
+        this.selectedOrder = null;
+
+        this.currentView = 'confirmed';
+
+        this.pendingStatus = '';
+
+        this.statusUpdateComplete = false;
+
+        this.deliveryOtpDigits =
+          ['', '', '', '', '', ''];
+
+      
+this.otpSuccessMessage =
+  'Order delivered successfully.';
+
+void this.showOrderToast(
+  this.otpSuccessMessage,
+  true
+);
+
+
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+   
+const message =
+  error?.error?.message ||
+  error?.error?.error ||
+  'Unable to verify the OTP. Please check it and try again.';
+
+this.otpErrorMessage = message;
+
+void this.showOrderToast(message, false);
+
+
+        this.cdr.detectChanges();
+      }
+
+    });
 }
 
   private updateOrderInList(
@@ -554,4 +776,24 @@ goBack(): void {
     window.history.back();
   }
 }
+
+
+
+private async showOrderToast(
+  message: string,
+  isSuccess: boolean
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'bottom',
+    cssClass: 'diwali-toast',
+    icon: isSuccess
+      ? 'checkmark-circle-outline'
+      : 'alert-circle-outline'
+  });
+
+  await toast.present();
+}
+
 }

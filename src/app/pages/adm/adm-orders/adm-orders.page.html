@@ -1,151 +1,171 @@
 <ion-content
   [fullscreen]="true"
-  class="admin-orders-content">
-
+  class="!bg-white"
+>
+<div
+  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+>
 
   <!-- =====================================================
-       STATIC SIDE DECORATIONS
+       GLOBAL HOME BOTTOM DESIGN
+       Positioned at the actual bottom of this page content
+       without taking layout space.
   ====================================================== -->
 
-  <img
-    src="assets/images/left-bg.png"
-    alt=""
-    class="side-decoration side-decoration-left"
-  />
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+    aria-hidden="true"
+  >
+    <img
+      src="assets/images/newDesignBg.png"
+      alt=""
+      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+    />
+  </div>
 
-  <img
-    src="assets/images/right-bg.png"
-    alt=""
-    class="side-decoration side-decoration-right"
-  />
-
-
-  <div class="admin-orders-page">
-
-
-    <!-- ===================================================
-         ORDER LIST
-    ==================================================== -->
+    <!-- ===================================================== -->
+    <!-- ORDER LIST VIEW -->
+    <!-- ===================================================== -->
 
     @if (!showOrderDetails) {
 
+      <!-- ================================================= -->
       <!-- HEADER -->
+      <!-- ================================================= -->
 
-      <header class="orders-header">
+      <header
+        class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
+      >
 
-        <div class="header-title">
+        <!-- BACK -->
+        <button
+          type="button"
+          class="absolute left-1 top-1/2 z-30 flex h-[40px] w-[40px] -translate-y-1/2 items-center justify-center !p-0 text-[#fff8dc]"
+          (click)="goBack()"
+          aria-label="Go back"
+        >
+          <ion-icon
+            name="arrow-back-outline"
+            class="text-[24px]"
+          ></ion-icon>
+        </button>
 
-          <h1>
+        <!-- HEADER TITLE -->
+        <div
+          class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+        >
+          <h1
+            class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+          >
             Orders
           </h1>
 
-          <p>
+          <p
+            class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
+          >
             Manage customer orders
           </p>
-
         </div>
+
+        <!-- RIGHT DEEPAS -->
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+        />
 
       </header>
 
 
+      <!-- ================================================= -->
       <!-- MAIN -->
+      <!-- ================================================= -->
 
-      <main class="orders-container">
+      <main
+        class="mx-auto flex w-full max-w-[760px] flex-1 flex-col"
+      >
 
+        <!-- ================================================= -->
+        <!-- VENDOR FILTER -->
+        <!-- ================================================= -->
 
-        <!-- =================================================
-             FILTER
-        ================================================== -->
+        <section
+          class="mt-3 w-full"
+        >
 
-        <section class="filter-card">
+          <div
+            class="flex items-center gap-2"
+          >
 
-          <div class="filter-heading">
+            <span
+              class="shrink-0 !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
+              Vendor
+            </span>
 
-            <div class="filter-icon">
+            <div
+              class="min-w-0 flex-1 overflow-hidden rounded-[9px] border border-[#e1d7d2] bg-[#fffdf7]"
+            >
 
-              <ion-icon
-                name="receipt-outline">
-              </ion-icon>
+              <ion-select
+                interface="popover"
+                [(ngModel)]="selectedVendorId"
+                (ionChange)="onVendorChanged()"
+                placeholder="All Vendors"
+                aria-label="Filter orders by vendor"
+                class="!h-[38px] !w-full !px-2 !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+              >
 
-            </div>
-
-
-            <div>
-
-              <h2>
-                All Orders
-              </h2>
-
-              <p>
-                {{ filteredOrders.length }}
-                orders displayed
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="price-filter">
-
-            <label
-              for="priceRange">
-
-              Price Range
-
-            </label>
-
-
-            <ion-select
-              id="priceRange"
-              class="price-select"
-              interface="popover"
-              [(ngModel)]="selectedPriceRange"
-              (ionChange)="onPriceRangeChanged()"
-              placeholder="Select price range">
-
-              @for (
-                range of priceRanges;
-                track range.value
-              ) {
-
-                <ion-select-option
-                  [value]="range.value">
-
-                  {{ range.label }}
-
+                <ion-select-option value="ALL">
+                  All Vendors
                 </ion-select-option>
 
-              }
+                @for (
+                  vendor of vendors;
+                  track vendor.userId
+                ) {
 
-            </ion-select>
+                  <ion-select-option
+                    [value]="vendor.userId"
+                  >
+                    {{ vendor.storeName || vendor.name }}
+                  </ion-select-option>
+
+                }
+
+              </ion-select>
+
+            </div>
 
           </div>
 
         </section>
 
 
-        <!-- =================================================
-             LOADING
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- LOADING -->
+        <!-- ================================================= -->
 
         @if (isLoading) {
 
-          <div class="orders-message">
+          <div
+            class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
+          >
 
-            <div class="message-icon">
+            <div
+              class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"
+            ></div>
 
-              <ion-icon
-                name="receipt-outline">
-              </ion-icon>
-
-            </div>
-
-            <h3>
+            <h3
+              class="!m-0 !font-sans !text-[13px] !font-bold !text-[#17233c]"
+            >
               Loading orders...
             </h3>
 
-            <p>
+            <p
+              class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
+            >
               Please wait while orders are loaded.
             </p>
 
@@ -154,27 +174,34 @@
         }
 
 
-        <!-- =================================================
-             ERROR
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- ERROR -->
+        <!-- ================================================= -->
 
         @if (!isLoading && errorMessage) {
 
-          <div class="orders-message error-state">
+          <div
+            class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
+          >
 
-            <div class="message-icon">
-
+            <div
+              class="mb-4 flex !h-[64px] !w-[64px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+            >
               <ion-icon
-                name="close-outline">
-              </ion-icon>
-
+                name="close-outline"
+                class="!text-[30px]"
+              ></ion-icon>
             </div>
 
-            <h3>
+            <h3
+              class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+            >
               Unable to load orders
             </h3>
 
-            <p>
+            <p
+              class="!m-[7px_0_17px] max-w-[290px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+            >
               {{ errorMessage }}
             </p>
 
@@ -183,9 +210,9 @@
         }
 
 
-        <!-- =================================================
-             EMPTY
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- EMPTY -->
+        <!-- ================================================= -->
 
         @if (
           !isLoading &&
@@ -193,22 +220,29 @@
           filteredOrders.length === 0
         ) {
 
-          <div class="orders-message">
+          <div
+            class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
+          >
 
-            <div class="message-icon">
-
+            <div
+              class="mb-4 flex !h-[58px] !w-[58px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+            >
               <ion-icon
-                name="receipt-outline">
-              </ion-icon>
-
+                name="receipt-outline"
+                class="!text-[27px]"
+              ></ion-icon>
             </div>
 
-            <h3>
+            <h3
+              class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+            >
               No orders found
             </h3>
 
-            <p>
-              There are no orders in this price range.
+            <p
+              class="!m-[7px_0_0] max-w-[280px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+            >
+              There are no orders for the selected vendor.
             </p>
 
           </div>
@@ -216,9 +250,9 @@
         }
 
 
-        <!-- =================================================
-             ORDER CARDS
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- ORDER LIST -->
+        <!-- ================================================= -->
 
         @if (
           !isLoading &&
@@ -226,197 +260,183 @@
           filteredOrders.length > 0
         ) {
 
-          <section class="orders-list">
-
-            @for (
-              order of filteredOrders;
-              track order.orderId
-            ) {
-
-              <article
-                class="order-card"
-                (click)="openOrder(order)">
-
-
-                <!-- ORDER CARD TOP -->
-
-                <div class="order-card-top">
-
-                  <div class="order-number">
-
-                    <div class="order-icon">
-
-                      <ion-icon
-                        name="receipt-outline">
-                      </ion-icon>
-
-                    </div>
-
-
-                    <div>
-
-                      <span class="small-label">
-                        Order
-                      </span>
-
-                      <h3>
-                        #{{ order.orderId }}
-                      </h3>
-
-                    </div>
-
-                  </div>
-
-
-                  <span
-                    class="status-badge"
-                    [class]="getStatusClass(order.status)">
-
-                    {{ getStatusLabel(order.status) }}
-
-                  </span>
-
-                </div>
-
-
-                <!-- DIVIDER -->
-
-                <div class="card-divider"></div>
-
-
-                <!-- CUSTOMER -->
-
-                <div class="order-customer">
-
-                  <div class="customer-icon">
-
-                    <ion-icon
-                      name="person-outline">
-                    </ion-icon>
-
-                  </div>
-
-
-                  <div class="customer-info">
-
-                    <h4>
-                      {{ order.customerName }}
-                    </h4>
-
-                    <p>
-                      {{ order.customerMobile }}
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                <!-- ORDER META -->
-
-                <div class="order-meta-grid">
-
-
-                  <div class="order-meta">
-
-                    <ion-icon
-                      name="cube-outline">
-                    </ion-icon>
-
-                    <div>
-
-                      <span>
-                        Items
-                      </span>
-
-                      <strong>
-                        {{ getProductCount(order) }}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-
-                  <div class="order-meta">
-
-                    <ion-icon
-                      name="calendar-outline">
-                    </ion-icon>
-
-                    <div>
-
-                      <span>
-                        Ordered
-                      </span>
-
-                      <strong>
-                        {{ formatDate(order.createdAt) }}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-
-                  <div class="order-meta">
-
-                    <ion-icon
-                      name="cash-outline">
-                    </ion-icon>
-
-                    <div>
-
-                      <span>
-                        Payment
-                      </span>
-
-                      <strong>
-                        {{ order.paymentMethod }}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-
-                </div>
-
-
-                <!-- ORDER TOTAL -->
-
-                <div class="order-total-row">
-
-                  <div>
-
-                    <span>
-                      Total Amount
-                    </span>
-
-                    <strong>
-                      ₹{{ order.totalAmount | number:'1.2-2' }}
-                    </strong>
-
-                  </div>
-
-
-                  <div class="view-order">
-
-                    <span>
-                      View Details
-                    </span>
-
-                    <span class="view-arrow">
-                      →
-                    </span>
-
-                  </div>
-
-                </div>
-
-              </article>
-
-            }
+          <section
+            class="w-full pb-6 pt-4"
+          >
+
+            <!-- LIST HEADING -->
+
+            <div
+              class="mb-2 flex items-end justify-between"
+            >
+
+              <div>
+
+                <h2
+                  class="!m-0 !font-sans !text-[16px] !font-extrabold !leading-tight !text-[#17233c]"
+                >
+                  Customer Orders
+                </h2>
+
+                <p
+                  class="!m-[2px_0_0] !font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
+                  {{ filteredOrders.length }}
+                  {{ filteredOrders.length === 1 ? 'order' : 'orders' }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- ORDER CARDS -->
+            <!-- ================================================= -->
+<div class="grid grid-cols-2 gap-2.5">
+  @for (order of filteredOrders; track order.orderId) {
+    <article
+      class="relative min-w-0 cursor-pointer overflow-hidden rounded-[11px] border border-[#eee2d7] bg-white px-2.5 py-2.5 shadow-[0_2px_8px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.985]"
+      (click)="openOrder(order)"
+    >
+
+      <!-- TOP -->
+      <div class="flex items-start justify-between gap-1.5">
+        <div class="min-w-0">
+          <span
+            class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
+          >
+            Order
+          </span>
+
+          <h3
+            class="!m-[1px_0_0] !font-sans !text-[12px] !font-extrabold !leading-tight !text-[#17233c]"
+          >
+            #{{ order.orderId }}
+          </h3>
+        </div>
+
+        <span
+          class="shrink-0 !rounded-[5px] px-1.5 py-[3px] !font-sans !text-[10px] !font-bold"
+          [class]="getStatusClass(order.status)"
+        >
+          {{ getStatusLabel(order.status) }}
+        </span>
+      </div>
+
+
+      <!-- CUSTOMER -->
+      <div class="mt-2 border-t border-[#f1e8df] pt-2">
+        <p
+          class="!m-0 truncate !font-sans !text-[11px] !font-bold !text-[#17233c]"
+        >
+          {{ order.customerName }}
+        </p>
+
+    <p
+  class="!m-[2px_0_0] truncate !font-sans !text-[10px] !font-normal !leading-[1.2] !text-[#806b68]"
+>
+  {{ order.customerMobile }}
+</p>
+      </div>
+
+
+      <!-- DATE + PAYMENT -->
+<div class="mt-2 min-w-0">
+  <span
+    class="block !font-sans !text-[7.5px] !font-normal !leading-[1.2] !text-[#806b68]"
+  >
+    {{ formatDate(order.createdAt) }}
+  </span>
+
+  <span
+    class="mt-[2px] block !font-sans !text-[7px] !font-medium !leading-[1.2] !text-[#806b68]"
+  >
+    {{ order.paymentMethod }}
+  </span>
+</div>
+
+      <!-- PRODUCT COUNT + PRICE -->
+      <div class="mt-1.5 flex items-end justify-between gap-1">
+
+        <div class="min-w-0">
+          <span
+            class="block truncate !font-sans !text-[7px] !font-medium !text-[#806b68]"
+          >
+            {{ getProductCount(order) }}
+            {{ getProductCount(order) === 1 ? 'product' : 'products' }}
+          </span>
+
+          <strong
+            class="mt-[2px] block !font-sans !text-[11px] !font-extrabold !text-[#8f071f]"
+          >
+            ₹{{ order.totalAmount | number:'1.2-2' }}
+          </strong>
+        </div>
+
+
+        <!-- PRODUCT IMAGE STACK -->
+<!-- PRODUCT IMAGE STACK -->
+<div
+  class="absolute right-[5px] top-[68px] h-[66px] w-[84px]"
+  aria-hidden="true"
+>
+  @if (order.items?.length) {
+
+    <!-- BACK IMAGE -->
+    @if (order.items.length >= 3 && order.items[2].productImageUrl) {
+      <div
+        class="absolute right-0 top-[7px] h-[54px] w-[54px] rotate-[11deg] overflow-hidden rounded-[7px] border border-[#eadfd5] bg-white p-[2px] shadow-[0_2px_6px_rgba(86,48,10,0.12)]"
+      >
+        <img
+          [src]="order.items[2].productImageUrl"
+          alt=""
+          class="block h-full w-full rounded-[5px] object-cover"
+        />
+      </div>
+    }
+
+    <!-- MIDDLE IMAGE -->
+    @if (order.items.length >= 2 && order.items[1].productImageUrl) {
+      <div
+        class="absolute right-[11px] top-[4px] h-[58px] w-[58px] rotate-[6deg] overflow-hidden rounded-[7px] border border-[#eadfd5] bg-white p-[2px] shadow-[0_2px_7px_rgba(86,48,10,0.13)]"
+      >
+        <img
+          [src]="order.items[1].productImageUrl"
+          alt=""
+          class="block h-full w-full rounded-[5px] object-cover"
+        />
+      </div>
+    }
+
+    <!-- FRONT IMAGE -->
+    @if (order.items[0].productImageUrl) {
+      <div
+        class="absolute right-[22px] top-0 z-10 h-[62px] w-[62px] overflow-hidden rounded-[7px] border border-[#eadfd5] bg-white p-[2px] shadow-[0_2px_8px_rgba(86,48,10,0.14)]"
+      >
+        <img
+          [src]="order.items[0].productImageUrl"
+          alt=""
+          class="block h-full w-full rounded-[5px] object-cover"
+        />
+      </div>
+    }
+
+  }
+</div>
+      </div>
+
+
+      <!-- VENDOR -->
+      <div
+        class="mt-1.5 truncate !font-sans !text-[7px] !font-medium !text-[#9e2020]"
+      >
+        {{ getOrderVendors(order) }}
+      </div>
+
+    </article>
+  }
+</div>
 
           </section>
 
@@ -424,75 +444,124 @@
 
       </main>
 
+
+
+
     }
 
 
-    <!-- ===================================================
-         ORDER DETAILS
-    ==================================================== -->
+    <!-- ===================================================== -->
+    <!-- ORDER DETAILS VIEW -->
+    <!-- ===================================================== -->
 
     @if (
       showOrderDetails &&
       selectedOrder
     ) {
 
-      <header class="order-details-header">
+      <!-- ================================================= -->
+      <!-- DETAILS HEADER -->
+      <!-- ================================================= -->
 
+      <header
+        class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
+      >
+
+        <!-- BACK -->
 
         <button
           type="button"
-          class="details-back-button"
-          (click)="backToOrders()">
+          aria-label="Back to orders"
+          (click)="backToOrders()"
+          class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        >
 
           <ion-icon
-            name="chevron-back-outline">
-          </ion-icon>
+            name="chevron-back-outline"
+            class="!text-[24px]"
+          ></ion-icon>
 
         </button>
 
 
-        <div class="details-header-title">
+        <!-- TITLE -->
 
-          <h1>
+        <div
+          class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+        >
+
+          <h1
+            class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !text-[#fff8dc] sm:!text-[22px]"
+          >
             Order #{{ selectedOrder.orderId }}
           </h1>
 
-          <p>
+          <p
+            class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
+          >
             Complete order details
           </p>
 
         </div>
 
+
+        <!-- RIGHT DEEPAS -->
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+        />
+
       </header>
 
 
-      <main class="order-details-container">
+      <!-- ================================================= -->
+      <!-- DETAILS MAIN -->
+      <!-- ================================================= -->
 
+      <main
+        class="mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-6 pt-4"
+      >
 
-        <!-- =================================================
-             ORDER STATUS
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- ORDER STATUS -->
+        <!-- ================================================= -->
 
-        <section class="details-card status-card">
+        <section
+          class="rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
 
-          <div class="details-card-heading">
+          <!-- HEADING -->
 
-            <div class="details-heading-icon">
+          <div
+            class="flex items-center gap-2.5"
+          >
+
+            <div
+              class="flex !h-[39px] !w-[39px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
-                name="receipt-outline">
-              </ion-icon>
+                name="receipt-outline"
+                class="!text-[19px]"
+              ></ion-icon>
 
             </div>
 
 
             <div>
 
-              <h2>
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#17233c]"
+              >
                 Order Status
               </h2>
 
-              <p>
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 Current order information
               </p>
 
@@ -501,56 +570,85 @@
           </div>
 
 
-          <div class="status-detail-row">
+          <!-- STATUS -->
 
-            <span>
+          <div
+            class="mt-4 flex items-center justify-between gap-3"
+          >
+
+            <span
+              class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Status
             </span>
 
             <span
-              class="status-badge large-status"
-              [class]="getStatusClass(selectedOrder.status)">
-
+              class="flex shrink-0 items-center !rounded-[8px] px-3 py-1.5 !font-sans !text-[9px] !font-bold"
+              [class]="getStatusClass(selectedOrder.status)"
+            >
               {{ getStatusLabel(selectedOrder.status) }}
-
             </span>
 
           </div>
 
 
-          <div class="detail-row">
+          <!-- ORDER DATE -->
 
-            <span>
+          <div
+            class="mt-3 flex items-start justify-between gap-4 border-t border-[#f0e5d8] pt-3"
+          >
+
+            <span
+              class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Order Date
             </span>
 
-            <strong>
+            <strong
+              class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+            >
               {{ formatDateTime(selectedOrder.createdAt) }}
             </strong>
 
           </div>
 
 
-          <div class="detail-row">
+          <!-- EXPECTED DELIVERY -->
 
-            <span>
+          <div
+            class="mt-3 flex items-start justify-between gap-4"
+          >
+
+            <span
+              class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Expected Delivery
             </span>
 
-            <strong>
+            <strong
+              class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+            >
               {{ formatDate(selectedOrder.expectedDeliveryDate) }}
             </strong>
 
           </div>
 
 
-          <div class="detail-row">
+          <!-- PAYMENT -->
 
-            <span>
+          <div
+            class="mt-3 flex items-start justify-between gap-4"
+          >
+
+            <span
+              class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Payment Method
             </span>
 
-            <strong>
+            <strong
+              class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+            >
               {{ selectedOrder.paymentMethod }}
             </strong>
 
@@ -559,30 +657,43 @@
         </section>
 
 
-        <!-- =================================================
-             CUSTOMER DETAILS
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- CUSTOMER DETAILS -->
+        <!-- ================================================= -->
 
-        <section class="details-card">
+        <section
+          class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
 
-          <div class="details-card-heading">
+          <!-- HEADING -->
 
-            <div class="details-heading-icon">
+          <div
+            class="flex items-center gap-2.5"
+          >
+
+            <div
+              class="flex !h-[39px] !w-[39px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
-                name="person-outline">
-              </ion-icon>
+                name="person-outline"
+                class="!text-[19px]"
+              ></ion-icon>
 
             </div>
 
 
             <div>
 
-              <h2>
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#17233c]"
+              >
                 Customer Details
               </h2>
 
-              <p>
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 Customer information
               </p>
 
@@ -591,39 +702,63 @@
           </div>
 
 
-          <div class="customer-detail">
+          <!-- CUSTOMER NAME -->
 
-            <span>
+          <div
+            class="mt-4"
+          >
+
+            <span
+              class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Customer Name
             </span>
 
-            <strong>
+            <strong
+              class="mt-[3px] block !font-sans !text-[11px] !font-semibold !text-[#17233c]"
+            >
               {{ selectedOrder.customerName }}
             </strong>
 
           </div>
 
 
-          <div class="customer-detail">
+          <!-- MOBILE -->
 
-            <span>
+          <div
+            class="mt-3.5"
+          >
+
+            <span
+              class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Mobile Number
             </span>
 
-            <strong>
+            <strong
+              class="mt-[3px] block !font-sans !text-[11px] !font-semibold !text-[#17233c]"
+            >
               {{ selectedOrder.customerMobile }}
             </strong>
 
           </div>
 
 
-          <div class="customer-detail address-detail">
+          <!-- ADDRESS -->
 
-            <span>
+          <div
+            class="mt-3.5"
+          >
+
+            <span
+              class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
               Delivery Address
             </span>
 
-            <strong>
+            <strong
+              class="mt-[3px] block !font-sans !text-[11px] !font-semibold !leading-[1.45] !text-[#17233c]"
+            >
               {{ selectedOrder.deliveryAddress }}
             </strong>
 
@@ -632,30 +767,43 @@
         </section>
 
 
-        <!-- =================================================
-             ORDER ITEMS
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- ORDERED PRODUCTS -->
+        <!-- ================================================= -->
 
-        <section class="details-card">
+        <section
+          class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
 
-          <div class="details-card-heading">
+          <!-- HEADING -->
 
-            <div class="details-heading-icon">
+          <div
+            class="flex items-center gap-2.5"
+          >
+
+            <div
+              class="flex !h-[39px] !w-[39px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
-                name="cube-outline">
-              </ion-icon>
+                name="cube-outline"
+                class="!text-[19px]"
+              ></ion-icon>
 
             </div>
 
 
             <div>
 
-              <h2>
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#17233c]"
+              >
                 Ordered Products
               </h2>
 
-              <p>
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 {{ selectedOrder.items.length }}
                 product(s)
               </p>
@@ -665,33 +813,45 @@
           </div>
 
 
-          <div class="detail-items">
+          <!-- ITEMS -->
+
+          <div
+            class="mt-3.5"
+          >
 
             @for (
               item of selectedOrder.items;
               track item.orderItemId
             ) {
 
-              <div class="detail-item">
-
+              <div
+                class="flex items-start gap-3 border-b border-[#f0e5d8] py-3 last:border-b-0"
+              >
 
                 <!-- IMAGE -->
 
-                <div class="detail-item-image">
+                <div
+                  class="h-[70px] w-[70px] shrink-0 overflow-hidden rounded-[10px] bg-[#f7f3df]"
+                >
 
                   @if (hasProductImage(item)) {
 
                     <img
                       [src]="item.productImageUrl!"
-                      [alt]="item.productName">
+                      [alt]="item.productName"
+                      class="block h-full w-full object-cover"
+                    />
 
                   } @else {
 
-                    <div class="detail-item-placeholder">
+                    <div
+                      class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                    >
 
                       <ion-icon
-                        name="cube-outline">
-                      </ion-icon>
+                        name="cube-outline"
+                        class="!text-[27px] !text-[#806b68]"
+                      ></ion-icon>
 
                     </div>
 
@@ -702,32 +862,40 @@
 
                 <!-- INFORMATION -->
 
-                <div class="detail-item-info">
+                <div
+                  class="min-w-0 flex-1"
+                >
 
-                  <h3>
+                  <h3
+                    class="!m-0 !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c]"
+                  >
                     {{ item.productName }}
                   </h3>
 
 
-                  <p class="vendor-name">
+                  @if (item.brandName) {
+
+                    <p
+                      class="!m-[3px_0_0] !font-sans !text-[9px] !font-semibold !text-[#9e2020]"
+                    >
+                      Brand: {{ item.brandName }}
+                    </p>
+
+                  }
+
+
+                  <p
+                    class="mt-[3px] flex items-center gap-1 !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                  >
 
                     <ion-icon
-                      name="storefront-outline">
-                    </ion-icon>
+                      name="storefront-outline"
+                      class="!text-[12px] !text-[#8f071f]"
+                    ></ion-icon>
 
                     {{ item.vendorName }}
 
                   </p>
-
-
-                  @if (item.brandName) {
-
-                    <p>
-                      Brand:
-                      {{ item.brandName }}
-                    </p>
-
-                  }
 
 
                   @if (
@@ -736,7 +904,9 @@
                     item.packUnit
                   ) {
 
-                    <p class="pack-info">
+                    <small
+                      class="mt-[3px] block !font-sans !text-[8px] !font-medium !text-[#99917e]"
+                    >
 
                       @if (item.size) {
                         {{ item.size }}
@@ -746,7 +916,7 @@
                         item.size &&
                         item.packQuantity
                       ) {
-                        ·
+                        •
                       }
 
                       @if (item.packQuantity) {
@@ -757,20 +927,27 @@
                         {{ item.packUnit }}
                       }
 
-                    </p>
+                    </small>
 
                   }
 
 
-                  <div class="quantity-price">
+                  <!-- QUANTITY / PRICE -->
 
-                    <span>
+                  <div
+                    class="mt-2 flex items-center gap-3"
+                  >
+
+                    <span
+                      class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                    >
                       Qty: {{ item.quantity }}
                     </span>
 
-                    <span>
-                      ₹{{ item.price | number:'1.2-2' }}
-                      each
+                    <span
+                      class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                    >
+                      ₹{{ item.price | number:'1.2-2' }} each
                     </span>
 
                   </div>
@@ -780,13 +957,19 @@
 
                 <!-- SUBTOTAL -->
 
-                <div class="detail-item-total">
+                <div
+                  class="shrink-0 text-right"
+                >
 
-                  <span>
+                  <span
+                    class="block !font-sans !text-[8px] !font-medium !text-[#806b68]"
+                  >
                     Subtotal
                   </span>
 
-                  <strong>
+                  <strong
+                    class="mt-[3px] block !font-sans !text-[13px] !font-extrabold !text-[#8f071f]"
+                  >
                     ₹{{ item.subtotal | number:'1.2-2' }}
                   </strong>
 
@@ -798,38 +981,22 @@
 
           </div>
 
-        </section>
 
+          <!-- ORDER TOTAL -->
 
-        <!-- =================================================
-             BILLING
-        ================================================== -->
+          <div
+            class="mt-3 flex items-center justify-between border-t border-[#f0e5d8] pt-3"
+          >
 
-        <section class="details-card billing-card">
-
-          <div class="billing-row">
-
-            <span>
-              Items
-            </span>
-
-            <strong>
-              {{ getItemCount(selectedOrder) }}
-            </strong>
-
-          </div>
-
-
-          <div class="billing-divider"></div>
-
-
-          <div class="billing-total">
-
-            <span>
+            <span
+              class="!font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Order Total
             </span>
 
-            <strong>
+            <strong
+              class="!font-sans !text-[17px] !font-extrabold !text-[#8f071f]"
+            >
               ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
             </strong>
 
@@ -838,7 +1005,86 @@
         </section>
 
 
+        <!-- ================================================= -->
+        <!-- BILLING -->
+        <!-- ================================================= -->
+
+        <section
+          class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
+
+          <div
+            class="flex items-center justify-between"
+          >
+
+            <span
+              class="!font-sans !text-[10px] !font-medium !text-[#806b68]"
+            >
+              Items
+            </span>
+
+            <strong
+              class="!font-sans !text-[10px] !font-semibold !text-[#17233c]"
+            >
+              {{ getItemCount(selectedOrder) }}
+            </strong>
+
+          </div>
+
+
+          <div
+            class="my-3 border-t border-[#f0e5d8]"
+          ></div>
+
+
+          <div
+            class="flex items-center justify-between"
+          >
+
+            <span
+              class="!font-sans !text-[12px] !font-bold !text-[#17233c]"
+            >
+              Order Total
+            </span>
+
+            <strong
+              class="!font-sans !text-[18px] !font-extrabold !text-[#8f071f]"
+            >
+              ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- BACK TO ORDERS -->
+        <!-- ================================================= -->
+
+        <button
+          type="button"
+          (click)="backToOrders()"
+          class="mt-4 flex !min-h-[43px] w-full !items-center !justify-center gap-2 !rounded-[10px] !border-0 !bg-[#b3123b] !px-4 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.14)] transition-transform duration-150 active:scale-[0.98]"
+        >
+
+          <ion-icon
+            name="chevron-back-outline"
+            class="!text-[17px]"
+          ></ion-icon>
+
+          Back to Orders
+
+        </button>
+
       </main>
+
+
+      <!-- ================================================= -->
+      <!-- DETAILS BOTTOM DESIGN -->
+      <!-- ================================================= -->
+
+
 
     }
 

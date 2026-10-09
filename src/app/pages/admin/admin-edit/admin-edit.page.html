@@ -1,8 +1,32 @@
-
 <ion-content [fullscreen]="true" class="!bg-white">
-  <div class="relative flex min-h-[100dvh] flex-col overflow-visible bg-white px-3 font-sans text-[#17233c] sm:px-4">
 
-    <!-- DIWALI SIDE DECORATIONS -->
+  <!-- =========================================================
+       PAGE WRAPPER
+       ========================================================= -->
+<div
+  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+>
+
+  <!-- =====================================================
+       GLOBAL HOME BOTTOM DESIGN
+       Positioned at the actual bottom of this page content
+       without taking layout space.
+  ====================================================== -->
+
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+    aria-hidden="true"
+  >
+    <img
+      src="assets/images/newDesignBg.png"
+      alt=""
+      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+    />
+  </div>
+
+    <!-- =========================================================
+         DIWALI SIDE DECORATIONS
+         ========================================================= -->
 
     <img
       src="assets/images/left-bg.png"
@@ -18,9 +42,16 @@
       class="pointer-events-none fixed right-0 top-[42%] z-0 hidden h-auto w-[62px] select-none object-contain opacity-[0.12] sm:block md:w-[85px]"
     />
 
-    <!-- HEADER -->
 
-    <header class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-start overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4">
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-start overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
+    >
+
+      <!-- BACK BUTTON -->
 
       <button
         type="button"
@@ -28,18 +59,35 @@
         (click)="goBack()"
         class="relative z-30 mr-2 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-        <ion-icon name="arrow-back-outline" class="!text-[23px]"></ion-icon>
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[23px]"
+        ></ion-icon>
       </button>
 
-      <div class="relative z-20 flex min-w-0 flex-1 flex-col justify-center leading-none">
-        <h1 class="!m-0 truncate !font-sans !text-[19px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]">
+
+      <!-- HEADER TITLE -->
+
+      <div
+        class="relative z-20 flex min-w-0 flex-1 flex-col justify-center leading-none"
+      >
+
+        <h1
+          class="!m-0 truncate !font-sans !text-[19px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+        >
           Edit Product
         </h1>
 
-        <p class="!m-[5px_0_0] truncate !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]">
-          Product ID: {{ productId }}
+        <p
+          class="!m-[5px_0_0] truncate !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]"
+        >
+          Product ID: {{ productStoreId }}
         </p>
+
       </div>
+
+
+      <!-- HEADER DIWALI DECORATION -->
 
       <img
         src="assets/images/right-deepas.png"
@@ -47,58 +95,104 @@
         aria-hidden="true"
         class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto max-w-[100px] select-none object-contain opacity-[0.85] sm:max-w-[125px]"
       />
+
     </header>
 
-    <!-- MAIN CONTENT -->
 
-    <main class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-8 pt-4">
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
 
-      <!-- INTRODUCTION -->
+    <main
+      class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-8 pt-4"
+    >
+
+      <!-- =======================================================
+           INTRODUCTION
+           ======================================================= -->
 
       <section class="mb-4 px-1">
-        <p class="!m-0 !font-sans !text-[9px] !font-bold uppercase tracking-[1.2px] !text-[#9e2020]">
+
+        <p
+          class="!m-0 !font-sans !text-[9px] !font-bold uppercase tracking-[1.2px] !text-[#9e2020]"
+        >
           Product Management
         </p>
 
-        <h2 class="!m-[5px_0_0] !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c] sm:!text-[24px]">
+        <h2
+          class="!m-[5px_0_0] !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c] sm:!text-[24px]"
+        >
           Edit Product Details
         </h2>
 
-        <p class="!m-[6px_0_0] max-w-[440px] !font-sans !text-[11px] !font-medium !leading-[1.55] !text-[#806b68]">
+        <p
+          class="!m-[6px_0_0] max-w-[440px] !font-sans !text-[11px] !font-medium !leading-[1.55] !text-[#806b68]"
+        >
           Update product information, images, pricing, stock and store details.
         </p>
+
       </section>
 
-      <!-- LOADING STATE -->
+
+      <!-- =======================================================
+           LOADING STATE
+           ======================================================= -->
 
       @if (isLoading) {
-        <section class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center">
-          <div class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"></div>
 
-          <h2 class="!m-0 !font-sans !text-[14px] !font-bold !text-[#17233c]">
+        <section
+          class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center"
+        >
+
+          <div
+            class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"
+          ></div>
+
+          <h2
+            class="!m-0 !font-sans !text-[14px] !font-bold !text-[#17233c]"
+          >
             Loading product...
           </h2>
 
-          <p class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
+          <p
+            class="!m-[6px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
+          >
             Please wait while product details are loaded.
           </p>
+
         </section>
+
       }
 
-      <!-- ERROR STATE -->
 
-      @if (!isLoading && errorMessage) {
-        <section class="flex flex-col items-center justify-center rounded-[14px] border border-[#f2c7ca] bg-[#fff3f3] px-5 py-10 text-center">
+      <!-- =======================================================
+           ERROR STATE
+           ======================================================= -->
 
-          <div class="mb-3 flex !h-[52px] !w-[52px] !items-center !justify-center !rounded-full !bg-[#fbe1e3] !text-[#b3123b]">
-            <ion-icon name="close-outline" class="!text-[27px]"></ion-icon>
+     @if (!isLoading && errorMessage && !product)  {
+
+        <section
+          class="flex flex-col items-center justify-center rounded-[14px] border border-[#f2c7ca] bg-[#fff3f3] px-5 py-10 text-center"
+        >
+
+          <div
+            class="mb-3 flex !h-[52px] !w-[52px] !items-center !justify-center !rounded-full !bg-[#fbe1e3] !text-[#b3123b]"
+          >
+            <ion-icon
+              name="close-outline"
+              class="!text-[27px]"
+            ></ion-icon>
           </div>
 
-          <h2 class="!m-0 !font-sans !text-[16px] !font-extrabold !text-[#17233c]">
+          <h2
+            class="!m-0 !font-sans !text-[16px] !font-extrabold !text-[#17233c]"
+          >
             Unable to load product
           </h2>
 
-          <p class="!m-[7px_0_16px] max-w-[320px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]">
+          <p
+            class="!m-[7px_0_16px] max-w-[320px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
             {{ errorMessage }}
           </p>
 
@@ -109,21 +203,35 @@
           >
             Try Again
           </button>
+
         </section>
+
       }
 
-      <!-- PRODUCT EDIT FORM -->
+
+      <!-- =======================================================
+           PRODUCT EDIT FORM
+           ======================================================= -->
 
       @if (!isLoading && product) {
 
-        <!-- PRODUCT INFORMATION -->
 
-        <section class="rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+        <!-- =====================================================
+             PRODUCT INFORMATION
+             ===================================================== -->
 
-         
+        <section
+          class="rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+        >
+
+          <!-- PRODUCT NAME -->
 
           <div class="mb-4">
-            <label for="editProductName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editProductName"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Product Name
             </label>
 
@@ -133,11 +241,20 @@
               [(ngModel)]="product.productName"
               class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             />
+
           </div>
 
+
+          <!-- PRODUCT CODE + BRAND -->
+
           <div class="mb-4 grid grid-cols-2 gap-3">
+
             <div class="min-w-0">
-              <label for="editProductCode" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editProductCode"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Product Code
               </label>
 
@@ -147,10 +264,16 @@
                 [(ngModel)]="product.productCode"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
 
+
             <div class="min-w-0">
-              <label for="editBrandName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editBrandName"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Brand Name
               </label>
 
@@ -160,14 +283,29 @@
                 [(ngModel)]="product.brandName"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
+
           </div>
 
+
+          <!-- CATEGORY + SIZE -->
+
           <div class="mb-4 grid grid-cols-2 gap-3">
+
             <div class="min-w-0">
-              <label for="editCategory" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editCategory"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Category
               </label>
+
+              <!--
+                Category is currently displayed as readonly because
+                this edit page is not loading a category lookup.
+              -->
 
               <input
                 id="editCategory"
@@ -176,10 +314,16 @@
                 readonly
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#f8f4ed] px-2.5 !font-sans !text-[11px] !font-medium text-[#806b68] outline-none sm:px-3 sm:!text-[12px]"
               />
+
             </div>
 
+
             <div class="min-w-0">
-              <label for="editSize" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editSize"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Size
               </label>
 
@@ -189,11 +333,20 @@
                 [(ngModel)]="product.size"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
+
           </div>
 
+
+          <!-- DESCRIPTION -->
+
           <div class="mb-4">
-            <label for="editDescription" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editDescription"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Description
             </label>
 
@@ -203,68 +356,114 @@
               [(ngModel)]="product.description"
               class="w-full resize-y rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 py-2.5 !font-sans !text-[12px] !font-medium leading-[1.55] text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             ></textarea>
+
           </div>
 
+
+          <!-- KIDS SPECIAL + AVAILABILITY -->
+
           <div class="grid grid-cols-2 gap-3">
+
+
+            <!-- KIDS SPECIAL -->
+
             <div class="min-w-0">
-              <label for="editKidsSpecial" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editKidsSpecial"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Kids Special
               </label>
 
-              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
-                <select
+              <div
+                class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]"
+              >
+
+                <!-- IONIC DROPDOWN: KIDS SPECIAL -->
+
+                <ion-select
                   id="editKidsSpecial"
                   [(ngModel)]="product.isKidsSpecial"
-                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
+                  interface="popover"
+                  aria-label="Kids Special"
+                  class="h-[45px] w-full !font-sans !text-[11px] !font-medium !text-[#17233c] sm:!text-[12px]"
                 >
-                  <option [ngValue]="true">Yes</option>
-                  <option [ngValue]="false">No</option>
-                </select>
+
+                  <ion-select-option [value]="true">
+                    Yes
+                  </ion-select-option>
+
+                  <ion-select-option [value]="false">
+                    No
+                  </ion-select-option>
+
+                </ion-select>
+
               </div>
+
             </div>
 
-            <div class="min-w-0">
-              <label for="editAvailability" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
-                Availability
-              </label>
 
-              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
-                <select
-                  id="editAvailability"
-                  [(ngModel)]="product.isAvailable"
-                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
-                >
-                  <option [ngValue]="true">Available</option>
-                  <option [ngValue]="false">Not Available</option>
-                </select>
-              </div>
-            </div>
+       
+
           </div>
 
         </section>
 
-        <!-- PACK INFORMATION -->
 
-        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+
+        <!-- =====================================================
+             PACK INFORMATION
+             ===================================================== -->
+
+        <section
+          class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+        >
+
+          <!-- SECTION HEADER -->
 
           <div class="mb-5 flex items-center gap-3">
-            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
-              <ion-icon name="cube-outline" class="!text-[21px]"></ion-icon>
+
+            <div
+              class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
+              <ion-icon
+                name="cube-outline"
+                class="!text-[21px]"
+              ></ion-icon>
             </div>
 
             <div>
-              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]"
+              >
                 Pack Information
               </h2>
-              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+
+              <p
+                class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 Configure product packaging
               </p>
+
             </div>
+
           </div>
 
+
           <div class="grid grid-cols-2 gap-3">
+
+
+            <!-- PACK QUANTITY -->
+
             <div class="min-w-0">
-              <label for="editPackQuantity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editPackQuantity"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Pack Quantity
               </label>
 
@@ -275,56 +474,162 @@
                 [(ngModel)]="product.packQuantity"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
               />
+
             </div>
 
+
+            <!-- PACK UNIT -->
+
             <div class="min-w-0">
-              <label for="editPackUnit" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editPackUnit"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Pack Unit
               </label>
 
-              <div class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]">
-                <select
+              <div
+                class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]"
+              >
+
+                <!--
+                  IONIC DROPDOWN: PACK UNIT
+
+                  Values come from the Lookup API.
+
+                  product.packUnit stores lookupCode.
+                  Example:
+                  PKT, BOX, PCS, etc.
+
+                  The user sees displayName.
+                -->
+
+                <ion-select
                   id="editPackUnit"
                   [(ngModel)]="product.packUnit"
-                  class="h-[45px] w-full min-w-0 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none sm:px-3 sm:!text-[12px]"
+                  interface="popover"
+                  aria-label="Pack Unit"
+                  [disabled]="isLoadingPackUnits || packUnits.length === 0"
+                  class="h-[45px] w-full !font-sans !text-[11px] !font-medium !text-[#17233c] disabled:opacity-60 sm:!text-[12px]"
                 >
-                  <option value="PACK">PACK</option>
-                  <option value="BOX">BOX</option>
-                  <option value="PIECE">PIECE</option>
-                </select>
+
+                  @if (isLoadingPackUnits) {
+
+                    <ion-select-option value="">
+                      Loading units...
+                    </ion-select-option>
+
+                  } @else if (packUnits.length === 0) {
+
+                    <ion-select-option value="">
+                      No units available
+                    </ion-select-option>
+
+                  } @else {
+
+                    @for (
+                      unit of packUnits;
+                      track unit.lookupId
+                    ) {
+
+                      <ion-select-option
+                        [value]="unit.lookupCode"
+                      >
+                        {{ unit.displayName }}
+                      </ion-select-option>
+
+                    }
+
+                  }
+
+                </ion-select>
+
               </div>
+
+
+              <!-- LOOKUP API ERROR -->
+
+              @if (packUnitErrorMessage) {
+
+                <p
+                  class="!m-[6px_0_0] !font-sans !text-[9px] !font-medium !text-[#b3123b]"
+                >
+                  {{ packUnitErrorMessage }}
+                </p>
+
+              }
+
             </div>
+
           </div>
 
         </section>
 
-        <!-- PRICING AND STOCK -->
 
-        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+
+        <!-- =====================================================
+             PRICING AND STOCK
+             ===================================================== -->
+
+        <section
+          class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+        >
+
+          <!-- SECTION HEADER -->
 
           <div class="mb-5 flex items-center gap-3">
-            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !font-sans !text-[19px] !font-bold !text-[#8f071f]">
+
+            <div
+              class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !font-sans !text-[19px] !font-bold !text-[#8f071f]"
+            >
               ₹
             </div>
 
             <div>
-              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]"
+              >
                 Pricing &amp; Stock
               </h2>
-              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+
+              <p
+                class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 Manage pricing and availability
               </p>
+
             </div>
+
           </div>
 
+
+          <!-- MRP + SELLING PRICE -->
+
           <div class="grid grid-cols-2 gap-3">
+
+
+            <!-- MRP -->
+
             <div class="min-w-0">
-              <label for="editMrp" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editMrp"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 MRP
               </label>
 
-              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
-                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
+              <div
+                class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10"
+              >
+
+                <span
+                  class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]"
+                >
+                  ₹
+                </span>
 
                 <input
                   id="editMrp"
@@ -333,16 +638,32 @@
                   [(ngModel)]="product.mrp"
                   class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none"
                 />
+
               </div>
+
             </div>
 
+
+            <!-- SELLING PRICE -->
+
             <div class="min-w-0">
-              <label for="editSellingPrice" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editSellingPrice"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Selling Price
               </label>
 
-              <div class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#b3123b]/10">
-                <span class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]">₹</span>
+              <div
+                class="flex h-[45px] items-center overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] transition focus-within:border-[#b3123b] focus-within:bg-white focus-within:ring-2 focus:ring-[#b3123b]/10"
+              >
+
+                <span
+                  class="flex h-full items-center pl-3 !font-sans !text-[12px] !font-bold !text-[#8f071f]"
+                >
+                  ₹
+                </span>
 
                 <input
                   id="editSellingPrice"
@@ -351,12 +672,22 @@
                   [(ngModel)]="product.sellingPrice"
                   class="h-full w-full min-w-0 border-0 bg-transparent px-2 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none"
                 />
+
               </div>
+
             </div>
+
           </div>
 
+
+          <!-- STOCK -->
+
           <div class="mt-4">
-            <label for="editStockQuantity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editStockQuantity"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Stock Quantity
             </label>
 
@@ -367,10 +698,18 @@
               [(ngModel)]="product.stockQuantity"
               class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             />
+
           </div>
 
+
+          <!-- BADGE -->
+
           <div class="mt-4">
-            <label for="editBadge" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editBadge"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Badge
             </label>
 
@@ -381,31 +720,61 @@
               placeholder="Example: Trending"
               class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             />
+
           </div>
 
         </section>
 
-        <!-- STORE INFORMATION -->
 
-        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+
+        <!-- =====================================================
+             STORE INFORMATION
+             ===================================================== -->
+
+        <section
+          class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+        >
+
+          <!-- SECTION HEADER -->
 
           <div class="mb-5 flex items-center gap-3">
-            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
-              <ion-icon name="storefront-outline" class="!text-[21px]"></ion-icon>
+
+            <div
+              class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
+              <ion-icon
+                name="storefront-outline"
+                class="!text-[21px]"
+              ></ion-icon>
             </div>
 
             <div>
-              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]"
+              >
                 Store Information
               </h2>
-              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
+
+              <p
+                class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
                 Review store and contact details
               </p>
+
             </div>
+
           </div>
 
+
+          <!-- STORE NAME -->
+
           <div class="mb-4">
-            <label for="editStoreName" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editStoreName"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Store Name
             </label>
 
@@ -415,10 +784,18 @@
               [(ngModel)]="product.storeName"
               class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             />
+
           </div>
 
+
+          <!-- STORE ADDRESS -->
+
           <div class="mb-4">
-            <label for="editStoreAddress" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+            <label
+              for="editStoreAddress"
+              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            >
               Store Address
             </label>
 
@@ -428,11 +805,20 @@
               [(ngModel)]="product.storeAddress"
               class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
             />
+
           </div>
 
+
+          <!-- CITY + STATE -->
+
           <div class="mb-4 grid grid-cols-2 gap-3">
+
             <div class="min-w-0">
-              <label for="editCity" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editCity"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 City
               </label>
 
@@ -442,10 +828,16 @@
                 [(ngModel)]="product.city"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
 
+
             <div class="min-w-0">
-              <label for="editState" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editState"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 State
               </label>
 
@@ -455,12 +847,22 @@
                 [(ngModel)]="product.state"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
+
           </div>
 
+
+          <!-- PINCODE + CONTACT -->
+
           <div class="grid grid-cols-2 gap-3">
+
             <div class="min-w-0">
-              <label for="editPincode" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editPincode"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Pincode
               </label>
 
@@ -470,10 +872,16 @@
                 [(ngModel)]="product.pincode"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
 
+
             <div class="min-w-0">
-              <label for="editContactNumber" class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]">
+
+              <label
+                for="editContactNumber"
+                class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
                 Contact Number
               </label>
 
@@ -483,223 +891,327 @@
                 [(ngModel)]="product.contactNumber"
                 class="h-[45px] w-full min-w-0 rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[11px] !font-medium text-[#17233c] outline-none transition focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10 sm:px-3 sm:!text-[12px]"
               />
+
             </div>
+
           </div>
 
         </section>
 
-  
 
 
-        <!-- PRODUCT IMAGES - MOVED TO THE LAST -->
+        <!-- =====================================================
+             PRODUCT IMAGES
+             ===================================================== -->
+<section
+  class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+>
 
-        <section class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
+  <!-- HEADER -->
 
-          <div class="mb-4 flex items-center gap-3">
-            <div class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]">
-              <ion-icon name="image-outline" class="!text-[21px]"></ion-icon>
-            </div>
+  <div class="mb-4 flex items-center gap-3">
 
-            <div class="min-w-0 flex-1">
-              <h2 class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
-                Product Images
-              </h2>
+    <div
+      class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]"
+    >
+      <ion-icon
+        name="image-outline"
+        class="!text-[21px]"
+      ></ion-icon>
+    </div>
 
-              <p class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
-                Add, replace or remove product images
-              </p>
-            </div>
-          </div>
+    <div class="min-w-0 flex-1">
 
-          <!-- ADD / REPLACE IMAGES -->
+      <h2
+        class="!m-0 !font-sans !text-[15px] !font-extrabold !leading-tight !text-[#17233c]"
+      >
+        Product Images
+      </h2>
 
-          <div class="border-b border-[#f0e4d7] pb-4">
+      <p
+        class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+      >
+        Add, replace or remove product images
+      </p>
 
-            <h3 class="!m-0 !font-sans !text-[12px] !font-extrabold !text-[#17233c]">
-              Add / Replace Images
-            </h3>
+    </div>
 
-            <p class="!m-[5px_0_12px] !font-sans !text-[10px] !font-medium !leading-[1.45] !text-[#806b68]">
-              Select one or more images for this product.
-            </p>
+  </div>
 
-            <label class="flex min-h-[115px] cursor-pointer flex-col items-center justify-center rounded-[12px] border border-dashed border-[#d9c4b2] bg-[#fffdf7] px-4 py-4 text-center transition duration-200 hover:border-[#b3123b] hover:bg-[#fffaf3] active:scale-[0.99]">
 
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                (change)="onImageSelected($event)"
-                class="hidden"
-              />
+  <!-- ADD / REPLACE -->
 
-              <div class="mb-2 flex !h-[37px] !w-[37px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
-                <ion-icon name="add-outline" class="!text-[22px]"></ion-icon>
-              </div>
+  <div class="border-b border-[#f0e4d7] pb-4">
 
-              <span class="!font-sans !text-[11px] !font-bold !text-[#17233c]">
-                Choose Images
-              </span>
+    <h3
+      class="!m-0 !font-sans !text-[12px] !font-extrabold !text-[#17233c]"
+    >
+      Add / Replace Images
+    </h3>
 
-              <span class="mt-1 !font-sans !text-[9px] !font-medium !text-[#806b68]">
-                JPG, PNG or WEBP
-              </span>
-            </label>
+    <p
+      class="!m-[5px_0_12px] !font-sans !text-[10px] !font-medium !leading-[1.45] !text-[#806b68]"
+    >
+      Add one or more product images using your camera or device gallery.
+    </p>
 
-            <p class="!m-[7px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]">
-              You can select multiple images.
-            </p>
 
-            <!-- NEW IMAGE PREVIEWS -->
+    <div class="grid grid-cols-2 gap-3">
 
-            @if (newImagePreviews.length > 0) {
-              <div class="mt-4 rounded-[12px] border border-[#ead8b9] bg-[#fffdf7] p-3">
+      <!-- CAMERA -->
 
-                <div class="mb-3 flex items-center justify-between gap-2">
-                  <h3 class="!m-0 !font-sans !text-[11px] !font-extrabold !text-[#17233c]">
-                    New Images
-                  </h3>
+      <button
+        type="button"
+        (click)="takeProductPicture()"
+        class="flex min-h-[115px] flex-col items-center justify-center rounded-[12px] border border-dashed border-[#d9c4b2] bg-[#fffdf7] px-3 py-4 text-center transition duration-200 active:scale-[0.99]"
+      >
 
-                  <span class="rounded-full bg-[#f7e9bd] px-2.5 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]">
-                    {{ newImagePreviews.length }}
-                  </span>
-                </div>
+        <div
+          class="mb-2 flex !h-[37px] !w-[37px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+        >
 
-                <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                  @for (preview of newImagePreviews; track $index) {
-                    <div class="relative aspect-square min-w-0 overflow-hidden rounded-[10px] border border-[#ead8b9] bg-white p-1">
+          <ion-icon
+            name="camera-outline"
+            class="!text-[22px]"
+          ></ion-icon>
 
-                      <img
-                        [src]="preview"
-                        alt="New product image"
-                        class="block h-full w-full rounded-[7px] object-cover"
-                      />
+        </div>
 
-                      <button
-                        type="button"
-                        [attr.aria-label]="'Remove selected image ' + ($index + 1)"
-                        (click)="removeNewImage($index)"
-                        class="absolute right-1.5 top-1.5 flex !h-[25px] !w-[25px] !items-center !justify-center !rounded-full !border !border-white/70 !bg-[#8f071f] !p-0 !text-white shadow-sm transition duration-150 active:scale-90"
-                      >
-                        <ion-icon name="close-outline" class="!text-[15px]"></ion-icon>
-                      </button>
+        <span
+          class="!font-sans !text-[11px] !font-bold !text-[#17233c]"
+        >
+          Take Picture
+        </span>
 
-                    </div>
-                  }
-                </div>
+        <span
+          class="mt-1 !font-sans !text-[9px] !font-medium !text-[#806b68]"
+        >
+          Use camera
+        </span>
 
-                <button
-                  type="button"
-                  (click)="clearNewImages()"
-                  class="mt-3 flex min-h-[36px] w-full !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#b3123b] transition duration-150 active:scale-[0.99]"
-                >
-                  Remove selected images
-                </button>
+      </button>
 
-              </div>
-            }
 
-          </div>
+      <!-- GALLERY -->
 
-          <!-- EXISTING IMAGES -->
+      <label
+        class="flex min-h-[115px] cursor-pointer flex-col items-center justify-center rounded-[12px] border border-dashed border-[#d9c4b2] bg-[#fffdf7] px-3 py-4 text-center transition duration-200 active:scale-[0.99]"
+      >
 
-          @if (product.images && product.images.length > 0) {
-            <div class="mt-4">
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          (change)="onImageSelected($event)"
+          class="hidden"
+        />
 
-              <div class="mb-2 flex items-center justify-between gap-2">
-                <label class="block !font-sans !text-[11px] !font-bold !text-[#17233c]">
-                  Existing Images
-                </label>
+        <div
+          class="mb-2 flex !h-[37px] !w-[37px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+        >
 
-                <span class="rounded-full bg-[#f7e9bd] px-2 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]">
-                  {{ product.images.length }}
-                </span>
-              </div>
+          <ion-icon
+            name="image-outline"
+            class="!text-[22px]"
+          ></ion-icon>
 
-              <div class="flex flex-wrap gap-3">
-                @for (image of product.images; track image.productImageId; let i = $index) {
-                  <div class="relative h-[72px] w-[72px] shrink-0 rounded-[10px] border border-[#eadfd5] bg-white p-1">
+        </div>
 
-                    <img
-                      [src]="image.imageUrl"
-                      [alt]="product.productName"
-                      class="h-full w-full rounded-[7px] object-cover"
-                    />
+        <span
+          class="!font-sans !text-[11px] !font-bold !text-[#17233c]"
+        >
+          Choose Images
+        </span>
 
-                    <button
-                      type="button"
-                      (click)="removeExistingImage(i)"
-                      [attr.aria-label]="'Remove existing image ' + (i + 1)"
-                      class="absolute -right-2 -top-2 flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-full !border-2 !border-white !bg-[#b3123b] !p-0 !text-white shadow-md transition duration-150 hover:!bg-[#8f071f] active:scale-90"
-                    >
-                      <ion-icon name="close-outline" class="!text-[15px]"></ion-icon>
-                    </button>
+        <span
+          class="mt-1 !font-sans !text-[9px] !font-medium !text-[#806b68]"
+        >
+          JPG, PNG or WEBP
+        </span>
 
-                  </div>
-                }
-              </div>
+      </label>
 
-            </div>
-          } @else {
-            <div class="mt-4 rounded-[10px] border border-dashed border-[#e1d7d2] bg-[#fffdf7] px-3 py-4 text-center">
-              <p class="!m-0 !font-sans !text-[10px] !font-medium !text-[#806b68]">
-                No existing images. You can add images using the box above.
-              </p>
-            </div>
-          }
+    </div>
 
-        </section>
+    <p
+      class="!m-[7px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+    >
+      You can select multiple images or capture photos one by one.
+    </p>
+
+  </div>
+
+
+  <!-- ===================================================
+       COMBINED EXISTING + NEW IMAGES
+       =================================================== -->
+
+  <div class="mt-4">
+
+    <div class="mb-2 flex items-center justify-between">
+
+      <h3
+        class="!m-0 !font-sans !text-[11px] !font-extrabold !text-[#17233c]"
+      >
+        Selected Images
+      </h3>
+
+      @if (editImages.length > 0) {
+
+        <span
+          class="rounded-full bg-[#f7e9bd] px-2 py-1 !font-sans !text-[9px] !font-bold !text-[#8f071f]"
+        >
+          {{ editImages.length }}
+        </span>
 
       }
 
-      
-        <!-- UPDATE PRODUCT -->
+    </div>
 
-        <section class="mt-4 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5">
 
-          <div class="mb-4 text-center">
-            <div class="mb-2 !font-sans !text-[13px] !font-bold tracking-[3px] !text-[#b3123b]">
-              ✦ &nbsp; ✦ &nbsp; ✦
+    @if (editImages.length > 0) {
+
+      <div
+        class="rounded-[12px] border border-[#ead8b9] bg-[#fffdf7] p-3"
+      >
+
+        <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+
+          @for (
+            image of editImages;
+            track $index
+          ) {
+
+            <div
+              class="relative aspect-square overflow-hidden rounded-[10px] border border-[#eadfd5] bg-white p-1"
+            >
+
+              <img
+                [src]="image.url"
+                [alt]="product?.productName || 'Product image'"
+                class="h-full w-full rounded-[7px] object-cover"
+              />
+
+              <button
+                type="button"
+                (click)="removeEditImage($index)"
+                [attr.aria-label]="'Remove image ' + ($index + 1)"
+                class="absolute right-1.5 top-1.5 flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-full !border-2 !border-white !bg-[#b3123b] !p-0 !text-white shadow-md active:scale-90"
+              >
+
+                <ion-icon
+                  name="close-outline"
+                  class="!text-[15px]"
+                ></ion-icon>
+
+              </button>
+
             </div>
 
-            <h2 class="!m-0 !font-sans !text-[14px] !font-extrabold !text-[#17233c]">
-              Save Your Changes
-            </h2>
+          }
 
-            <p class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]">
-              Review the updated details before saving.
-            </p>
-          </div>
+        </div>
 
-          <button
-            type="button"
-            [disabled]="isSaving"
-            (click)="updateProduct()"
-            class="flex min-h-[47px] w-full !items-center !justify-center gap-2 !rounded-[12px] !border-0 !bg-[#b3123b] px-4 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_4px_12px_rgba(143,7,31,0.18)] transition duration-200 hover:!bg-[#8f071f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-            style="--background: #b3123b; --background-activated: #8f071f; --color: #fff8dc;"
-          >
-            @if (isSaving) {
-              <span class="h-4 w-4 animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"></span>
-              <span>Updating...</span>
-            } @else {
-              <ion-icon name="save-outline" class="!text-[18px]"></ion-icon>
-              <span>Update Product</span>
-            }
-          </button>
-
-        </section>
-
-      <!-- BOTTOM DIWALI DECORATION -->
-
-      <div class="pointer-events-none relative z-0 -mx-3 mt-5 w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]">
-        <img
-          src="assets/images/newDesignBg.png"
-          alt=""
-          aria-hidden="true"
-          class="block h-auto w-[175%] max-w-none select-none opacity-[0.18]"
-        />
       </div>
 
-    </main>
+    } @else {
+
+      <div
+        class="rounded-[12px] border border-dashed border-[#e1d7d2] bg-[#fffdf7] px-3 py-5 text-center"
+      >
+
+        <p
+          class="!m-0 !font-sans !text-[10px] !font-medium !text-[#806b68]"
+        >
+          No product images selected.
+        </p>
+
+      </div>
+
+    }
+
   </div>
+
+</section>
+
+
+      }
+
+
+      <!-- =======================================================
+           UPDATE PRODUCT
+           ======================================================= -->
+
+      <section
+        class="mt-4 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+      >
+
+        <div class="mb-4 text-center">
+
+          <div
+            class="mb-2 !font-sans !text-[13px] !font-bold tracking-[3px] !text-[#b3123b]"
+          >
+            ✦ &nbsp; ✦ &nbsp; ✦
+          </div>
+
+          <h2
+            class="!m-0 !font-sans !text-[14px] !font-extrabold !text-[#17233c]"
+          >
+            Save Your Changes
+          </h2>
+
+          <p
+            class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
+          >
+            Review the updated details before saving.
+          </p>
+
+        </div>
+
+
+        <!-- UPDATE BUTTON -->
+
+        <button
+          type="button"
+          [disabled]="isSaving"
+          (click)="updateProduct()"
+          class="flex min-h-[47px] w-full !items-center !justify-center gap-2 !rounded-[12px] !border-0 !bg-[#b3123b] px-4 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_4px_12px_rgba(143,7,31,0.18)] transition duration-200 hover:!bg-[#8f071f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          style="--background: #b3123b; --background-activated: #8f071f; --color: #fff8dc;"
+        >
+
+          @if (isSaving) {
+
+            <span
+              class="h-4 w-4 animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"
+            ></span>
+
+            <span>Updating...</span>
+
+          } @else {
+
+            <ion-icon
+              name="save-outline"
+              class="!text-[18px]"
+            ></ion-icon>
+
+            <span>Update Product</span>
+
+          }
+
+        </button>
+
+      </section>
+
+
+
+      <!-- =======================================================
+           BOTTOM DIWALI DECORATION
+           ======================================================= -->
+
+
+
+    </main>
+
+  </div>
+
 </ion-content>

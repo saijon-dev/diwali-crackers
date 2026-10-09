@@ -8,7 +8,8 @@ import {
   IonContent,
   IonIcon,
   IonSelectOption,
-  IonSelect
+  IonSelect,
+  ToastController
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -24,7 +25,9 @@ import {
   chevronDownOutline,
   imageOutline,
   cubeOutline,
-  alertCircleOutline
+  alertCircleOutline,
+  addOutline,
+  checkmarkCircleOutline
 } from 'ionicons/icons';
 
 import {
@@ -36,6 +39,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 
 import { environment } from '../../../../environments/environment';
+import { VendorService } from '../../../services/vendor.service';
 
 
 interface Category {
@@ -73,13 +77,17 @@ export class VendProductsPage implements OnInit {
   isLoadingProducts = true;
   isLoadingCategories = true;
 
+  isAddProductView = false;
+
   errorMessage = '';
 
   constructor(
     private productService: ProductService,
     private http: HttpClient,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastController: ToastController,
+      private vendorService: VendorService
   ) {
 
     addIcons({
@@ -89,20 +97,57 @@ export class VendProductsPage implements OnInit {
       chevronDownOutline,
       imageOutline,
       cubeOutline,
-      alertCircleOutline
+      alertCircleOutline,
+      addOutline,
+      checkmarkCircleOutline
     });
 
   }
 
 
-  ngOnInit(): void {
+ngOnInit(): void {
+  this.loadCategories();
+}
 
-    this.loadCategories();
+ionViewWillEnter(): void {
+  // Reload data whenever the page is entered
+  this.loadCategories();
+  this.loadVendorProducts();
 
-    this.loadVendorProducts();
+  // Show success toast passed during navigation
+  const state = history.state;
 
+  if (state?.toastMessage && state?.toastType === 'success') {
+    void this.showProductToast(state.toastMessage, true);
+
+    history.replaceState(
+      {
+        ...state,
+        toastMessage: null,
+        toastType: null
+      },
+      ''
+    );
   }
+}
 
+
+private async showProductToast(
+  message: string,
+  isSuccess: boolean
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'bottom',
+    cssClass: 'diwali-toast',
+    icon: isSuccess
+      ? 'checkmark-circle-outline'
+      : 'alert-circle-outline'
+  });
+
+  await toast.present();
+}
 
   // =====================================================
   // LOAD CATEGORIES
@@ -149,54 +194,63 @@ export class VendProductsPage implements OnInit {
   // =====================================================
   // LOAD VENDOR PRODUCTS
   // =====================================================
+loadVendorProducts(): void {
 
-  loadVendorProducts(): void {
+  this.isLoadingProducts = true;
+  this.errorMessage = '';
 
-    this.isLoadingProducts = true;
+  this.productService
+    .getVendorProducts()
+    .subscribe({
 
-    this.errorMessage = '';
+      next: (response: VendorProductPage) => {
 
-    this.productService
-      .getVendorProducts()
-      .subscribe({
+        this.products = response?.content ?? [];
 
-        next: (response: VendorProductPage) => {
+        // Get the storeId from the first product that has a valid ID.
+      const storeId = this.products.find(
+  product =>
+    product.storeId !== undefined &&
+    Number.isInteger(product.storeId) &&
+    product.storeId > 0
+)?.storeId;
 
-          this.products =
-            response?.content ?? [];
-
-          this.applyFilters();
-
-          this.isLoadingProducts = false;
-
-          this.cdr.detectChanges();
-
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Failed to load vendor products:',
-            error
+if (storeId !== undefined) {
+  this.vendorService.setCurrentStoreId(storeId);
+  console.log('Saved Store ID:', storeId);
+} else {
+          console.warn(
+            'No valid storeId found in vendor products response.'
           );
-
-          this.products = [];
-
-          this.filteredProducts = [];
-
-          this.errorMessage =
-            'Unable to load your products.';
-
-          this.isLoadingProducts = false;
-
-          this.cdr.detectChanges();
-
         }
 
-      });
+        this.applyFilters();
 
-  }
+        this.isLoadingProducts = false;
 
+        this.cdr.detectChanges();
+      },
+
+      error: (error) => {
+
+        console.error(
+          'Failed to load vendor products:',
+          error
+        );
+
+        this.products = [];
+        this.filteredProducts = [];
+
+        this.errorMessage =
+          'Unable to load your products.';
+
+        this.isLoadingProducts = false;
+
+        this.cdr.detectChanges();
+      }
+
+    });
+}
 
   // =====================================================
   // SEARCH + CATEGORY FILTER
@@ -366,12 +420,15 @@ getProductImage(
   // =====================================================
   // PRODUCT CLICK
   // =====================================================
-
 openProduct(product: VendorProduct): void {
-  this.router.navigate([
-    '/tabs/admin-edit',
-    product.productId
-  ]);
+  this.router.navigate(
+    ['/tabs/admin-edit', product.productStoreId],
+    {
+      state: {
+        product
+      }
+    }
+  );
 }
 
   // =====================================================
@@ -385,5 +442,16 @@ openProduct(product: VendorProduct): void {
     this.loadCategories();
 
   }
+
+
+  openNewProductForm(): void {
+  this.isAddProductView = true;
+
+  this.router.navigate(['/tabs/admin-edit', 'new'], {
+    state: {
+      isNewProduct: true
+    }
+  });
+}
 
 }

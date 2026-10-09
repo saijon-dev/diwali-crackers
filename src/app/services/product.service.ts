@@ -4,13 +4,14 @@ import {
   HttpClient,
   HttpParams
 } from '@angular/common/http';
-
-import { Observable, from, of } from 'rxjs';
-
 import {
-  switchMap,
-  map
-} from 'rxjs/operators';
+  Camera,
+  CameraDirection,
+  CameraResultType,
+  CameraSource
+} from '@capacitor/camera';
+import { Observable, from, of } from 'rxjs';
+import { switchMap, map, tap } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -47,6 +48,7 @@ export interface LookupUnit {
 export interface Product {
   productId: number;
   productStoreId: number;
+    storeId?: number;
   productCode: string;
   productName: string;
   categoryId: number;
@@ -107,7 +109,7 @@ export interface ProductData {
   mrp: number;
   sellingPrice: number;
   stockQuantity: number;
-  imageIndexes: number[];
+imageIndexes?: number[];
 }
 
 
@@ -119,7 +121,13 @@ export interface Category {
   categoryId: number;
   categoryName: string;
   description: string;
-  imageUrl?: string;
+  categoryImageUrl?: string;
+  status: string;
+  createdByType: string;
+  createdByUserId: number;
+  createdAt: string;
+  updatedAt: string;
+  alreadyAdded: boolean | null;
 }
 
 export interface CategoryData {
@@ -185,7 +193,7 @@ export interface AdminProduct {
   createdByUserName: string;
   createdByStoreName: string;
   vendorListings: AdminVendorListing[];
-  images: string[];
+  images: ProductImage[];
 }
 
 
@@ -294,9 +302,24 @@ export class ProductService {
   private readonly productPageCache =
     new Map<string, ProductPageResponse>();
 
+    private readonly productStoreCategoriesCache =
+  new Map<number, Category[]>();
+
 
     private readonly productDetailsCache =
   new Map<number, Product>();
+
+
+  private readonly categoryProductsCache =
+  new Map<number, ProductPageResponse>();
+
+private readonly storeProductsCache =
+  new Map<string, ProductPageResponse>();
+
+private readonly allVendorProductsCache =
+  new Map<number, ProductPageResponse>();
+
+  private adminProductsCache: AdminProductResponse | null = null;
 
 
   /*
@@ -313,7 +336,9 @@ export class ProductService {
 
 
 
-
+clearAdminProductCache(): void {
+  this.adminProductsCache = null;
+}
 
   
   /* =========================================================
@@ -376,16 +401,40 @@ export class ProductService {
 
 
 
-  getStoreProducts(
+getStoreProducts(
   storeId: number,
   page: number = 0,
   size: number = 10
 ): Observable<ProductPageResponse> {
 
-  return this.http.get<ProductPageResponse>(
-    `${this.apiUrl}/stores/product-stores/${storeId}/store-products?page=${page}&size=${size}`
-  );
+  const cacheKey = `${storeId}_${page}_${size}`;
 
+  const cachedResponse =
+    this.storeProductsCache.get(cacheKey);
+
+  if (cachedResponse) {
+    return of(cachedResponse);
+  }
+
+  return this.http
+    .get<ProductPageResponse>(
+      `${this.apiUrl}/${storeId}/all-vendor-products`,
+      {
+        params: new HttpParams()
+          .set('page', page)
+          .set('size', size)
+      }
+    )
+    .pipe(
+      map(response => {
+        this.storeProductsCache.set(
+          cacheKey,
+          response
+        );
+
+        return response;
+      })
+    );
 }
 
 
@@ -450,45 +499,7 @@ export class ProductService {
    * loading a paginated /products response and searching
    * through the current Home page.
    */
-getProduct(
-  productId: number
-): Observable<Product> {
 
-  const cachedProduct =
-    this.productDetailsCache.get(
-      productId
-    );
-
-
-  if (cachedProduct) {
-
-    return of(
-      cachedProduct
-    );
-
-  }
-
-
-  return this.http
-    .get<Product>(
-      `${this.apiUrl}/products/${productId}`
-    )
-    .pipe(
-
-      map(product => {
-
-        this.productDetailsCache.set(
-          productId,
-          product
-        );
-
-        return product;
-
-      })
-
-    );
-
-}
 
 
 clearProductDetailsCache(): void {
@@ -515,30 +526,64 @@ clearProductDetailsCache(): void {
      ALL VENDOR PRODUCTS
   ========================================================= */
 
-  getAllVendorProducts(
-    productStoreId: number
-  ): Observable<ProductPageResponse> {
+getAllVendorProducts(
+  productStoreId: number
+): Observable<ProductPageResponse> {
 
-    return this.http.get<ProductPageResponse>(
-      `${this.apiUrl}/${productStoreId}/all-vendor-products`
-    );
+  const cachedResponse =
+    this.allVendorProductsCache.get(productStoreId);
 
+  if (cachedResponse) {
+    return of(cachedResponse);
   }
+
+  return this.http
+    .get<ProductPageResponse>(
+      `${this.apiUrl}/diwali/stores/product-stores/${productStoreId}/store-products`
+    )
+    .pipe(
+      map(response => {
+        this.allVendorProductsCache.set(
+          productStoreId,
+          response
+        );
+
+        return response;
+      })
+    );
+}
 
 
   /* =========================================================
      PRODUCTS BY CATEGORY
   ========================================================= */
 
-  getProductsByCategory(
-    categoryId: number
-  ): Observable<ProductPageResponse> {
+getProductsByCategory(
+  categoryId: number
+): Observable<ProductPageResponse> {
 
-    return this.http.get<ProductPageResponse>(
-      `${this.apiUrl}/products/category/${categoryId}`
-    );
+  const cachedResponse =
+    this.categoryProductsCache.get(categoryId);
 
+  if (cachedResponse) {
+    return of(cachedResponse);
   }
+
+  return this.http
+    .get<ProductPageResponse>(
+      `${this.apiUrl}/products/category/${categoryId}`
+    )
+    .pipe(
+      map(response => {
+        this.categoryProductsCache.set(
+          categoryId,
+          response
+        );
+
+        return response;
+      })
+    );
+}
 
 
   /* =========================================================
@@ -675,10 +720,13 @@ clearProductDetailsCache(): void {
   }
 
 
-  clearCustomerCache(): void {
-    this.clearProductCache();
-    this.clearCategoryCache();
-  }
+clearCustomerCache(): void {
+  this.clearProductCache();
+  this.clearCategoryCache();
+  this.clearCategoryProductsCache();
+  this.clearStoreProductsCache();
+  this.clearAllVendorProductsCache();
+}
 
 
   /* =========================================================
@@ -730,46 +778,32 @@ clearProductDetailsCache(): void {
      UPDATE CATEGORY
   ========================================================= */
 
-  updateCategory(
-    categoryId: number,
-    categoryData: CategoryData,
-    image: File
-  ): Observable<any> {
+updateCategory(
+  categoryId: number,
+  categoryData: {
+    categoryName: string;
+    description: string;
+  },
+  image?: File | null
+): Observable<any> {
+  const formData = new FormData();
 
-    const formData =
-      new FormData();
+  const categoryBlob = new Blob(
+    [JSON.stringify(categoryData)],
+    { type: 'application/json' }
+  );
 
+  formData.append('categoryData', categoryBlob);
 
-    const categoryDataBlob =
-      new Blob(
-        [
-          JSON.stringify(categoryData)
-        ],
-        {
-          type: 'application/json'
-        }
-      );
-
-
-    formData.append(
-      'categoryData',
-      categoryDataBlob
-    );
-
-
-    formData.append(
-      'image',
-      image,
-      image.name
-    );
-
-
-    return this.http.put(
-      `${this.apiUrl}/categories/${categoryId}`,
-      formData
-    );
-
+  if (image) {
+    formData.append('categoryImage', image);
   }
+
+  return this.http.put(
+    `${this.apiUrl}/categories/${categoryId}`,
+    formData
+  );
+}
 
 
   /* =========================================================
@@ -788,102 +822,76 @@ clearProductDetailsCache(): void {
   /* =========================================================
      ADD VENDOR PRODUCTS
   ========================================================= */
+addProduct(
+  products: ProductData[],
+  images: File[]
+): Observable<any> {
 
-  addProduct(
-    products: ProductData[],
-    images: File[]
-  ): Observable<any> {
+  const formData = new FormData();
 
-    const formData =
-      new FormData();
+  const productsBlob = new Blob(
+    [
+      JSON.stringify(products)
+    ],
+    {
+      type: 'application/json'
+    }
+  );
 
+  formData.append(
+    'products',
+    productsBlob
+  );
 
-    const productsBlob =
-      new Blob(
-        [
-          JSON.stringify({
-            products
-          })
-        ],
-        {
-          type: 'application/json'
-        }
-      );
-
+  images.forEach(image => {
 
     formData.append(
-      'products',
-      productsBlob
+      'images',
+      image,
+      image.name
     );
 
+  });
 
-    images.forEach(image => {
-
-      formData.append(
-        'images',
-        image,
-        image.name
-      );
-
-    });
-
-
-    return this.http.post(
-      `${this.apiUrl}/vendor/products/bulk`,
-      formData
-    );
-
-  }
+  return this.http.post(
+    `${this.apiUrl}/vendor/products/bulk`,
+    formData
+  );
+}
 
 
   /* =========================================================
      UPDATE VENDOR PRODUCT
   ========================================================= */
+updateVendorProduct(
+  productStoreId: number,
+  productData: ProductData,
+  images: File[]
+): Observable<any> {
 
-  updateVendorProduct(
-    productId: number,
-    productData: any,
-    images: File[] = []
-  ): Observable<any> {
+  const formData = new FormData();
 
-    const formData =
-      new FormData();
+  // Product JSON, including removeImageIds
+  const productBlob = new Blob(
+    [JSON.stringify(productData)],
+    { type: 'application/json' }
+  );
 
+  formData.append('productData', productBlob);
 
-    const productDataBlob =
-      new Blob(
-        [
-          JSON.stringify(productData)
-        ],
-        {
-          type: 'application/json'
-        }
-      );
+  // Existing images to keep
 
 
-    formData.append(
-      'productData',
-      productDataBlob
-    );
+  // Newly added images
+  images.forEach(image => {
+    formData.append('images', image, image.name);
+  });
 
-
-    images.forEach(image => {
-
-      formData.append(
-        'images',
-        image,
-        image.name
-      );
-
-    });
-
-
-    return this.http.put(
-      `${this.apiUrl}/vendor/products/${productId}`,
-      formData
-    );
-
-  }
+  return this.http.put(
+    `${this.apiUrl}/products/${productStoreId}`,
+    formData
+  );
+}
 
 
   /* =========================================================
@@ -903,116 +911,181 @@ clearProductDetailsCache(): void {
      ADMIN PRODUCTS
   ========================================================= */
 
-  getAdminProducts(): Observable<AdminProductResponse> {
+getAdminProducts(): Observable<AdminProductResponse> {
 
-    return this.http.get<AdminProductResponse>(
-      `${this.apiUrl}/admin/products`
-    );
+  /*
+   * Return cached admin products if already loaded.
+   */
+  if (this.adminProductsCache) {
+
+    return of(this.adminProductsCache);
 
   }
+
+
+  /*
+   * First request:
+   * call backend and cache successful response.
+   */
+  return this.http.get<AdminProductResponse>(
+    `${this.apiUrl}/admin/products`
+  ).pipe(
+
+    tap(response => {
+
+      this.adminProductsCache =
+        response;
+
+    })
+
+  );
+
+}
 
 
   /* =========================================================
      ADD ADMIN PRODUCT
   ========================================================= */
 
-  addAdminProduct(
-    productData: {
-      productName: string;
-      categoryId: number;
-      status: string;
-    },
-    image: File
-  ): Observable<any> {
 
-    const formData =
-      new FormData();
+addAdminProduct(
+  productData: {
+    productName: string;
+    categoryId: number;
+    status: string;
+  },
+  images: File[]
+): Observable<any> {
 
+  const formData = new FormData();
 
-    const productDataBlob =
-      new Blob(
-        [
-          JSON.stringify(productData)
-        ],
-        {
-          type: 'application/json'
-        }
-      );
+  const productDataBlob = new Blob(
+    [JSON.stringify(productData)],
+    {
+      type: 'application/json'
+    }
+  );
 
+  formData.append(
+    'productData',
+    productDataBlob
+  );
 
+  // Send multiple images with the same key
+  images.forEach((image) => {
     formData.append(
-      'productData',
-      productDataBlob
-    );
-
-
-    formData.append(
-      'image',
+      'images',
       image,
       image.name
     );
+  });
 
+  return this.http.post(
+    `${this.apiUrl}/admin/products`,
+    formData
+  ).pipe(
+    tap((response) => {
+      const result = response as {
+        success?: boolean;
+      };
 
-    return this.http.post(
-      `${this.apiUrl}/admin/products`,
-      formData
-    );
+      if (result?.success !== false) {
+        this.clearAdminProductCache();
+      }
+    })
+  );
+}
 
-  }
 
 
   /* =========================================================
      UPDATE ADMIN PRODUCT
   ========================================================= */
 
-  updateAdminProduct(
-    productId: number,
-    productData: {
-      productName: string;
-      categoryId: number;
-      status: string;
-    },
-    image?: File
-  ): Observable<any> {
 
-    const formData =
-      new FormData();
+updateAdminProduct(
+  productId: number,
+  productData: {
+    productName: string;
+    categoryId: number;
+    status: string;
+    removeImageIds: number[];
+  },
+  images?: File[]
+): Observable<any> {
+
+  const formData = new FormData();
+
+  const productDataBlob = new Blob(
+    [JSON.stringify(productData)],
+    {
+      type: 'application/json'
+    }
+  );
+
+  formData.append('productData', productDataBlob);
+
+  // Send each newly added image using the same key.
+  if (images && images.length > 0) {
+    images.forEach(image => {
+      formData.append('images', image, image.name);
+    });
+  }
+
+  return this.http.put(
+    `${this.apiUrl}/admin/products/${productId}`,
+    formData
+  ).pipe(
+    tap(response => {
+      const result = response as {
+        success?: boolean;
+      };
+
+      if (result?.success !== false) {
+        this.clearAdminProductCache();
+      }
+    })
+  );
+}
 
 
-    const productDataBlob =
-      new Blob(
-        [
-          JSON.stringify(productData)
-        ],
-        {
-          type: 'application/json'
-        }
-      );
 
 
-    formData.append(
-      'productData',
-      productDataBlob
-    );
+  /* ====================================================
+   TAKE PICTURE USING DEVICE CAMERA
+==================================================== */
+async takePicture(): Promise<File | null> {
+  try {
+    const photo = await Camera.getPhoto({
+      quality: 90,
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera,
+      direction: CameraDirection.Rear
+    });
 
-
-    if (image) {
-
-      formData.append(
-        'image',
-        image,
-        image.name
-      );
-
+    if (!photo.webPath) {
+      console.warn('Camera did not return an image path.');
+      return null;
     }
 
+    const response = await fetch(photo.webPath);
+    const blob = await response.blob();
 
-    return this.http.put(
-      `${this.apiUrl}/admin/products/${productId}`,
-      formData
+    const file = new File(
+      [blob],
+      `camera-${Date.now()}.jpg`,
+      {
+        type: blob.type || 'image/jpeg'
+      }
     );
 
+    return file;
+
+  } catch (error) {
+    console.warn('Camera cancelled or unavailable:', error);
+    return null;
   }
+}
 
 
 
@@ -1022,8 +1095,49 @@ clearProductDetailsCache(): void {
 
 getPackUnits(): Observable<LookupUnit[]> {
   return this.http.get<LookupUnit[]>(
-    `${this.apiUrl}/lookups/units`
+    `${this.apiUrl}/diwali/lookups/units`
   );
+}
+
+
+clearCategoryProductsCache(): void {
+  this.categoryProductsCache.clear();
+}
+
+clearStoreProductsCache(): void {
+  this.storeProductsCache.clear();
+}
+
+clearAllVendorProductsCache(): void {
+  this.allVendorProductsCache.clear();
+}
+
+
+
+getCategoriesByProductStore(
+  productStoreId: number
+): Observable<Category[]> {
+
+  const cached =
+    this.productStoreCategoriesCache.get(productStoreId);
+
+  if (cached) {
+    return of(cached);
+  }
+
+  return this.http
+    .get<Category[]>(
+      `${this.apiUrl}/categories/product-stores/${productStoreId}/categories`
+    )
+    .pipe(
+      tap(categories => {
+        this.productStoreCategoriesCache.set(
+          productStoreId,
+          categories
+        );
+      })
+    );
+
 }
 
 }

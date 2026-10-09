@@ -235,7 +235,7 @@ export class OrderService {
     .set('size', size);
 
   return this.http.get<AdminOrderPageResponse>(
-    `${this.apiUrl}/admin/orders`,
+    `${this.apiUrl}/orders/admin`,
     {
       params
     }

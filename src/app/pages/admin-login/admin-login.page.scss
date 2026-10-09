@@ -3,6 +3,7 @@
 ========================================= */
 
 .login-content {
+
   --background: #4b061f;
 
   --padding-top: 0;
@@ -17,6 +18,7 @@
 ========================================= */
 
 .login-page {
+
   position: relative;
 
   width: 100%;
@@ -33,6 +35,7 @@
 ========================================= */
 
 .login-background {
+
   position: absolute;
 
   inset: 0;
@@ -58,6 +61,7 @@
 ========================================= */
 
 .login-overlay {
+
   position: absolute;
 
   inset: 0;
@@ -80,6 +84,7 @@
 ========================================= */
 
 .back-button-container {
+
   position: absolute;
 
   top:
@@ -98,6 +103,7 @@
 ========================================= */
 
 .login-container {
+
   position: relative;
 
   z-index: 3;
@@ -132,6 +138,7 @@
 ========================================= */
 
 .brand-section {
+
   width: 100%;
 
   text-align: center;
@@ -141,6 +148,7 @@
 
 
 .brand-name {
+
   font-family:
     'Poppins',
     sans-serif;
@@ -159,6 +167,7 @@
 
 
 .brand-title {
+
   margin-top: 2px;
 
   font-family:
@@ -180,6 +189,7 @@
 
 
 .brand-decoration {
+
   margin-top: 2px;
 
   font-family:
@@ -199,6 +209,7 @@
 ========================================= */
 
 .login-card {
+
   width: 100%;
 
   max-width: 370px;
@@ -230,6 +241,7 @@
 ========================================= */
 
 .card-title {
+
   text-align: center;
 
   font-family:
@@ -251,6 +263,7 @@
 ========================================= */
 
 .card-subtitle {
+
   margin-top: 4px;
 
   margin-bottom: 16px;
@@ -271,6 +284,7 @@
 
 
 .card-subtitle strong {
+
   color: #10265c;
 
   font-weight: 600;
@@ -282,6 +296,7 @@
 ========================================= */
 
 .input-group {
+
   width: 100%;
 
   margin-bottom: 12px;
@@ -293,6 +308,7 @@
 ========================================= */
 
 .input-wrapper {
+
   display: flex;
 
   align-items: center;
@@ -322,6 +338,7 @@
 
 
 .input-wrapper:focus-within {
+
   border-color: #c99224;
 
   box-shadow:
@@ -335,6 +352,7 @@
 ========================================= */
 
 .input-icon {
+
   flex-shrink: 0;
 
   margin-right: 8px;
@@ -350,6 +368,7 @@
 ========================================= */
 
 .input-wrapper ion-input {
+
   flex: 1;
 
   --padding-start: 0;
@@ -375,6 +394,7 @@
 ========================================= */
 
 .otp-container {
+
   display: flex;
 
   justify-content: center;
@@ -398,6 +418,7 @@
 ========================================= */
 
 .otp-box {
+
   width: 45px;
 
   height: 49px;
@@ -436,6 +457,7 @@
 
 
 .otp-box.active {
+
   border-color: #c99224;
 
   box-shadow:
@@ -452,6 +474,7 @@
 ========================================= */
 
 .otp-hidden-input {
+
   position: absolute;
 
   width: 1px;
@@ -467,10 +490,146 @@
 
 
 /* =========================================
+   OTP TIMER / RESEND
+========================================= */
+
+.otp-resend-section {
+
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  min-height: 28px;
+
+  margin:
+    1px
+    0
+    7px;
+}
+
+
+/* =========================================
+   OTP TIMER
+========================================= */
+
+.otp-timer {
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  color: #66708a;
+
+  text-align: center;
+}
+
+
+.otp-timer strong {
+
+  margin-left: 3px;
+
+  color: #a06a18;
+
+  font-weight: 700;
+
+  letter-spacing: 0.3px;
+}
+
+
+/* =========================================
+   RESEND OTP BUTTON
+========================================= */
+
+.resend-otp-button {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 105px;
+
+  height: 28px;
+
+  padding:
+    0
+    14px;
+
+  border:
+    1px solid
+    rgba(160, 106, 24, 0.55);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 248, 226, 0.9);
+
+  color: #a06a18;
+
+  font-family:
+    'Poppins',
+    sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.resend-otp-button:hover {
+
+  background: #fff5d8;
+
+  border-color: #a06a18;
+
+  box-shadow:
+    0 2px 6px
+    rgba(160, 106, 24, 0.12);
+}
+
+
+.resend-otp-button:active {
+
+  transform:
+    scale(0.97);
+}
+
+
+.resend-otp-button:disabled {
+
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================
    ERROR MESSAGE
 ========================================= */
 
 .error-message {
+
   padding:
     4px
     3px
@@ -491,6 +650,7 @@
 ========================================= */
 
 .change-number-button {
+
   display: block;
 
   margin:
@@ -526,6 +686,7 @@
 ========================================= */
 
 .login-button {
+
   margin:
     5px
     0
@@ -560,6 +721,7 @@
 ========================================= */
 
 .api-error-message {
+
   margin:
     5px
     3px
@@ -596,6 +758,7 @@
 ========================================= */
 
 .login-footer {
+
   margin-top: 13px;
 
   text-align: center;
@@ -624,6 +787,7 @@
 @media (max-width: 360px) {
 
   .login-container {
+
     padding-left: 10px;
 
     padding-right: 10px;
@@ -635,11 +799,13 @@
 
 
   .brand-section {
+
     margin-bottom: 9px;
   }
 
 
   .login-card {
+
     padding:
       16px
       12px
@@ -648,21 +814,25 @@
 
 
   .card-subtitle {
+
     margin-bottom: 12px;
   }
 
 
   .input-wrapper {
+
     min-height: 43px;
   }
 
 
   .otp-container {
+
     gap: 5px;
   }
 
 
   .otp-box {
+
     width: 39px;
 
     height: 43px;
@@ -673,7 +843,24 @@
   }
 
 
+  .otp-resend-section {
+
+    margin-bottom: 6px;
+  }
+
+
+  .resend-otp-button {
+
+    min-width: 100px;
+
+    height: 27px;
+
+    font-size: 9px;
+  }
+
+
   .login-button {
+
     height: 42px;
   }
 
@@ -687,6 +874,7 @@
 @media (min-height: 800px) {
 
   .login-card {
+
     padding-top: 21px;
 
     padding-bottom: 18px;
@@ -702,16 +890,29 @@
 @media (max-width: 330px) {
 
   .otp-container {
+
     gap: 4px;
   }
 
 
   .otp-box {
+
     width: 36px;
 
     height: 42px;
 
     font-size: 15px;
+  }
+
+
+  .resend-otp-button {
+
+    min-width: 96px;
+
+    padding:
+      0
+      12px;
+
   }
 
 }

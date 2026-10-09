@@ -1,5 +1,7 @@
-import { Component ,
-  ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectorRef
+} from '@angular/core';
 
 import {
   IonTabs,
@@ -11,6 +13,7 @@ import {
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
+
 import {
   CartService
 } from '../services/cart.service';
@@ -72,36 +75,15 @@ interface TabItem {
 
 export class TabsPage {
 
-cartCount = 0;
+  cartCount = 0;
+
   role: string | null = null;
 
-customerTabs: TabItem[] = [
 
-  {
-    label: 'Home',
-    route: 'home',
-    icon: 'home-outline'
-  },
+  // =========================================
+  // CUSTOMER TABS
+  // =========================================
 
-  {
-    label: 'Categories',
-    route: 'categories',
-    icon: 'grid-outline'
-  },
-
-  {
-    label: 'Cart',
-    route: 'cart',
-    icon: 'cart-outline'
-  },
-
-  {
-    label: 'My Orders',
-    route: 'orders',
-    icon: 'receipt-outline'
-  }
-
-];
 
 
   // =========================================
@@ -111,43 +93,33 @@ customerTabs: TabItem[] = [
   vendorTabs: TabItem[] = [
 
     {
-
       label: 'Products',
-
       route: 'products',
-
       icon: 'cube-outline'
-
     },
 
     {
-
-      label: 'My Products',
-
-      route: 'vend-products',
-
+      label: 'Categories',
+      route: 'adm-categories',
       icon: 'grid-outline'
-
     },
 
     {
+      label: 'My Products',
+      route: 'vend-products',
+      icon: 'grid-outline'
+    },
 
+    {
       label: 'Orders',
-
       route: 'vend-orders',
-
       icon: 'sync-outline'
-
     },
 
     {
-
       label: 'Shop',
-
       route: 'shop',
-
       icon: 'storefront-outline'
-
     }
 
   ];
@@ -159,45 +131,34 @@ customerTabs: TabItem[] = [
 
   adminTabs: TabItem[] = [
 
-    {
 
-      label: 'Home',
 
-      route: 'adm-home',
-
-      icon: 'home-outline'
-
-    },
-
-    {
-
-      label: 'Vendors',
-
-      route: 'adm-vendors',
-
-      icon: 'people-outline'
-
-    },
-
-    {
-
-      label: 'Orders',
-
-      route: 'adm-orders',
-
-      icon: 'receipt-outline'
-
-    },
-
-  {
-
+        {
       label: 'Products',
-
       route: 'adm-products',
-
       icon: 'cube-outline'
+    },
 
+ 
+    {
+      label: 'Vendors',
+      route: 'adm-vendors',
+      icon: 'people-outline'
+    },
+
+    {
+      label: 'Categories',
+      route: 'adm-categories',
+      icon: 'grid-outline'
+    },
+
+    {
+      label: 'Orders',
+      route: 'adm-orders',
+      icon: 'receipt-outline'
     }
+
+
 
   ];
 
@@ -205,11 +166,12 @@ customerTabs: TabItem[] = [
   constructor(
 
     private authService: AuthService,
-      private cartService: CartService,
-        private cdr: ChangeDetectorRef
+
+    private cartService: CartService,
+
+    private cdr: ChangeDetectorRef
 
   ) {
-
 
     addIcons({
 
@@ -231,11 +193,16 @@ customerTabs: TabItem[] = [
 
       ellipsisHorizontalOutline
 
-    });}
+    });
+
+  }
 
 
-    // Get role when TabsPage loads
- ionViewWillEnter(): void {
+  // =========================================
+  // GET ROLE WHEN TABS PAGE LOADS
+  // =========================================
+
+  ionViewWillEnter(): void {
 
     this.role =
       this.authService.getRole();
@@ -246,26 +213,33 @@ customerTabs: TabItem[] = [
     );
 
   }
-ngOnInit(): void {
 
-  this.cartService.cart$.subscribe(cart => {
 
-    console.log('TABS CART UPDATE:', cart);
+  // =========================================
+  // CART COUNT
+  // =========================================
 
-    this.cartCount =
-      cart?.totalItems ?? 0;
+  ngOnInit(): void {
 
-    console.log(
-      'TABS CART COUNT:',
-      this.cartCount
-    );
+    this.cartService.cart$.subscribe(cart => {
 
-    this.cdr.detectChanges();
+      console.log(
+        'TABS CART UPDATE:',
+        cart
+      );
 
-  });
+      this.cartCount =
+        cart?.totalItems ?? 0;
 
-}
+      console.log(
+        'TABS CART COUNT:',
+        this.cartCount
+      );
 
-  
+      this.cdr.detectChanges();
+
+    });
+
+  }
 
 }

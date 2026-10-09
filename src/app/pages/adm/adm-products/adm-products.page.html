@@ -1,187 +1,351 @@
 <ion-content
   [fullscreen]="true"
-  class="adm-products-content"
+  class="!bg-white"
 >
 
-  <div class="adm-products-page">
+<div
+  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+>
+
+  <!-- =====================================================
+       GLOBAL HOME BOTTOM DESIGN
+       Positioned at the actual bottom of this page content
+       without taking layout space.
+  ====================================================== -->
+
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+    aria-hidden="true"
+  >
+    <img
+      src="assets/images/newDesignBg.png"
+      alt=""
+      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+    />
+  </div>
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
+    >
+
+      <!-- BACK BUTTON -->
+
+    <button
+  type="button"
+  (click)="confirmLogout()"
+  aria-label="Logout"
+  class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+>
+  <ion-icon
+    name="log-out-outline"
+    class="!text-[23px]"
+  ></ion-icon>
+</button>
 
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+      <!-- HEADER TITLE -->
 
-    <header class="products-header">
-
-      <button
-        type="button"
-        class="back-button"
-        (click)="goBack()"
-        aria-label="Go back"
+      <div
+        class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
       >
 
-        <ion-icon
-          name="arrow-back-outline"
-        ></ion-icon>
-
-      </button>
-
-
-      <div class="header-title">
-
-        <h1>
+        <h1
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+        >
           Products
         </h1>
 
-        <span>
+        <p
+          class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
+        >
           Manage your crackers
-        </span>
+        </p>
 
       </div>
+
+
+      <!-- RIGHT DEEPAS -->
+
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+      />
 
     </header>
 
 
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
 
-    <main class="products-main">
+<main
+  class="mx-auto flex w-full max-w-[760px] flex-1 flex-col"
+>
 
+      <!-- ================================================= -->
+      <!-- SEARCH -->
+      <!-- ================================================= -->
 
-      <!-- ===================================================
-           SEARCH
-      ==================================================== -->
+      <section
+        class="mt-4"
+      >
 
-      <div class="product-actions">
+        <div
+          class="flex items-center gap-2.5"
+        >
 
-        <div class="search-box">
+          <!-- SEARCH BOX -->
 
-          <ion-icon
-            name="search-outline"
-            class="search-icon"
-          ></ion-icon>
+          <div
+            class="relative flex h-[43px] min-w-0 flex-1 items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+          >
 
-
-          <input
-            type="text"
-            [(ngModel)]="searchText"
-            placeholder="Search products"
-            autocomplete="off"
-          />
-
-
-          @if (searchText) {
-
-            <button
-              type="button"
-              class="clear-search"
-              (click)="searchText = ''"
-              aria-label="Clear search"
+            <ion-icon
+              name="search-outline"
+              class="ml-3 shrink-0 !text-[17px] !text-[#8f071f]"
             >
+            </ion-icon>
 
-              <ion-icon
-                name="close-outline"
-              ></ion-icon>
 
-            </button>
+            <input
+              type="text"
+              [(ngModel)]="searchText"
+              placeholder="Search products"
+              autocomplete="off"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
+            />
 
-          }
+
+            @if (searchText) {
+
+              <button
+                type="button"
+                class="mr-2 flex !h-[27px] !w-[27px] !items-center !justify-center !rounded-[7px] !border-0 !bg-[#f7e9bd] !p-0 !font-sans !text-[#8f071f] transition-transform duration-150 active:scale-90"
+                (click)="searchText = ''"
+                aria-label="Clear search"
+              >
+
+                <ion-icon
+                  name="close-outline"
+                  class="!text-[15px]"
+                >
+                </ion-icon>
+
+              </button>
+
+            }
+
+          </div>
+
+
+          <!-- ADD PRODUCT -->
+
+          <button
+            type="button"
+            (click)="openAddProduct()"
+            aria-label="Add product"
+            class="flex !h-[43px] !w-[43px] shrink-0 !items-center !justify-center !rounded-[11px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)] transition-transform duration-150 active:scale-95"
+          >
+
+            <ion-icon
+              name="add-outline"
+              class="!text-[21px]"
+            >
+            </ion-icon>
+
+          </button>
 
         </div>
 
-      </div>
+      </section>
 
 
-      <!-- ===================================================
-           PRODUCT COUNT
-      ==================================================== -->
+      <!-- ================================================= -->
+      <!-- PRODUCTS HEADING -->
+      <!-- ================================================= -->
 
-      <div class="products-heading">
+      <section
+        class="mt-5 flex items-end justify-between gap-3"
+      >
 
         <div>
 
-          <span class="section-kicker">
+          <span
+            class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
+          >
             Collection
           </span>
 
-          <h2>
+          <h2
+            class="!m-[4px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
+          >
             All Products
           </h2>
 
         </div>
 
 
-        <span class="product-count">
+        <!-- COUNT -->
+
+        <span
+          class="flex !h-[31px] min-w-[40px] !items-center !justify-center !rounded-[8px] !border !border-[#eadbc9] !bg-[#fffdf7] !px-2.5 !font-sans !text-[10px] !font-bold !text-[#8f071f]"
+        >
           {{ filteredProducts.length }}
         </span>
 
-      </div>
+      </section>
 
 
-      <!-- ===================================================
-           LOADING
-      ==================================================== -->
+      <!-- ================================================= -->
+      <!-- LOADING -->
+      <!-- ================================================= -->
 
-      @if (isLoadingProducts) {
+ <!-- ================================================= -->
+<!-- PRODUCT LIST SKELETON -->
+<!-- ================================================= -->
 
-        <section
-          class="empty-products"
+@if (isLoadingProducts) {
+
+  <section
+    class="mt-4 flex flex-col gap-3 pb-8"
+    aria-label="Loading products"
+  >
+
+    @for (
+      skeleton of [1, 2, 3, 4];
+      track skeleton
+    ) {
+
+      <article
+        class="flex min-w-0 items-center gap-3 rounded-[14px] border border-[#f0e5d8] bg-white p-3 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+      >
+
+        <!-- ================================================= -->
+        <!-- PRODUCT IMAGE SKELETON -->
+        <!-- ================================================= -->
+
+        <div
+          class="h-[78px] w-[78px] shrink-0 animate-pulse rounded-[11px] bg-[#f1e9db]"
+        >
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PRODUCT INFORMATION SKELETON -->
+        <!-- ================================================= -->
+
+        <div
+          class="min-w-0 flex-1"
         >
 
-          <div class="empty-icon">
+          <!-- PRODUCT LABEL -->
 
-            <ion-icon
-              name="cube-outline"
-            ></ion-icon>
-
+          <div
+            class="h-[7px] w-[48px] animate-pulse rounded-[3px] bg-[#eadfca]"
+          >
           </div>
 
-          <h3>
-            Loading products
-          </h3>
 
-          <p>
-            Please wait while products are loaded.
-          </p>
+          <!-- PRODUCT NAME -->
 
-        </section>
-
-      }
+          <div
+            class="mt-[6px] h-[14px] w-[72%] animate-pulse rounded-[4px] bg-[#e8dfd3]"
+          >
+          </div>
 
 
-      <!-- ===================================================
-           ERROR
-      ==================================================== -->
+          <!-- CATEGORY -->
+
+          <div
+            class="mt-[7px] h-[9px] w-[48%] animate-pulse rounded-[3px] bg-[#f1e9db]"
+          >
+          </div>
+
+
+          <!-- STATUS -->
+
+          <div
+            class="mt-[8px] h-[18px] w-[58px] animate-pulse rounded-[7px] bg-[#f1e9db]"
+          >
+          </div>
+
+
+          <!-- IMAGE COUNT -->
+
+          <div
+            class="mt-[7px] h-[8px] w-[70px] animate-pulse rounded-[3px] bg-[#f5eee5]"
+          >
+          </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- EDIT ARROW SKELETON -->
+        <!-- ================================================= -->
+
+        <div
+          class="h-[34px] w-[34px] shrink-0 animate-pulse rounded-[9px] bg-[#f1e9db]"
+        >
+        </div>
+
+      </article>
+
+    }
+
+  </section>
+
+}
+
+      <!-- ================================================= -->
+      <!-- ERROR -->
+      <!-- ================================================= -->
 
       @else if (productErrorMessage) {
 
         <section
-          class="empty-products"
+          class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
         >
 
-          <div class="empty-icon">
+          <div
+            class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+          >
 
             <ion-icon
               name="cube-outline"
-            ></ion-icon>
+              class="!text-[31px]"
+            >
+            </ion-icon>
 
           </div>
 
-          <h3>
+
+          <h3
+            class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+          >
             Unable to load products
           </h3>
 
-          <p>
+
+          <p
+            class="!m-[7px_0_17px] max-w-[290px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
             {{ productErrorMessage }}
           </p>
+
 
           <button
             type="button"
             (click)="loadAdminProducts()"
+            class="!min-h-[38px] !rounded-[9px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
           >
-
             Try Again
-
           </button>
 
         </section>
@@ -189,192 +353,164 @@
       }
 
 
-      <!-- ===================================================
-           PRODUCT LIST
-      ==================================================== -->
+      <!-- ================================================= -->
+      <!-- PRODUCT LIST -->
+      <!-- ================================================= -->
 
       @else if (filteredProducts.length > 0) {
 
-        <section class="product-list">
+<section
+  class="mt-4 grid grid-cols-3 gap-2"
+>
+  @for (
+    product of filteredProducts;
+    track product.productId
+  ) {
+    <article
+      class="relative min-w-0 cursor-pointer overflow-hidden rounded-[10px] border border-[#f0e5d8] bg-white p-[6px] shadow-[0_2px_8px_rgba(86,48,10,0.06)] transition-transform duration-150 active:scale-[0.97]"
+      (click)="openEditProduct(product)"
+    >
 
+      <!-- PRODUCT IMAGE -->
+      <div
+        class="relative h-[72px] w-full overflow-hidden rounded-[7px] bg-[#f7f3df]"
+      >
+        @if (
+          product.images &&
+          product.images.length > 0
+        ) {
+       <img
+    [src]="product.images[0].imageUrl"
+    [alt]="product.productName"
+    class="block h-full w-full object-cover"
+    loading="lazy"
+    (error)="onPreviewImageError($event)"
+  />
+        } @else {
+          <div
+            class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#806b68]"
+          >
+            <ion-icon
+              name="cube-outline"
+              class="!text-[22px]"
+            ></ion-icon>
+          </div>
+        }
+      </div>
 
-          @for (
-            product of filteredProducts;
-            track product.productId
-          ) {
+      <!-- PRODUCT DETAILS -->
+      <div class="min-w-0 px-[1px] pb-[1px] pt-[6px]">
 
-            <article
-              class="product-card"
-            >
+        <span
+          class="block !font-sans !text-[5.5px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
+        >
+          Product
+        </span>
 
+        <h3
+          class="!m-[2px_0_0] line-clamp-2 !font-sans !text-[10px] !font-bold !leading-[1.25] !text-[#17233c]"
+        >
+          {{ product.productName }}
+        </h3>
 
-              <!-- PRODUCT IMAGE -->
+        <span
+          class="mt-[2px] block truncate !font-sans !text-[9px] !font-medium !text-[#806b68]"
+        >
+          {{
+            product.categoryName ||
+            getCategoryName(product.categoryId)
+          }}
+        </span>
 
-              <div class="product-image">
+        <!-- STATUS -->
+        <span
+          class="mt-1 inline-flex !rounded-[4px] !px-[4px] !py-[2px] !font-sans !text-[5.5px] !font-bold"
+          [class.!bg-[#eaf6ed]]="
+            product.status !== 'INACTIVE'
+          "
+          [class.!text-[#28733b]]="
+            product.status !== 'INACTIVE'
+          "
+          [class.!bg-[#fbe9e9]]="
+            product.status === 'INACTIVE'
+          "
+          [class.!text-[#a32929]]="
+            product.status === 'INACTIVE'
+          "
+        >
+          {{ product.status }}
+        </span>
 
-                @if (
-                  product.images &&
-                  product.images.length > 0
-                ) {
+        <!-- IMAGE COUNT -->
+        <span
+          class="mt-1 flex items-center gap-1 !font-sans !text-[7px] !font-medium !text-[#99917e]"
+        >
+          <ion-icon
+            name="image-outline"
+            class="!text-[9px]"
+          ></ion-icon>
 
-                  <img
-                    [src]="product.images[0]"
-                    [alt]="product.productName"
-                  />
+          {{ product.images?.length || 0 }}
+          {{ product.images?.length === 1 ? 'image' : 'images' }}
+        </span>
 
-                } @else {
+      </div>
 
-                  <div
-                    class="image-placeholder"
-                  >
-
-                    <ion-icon
-                      name="cube-outline"
-                    ></ion-icon>
-
-                  </div>
-
-                }
-
-              </div>
-
-
-              <!-- PRODUCT INFORMATION -->
-
-              <div class="product-info">
-
-                <span class="product-label">
-                  PRODUCT
-                </span>
-
-
-                <h3>
-                  {{ product.productName }}
-                </h3>
-
-
-                <span class="product-category">
-
-                  {{
-                    product.categoryName ||
-                    getCategoryName(
-                      product.categoryId
-                    )
-                  }}
-
-                </span>
-
-
-                <span
-                  class="product-status"
-                  [class.inactive]="
-                    product.status === 'INACTIVE'
-                  "
-                >
-
-                  {{ product.status }}
-
-                </span>
-
-
-                @if (
-                  product.images &&
-                  product.images.length > 1
-                ) {
-
-                  <span class="image-count">
-
-                    <ion-icon
-                      name="image-outline"
-                    ></ion-icon>
-
-                    {{ product.images.length }}
-                    images
-
-                  </span>
-
-                } @else {
-
-                  <span class="image-count">
-
-                    <ion-icon
-                      name="image-outline"
-                    ></ion-icon>
-
-                    1 image
-
-                  </span>
-
-                }
-
-              </div>
-
-
-              <!-- EDIT BUTTON -->
-
-              <button
-                type="button"
-                class="product-arrow"
-                aria-label="Edit product"
-                (click)="
-                  openEditProduct(product)
-                "
-              >
-
-                <span>
-                  ›
-                </span>
-
-              </button>
-
-
-            </article>
-
-          }
-
-        </section>
+    </article>
+  }
+</section>
 
       }
 
 
-      <!-- ===================================================
-           EMPTY STATE
-      ==================================================== -->
+      <!-- ================================================= -->
+      <!-- EMPTY STATE -->
+      <!-- ================================================= -->
 
       @else {
 
         <section
-          class="empty-products"
+          class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
         >
 
-          <div class="empty-icon">
+          <div
+            class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+          >
 
             <ion-icon
               name="cube-outline"
-            ></ion-icon>
+              class="!text-[31px]"
+            >
+            </ion-icon>
 
           </div>
 
 
-          <h3>
+          <h3
+            class="!m-0 !font-sans !text-[20px] !font-extrabold !text-[#17233c]"
+          >
             No products found
           </h3>
 
 
-          <p>
-            Try a different search or add
-            a new product.
+          <p
+            class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
+            Try a different search or add a new product.
           </p>
 
 
           <button
             type="button"
             (click)="openAddProduct()"
+            class="flex !min-h-[40px] !items-center !justify-center gap-2 !rounded-[9px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
           >
 
             <ion-icon
               name="add-outline"
-            ></ion-icon>
+              class="!text-[16px]"
+            >
+            </ion-icon>
 
             Add Product
 
@@ -384,56 +520,76 @@
 
       }
 
-    </main>
 
-  </div>
+      <!-- ================================================= -->
+      <!-- BOTTOM DESIGN -->
+      <!-- ================================================= -->
 
 
-  <!-- =====================================================
-       ADD / UPDATE PRODUCT MODAL
-  ====================================================== -->
+
+<!-- ================================================= -->
+<!-- MAIN -->
+<!-- ================================================= -->
+
+</main>
+
+<!-- ================================================= -->
+<!-- BOTTOM DESIGN -->
+<!-- ================================================= -->
+
+
+</div>
+
+
+
+
+  <!-- ===================================================== -->
+  <!-- ADD / UPDATE PRODUCT MODAL -->
+  <!-- ===================================================== -->
 
   @if (isAddProductOpen) {
 
     <div
-      class="modal-layer"
+      class="fixed inset-0 z-[100] flex items-end justify-center bg-[#17233c]/45 px-3 pb-3 pt-8 sm:items-center sm:px-5"
       (click)="closeAddProduct()"
     >
 
-
       <div
-        class="add-product-modal"
+        class="flex max-h-[92dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_12px_40px_rgba(23,35,60,0.22)]"
         (click)="$event.stopPropagation()"
       >
 
+        <!-- ================================================= -->
+        <!-- MODAL HEADER -->
+        <!-- ================================================= -->
 
-        <!-- =================================================
-             MODAL HEADER
-        ================================================== -->
+        <div
+          class="flex shrink-0 items-center justify-between gap-3 bg-[#8f071f] px-4 py-3.5"
+        >
 
-        <div class="modal-header">
+          <div
+            class="min-w-0"
+          >
 
-          <div>
-
-            <span class="modal-kicker">
-
+            <span
+              class="block !font-sans !text-[7px] !font-bold uppercase tracking-[0.7px] !text-[#f7df9d]"
+            >
               {{
                 isEditMode
-                  ? 'EDIT PRODUCT'
-                  : 'NEW PRODUCT'
+                  ? 'Edit Product'
+                  : 'New Product'
               }}
-
             </span>
 
 
-            <h2>
-
+            <h2
+              class="!m-[4px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#fff8dc]"
+            >
               {{
                 isEditMode
                   ? 'Update Product'
                   : 'Add Product'
               }}
-
             </h2>
 
           </div>
@@ -441,379 +597,333 @@
 
           <button
             type="button"
-            class="modal-close"
             (click)="closeAddProduct()"
             [disabled]="isAddingProduct"
             aria-label="Close"
+            class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[9px] !border !border-[#ffffff40] !bg-[#ffffff14] !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
           >
 
             <ion-icon
               name="close-outline"
-            ></ion-icon>
+              class="!text-[20px]"
+            >
+            </ion-icon>
 
           </button>
 
         </div>
 
 
-        <!-- =================================================
-             DECORATIVE LINE
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- MODAL BODY -->
+        <!-- ================================================= -->
 
-        <div class="modal-decoration">
+        <div
+          class="min-h-0 flex-1 overflow-y-auto px-4 py-4"
+        >
 
-          <span>
-            ✦
-          </span>
+          <!-- DECORATIVE LINE -->
 
-          <div></div>
+          <div
+            class="mb-4 flex items-center gap-2"
+          >
 
-          <span>
-            ✦
-          </span>
+            <span
+              class="!font-sans !text-[9px] !text-[#b3123b]"
+            >
+              ✦
+            </span>
 
-        </div>
+            <div
+              class="h-px flex-1 bg-[#eadbc9]"
+            >
+            </div>
 
-
-        <!-- =================================================
-             PRODUCT NAME
-        ================================================== -->
-
-        <div class="form-field">
-
-          <label>
-            Product Name
-          </label>
-
-
-          <div class="input-wrapper">
-
-            <ion-icon
-              name="cube-outline"
-            ></ion-icon>
-
-
-            <input
-              type="text"
-              [(ngModel)]="productName"
-              placeholder="Enter product name"
-              maxlength="100"
-              autocomplete="off"
-            />
+            <span
+              class="!font-sans !text-[9px] !text-[#b3123b]"
+            >
+              ✦
+            </span>
 
           </div>
 
-        </div>
 
+          <!-- ================================================= -->
+          <!-- PRODUCT NAME -->
+          <!-- ================================================= -->
 
-        <!-- =================================================
-             PRODUCT CATEGORY
-        ================================================== -->
+          <div
+            class="mb-4"
+          >
 
-        <div class="form-field">
+            <label
+              class="mb-1.5 block !font-sans !text-[9px] !font-semibold !text-[#806b68]"
+            >
+              Product Name
+            </label>
 
-          <label>
-            Product Category
-          </label>
-
-
-          <div class="category-select-row">
 
             <div
-              class="input-wrapper category-wrapper"
+              class="flex h-[43px] items-center rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
             >
 
               <ion-icon
                 name="cube-outline"
-              ></ion-icon>
-
-
-              <select
-                [(ngModel)]="productCategoryId"
+                class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
               >
+              </ion-icon>
 
-                <option
-                  [ngValue]="null"
-                  disabled
+
+              <input
+                type="text"
+                [(ngModel)]="productName"
+                placeholder="Enter product name"
+                maxlength="100"
+                autocomplete="off"
+                class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[11px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
+              />
+
+            </div>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- PRODUCT CATEGORY -->
+          <!-- ================================================= -->
+
+<!-- PRODUCT CATEGORY -->
+<div class="mb-4">
+  <label
+    class="mb-2 block !font-sans !text-[10px] !font-bold !leading-[1.4] !text-[#17233c]"
+  >
+    Category
+  </label>
+
+  <div
+    class="box-border w-full overflow-hidden rounded-[10px] border border-[#e5dcd2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+  >
+    <ion-select
+      [(ngModel)]="productCategoryId"
+      interface="popover"
+      placeholder="Select category"
+      [disabled]="isAddingProduct"
+      class="!min-h-[44px] !w-full !max-w-full !box-border !font-sans !text-[11px] !font-medium !text-[#17233c]"
+      aria-label="Select category"
+    >
+      @for (category of categories; track category.categoryId) {
+        <ion-select-option [value]="category.categoryId">
+          {{ category.categoryName }}
+        </ion-select-option>
+      }
+    </ion-select>
+  </div>
+</div>
+
+<!-- PRODUCT STATUS -->
+@if (isEditMode) {
+  <div class="mb-4">
+    <label
+      class="mb-2 block !font-sans !text-[10px] !font-bold !leading-[1.4] !text-[#17233c]"
+    >
+      Product Status
+    </label>
+
+    <div
+      class="box-border w-full overflow-hidden rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+    >
+      <ion-select
+        [(ngModel)]="productStatus"
+        interface="popover"
+        placeholder="Select status"
+        [disabled]="isAddingProduct"
+        class="!min-h-[44px] !w-full !max-w-full !box-border !font-sans !text-[11px] !font-medium !text-[#17233c]"
+        aria-label="Select product status"
+      >
+        <ion-select-option value="ACTIVE">Active</ion-select-option>
+        <ion-select-option value="INACTIVE">Inactive</ion-select-option>
+      </ion-select>
+    </div>
+  </div>
+}
+
+
+
+          <!-- ================================================= -->
+          <!-- PRODUCT IMAGE -->
+          <!-- ================================================= -->
+
+          <div
+            class="mb-4"
+          >
+
+            <div
+              class="mb-1.5 flex items-center justify-between gap-2"
+            >
+
+              <label
+                class="!font-sans !text-[9px] !font-semibold !text-[#806b68]"
+              >
+                Product Image
+              </label>
+
+
+              @if (
+                !isEditMode &&
+                selectedImages.length > 0
+              ) {
+
+                <span
+                  class="!font-sans !text-[8px] !font-bold !text-[#8f071f]"
                 >
-                  Select product category
-                </option>
+                  {{ selectedImages.length }} selected
+                </span>
 
-
-                @for (
-                  category of categories;
-                  track category.categoryId
-                ) {
-
-                  <option
-                    [ngValue]="category.categoryId"
-                  >
-                    {{ category.categoryName }}
-                  </option>
-
-                }
-
-              </select>
+              }
 
             </div>
 
 
-            <!-- ADD CATEGORY -->
+            <!-- UPLOAD -->
 
-            <button
-              type="button"
-              class="add-category-button"
-              (click)="goToCategories()"
-              aria-label="Add category"
+            <label
+              class="flex cursor-pointer items-center gap-3 rounded-[11px] border border-dashed border-[#d9c8b7] bg-[#fffdf7] px-3 py-3 transition-colors duration-150 active:bg-[#fdf6e7]"
+              for="productImages"
             >
 
-              <ion-icon
-                name="add-outline"
-              ></ion-icon>
+              <div
+                class="flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-[9px] !bg-[#f7e9bd] !text-[#8f071f]"
+              >
 
-            </button>
+                <ion-icon
+                  name="cloud-upload-outline"
+                  class="!text-[20px]"
+                >
+                </ion-icon>
 
-          </div>
-
-        </div>
-
-
-        <!-- =================================================
-             PRODUCT STATUS
-        ================================================== -->
-
-        <div class="form-field">
-
-          <label>
-            Product Status
-          </label>
+              </div>
 
 
-          <div
-            class="input-wrapper category-wrapper"
-          >
+              <div
+                class="min-w-0 flex-1"
+              >
 
-            <ion-icon
-              name="cube-outline"
-            ></ion-icon>
+            <strong
+  class="block truncate !font-sans !text-[10px] !font-bold !text-[#17233c]"
+>
+  Add product image
+</strong>
 
+<span
+  class="mt-[2px] block !font-sans !text-[8px] !font-medium !text-[#806b68]"
+>
+  Choose an image
+</span>
 
-            <select
-              [(ngModel)]="productStatus"
-            >
-
-              <option value="ACTIVE">
-                Active
-              </option>
-
-              <option value="INACTIVE">
-                Inactive
-              </option>
-
-            </select>
-
-          </div>
-
-        </div>
+              </div>
 
 
-        <!-- =================================================
-             PRODUCT IMAGE
-        ================================================== -->
+              <div
+                class="flex !h-[30px] !w-[30px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#b3123b] !font-sans !text-[18px] !font-medium !text-[#fff8dc]"
+              >
+                +
+              </div>
 
-        <div class="form-field">
-
-          <div
-            class="upload-label-row"
-          >
-
-            <label>
-              Product Image
             </label>
 
 
-            @if (
-              !isEditMode &&
-              selectedImages.length > 0
-            ) {
+            <input
+              id="productImages"
+              type="file"
+              accept="image/*"
+              hidden
+              (change)="onImagesSelected($event)"
+            />
 
-              <span>
-                {{ selectedImages.length }}
-                selected
-              </span>
 
-            }
+            <!-- PREVIEW -->
+
+           <!-- =================================================
+     PREVIEW
+================================================== -->
+
+@if (imagePreviews.length > 0) {
+
+
+<!-- PRODUCT IMAGES -->
+<div class="mt-4">
+  <div
+    class="mb-2 block !font-sans !text-[10px] !font-bold !text-[#806b68]"
+  >
+    Product Images
+  </div>
+
+  <div class="grid grid-cols-4 gap-3">
+    @for (preview of imagePreviews; track $index; let i = $index) {
+      <div
+        class="relative aspect-square min-w-0 overflow-hidden rounded-[9px] border border-[#eadbc9] bg-[#fffdf7]"
+      >
+        <img
+          [src]="preview"
+          [alt]="'Product image ' + (i + 1)"
+          class="block h-full w-full object-cover"
+          (error)="onPreviewImageError($event)"
+        />
+
+        <button
+          type="button"
+          aria-label="Remove image"
+          (click)="removeImage(i)"
+          [disabled]="isAddingProduct"
+          class="absolute right-1 top-1 z-20 flex !h-5 !w-5 !items-center !justify-center !rounded-full !border-0 !bg-[#b3123b] !p-0 !text-[13px] !font-bold !text-white shadow-sm"
+        >
+          ×
+        </button>
+
+        @if (i === 0) {
+          <span
+            class="absolute bottom-1 left-1 rounded-[4px] bg-[#b3123b] px-1.5 py-1 !font-sans !text-[7px] !font-bold !leading-none !text-white"
+          >
+            Main
+          </span>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+
+}
 
           </div>
-
-
-          <!-- IMAGE UPLOAD -->
-
-          <label
-            class="upload-box"
-            for="productImages"
-          >
-
-            <div class="upload-icon">
-
-              <ion-icon
-                name="cloud-upload-outline"
-              ></ion-icon>
-
-            </div>
-
-
-            <div class="upload-text">
-
-              <strong>
-                {{
-                  isEditMode
-                    ? 'Replace product image'
-                    : 'Add product image'
-                }}
-              </strong>
-
-              <span>
-                Choose an image
-              </span>
-
-            </div>
-
-
-            <div class="upload-plus">
-              +
-            </div>
-
-          </label>
-
-
-          <input
-            id="productImages"
-            type="file"
-            accept="image/*"
-            hidden
-            (change)="
-              onImagesSelected($event)
-            "
-          />
-
-
-          <!-- EXISTING / SELECTED IMAGE -->
-
-          @if (
-            imagePreviews.length > 0
-          ) {
-
-            <div
-              class="preview-section"
-            >
-
-              <div
-                class="preview-title"
-              >
-
-                {{
-                  isEditMode
-                    ? (
-                      selectedImages.length > 0
-                        ? 'New Image'
-                        : 'Current Image'
-                    )
-                    : 'Selected Image'
-                }}
-
-              </div>
-
-
-              <div
-                class="preview-grid"
-              >
-
-                @for (
-                  preview of imagePreviews;
-                  track $index;
-                  let i = $index
-                ) {
-
-                  <div
-                    class="preview-card"
-                  >
-
-                    <img
-                      [src]="preview"
-                      alt="Product image"
-                    />
-
-
-                    @if (!isEditMode) {
-
-                      <button
-                        type="button"
-                        class="remove-image"
-                        (click)="
-                          removeImage(i)
-                        "
-                        aria-label="Remove image"
-                      >
-
-                        <ion-icon
-                          name="trash-outline"
-                        ></ion-icon>
-
-                      </button>
-
-                    }
-
-
-                    @if (i === 0) {
-
-                      <span
-                        class="main-image-badge"
-                      >
-                        Main
-                      </span>
-
-                    }
-
-                  </div>
-
-                }
-
-              </div>
-
-            </div>
-
-          }
 
         </div>
 
 
-        <!-- =================================================
-             ACTIONS
-        ================================================== -->
+        <!-- ================================================= -->
+        <!-- MODAL ACTIONS -->
+        <!-- ================================================= -->
 
-        <div class="modal-actions">
+        <div
+          class="flex shrink-0 gap-2.5 border-t border-[#f0e5d8] bg-white px-4 py-3.5"
+        >
 
+          <!-- CANCEL -->
 
           <button
             type="button"
-            class="cancel-button"
             (click)="closeAddProduct()"
             [disabled]="isAddingProduct"
+            class="flex !min-h-[42px] flex-1 !items-center !justify-center !rounded-[9px] !border !border-[#dfd3c8] !bg-[#fffdf7] !px-4 !font-sans !text-[10px] !font-bold !text-[#806b68] transition-transform duration-150 active:scale-[0.98]"
           >
-
             Cancel
-
           </button>
 
 
-          <!-- =================================================
-               SAVE / UPDATE BUTTON
-          ================================================== -->
+          <!-- SAVE / UPDATE -->
 
           <button
             type="button"
-            class="save-button"
             [disabled]="
               !productName.trim() ||
               productCategoryId === null ||
@@ -828,13 +938,15 @@
               )
             "
             (click)="addProduct()"
+            class="flex !min-h-[42px] flex-[1.35] !items-center !justify-center gap-2 !rounded-[9px] !border-0 !bg-[#b3123b] !px-4 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.14)] transition-all duration-150 disabled:!cursor-not-allowed disabled:!opacity-45 active:scale-[0.98]"
           >
 
             @if (isAddingProduct) {
 
               <span
-                class="button-loader"
-              ></span>
+                class="h-[14px] w-[14px] animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"
+              >
+              </span>
 
             } @else {
 
@@ -844,7 +956,9 @@
                     ? 'cube-outline'
                     : 'add-outline'
                 "
-              ></ion-icon>
+                class="!text-[16px]"
+              >
+              </ion-icon>
 
             }
 
@@ -871,30 +985,113 @@
 
         </div>
 
-
       </div>
 
     </div>
 
   }
 
+@if (showLogoutConfirmation) {
+
+  <div
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(20,15,5,0.38)] px-5"
+  >
+
+    <div
+      class="w-full max-w-[320px] overflow-hidden rounded-[16px] bg-[#fffdf7] shadow-[0_8px_30px_rgba(50,20,0,0.20)]"
+    >
+
+      <!-- HEADER -->
+
+      <div
+        class="relative flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-10"
+      >
+
+        <div class="relative z-20 text-center">
+
+          <div
+            class="mx-auto mb-1.5 flex !h-[32px] !w-[32px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+          >
+            <ion-icon
+              name="log-out-outline"
+              class="!text-[18px]"
+            ></ion-icon>
+          </div>
+
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-full w-auto select-none object-contain opacity-[0.85]"
+        />
+
+      </div>
+
+
+      <!-- CONTENT -->
+
+      <div class="px-5 pb-5 pt-4 text-center">
+
+        <h2
+          class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+        >
+          Are you sure?
+        </h2>
+
+        <p
+          class="!m-[7px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+        >
+          Are you sure you want to logout?
+        </p>
+
+
+        <!-- ACTIONS -->
+
+        <div class="mt-5 flex gap-2.5">
+
+          <!-- CANCEL -->
+
+          <button
+            type="button"
+            (click)="cancelLogout()"
+            class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#806b68] transition duration-150 active:scale-[0.98]"
+          >
+            Cancel
+          </button>
+
+
+          <!-- LOGOUT -->
+
+          <button
+            type="button"
+            (click)="logout()"
+            class="flex min-h-[42px] flex-1 !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98]"
+          >
+            <ion-icon
+              name="log-out-outline"
+              class="!text-[15px]"
+            ></ion-icon>
+
+            Logout
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}
+
+
+  <!-- ===================================================== -->
+  <!-- FLOATING ADD PRODUCT BUTTON -->
+  <!-- ===================================================== -->
+
+ 
 
 </ion-content>
-
-
-<!-- =========================================================
-     FLOATING ADD PRODUCT BUTTON
-========================================================== -->
-
-<button
-  type="button"
-  class="add-product-button"
-  (click)="openAddProduct()"
-  aria-label="Add product"
->
-
-  <ion-icon
-    name="add-outline"
-  ></ion-icon>
-
-</button>

@@ -20,6 +20,8 @@ import {
   AlertController
 } from '@ionic/angular';
 
+import { DecimalPipe } from '@angular/common';
+
 import {
   Router
 } from '@angular/router';
@@ -38,7 +40,8 @@ import {
   chevronForwardOutline,
   closeOutline,
   homeOutline,
-  storefrontOutline
+  storefrontOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
 
 import {
@@ -71,7 +74,8 @@ import { Product } from '../../services/product.service';
     IonTextarea,
     IonAlert,
     IonToast,
-    FloatingCartComponent
+    FloatingCartComponent,
+    DecimalPipe
   ]
 })
 export class CartPage implements OnInit {
@@ -142,18 +146,20 @@ export class CartPage implements OnInit {
   ==================================================== */
 
   isCheckoutModalOpen = false;
+  showOrderConfirmation = false;
 
 
   /* ====================================================
      CHECKOUT DETAILS
   ==================================================== */
 
-  customerName = '';
+customerName = '';
 
-  customerMobile = '';
+customerMobile = '';
 
-  deliveryAddress = '';
+alternativeMobileNumber = '';
 
+deliveryAddress = '';
 
   /* ====================================================
      ORDER
@@ -197,7 +203,8 @@ export class CartPage implements OnInit {
       chevronForwardOutline,
       closeOutline,
       homeOutline,
-      storefrontOutline
+      storefrontOutline,
+      checkmarkOutline
 
     });
 
@@ -852,6 +859,26 @@ export class CartPage implements OnInit {
     }
 
 
+    const alternativeMobile =
+  this.alternativeMobileNumber.trim();
+
+if (!alternativeMobile) {
+  this.showToast(
+    'Please enter your alternative mobile number.',
+    'warning'
+  );
+  return;
+}
+
+if (!/^\d{10}$/.test(alternativeMobile)) {
+  this.showToast(
+    'Please enter a valid 10-digit alternative mobile number.',
+    'warning'
+  );
+  return;
+}
+
+
     if (!/^\d{10}$/.test(mobile)) {
 
       this.showToast(
@@ -894,23 +921,8 @@ export class CartPage implements OnInit {
     }
 
 
-    this.isCheckoutModalOpen = false;
-
-
-    const alert =
-      await this.createConfirmAlert(
-        'Confirm Order',
-        'Are you sure you want to place this order?',
-        'Order',
-        () => {
-
-          this.placeOrder(token);
-
-        }
-      );
-
-
-    await alert.present();
+   this.isCheckoutModalOpen = false;
+this.showOrderConfirmation = true;
 
   }
 
@@ -928,21 +940,14 @@ export class CartPage implements OnInit {
     this.errorMessage = '';
 
 
-    const orderData:
-      CreateOrderRequest = {
-
-      cartToken: token,
-
-      customerName:
-        this.customerName.trim(),
-
-      customerMobile:
-        this.customerMobile.trim(),
-
-      deliveryAddress:
-        this.deliveryAddress.trim()
-
-    };
+ const orderData: CreateOrderRequest = {
+  cartToken: token,
+  customerName: this.customerName.trim(),
+  customerMobile: this.customerMobile.trim(),
+  alternativeMobileNumber:
+    this.alternativeMobileNumber.trim(),
+  deliveryAddress: this.deliveryAddress.trim()
+};
 
 
     console.log(
@@ -993,6 +998,8 @@ export class CartPage implements OnInit {
 
           this.customerMobile = '';
 
+          this.alternativeMobileNumber = '';
+
           this.deliveryAddress = '';
 
 
@@ -1000,7 +1007,7 @@ export class CartPage implements OnInit {
 
 
           this.showToast(
-            `Order #${response.orderId} placed successfully.`,
+            `Order placed successfully.`,
             'success'
           );
 
@@ -1158,6 +1165,30 @@ openProduct(productStoreId: number): void {
     productStoreId
   ]);
 
+}
+
+
+cancelOrderConfirmation(): void {
+  this.showOrderConfirmation = false;
+  this.isCheckoutModalOpen = true;
+}
+
+confirmOrderAndPlace(): void {
+  const token = this.cartService.getCartToken();
+
+  if (!token) {
+    this.showOrderConfirmation = false;
+
+    this.showToast(
+      'Your cart session could not be found.',
+      'danger'
+    );
+
+    return;
+  }
+
+  this.showOrderConfirmation = false;
+  this.placeOrder(token);
 }
 
 }

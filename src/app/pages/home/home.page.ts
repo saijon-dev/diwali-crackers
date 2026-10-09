@@ -1340,32 +1340,31 @@ openProduct(
   /* ====================================================
      CATEGORY
   ==================================================== */
+selectCategory(
+  categoryId: number
+): void {
 
-  selectCategory(
-    categoryId: number
-  ): void {
-
-    if (
-      !categoryId ||
-      !Number.isInteger(categoryId) ||
-      categoryId <= 0
-    ) {
-
-      return;
-
-    }
-
-
-    this.router.navigate(
-      ['/categories'],
-      {
-        queryParams: {
-          categoryId
-        }
-      }
-    );
-
+  if (
+    !categoryId ||
+    !Number.isInteger(categoryId) ||
+    categoryId <= 0
+  ) {
+    return;
   }
+
+  this.router.navigate(
+    ['/categories'],
+    {
+      queryParams: {
+        categoryId
+      },
+      state: {
+        returnTo: 'home'
+      }
+    }
+  );
+
+}
 
 
   /* ====================================================
@@ -1384,21 +1383,23 @@ openProduct(
   /* ====================================================
      VENDOR
   ==================================================== */
+openVendor(
+  vendor: StoreVendor
+): void {
 
-  openVendor(
-    vendor: StoreVendor
-  ): void {
-
-    this.router.navigate(
-      ['/categories'],
-      {
-        queryParams: {
-          storeId: vendor.storeId
-        }
+  this.router.navigate(
+    ['/categories'],
+    {
+      queryParams: {
+        storeId: vendor.storeId
+      },
+      state: {
+        returnTo: 'home'
       }
-    );
+    }
+  );
 
-  }
+}
 
 
   /* ====================================================
@@ -1425,5 +1426,44 @@ openProduct(
     ]);
 
   }
+
+
+  goToCategory(categoryId: number): void {
+  const categoryElement = document.querySelector(
+    `[data-category-id="${categoryId}"]`
+  ) as HTMLElement | null;
+
+  if (!categoryElement) return;
+
+  categoryElement.scrollIntoView({
+    behavior: 'smooth',
+    inline: 'center',
+    block: 'nearest'
+  });
+
+  this.centeredCategoryId = categoryId;
+}
+
+
+private readonly productBadgeMap = new Map<number, string>();
+
+getProductBadge(product: Product): string {
+  const productKey = product.productStoreId;
+
+  const existingBadge = this.productBadgeMap.get(productKey);
+
+  if (existingBadge) {
+    return existingBadge;
+  }
+
+  const badge =
+    Math.random() < 0.5
+      ? 'assets/images/15-badge.png'
+      : 'assets/images/20-badge.png';
+
+  this.productBadgeMap.set(productKey, badge);
+
+  return badge;
+}
 
 }

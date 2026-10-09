@@ -34,7 +34,7 @@ export interface VendorOrderItem {
 
   packUnit: string | null;
 
-  storeImageUrl: string | null;
+  productImageUrl: string | null;
 
   quantity: number;
 
@@ -145,7 +145,7 @@ export class VendorOrderService {
 
 
     return this.http.get<VendorOrderPageResponse>(
-      `${this.apiUrl}/vendor/orders/received`,
+      `${this.apiUrl}/orders/vendor/received`,
       {
         params
       }
@@ -176,7 +176,7 @@ export class VendorOrderService {
 
 
     return this.http.get<VendorOrderPageResponse>(
-      `${this.apiUrl}/vendor/orders/confirmed`,
+      `${this.apiUrl}/orders/vendor/all`,
       {
         params
       }
@@ -197,7 +197,7 @@ export class VendorOrderService {
     status: string
   ): Observable<any> {
     return this.http.put(
-      `${this.apiUrl}/vendor/orders/${orderId}/status`,
+      `${this.apiUrl}/orders/${orderId}/vendor/status`,
       { status }
     );
   }

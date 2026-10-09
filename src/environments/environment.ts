@@ -4,7 +4,7 @@
 export const environment = {
   production: false,
 
-  apiUrl: 'http://172.17.12.120:8080/api'
+  apiUrl: 'http://172.17.12.120:8099/wsjsp/api'
 };
 /*
  * For easier debugging in development mode, you can import the following file

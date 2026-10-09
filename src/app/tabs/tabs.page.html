@@ -1,8 +1,6 @@
 <ion-tabs>
 
 
-
-
   <!-- ================================= -->
   <!-- VENDOR NAVIGATION -->
   <!-- ================================= -->
@@ -11,15 +9,21 @@
 
     <ion-tab-bar
       slot="bottom"
-      class="bottom-navigation vendor-navigation">
+      class="bottom-navigation vendor-navigation"
+    >
 
-      @for (tab of vendorTabs; track tab.route) {
+      @for (
+        tab of vendorTabs;
+        track tab.route
+      ) {
 
         <ion-tab-button
-          [tab]="tab.route">
+          [tab]="tab.route"
+        >
 
           <ion-icon
-            [name]="tab.icon">
+            [name]="tab.icon"
+          >
           </ion-icon>
 
           <ion-label>
@@ -43,15 +47,21 @@
 
     <ion-tab-bar
       slot="bottom"
-      class="bottom-navigation admin-navigation">
+      class="bottom-navigation admin-navigation"
+    >
 
-      @for (tab of adminTabs; track tab.route) {
+      @for (
+        tab of adminTabs;
+        track tab.route
+      ) {
 
         <ion-tab-button
-          [tab]="tab.route">
+          [tab]="tab.route"
+        >
 
           <ion-icon
-            [name]="tab.icon">
+            [name]="tab.icon"
+          >
           </ion-icon>
 
           <ion-label>

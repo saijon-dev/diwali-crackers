@@ -24,7 +24,8 @@ import {
   checkmarkCircleOutline,
   closeCircleOutline,
   trendingUpOutline,
-  gridOutline
+  gridOutline,
+  logOutOutline
 } from 'ionicons/icons';
 
 import { Router } from '@angular/router';
@@ -52,8 +53,6 @@ interface RecentOrder {
 
   templateUrl: './adm-home.page.html',
 
-  styleUrls: ['./adm-home.page.scss'],
-
   standalone: true,
 
   imports: [
@@ -62,6 +61,9 @@ interface RecentOrder {
   ]
 })
 export class AdmHomePage implements OnInit {
+
+
+  showLogoutConfirmation = false;
 
 
   // =====================================================
@@ -201,7 +203,9 @@ export class AdmHomePage implements OnInit {
 
       trendingUpOutline,
 
-      gridOutline
+      gridOutline,
+
+      logOutOutline
 
     });
 
@@ -298,5 +302,34 @@ export class AdmHomePage implements OnInit {
     '/tabs/adm-categories'
   ]);
 }
+
+confirmLogout(): void {
+  this.showLogoutConfirmation = true;
+}
+
+cancelLogout(): void {
+  this.showLogoutConfirmation = false;
+}
+
+confirmLogoutAction(): void {
+  this.showLogoutConfirmation = false;
+
+  this.logout();
+}
+
+  logout(): void {
+
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('role');
+
+    localStorage.removeItem('smartlearn_token');
+    localStorage.removeItem('smartlearn_refresh_token');
+    localStorage.removeItem('smartlearn_role');
+    localStorage.removeItem('smartlearn_user_id');
+
+    this.router.navigate(['/home']);
+  }
 
 }

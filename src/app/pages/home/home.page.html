@@ -3,8 +3,26 @@
   class="!bg-white"
 >
 <div
-  class="relative flex w-full max-w-full flex-col overflow-x-clip bg-white px-3 sm:px-4"
+  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
 >
+
+  <!-- =====================================================
+       GLOBAL HOME BOTTOM DESIGN
+       Positioned at the actual bottom of this page content
+       without taking layout space.
+  ====================================================== -->
+
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+    aria-hidden="true"
+  >
+    <img
+      src="assets/images/newDesignBg.png"
+      alt=""
+      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+    />
+  </div>
+
     <!-- =====================================================
          SEARCH MODE
     ===================================================== -->
@@ -23,20 +41,22 @@
           class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
         >
 
+          <!-- BACK -->
+
           <button
             type="button"
             (click)="closeSearch()"
             aria-label="Back"
             class="relative z-30 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
           >
-
             <ion-icon
               name="arrow-back-outline"
               class="!text-[24px]"
             ></ion-icon>
-
           </button>
 
+
+          <!-- SEARCH INPUT -->
 
           <div
             class="relative z-20 ml-2 min-w-0 flex-1 pr-[48px] sm:pr-[58px]"
@@ -70,12 +90,10 @@
                   aria-label="Clear search"
                   class="ml-1 flex !h-[28px] !w-[28px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-[#8f071f] !p-0 !text-[#fff8dc]"
                 >
-
                   <ion-icon
                     name="close-outline"
                     class="!text-[17px]"
                   ></ion-icon>
-
                 </button>
 
               }
@@ -84,6 +102,8 @@
 
           </div>
 
+
+          <!-- RIGHT DEEPAS -->
 
           <img
             src="assets/images/right-deepas.png"
@@ -99,11 +119,17 @@
              SEARCH BODY
         =================================================== -->
 
-<main
-  class="relative z-10 min-h-[calc(100dvh-76px)] pb-2"
->
+        <main
+          class="relative z-10 min-h-[calc(100dvh-76px)] pb-2"
+        >
+
+          <!-- =================================================
+               SEARCH LANDING
+          ================================================= -->
 
           @if (!hasSearched) {
+
+            <!-- RECENT SEARCHES -->
 
             @if (recentSearches.length > 0) {
 
@@ -186,6 +212,8 @@
             }
 
 
+            <!-- POPULAR SEARCHES -->
+
             <section
               class="mb-7 pt-5"
             >
@@ -227,6 +255,8 @@
             </section>
 
 
+            <!-- SEARCH EMPTY STATE -->
+
             <section
               class="flex min-h-[300px] flex-col items-center justify-center px-5 text-center"
             >
@@ -262,30 +292,132 @@
           }
 
 
+          <!-- =================================================
+               SEARCH LOADING SKELETON
+          ================================================= -->
+
           @if (
             hasSearched &&
             isSearching
           ) {
 
             <section
-              class="flex min-h-[calc(100vh-76px)] flex-col items-center justify-center gap-3 text-center"
+              class="pt-5"
             >
 
+              <!-- RESULT HEADER SKELETON -->
+
               <div
-                class="h-8 w-8 animate-spin rounded-full border-[3px] border-[#ead8b9] border-t-[#8f071f]"
-              ></div>
-
-
-              <p
-                class="!m-0 !font-sans !text-[11px] !font-semibold !text-[#806b68]"
+                class="mb-4 flex w-full items-center justify-between"
               >
-                Searching products...
-              </p>
+
+                <div
+                  class="min-w-0"
+                >
+
+                  <div
+                    class="h-[18px] w-[105px] animate-pulse rounded-[5px] bg-[#eee8d4]"
+                  ></div>
+
+                  <div
+                    class="mt-[6px] h-[9px] w-[150px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                  ></div>
+
+                </div>
+
+
+                <div
+                  class="h-[25px] w-[30px] animate-pulse rounded-[13px] bg-[#eee8d4]"
+                ></div>
+
+              </div>
+
+
+              <!-- SEARCH PRODUCT SKELETON -->
+
+              <div
+                class="grid grid-cols-3 items-stretch gap-[10px] pb-8 sm:gap-[12px]"
+              >
+
+                @for (item of [1,2,3,4,5,6]; track item) {
+
+                  <article
+                    class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+                  >
+
+                    <!-- IMAGE -->
+
+                    <div
+                      class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] animate-pulse rounded-[11px] bg-[#eee8d4] sm:h-[118px]"
+                    ></div>
+
+
+                    <!-- DETAILS -->
+
+                    <div
+                      class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                    >
+
+                      <div
+                        class="mt-[3px] min-h-[34px]"
+                      >
+
+                        <div
+                          class="h-[9px] w-[82%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                        ></div>
+
+                        <div
+                          class="mt-[5px] h-[9px] w-[60%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                        ></div>
+
+                      </div>
+
+
+                      <div
+                        class="mt-[2px] flex items-center gap-[4px]"
+                      >
+
+                        <div
+                          class="h-[7px] w-[25px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                        ></div>
+
+                        <div
+                          class="h-[10px] w-[35px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                        ></div>
+
+                      </div>
+
+
+                      <div
+                        class="mt-[5px] flex items-center"
+                      >
+
+                        <div
+                          class="mr-[3px] h-[4px] w-[4px] animate-pulse rounded-full bg-[#ddd4b9]"
+                        ></div>
+
+                        <div
+                          class="h-[7px] w-[45px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                        ></div>
+
+                      </div>
+
+                    </div>
+
+                  </article>
+
+                }
+
+              </div>
 
             </section>
 
           }
 
+
+          <!-- =================================================
+               SEARCH ERROR
+          ================================================= -->
 
           @if (
             hasSearched &&
@@ -336,6 +468,10 @@
           }
 
 
+          <!-- =================================================
+               SEARCH RESULTS
+          ================================================= -->
+
           @if (
             hasSearched &&
             !isSearching &&
@@ -379,197 +515,181 @@
 
             </div>
 
-@if (searchResults.length > 0) {
 
-  <section
-    class="grid grid-cols-3 items-stretch gap-[10px] pb-8 sm:gap-[12px]"
-  >
-    @for (
-      product of searchResults;
-      track product.productStoreId
-    ) {
+            @if (searchResults.length > 0) {
 
-      <article
-        class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
-        (click)="openProduct(product)"
-      >
-
-        <!-- PRODUCT IMAGE -->
-
-        <div
-          class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[118px]"
-        >
-
-          @if (
-            product.images &&
-            product.images.length > 0
-          ) {
-
-            <img
-              [src]="product.images[0].imageUrl"
-              [alt]="product.productName"
-              class="block h-full w-full object-cover"
-              loading="lazy"
-            />
-
-          }
-
-          @else {
-
-            <div
-              class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
-            >
-
-              <ion-icon
-                name="image-outline"
-                class="!text-[25px] !text-[#806b68]"
-              ></ion-icon>
-
-            </div>
-
-          }
-
-        </div>
-
-
-        <!-- PRODUCT DETAILS -->
-
-        <div
-          class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
-        >
-
-          <!-- PRODUCT NAME + ADD -->
-
-          <div
-            class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
-          >
-
-            <h3
-              class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[11px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
-            >
-              {{ product.productName }}
-            </h3>
-
-
-            <!-- ADD BUTTON -->
-
-            <button
-              type="button"
-              aria-label="Add to cart"
-              [disabled]="
-                !product.isAvailable ||
-                product.stockQuantity <= 0 ||
-                isProductAdded(product.productStoreId)
-              "
-              (click)="
-                $event.stopPropagation();
-                addToCart(product)
-              "
-              class="mt-[1px] flex !h-[29px] !w-[29px] shrink-0 !items-center !justify-center !rounded-[9px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[#fff8dc] shadow-[0_2px_5px_rgba(143,7,31,0.20)] transition-transform duration-150 active:scale-90 disabled:!cursor-default disabled:!bg-[#d7c8c4] disabled:!text-[#8b7773] disabled:!opacity-100 disabled:!shadow-none"
-            >
-
-              <ion-icon
-                name="add-outline"
-                class="!text-[19px]"
-              ></ion-icon>
-
-            </button>
-
-          </div>
-
-
-          <!-- PRICE -->
-
-          <div
-            class="mt-[2px] flex items-center gap-[4px]"
-          >
-
-            @if (
-              product.mrp >
-              product.sellingPrice
-            ) {
-
-              <span
-                class="font-sans text-[6px] text-[#99917e] line-through"
+              <section
+                class="grid grid-cols-3 items-stretch gap-[10px] pb-8 sm:gap-[12px]"
               >
-                ₹{{ product.mrp }}
-              </span>
+
+                @for (
+                  product of searchResults;
+                  track product.productStoreId
+                ) {
+
+              <article
+  (click)="openProduct(product)"
+  class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] !border !border-[#eadfcb] !bg-white shadow-[0_3px_10px_rgba(143,7,31,0.07)] transition-transform duration-150 active:scale-[0.98]"
+>
+                    <!-- PRODUCT IMAGE -->
+
+                    <div
+                      class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[118px]"
+                    >
+
+                      @if (
+                        product.images &&
+                        product.images.length > 0
+                      ) {
+
+                        <img
+                          [src]="product.images[0].imageUrl"
+                          [alt]="product.productName"
+                          class="block h-full w-full object-cover"
+                          loading="lazy"
+                        />
+
+                      }
+
+                      @else {
+
+                        <div
+                          class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                        >
+
+                          <ion-icon
+                            name="image-outline"
+                            class="!text-[25px] !text-[#806b68]"
+                          ></ion-icon>
+
+                        </div>
+
+                      }
+
+                    </div>
+
+
+                    <!-- PRODUCT DETAILS -->
+
+                    <div
+                      class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                    >
+
+                      <!-- PRODUCT NAME + ADD -->
+
+                      <div
+                        class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
+                      >
+
+                        <h3
+                          class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
+                        >
+                          {{ product.productName }}
+                        </h3>
+
+
+                        <!-- ADD BUTTON -->
+
+                  
+
+                      </div>
+
+
+                      <!-- PRICE -->
+
+                      <div
+                        class="mt-[2px] flex items-center gap-[4px]"
+                      >
+
+                        @if (
+                          product.mrp >
+                          product.sellingPrice
+                        ) {
+
+                          <span
+                            class="font-sans text-[10px] text-[#99917e] line-through"
+                          >
+                            ₹{{ product.mrp }}
+                          </span>
+
+                        }
+
+
+                        <span
+                          class="font-sans text-[10px] font-bold text-[#ef0b1c]"
+                        >
+                          ₹{{ product.sellingPrice }}
+                        </span>
+
+                      </div>
+
+
+                      <!-- STOCK -->
+
+                      <div
+                        class="mt-[3px] flex items-center"
+                      >
+
+                        @if (
+                          product.stockQuantity <= 0
+                        ) {
+
+                          <span
+                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+                          ></span>
+
+                          <span
+                            class="font-sans text-[10px] font-medium text-[#9e2020]"
+                          >
+                            Out of Stock
+                          </span>
+
+                        }
+
+                        @else if (
+                          product.stockQuantity <= 10
+                        ) {
+
+                          <span
+                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+                          ></span>
+
+                          <span
+                            class="font-sans text-[10px] font-medium text-[#9e2020]"
+                          >
+                            Minimum Stock
+                          </span>
+
+                        }
+
+                        @else {
+
+                          <span
+                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#24722d]"
+                          ></span>
+
+                          <span
+                            class="font-sans text-[10px] font-medium text-[#24722d]"
+                          >
+                            In Stock {{ product.stockQuantity }}
+                          </span>
+
+                        }
+
+                      </div>
+
+                    </div>
+
+                  </article>
+
+                }
+
+              </section>
 
             }
 
-            <span
-              class="font-sans text-[10px] font-bold text-[#ef0b1c]"
-            >
-              ₹{{ product.sellingPrice }}
-            </span>
 
-          </div>
-
-
-          <!-- STOCK -->
-
-          <div
-            class="mt-[3px] flex items-center"
-          >
-
-            @if (
-              product.stockQuantity <= 0
-            ) {
-
-              <span
-                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
-              ></span>
-
-              <span
-                class="font-sans text-[7px] font-medium text-[#9e2020]"
-              >
-                Out of Stock
-              </span>
-
-            }
-
-            @else if (
-              product.stockQuantity <= 10
-            ) {
-
-              <span
-                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
-              ></span>
-
-              <span
-                class="font-sans text-[7px] font-medium text-[#9e2020]"
-              >
-                Minimum Stock
-              </span>
-
-            }
-
-            @else {
-
-              <span
-                class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#24722d]"
-              ></span>
-
-              <span
-                class="font-sans text-[7px] font-medium text-[#24722d]"
-              >
-                In Stock
-              </span>
-
-            }
-
-          </div>
-
-        </div>
-
-      </article>
-
-    }
-
-  </section>
-
-}
-
+            <!-- NO PRODUCTS -->
 
             @if (searchResults.length === 0) {
 
@@ -621,19 +741,9 @@
         </main>
 
 
-        <!-- ===================================================
-             SEARCH BOTTOM DESIGN
-        =================================================== -->
-<div
-  class="pointer-events-none relative z-0 mt-0 -mx-3 min-h-[190px] w-[calc(100%+24px)] max-w-full shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
->
-  <img
-    src="assets/images/newDesignBg.png"
-    alt=""
-    aria-hidden="true"
-    class="block h-auto w-[175%] max-w-none opacity-[0.18]"
-  />
-</div>
+        <!-- SEARCH BOTTOM DESIGN -->
+
+   
 
       </div>
 
@@ -663,6 +773,8 @@
           class="pointer-events-none absolute left-0 top-0 z-10 h-[88px] w-auto select-none object-contain"
         />
 
+
+        <!-- ADMIN LOGIN -->
 
         <button
           type="button"
@@ -701,6 +813,7 @@
               name="cart-outline"
               class="!text-[24px]"
             ></ion-icon>
+
 
             @if (cartCount > 0) {
 
@@ -801,504 +914,342 @@
             --border-width: 0;
             --border-style: none;
           "
-        >
-        </ion-searchbar>
+        ></ion-searchbar>
 
       </div>
 
 
-      <!-- ===================================================
-           CATEGORY FEATURE PANEL
-      =================================================== -->
 
-      <div class="relative">
+<!-- ===================================================
+     STORES + CATEGORIES AREA
+=================================================== -->
 
-        <!-- LEFT FLOWERS -->
+<div class="relative">
 
-        <img
-          src="assets/images/flowers-left.png"
-          alt=""
-          aria-hidden="true"
-          class="pointer-events-none absolute left-[-10px] top-[260px] z-10 h-[110px] w-auto select-none object-contain"
-        />
+  <!-- =================================================
+       LEFT FLOWERS
+  ================================================== -->
 
-
-        <!-- RIGHT FLOWERS -->
-
-        <img
-          src="assets/images/right-flowers.png"
-          alt=""
-          aria-hidden="true"
-          class="pointer-events-none absolute right-[-4px] top-[260px] z-10 h-[85px] w-auto select-none object-contain"
-        />
+  <!-- <img
+    src="assets/images/flowers-left.png"
+    alt=""
+    aria-hidden="true"
+  class="pointer-events-none absolute left-[-10px] top-[320px] z-[25] h-[95px] w-auto translate-y-[10px] select-none object-contain"
+  /> -->
 
 
-        <!-- CATEGORY FEATURE PANEL -->
+  <!-- =================================================
+       RIGHT FLOWERS
+  ================================================== -->
 
-        <section
-          class="relative z-20 -mx-3 mb-5 h-[280px] overflow-visible px-4 pb-5 pt-4 sm:-mx-4 sm:h-[292px] sm:px-6"
-          style="
-            background:
-              linear-gradient(
-                180deg,
-                rgba(143, 7, 31, 0) 0%,
-                rgba(143, 7, 31, 0.10) 18%,
-                rgba(143, 7, 31, 0.30) 38%,
-                rgba(143, 7, 31, 0.54) 58%,
-                rgba(143, 7, 31, 0.78) 80%,
-                rgba(143, 7, 31, 1) 100%
-              ),
-              radial-gradient(
-                ellipse 100% 82% at 100% 0%,
-                #c51f45 0%,
-                #bc1a40 18%,
-                #b3163b 35%,
-                #a81135 52%,
-                #9d0c2f 70%,
-                #950927 84%,
-                #8f071f 100%
-              );
-          "
+  <!-- <img
+    src="assets/images/right-flowers.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-[-4px] top-[328px] z-[25] h-[85px] w-auto select-none object-contain"
+  /> -->
+
+
+  <!-- =================================================
+       STORES FEATURE PANEL
+  ================================================= -->
+
+  <section
+    class="relative z-20 -mx-3 mb-5 h-[335px] overflow-visible px-4 pb-5 pt-4 sm:-mx-4 sm:h-[347px] sm:px-6"
+    style="
+      background:
+        linear-gradient(
+          180deg,
+          rgba(143, 7, 31, 0) 0%,
+          rgba(143, 7, 31, 0.10) 12%,
+          rgba(143, 7, 31, 0.30) 28%,
+          rgba(143, 7, 31, 0.54) 48%,
+          rgba(143, 7, 31, 0.78) 70%,
+          rgba(143, 7, 31, 1) 88%,
+          rgba(143, 7, 31, 1) 100%
+        ),
+        radial-gradient(
+          ellipse 100% 82% at 100% 0%,
+          #c51f45 0%,
+          #bc1a40 18%,
+          #b3163b 35%,
+          #a81135 52%,
+          #9d0c2f 70%,
+          #950927 84%,
+          #8f071f 100%
+        );
+    "
+  >
+
+    <!-- FIREWORK -->
+
+    <img
+      src="assets/images/fireworks-design.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute right-[-1px] top-[-12px] z-[2] h-[120px] w-auto select-none object-contain opacity-[0.2] grayscale"
+    />
+
+
+    <!-- RIGHT LANTERN -->
+
+    <img
+      src="assets/images/right-lantern.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute right-[24px] top-[18px] z-[2] h-[25px] w-auto select-none object-contain opacity-[0.9]"
+    />
+
+
+    <!-- LEFT LANTERN -->
+
+    <img
+      src="assets/images/left-lantern.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute left-[10px] top-[25px] z-[5] h-[70px] w-auto select-none object-contain opacity-100"
+    />
+
+
+    <!-- SOFT LIGHT -->
+
+    <div
+      class="pointer-events-none absolute left-[12%] top-[105px] z-0 h-[150px] w-[150px] rounded-full bg-[#c72e4b]/[0.06] blur-3xl"
+    ></div>
+
+    <div
+      class="pointer-events-none absolute right-[20%] top-[100px] z-0 h-[160px] w-[160px] rounded-full bg-[#c72e4b]/[0.055] blur-3xl"
+    ></div>
+
+
+    <!-- =================================================
+         STORES HEADER
+         Same styling as the previous CATEGORIES header
+    ================================================== -->
+
+    <div
+      class="relative z-10 mb-4 h-[68px] w-full"
+    >
+
+      <div
+        class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
+      >
+
+        <h2
+          class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
         >
+          STORES
+        </h2>
 
-          <!-- FIREWORK -->
-
-          <img
-            src="assets/images/fireworks-design.png"
-            alt=""
-            aria-hidden="true"
-            class="pointer-events-none absolute right-[-1px] top-[-12px] z-[2] h-[120px] w-auto select-none object-contain opacity-[0.2] grayscale"
-          />
+      </div>
 
 
-          <!-- RIGHT LANTERN -->
+      <div
+        class="absolute left-0 top-[37px] flex w-full items-center justify-center"
+      >
 
-          <img
-            src="assets/images/right-lantern.png"
-            alt=""
-            aria-hidden="true"
-            class="pointer-events-none absolute right-[24px] top-[18px] z-[2] h-[25px] w-auto select-none object-contain opacity-[0.9]"
-          />
+        <p
+          class="m-0 text-center font-serif text-[9px] font-semibold italic leading-none tracking-[0.15px] text-[#f7df9d] sm:text-[10px]"
+        >
+          Discover festive crackers from our stores
+        </p>
 
+      </div>
 
-          <!-- LEFT LANTERN -->
-
-          <img
-            src="assets/images/left-lantern.png"
-            alt=""
-            aria-hidden="true"
-            class="pointer-events-none absolute left-[10px] top-[25px] z-[5] h-[70px] w-auto select-none object-contain opacity-100"
-          />
+    </div>
 
 
-          <!-- SOFT LIGHT -->
-
-          <div
-            class="pointer-events-none absolute left-[12%] top-[105px] z-0 h-[150px] w-[150px] rounded-full bg-[#c72e4b]/[0.06] blur-3xl"
-          ></div>
-
-          <div
-            class="pointer-events-none absolute right-[20%] top-[100px] z-0 h-[160px] w-[160px] rounded-full bg-[#c72e4b]/[0.055] blur-3xl"
-          ></div>
-
-
-          <!-- CATEGORY HEADER -->
-
-          <div
-            class="relative z-10 mb-4 h-[68px] w-full"
-          >
-
-            <div
-              class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
-            >
-
-              <h2
-                class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
-              >
-                CATEGORIES
-              </h2>
-
-            </div>
-
-
-            <div
-              class="absolute left-0 top-[37px] flex w-full items-center justify-center"
-            >
-
-              <p
-                class="m-0 text-center font-serif text-[9px] font-semibold italic leading-none tracking-[0.15px] text-[#f7df9d] sm:text-[10px]"
-              >
-                Find the best there is!
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <!-- CATEGORY SCROLLER -->
+    <!-- =================================================
+         VENDOR SCROLLER
+    ================================================== -->
 
 <div
-  #categoryScroller
-  class="relative z-10 w-full max-w-full overflow-x-auto overflow-y-visible py-2 scrollbar-hide"
-  (scroll)="onCategoryScroll()"
+  class="w-full overflow-x-auto overflow-y-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
 >
-  <div
-    class="flex w-max min-w-full items-stretch justify-start gap-5 px-[calc(50%-52.5px)] sm:px-[calc(50%-57.5px)]"
-  >
-    <!-- Keep your existing loading and error conditions here -->
 
-    @if (!isLoadingCategories && !categoryErrorMessage) {
-      @for (category of categories; track category.categoryId) {
-        <button
-          type="button"
-          (click)="selectCategory(category.categoryId)"
-          [attr.data-category-id]="category.categoryId"
-          [class.scale-110]="centeredCategoryId === category.categoryId"
-          [class.scale-95]="centeredCategoryId !== category.categoryId"
-          class="category-card relative flex h-[135px] w-[105px] shrink-0 flex-col overflow-hidden !rounded-[16px] border border-[#eadfcb] bg-[#fffdf7]/90 px-3 pt-2 pb-0 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-300 ease-in-out active:scale-95 sm:h-[145px] sm:w-[115px]"
-        >
-          <img
-            src="assets/images/card-bg.png"
-            alt=""
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.4]"
-          />
+      <div
+        class="flex w-max gap-3 pb-1"
+      >
 
-          <div class="relative z-10 flex h-full flex-col">
-            <div class="flex h-[22px] w-full shrink-0 items-center justify-center px-1">
-              <span
-                class="line-clamp-2 w-full translate-y-2 text-center font-sans text-[11px] font-bold leading-[1.15] text-[#4a1820]"
-              >
-                {{ category.categoryName }}
-              </span>
-            </div>
+        <!-- ==========================================
+             VENDOR SKELETON
+        =========================================== -->
 
-            <div
-              class="mt-3 h-[101px] w-full shrink-0 overflow-hidden !rounded-[10px] bg-[#fffaf0] p-2 sm:h-[108px]"
-            >
-              @if (category.imageUrl) {
-                <img
-                  [src]="category.imageUrl"
-                  [alt]="category.categoryName"
-                  class="block h-full w-full !rounded-[6px] object-cover"
-                />
-              } @else {
-                <div
-                  class="flex h-full w-full items-center justify-center !rounded-[6px] bg-[#f8edd6] text-[#a58b82]"
-                >
-                  <ion-icon name="image-outline" class="text-[26px]"></ion-icon>
-                </div>
-              }
-            </div>
-          </div>
-        </button>
-      }
-    }
-  </div>
-</div>
+ @if (isVendorsLoading) {
 
-          @if (
-            !isLoadingCategories &&
-            !categoryErrorMessage &&
-            categories.length > 3
-          ) {
+  @for (item of [1,2,3]; track item) {
 
-            <div
-              class="pointer-events-none absolute right-2 top-[157px] z-30 flex h-7 w-7 items-center justify-center rounded-full bg-[#fff8dc] shadow-[0_2px_8px_rgba(40,0,10,0.25)]"
-            >
+    <article
+      class="relative flex w-[150px] shrink-0 flex-col overflow-hidden !rounded-[16px] border border-[#eadfcb] bg-[#fffdf7]/90 shadow-[0_3px_12px_rgba(80,30,20,0.07)]"
+    >
 
-              <span
-                class="font-sans text-[15px] font-extrabold text-[#8f071f]"
-              >
-                →
-              </span>
+      <!-- CARD BACKGROUND -->
 
-            </div>
+      <img
+        src="assets/images/card-bg.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover opacity-[0.4]"
+      />
 
-          }
+      <!-- IMAGE SKELETON -->
 
-        </section>
-
+      <div
+        class="relative z-10 mx-auto mt-[34px] h-[98px] w-[calc(100%-18px)] animate-pulse overflow-hidden !rounded-[11px] bg-[#eadfcb] p-2"
+      >
+        <div
+          class="h-full w-full !rounded-[7px] bg-[#ddd4b9]"
+        ></div>
       </div>
 
-
-      <!-- ===================================================
-           MAIN CONTENT
-      =================================================== -->
-<main class="relative z-10 flex flex-col !pb-0">
-
-        <!-- =================================================
-             VENDORS
-        ================================================= -->
-
-        <section
-          class="relative z-20 -mt-[-11px] pt-0"
-        >
-
-          <!-- SECTION HEADING -->
-
-         <div class="mb-3 -mt-[12px] flex w-full flex-col items-center justify-center">
-  <h2
-    class="!m-0 !font-sans !text-[19px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-  >
-    STORES
-  </h2>
-
-  <p
-    class="!mb-0 !mt-[5px] !font-serif !text-[10px] !italic !font-medium !leading-tight !tracking-[0.2px] !text-[#806b68]"
-  >
-    Discover festive crackers from our stores
-  </p>
-</div>
-
-
-          <!-- HORIZONTAL VENDOR SCROLLER -->
-
-          <div
-            class="-mx-3 overflow-x-auto overflow-y-hidden px-3 scrollbar-hide sm:-mx-4 sm:px-4"
-          >
-
-            <div
-              class="flex w-max gap-3 pb-1"
-            >
-
-              @for (
-                vendor of vendors;
-                track vendor.storeId
-              ) {
-
-                <!-- VENDOR CARD -->
-
-                <article
-                  role="button"
-                  tabindex="0"
-                  (click)="openVendor(vendor)"
-                  class="relative flex w-[160px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-gradient-to-b from-[#c51f45] via-[#a90d32] to-[#8f071f] shadow-[0_4px_12px_rgba(100,0,20,0.16)]"
-                >
-
-                  <!-- LIGHT / STRING DESIGN -->
-
-                  <img
-                    src="assets/images/vendor-lights.png"
-                    alt=""
-                    aria-hidden="true"
-                    class="pointer-events-none absolute left-0 top-[-7px] z-10 h-[42px] w-full select-none object-cover object-top opacity-[0.9]"
-                  />
-
-
-                  <!-- VENDOR IMAGE AREA -->
-
-                  <div
-                    class="relative z-20 mx-auto mt-[38px] h-[105px] w-[calc(100%-20px)] overflow-hidden rounded-[12px] bg-[#f7f3df] shadow-[0_2px_7px_rgba(50,0,10,0.15)]"
-                  >
-
-                    @if (vendor.storeImageUrl) {
-
-                      <img
-                        [src]="vendor.storeImageUrl"
-                        [alt]="vendor.storeName"
-                        class="block h-full w-full object-cover"
-                        loading="lazy"
-                      />
-
-                    }
-
-                    @else {
-
-                      <div
-                        class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#8f071f]"
-                      >
-
-                        <ion-icon
-                          name="image-outline"
-                          class="!text-[32px]"
-                        ></ion-icon>
-
-                      </div>
-
-                    }
-
-                  </div>
-
-
-                  <!-- VENDOR DETAILS -->
-
-                  <div
-                    class="relative z-20 flex min-h-[94px] flex-col px-3 pb-4 pt-3"
-                  >
-
-                    <h3
-                      class="!m-0 !font-sans !text-[14px] !font-bold !leading-[1.25] !tracking-[-0.15px] !text-[#fff8dc]"
-                    >
-                      {{ vendor.storeName }}
-                    </h3>
-
-
-                    <div
-                      class="mt-[7px] flex items-start gap-1.5"
-                    >
-
-                      <ion-icon
-                        name="location-outline"
-                        class="mt-[1px] shrink-0 !text-[13px] !text-[#f8e8df]"
-                      ></ion-icon>
-
-
-                      <p
-                        class="line-clamp-3 !m-0 !font-sans !text-[10px] !font-semibold !leading-[1.35] !tracking-[-0.05px] !text-[#f8e8df]"
-                      >
-                        {{ vendor.address }}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                </article>
-
-              }
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- =================================================
-             NEW ARRIVALS
-        ================================================= -->
-
-     <!-- =================================================
-     NEW ARRIVALS
-================================================= -->
-
-<section
-  id="new-arrivals"
-  class="flex flex-col pt-[18px]"
->
-
-  <!-- SECTION HEADING -->
-
-  <div
-    class="mb-3 flex w-full items-center justify-start"
-  >
-
-    <h2
-      class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-    >
-      NEW ARRIVALS
-    </h2>
-
-  </div>
-
-
-  <!-- INITIAL LOADING -->
-
-  @if (isLoadingProducts) {
-
-    <div
-      class="flex w-full flex-col items-center justify-center py-10 text-center"
-    >
+      <!-- DETAILS SKELETON -->
 
       <div
-        class="mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#ead8b9] border-t-[#8f071f]"
-      ></div>
-
-      <p
-        class="font-sans text-[12px] font-semibold text-[#806b68]"
-      >
-        Loading crackers...
-      </p>
-
-    </div>
-
-  }
-
-
-  <!-- ERROR -->
-
-  @if (
-    !isLoadingProducts &&
-    productErrorMessage
-  ) {
-
-    <div
-      class="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
-    >
-
-      <p
-        class="mb-3 font-sans text-[12px] font-semibold text-[#806b68]"
-      >
-        {{ productErrorMessage }}
-      </p>
-
-
-      <button
-        type="button"
-        (click)="loadProducts(0)"
-        class="rounded-[12px] border-0 bg-[#8f071f] px-5 py-2.5 font-sans text-[11px] font-extrabold text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform active:scale-95"
-      >
-        Try Again
-      </button>
-
-    </div>
-
-  }
-
-
-  <!-- PRODUCTS -->
-
-  @if (
-    !isLoadingProducts &&
-    !productErrorMessage
-  ) {
-
-    @if (products.length > 0) {
-
-      <!--
-        TWO ROW HORIZONTAL PRODUCT LIST
-
-        Each column contains 2 products.
-        The list scrolls horizontally.
-      -->
-
-      <div
-        class="overflow-x-auto overflow-y-hidden scrollbar-hide"
+        class="relative z-10 flex min-h-[82px] flex-col px-3 pb-3 pt-3"
       >
 
         <div
-          class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+          class="h-[13px] w-[82px] animate-pulse rounded-[4px] bg-[#eadfcb]"
+        ></div>
+
+        <div
+          class="mt-[9px] flex gap-1.5"
         >
 
+          <div
+            class="h-[10px] w-[10px] shrink-0 animate-pulse rounded-full bg-[#ddd4b9]"
+          ></div>
+
+          <div
+            class="flex-1"
+          >
+
+            <div
+              class="h-[7px] w-full animate-pulse rounded-[3px] bg-[#ddd4b9]"
+            ></div>
+
+            <div
+              class="mt-[5px] h-[7px] w-[75%] animate-pulse rounded-[3px] bg-[#ddd4b9]"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  }
+
+}
+@else if (vendorErrorMessage) {
+
+  <div
+    class="flex min-h-[150px] w-full min-w-full shrink-0 translate-x-[75px] flex-col items-center justify-center px-4 text-center"
+  >
+
+    <div
+      class="mb-3 flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#fff8dc]"
+    >
+      <ion-icon
+        name="close-outline"
+        class="!text-[22px] !text-[#8f071f]"
+      ></ion-icon>
+    </div>
+
+    <p
+      class="!m-0 !mb-3 max-w-[280px] !font-sans !text-[10px] !font-semibold !leading-[1.5] !text-[#fff8dc]"
+    >
+      {{ vendorErrorMessage }}
+    </p>
+
+    <button
+      type="button"
+      (click)="loadVendors()"
+      class="!min-h-[34px] !rounded-[10px] !border-0 !bg-transparent !px-5 !font-sans !text-[10px] !font-extrabold !text-[#fff8dc] !shadow-none transition-transform duration-150 active:scale-95"
+    >
+      Try Again
+    </button>
+
+  </div>
+
+}
+
+
+
+
+        <!-- ==========================================
+             VENDORS
+        =========================================== -->
+@if (!isVendorsLoading && !vendorErrorMessage) {
+
+
+
+
+
+  @if (!isVendorsLoading && vendorErrorMessage) {
+  <div
+    class="flex min-h-[150px] w-full min-w-[300px] flex-col items-center justify-center px-4 text-center"
+  >
+    <div
+      class="mb-2 flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#f8e5e7]"
+    >
+      <ion-icon
+        name="close-outline"
+        class="!text-[22px] !text-[#8f071f]"
+      ></ion-icon>
+    </div>
+
+    <p
+      class="!m-0 !mb-3 max-w-[240px] !font-sans !text-[10px] !font-semibold !leading-[1.4] !text-[#806b68]"
+    >
+      {{ vendorErrorMessage }}
+    </p>
+
+    <button
+      type="button"
+      (click)="loadVendors()"
+      class="!min-h-[34px] !rounded-[10px] !border-0 !bg-[#8f071f] !px-5 !font-sans !text-[10px] !font-extrabold !text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform duration-150 active:scale-95"
+    >
+      Try Again
+    </button>
+  </div>
+}
+
           @for (
-            product of products;
-            track product.productStoreId
+            vendor of vendors;
+            track vendor.storeId
           ) {
 
-            <!-- PRODUCT CARD -->
+        <article
+  role="button"
+  tabindex="0"
+  (click)="openVendor(vendor)"
+  class="relative z-10 flex w-[150px] shrink-0 flex-col overflow-hidden !rounded-[16px] !border !border-[#eadfcb] !bg-white !opacity-100 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-200 ease-in-out active:scale-[0.98]"
+>
+              <!-- CARD BACKGROUND -->
 
-            <article
-              class="flex h-full w-[105px] min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98] sm:w-[115px]"
-              (click)="openProduct(product)"
-            >
+              <img
+                src="assets/images/card-bg.png"
+                alt=""
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-0 z-0 h-full w-full select-none object-cover opacity-[0.4]"
+              /> 
 
-              <!-- PRODUCT IMAGE -->
+
+              <!-- VENDOR IMAGE -->
 
               <div
-                class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[92px]"
+                class="relative z-10 mx-auto mt-[15px] h-[98px] w-[calc(100%-18px)] overflow-hidden !rounded-[11px] bg-[#fffaf0] p-2 shadow-[0_2px_7px_rgba(80,30,20,0.06)]"
               >
 
-                @if (
-                  product.images &&
-                  product.images.length > 0
-                ) {
+                @if (vendor.storeImageUrl) {
 
                   <img
-                    [src]="product.images[0].imageUrl"
-                    [alt]="product.productName"
-                    class="block h-full w-full object-cover"
+                    [src]="vendor.storeImageUrl"
+                    [alt]="vendor.storeName"
+                    class="block h-full w-full !rounded-[7px] object-cover"
                     loading="lazy"
                   />
 
@@ -1307,12 +1258,12 @@
                 @else {
 
                   <div
-                    class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                    class="flex h-full w-full items-center justify-center !rounded-[7px] bg-[#f8edd6] text-[#a58b82]"
                   >
 
                     <ion-icon
                       name="image-outline"
-                      class="!text-[23px] !text-[#806b68]"
+                      class="!text-[29px]"
                     ></ion-icon>
 
                   </div>
@@ -1322,101 +1273,34 @@
               </div>
 
 
-              <!-- PRODUCT DETAILS -->
+              <!-- VENDOR DETAILS -->
 
               <div
-                class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+                class="relative z-10 flex min-h-[82px] flex-col px-3 pb-3 pt-3"
               >
 
-                <!-- PRODUCT NAME -->
-
                 <h3
-                  class="!m-0 min-h-[29px] w-full !overflow-hidden !font-sans !text-[10px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[11px]"
+                  class="!m-0 !font-sans !text-[13px] !font-bold !leading-[1.25] !tracking-[-0.15px] !text-[#4a1820]"
                 >
-                  {{ product.productName }}
+                  {{ vendor.storeName }}
                 </h3>
 
 
-                <!-- PRICE -->
-
                 <div
-                  class="mt-[4px] flex min-w-0 items-center gap-[3px]"
+                  class="mt-[6px] flex items-start gap-1.5"
                 >
 
-                  @if (
-                    product.mrp >
-                    product.sellingPrice
-                  ) {
-
-                    <span
-                      class="truncate font-sans text-[6px] text-[#99917e] line-through"
-                    >
-                      ₹{{ product.mrp }}
-                    </span>
-
-                  }
+                  <ion-icon
+                    name="location-outline"
+                    class="mt-[1px] shrink-0 !text-[12px] !text-[#8f071f]"
+                  ></ion-icon>
 
 
-                  <span
-                    class="truncate font-sans text-[9px] font-bold text-[#ef0b1c]"
+                  <p
+                    class="line-clamp-3 !m-0 !font-sans !text-[9px] !font-semibold !leading-[1.35] !tracking-[-0.05px] !text-[#806b68]"
                   >
-                    ₹{{ product.sellingPrice }}
-                  </span>
-
-                </div>
-
-
-                <!-- STOCK -->
-
-                <div
-                  class="mt-[3px] flex min-w-0 items-center"
-                >
-
-                  @if (
-                    product.stockQuantity <= 0
-                  ) {
-
-                    <span
-                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
-                    ></span>
-
-                    <span
-                      class="truncate font-sans text-[6px] font-medium text-[#9e2020]"
-                    >
-                      Out of Stock
-                    </span>
-
-                  }
-
-                  @else if (
-                    product.stockQuantity <= 10
-                  ) {
-
-                    <span
-                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
-                    ></span>
-
-                    <span
-                      class="truncate font-sans text-[6px] font-medium text-[#9e2020]"
-                    >
-                      Minimum Stock
-                    </span>
-
-                  }
-
-                  @else {
-
-                    <span
-                      class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#24722d]"
-                    ></span>
-
-                    <span
-                      class="truncate font-sans text-[6px] font-medium text-[#24722d]"
-                    >
-                      In Stock
-                    </span>
-
-                  }
+                    {{ vendor.address }}
+                  </p>
 
                 </div>
 
@@ -1426,99 +1310,701 @@
 
           }
 
+        }
 
-          <!-- SEE MORE -->
+      </div>
 
-       @if (
-  productsTotalPages > 0 &&
-  productsPage <
-    productsTotalPages - 1
+    </div>
+
+  </section>
+
+
+  <!-- =================================================
+       CATEGORIES SECTION
+       Category card dimensions remain unchanged
+  ================================================== -->
+
+  <section
+    class="relative z-20 -mx-3 mb-5 bg-white px-3 pt-0 sm:-mx-4 sm:px-4 sm:pt-1"
+  >
+
+    <!-- CATEGORY HEADER -->
+
+  <div
+  class="relative mb-3 flex h-[60px] w-full items-center justify-center overflow-hidden"
+>
+  <!-- LEFT DESIGN -->
+  <img
+    src="assets/images/new-arrivals-bg-left.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute left-0 top-1/2 z-0 h-[112px] w-[52%] -translate-y-1/2 object-contain object-left"
+  />
+
+  <!-- RIGHT DESIGN -->
+  <img
+    src="assets/images/new-arrivals-bg-right.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-1/2 z-0 h-[112px] w-[52%] -translate-y-1/2 object-contain object-right"
+  />
+
+  <!-- TEXT -->
+  <div
+    class="relative z-10 flex flex-col items-center justify-center bg-white px-2"
+  >
+    <h2
+      class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+    >
+      CATEGORIES
+    </h2>
+
+    <p
+      class="!mb-0 !mt-[5px] !font-serif !italic !font-medium !text-[10px] !leading-tight !tracking-[0.2px] !text-[#806b68]"
+    >
+      Find the best there is!
+    </p>
+  </div>
+</div>
+
+<!-- PRODUCT PAGE DOTS -->
+@if (productsTotalPages > 1) {
+  <div
+    class="mt-[5px] flex w-full items-center justify-center gap-[5px]"
+  >
+    @for (
+      page of [].constructor(productsTotalPages);
+      track $index
+    ) {
+      <button
+        type="button"
+        [attr.aria-label]="'Go to products page ' + ($index + 1)"
+        (click)="goToProductsPage($index)"
+        class="!m-0 !border-0 !p-0 transition-all duration-200"
+        [class.!h-[6px]]="productsPage === $index"
+        [class.!w-[16px]]="productsPage === $index"
+        [class.!rounded-[4px]]="productsPage === $index"
+        [class.!bg-[#8f071f]]="productsPage === $index"
+        [class.!h-[6px]]="productsPage !== $index"
+        [class.!w-[6px]]="productsPage !== $index"
+        [class.!rounded-full]="productsPage !== $index"
+        [class.!bg-[#eadfcb]]="productsPage !== $index"
+      >
+      </button>
+    }
+  </div>
+}
+
+
+    <!-- CATEGORY SCROLLER -->
+
+    <div
+      #categoryScroller
+     class="relative z-10 w-full max-w-full overflow-x-auto overflow-y-visible py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      (scroll)="onCategoryScroll()"
+    >
+
+      <div
+        class="flex w-max min-w-full items-stretch justify-start gap-5 px-[calc(50%-52.5px)] sm:px-[calc(50%-57.5px)]"
+      >
+
+        <!-- ==========================================
+             CATEGORY SKELETON
+        =========================================== -->
+
+        @if (isLoadingCategories) {
+
+          @for (item of [1,2,3,4]; track item) {
+
+            <div
+              class="relative flex h-[135px] w-[105px] shrink-0 flex-col overflow-hidden !rounded-[16px] border border-[#eadfcb] bg-[#fffdf7]/90 px-3 pt-2 pb-0 shadow-[0_3px_12px_rgba(80,30,20,0.07)] sm:h-[145px] sm:w-[115px]"
+            >
+
+              <!-- TITLE -->
+
+              <div
+                class="mx-auto mt-[5px] h-[11px] w-[58px] animate-pulse rounded-[4px] bg-[#eadfcb]"
+              ></div>
+
+
+              <!-- IMAGE -->
+
+              <div
+                class="mt-3 h-[101px] w-full animate-pulse !rounded-[10px] bg-[#eee8d4] p-2 sm:h-[108px]"
+              >
+
+                <div
+                  class="h-full w-full !rounded-[6px] bg-[#e5dcc5]"
+                ></div>
+
+              </div>
+
+            </div>
+
+          }
+
+        }
+
+
+        <!-- ==========================================
+             CATEGORIES
+        =========================================== -->
+
+        @if (
+          !isLoadingCategories &&
+          !categoryErrorMessage
+        ) {
+
+          @for (
+            category of categories;
+            track category.categoryId
+          ) {
+
+            <button
+              type="button"
+              (click)="selectCategory(category.categoryId)"
+              [attr.data-category-id]="category.categoryId"
+              [class.scale-110]="centeredCategoryId === category.categoryId"
+              [class.scale-95]="centeredCategoryId !== category.categoryId"
+              class="category-card relative flex h-[135px] w-[105px] shrink-0 flex-col overflow-hidden !rounded-[16px] border border-[#eadfcb] bg-[#8f071f]/90 px-3 pt-2 pb-0 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-300 ease-in-out active:scale-95 sm:h-[145px] sm:w-[115px]"
+            >
+
+              <!-- CARD BACKGROUND -->
+
+              <!-- <img
+                src="assets/images/card-bg.png"
+                alt=""
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.4]"
+              /> -->
+
+
+              <div
+                class="relative z-10 flex h-full flex-col"
+              >
+
+                <!-- CATEGORY NAME -->
+
+                <div
+                  class="flex h-[22px] w-full shrink-0 items-center justify-center px-1"
+                >
+
+                  <span
+                    class="line-clamp-2 w-full translate-y-2 text-center font-sans text-[11px] font-bold leading-[1.15] text-[#fffdf7]"
+                  >
+                    {{ category.categoryName }}
+                  </span>
+
+                </div>
+
+
+                <!-- CATEGORY IMAGE -->
+
+                <div
+                  class="mt-3 h-[101px] w-full shrink-0 overflow-hidden !rounded-[10px] bg-[#fffaf0] p-2 sm:h-[108px]"
+                >
+
+                  @if (category.categoryImageUrl) {
+
+                    <img
+                      [src]="category.categoryImageUrl"
+                      [alt]="category.categoryName"
+                      class="block h-full w-full !rounded-[6px] object-cover"
+                    />
+
+                  }
+
+                  @else {
+
+                    <div
+                      class="flex h-full w-full items-center justify-center !rounded-[6px] bg-[#f8edd6] text-[#a58b82]"
+                    >
+
+                      <ion-icon
+                        name="image-outline"
+                        class="text-[26px]"
+                      ></ion-icon>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </button>
+
+          }
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- CATEGORY SCROLL INDICATOR -->
+
+<!-- CATEGORY DOT INDICATOR -->
+
+@if (
+  !isLoadingCategories &&
+  !categoryErrorMessage &&
+  categories.length > 1
 ) {
 
   <div
-    class="row-span-2 flex w-[58px] items-center justify-center"
+    class="mt-[4px] flex w-full items-center justify-center gap-[5px]"
   >
 
-    <button
-      type="button"
-      (click)="nextProductsPage()"
-      [disabled]="isChangingProductPage"
-      class="!border-0 !bg-transparent !p-0 !font-sans !text-[9px] !font-extrabold !text-[#8f071f] transition-transform duration-150 active:scale-95 disabled:!opacity-50"
+    @for (
+      category of categories;
+      track category.categoryId
+    ) {
+
+      <button
+        type="button"
+        [attr.aria-label]="'Go to ' + category.categoryName"
+        (click)="goToCategory(category.categoryId)"
+        class="!m-0 !border-0 !p-0 transition-all duration-200"
+        [class.!h-[6px]]="centeredCategoryId === category.categoryId"
+        [class.!w-[16px]]="centeredCategoryId === category.categoryId"
+        [class.!rounded-[4px]]="centeredCategoryId === category.categoryId"
+        [class.!bg-[#8f071f]]="centeredCategoryId === category.categoryId"
+        [class.!h-[6px]]="centeredCategoryId !== category.categoryId"
+        [class.!w-[6px]]="centeredCategoryId !== category.categoryId"
+        [class.!rounded-full]="centeredCategoryId !== category.categoryId"
+        [class.!bg-[#eadfcb]]="centeredCategoryId !== category.categoryId"
+      >
+      </button>
+
+    }
+
+  </div>
+
+}
+
+  </section>
+
+</div>
+
+
+        <!-- =================================================
+             NEW ARRIVALS
+        ================================================= -->
+
+        <section
+          id="new-arrivals"
+          class="flex flex-col pt-[-4px]"
+        >
+
+          <!-- SECTION HEADING -->
+
+      <!-- SECTION HEADING -->
+<!-- SECTION HEADING -->
+<!-- NEW ARRIVALS HEADING -->
+<!-- NEW ARRIVALS HEADING -->
+<div
+  class="relative mb-3 flex h-[60px] w-full items-center justify-center overflow-hidden"
+>
+  <!-- LEFT DESIGN -->
+  <img
+    src="assets/images/new-arrivals-bg-left.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute left-0 top-1/2 z-0 h-[92px] w-[52%] -translate-y-1/2 object-contain object-left"
+  />
+
+  <!-- RIGHT DESIGN -->
+  <img
+    src="assets/images/new-arrivals-bg-right.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-1/2 z-0 h-[92px] w-[52%] -translate-y-1/2 object-contain object-right"
+  />
+
+  <!-- TEXT -->
+  <h2
+    class="relative z-10 !m-0 bg-white px-2 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+  >
+    NEW ARRIVALS
+  </h2>
+</div>
+
+
+          <!-- ==========================================
+               PRODUCT SKELETON
+          =========================================== -->
+
+          @if (isLoadingProducts) {
+
+            <div
+              class="overflow-x-hidden"
+            >
+
+              <div
+                class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+              >
+
+                @for (item of [1,2,3,4,5,6]; track item) {
+
+                  <article
+                    class="flex h-full w-[105px] min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)] sm:w-[115px]"
+                  >
+
+                    <!-- IMAGE -->
+
+                    <div
+                      class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] animate-pulse rounded-[9px] bg-[#eee8d4] sm:h-[92px]"
+                    ></div>
+
+
+                    <!-- DETAILS -->
+
+                    <div
+                      class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+                    >
+
+                      <div
+                        class="min-h-[29px]"
+                      >
+
+                        <div
+                          class="h-[8px] w-[88%] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                        ></div>
+
+                        <div
+                          class="mt-[5px] h-[8px] w-[62%] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                        ></div>
+
+                      </div>
+
+
+                      <!-- PRICE -->
+
+                      <div
+                        class="mt-[4px] flex items-center gap-[3px]"
+                      >
+
+                        <div
+                          class="h-[6px] w-[22px] animate-pulse rounded-[3px] bg-[#e3dbc8]"
+                        ></div>
+
+                        <div
+                          class="h-[9px] w-[30px] animate-pulse rounded-[3px] bg-[#eadfcb]"
+                        ></div>
+
+                      </div>
+
+
+                      <!-- STOCK -->
+
+                      <div
+                        class="mt-[4px] flex items-center"
+                      >
+
+                        <div
+                          class="mr-[3px] h-[4px] w-[4px] animate-pulse rounded-full bg-[#ddd4b9]"
+                        ></div>
+
+                        <div
+                          class="h-[6px] w-[40px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                        ></div>
+
+                      </div>
+
+                    </div>
+
+                  </article>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+
+          <!-- ERROR -->
+
+          @if (
+            !isLoadingProducts &&
+            productErrorMessage
+          ) {
+
+            <div
+              class="flex w-full flex-col items-center justify-center px-4 py-10 text-center"
+            >
+
+              <p
+                class="mb-3 font-sans text-[12px] font-semibold text-[#806b68]"
+              >
+                {{ productErrorMessage }}
+              </p>
+
+
+              <button
+                type="button"
+                (click)="loadProducts(0)"
+                class="rounded-[12px] border-0 bg-[#8f071f] px-5 py-2.5 font-sans text-[11px] font-extrabold text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform active:scale-95"
+              >
+                Try Again
+              </button>
+
+            </div>
+
+          }
+
+
+          <!-- PRODUCTS -->
+
+          @if (
+            !isLoadingProducts &&
+            !productErrorMessage
+          ) {
+
+            @if (products.length > 0) {
+
+              <!-- TWO ROW HORIZONTAL PRODUCT LIST -->
+
+              <div
+                class="overflow-x-auto overflow-y-hidden scrollbar-hide"
+              >
+
+                <div
+                  class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+                >
+
+                  @for (
+                    product of products;
+                    track product.productStoreId
+                  ) {
+
+                    <!-- PRODUCT CARD -->
+<article
+  class="relative z-10 flex h-full w-[105px] min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] !border !border-[#eadfcb] !bg-white !opacity-100 shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98] sm:w-[115px]"
+  (click)="openProduct(product)"
+>
+  <!-- DISCOUNT BADGE -->
+  <img
+    [src]="getProductBadge(product)"
+    alt="Discount"
+    aria-hidden="true"
+    class="pointer-events-none absolute left-[-2px] top-[-3px] z-30 h-[34px] w-[34px] object-contain"
+  />
+
+  <!-- PRODUCT IMAGE -->
+  <div
+    class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[92px]"
+  >
+    @if (
+      product.images &&
+      product.images.length > 0
+    ) {
+
+      <img
+        [src]="product.images[0].imageUrl"
+        [alt]="product.productName"
+        class="block h-full w-full object-cover"
+        loading="lazy"
+      />
+
+    }
+
+    @else {
+
+      <div
+        class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+      >
+        <ion-icon
+          name="image-outline"
+          class="!text-[23px] !text-[#806b68]"
+        ></ion-icon>
+      </div>
+
+    }
+  </div>
+
+  <!-- PRODUCT DETAILS -->
+  <div
+    class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+  >
+
+    <!-- PRODUCT NAME -->
+    <h3
+      class="!m-0 min-h-[29px] w-full !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[11px]"
+    >
+      {{ product.productName }}
+    </h3>
+
+    <!-- PRICE -->
+    <div
+      class="mt-[4px] flex min-w-0 items-center gap-[3px]"
+    >
+      @if (
+        product.mrp >
+        product.sellingPrice
+      ) {
+
+        <span
+          class="truncate font-sans text-[10px] text-[#99917e] line-through"
+        >
+          ₹{{ product.mrp }}
+        </span>
+
+      }
+
+      <span
+        class="truncate font-sans text-[10px] font-bold text-[#ef0b1c]"
+      >
+        ₹{{ product.sellingPrice }}
+      </span>
+    </div>
+
+    <!-- STOCK -->
+    <div
+      class="mt-[3px] flex min-w-0 items-center"
     >
 
-      @if (isChangingProductPage) {
+      @if (
+        product.stockQuantity <= 0
+      ) {
 
-        <span>
-          Loading...
+        <span
+          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+        ></span>
+
+        <span
+          class="truncate font-sans text-[10px] font-medium text-[#9e2020]"
+        >
+          Out of Stock
+        </span>
+
+      }
+
+      @else if (
+        product.stockQuantity <= 10
+      ) {
+
+        <span
+          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+        ></span>
+
+        <span
+          class="truncate font-sans text-[10px] font-medium text-[#9e2020]"
+        >
+          Minimum Stock
         </span>
 
       }
 
       @else {
 
-        <span>
-          SEE MORE →
+        <span
+          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#24722d]"
+        ></span>
+
+        <span
+          class="truncate font-sans text-[10px] font-medium text-[#24722d]"
+        >
+          In Stock
         </span>
 
       }
 
-    </button>
+    </div>
 
   </div>
+</article>
 
-}
-
-        </div>
-
-      </div>
-
-    }
+                  }
 
 
-    <!-- NO PRODUCTS -->
+                  <!-- SEE MORE -->
 
-    @if (products.length === 0) {
+                  @if (
+                    productsTotalPages > 0 &&
+                    productsPage <
+                    productsTotalPages - 1
+                  ) {
 
-      <div
-        class="flex w-full flex-col items-center justify-center px-4 py-12 text-center"
-      >
+                    <div
+                      class="row-span-2 flex w-[58px] items-center justify-center"
+                    >
 
-        <ion-icon
-          name="image-outline"
-          class="mb-2 !text-[34px] !text-[#b29d95]"
-        ></ion-icon>
+                      <button
+                        type="button"
+                        (click)="nextProductsPage()"
+                        [disabled]="isChangingProductPage"
+                        class="!border-0 !bg-transparent !p-0 !font-sans !text-[9px] !font-extrabold !text-[#8f071f] transition-transform duration-150 active:scale-95 disabled:!opacity-50"
+                      >
 
-        <p
-          class="!m-0 font-sans text-[12px] font-semibold text-[#806b68]"
-        >
-          No products available.
-        </p>
+                        @if (isChangingProductPage) {
 
-      </div>
+                          <span>
+                            Loading...
+                          </span>
 
-    }
+                        }
 
-  }
+                        @else {
 
-</section>
+                          <span>
+                            SEE MORE →
+                          </span>
 
-      </main>
+                        }
+
+                      </button>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            }
+
+
+            <!-- NO PRODUCTS -->
+
+            @if (products.length === 0) {
+
+              <div
+                class="flex w-full flex-col items-center justify-center px-4 py-12 text-center"
+              >
+
+                <ion-icon
+                  name="image-outline"
+                  class="mb-2 !text-[34px] !text-[#b29d95]"
+                ></ion-icon>
+
+                <p
+                  class="!m-0 font-sans text-[12px] font-semibold text-[#806b68]"
+                >
+                  No products available.
+                </p>
+
+              </div>
+
+            }
+
+          }
+
+        </section>
+
+
 
 
       <!-- ===================================================
            HOME BOTTOM DESIGN
       =================================================== -->
 
-<div
-  class="pointer-events-none relative z-0 -mx-3 mt-0 h-[58px] w-[calc(100%+24px)] max-w-full shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
->
-  <img
-    src="assets/images/newDesignBg.png"
-    alt=""
-    aria-hidden="true"
-    class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
-  />
-</div>
+ 
 
     }
 

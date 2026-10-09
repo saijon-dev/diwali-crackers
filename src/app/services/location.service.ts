@@ -30,6 +30,8 @@ export interface UserLocation {
 })
 export class LocationService {
 
+  
+
 
   /* ====================================================
      CHECK IF RUNNING NATIVE
@@ -107,75 +109,28 @@ export class LocationService {
   /* ====================================================
      GET CURRENT LOCATION
   ==================================================== */
+/* ====================================================
+   GET CURRENT LOCATION
+==================================================== */
 
-  async getCurrentLocation(): Promise<UserLocation> {
+async getCurrentLocation(): Promise<UserLocation> {
 
-    /*
-     * ================================================
-     * BROWSER
-     * ================================================
-     */
+  /*
+   * TESTING LOCATION
+   * Vizag / Visakhapatnam
+   */
 
-    if (!this.isNativePlatform()) {
+  return {
 
-      return this.getBrowserLocation();
+    latitude: 17.6868,
 
-    }
+    longitude: 83.2185,
 
+    accuracy: 1000
 
-    /*
-     * ================================================
-     * ANDROID / NATIVE
-     * ================================================
-     */
+  };
 
-    let permission =
-      await this.checkPermission();
-
-
-    if (
-      permission !== 'granted'
-    ) {
-
-      permission =
-        await this.requestPermission();
-
-    }
-
-
-    if (
-      permission !== 'granted'
-    ) {
-
-      throw new Error(
-        'Location permission was not granted.'
-      );
-
-    }
-
-
-    const position: Position =
-      await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
-      });
-
-
-    return {
-
-      latitude:
-        position.coords.latitude,
-
-      longitude:
-        position.coords.longitude,
-
-      accuracy:
-        position.coords.accuracy
-
-    };
-
-  }
+}
 
 
   /* ====================================================

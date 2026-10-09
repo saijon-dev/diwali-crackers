@@ -1,0 +1,1196 @@
+<ion-content
+  [fullscreen]="true"
+  class="!bg-white"
+>
+
+  <div
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 pb-8 sm:px-4"
+  >
+
+    <!-- =========================================================
+         BOTTOM DIWALI DESIGN
+    ========================================================== -->
+
+    <div
+      class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
+    </div>
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-10 shadow-none sm:-mx-4"
+    >
+
+      <!-- BACK -->
+
+      <button
+        type="button"
+        (click)="goBack()"
+        aria-label="Back"
+        class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+      </button>
+
+
+      <!-- HEADER TITLE -->
+
+      <div
+        class="relative z-20 flex flex-col items-center justify-center leading-none"
+      >
+
+        <div
+          class="flex items-center gap-2"
+        >
+
+          <span
+            class="font-serif text-[17px] font-bold text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+          <span
+            class="font-serif text-[22px] font-bold tracking-[0.3px] text-[#fff8dc]"
+          >
+            Create Combo
+          </span>
+
+          <span
+            class="font-serif text-[17px] font-bold text-[#f7df9d]"
+          >
+            ✦
+          </span>
+
+        </div>
+
+        <span
+          class="mt-1 font-serif text-[9px] font-semibold tracking-[0.2px] text-[#fff8dc]"
+        >
+          Make special combos from your products
+        </span>
+
+      </div>
+
+
+      <!-- RIGHT DEEPAS -->
+
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+      />
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main
+      class="relative z-10"
+    >
+
+
+      <!-- =======================================================
+           SELECT PRODUCTS
+      ======================================================== -->
+
+      <section
+        class="pt-5"
+      >
+
+        <!-- TITLE + SEARCH -->
+
+        <div
+          class="flex items-end justify-between gap-3"
+        >
+
+          <div
+            class="min-w-0"
+          >
+
+            <h2
+              class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-black"
+            >
+              Select Products
+            </h2>
+
+            <p
+              class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.4] !text-[#806b68]"
+            >
+              Choose products from your inventory to add to the combo
+            </p>
+
+          </div>
+
+
+          <!-- SEARCH -->
+
+          <div
+            class="relative w-[145px] shrink-0 sm:w-[190px]"
+          >
+
+            <ion-icon
+              name="search-outline"
+              class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 !text-[18px] !text-[#b3123b]"
+            ></ion-icon>
+
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              placeholder="Search products..."
+              class="h-[44px] w-full rounded-[13px] border border-[#efb9a9] bg-white pl-9 pr-2.5 !font-sans !text-[11px] !font-medium !text-[#17233c] !outline-none placeholder:!text-[#a28d8d] focus:border-[#b3123b] sm:!text-[12px]"
+            />
+
+          </div>
+
+        </div>
+
+
+        <!-- =======================================================
+             CATEGORY FILTER
+        ======================================================== -->
+
+        @if (!isCategoriesLoading) {
+
+          <div
+            class="mt-4 w-full max-w-full overflow-x-auto overflow-y-hidden scrollbar-hide"
+          >
+
+            <div
+              class="flex w-max gap-2"
+            >
+
+              <!-- ALL -->
+
+              <button
+                type="button"
+                (click)="selectCategory(null)"
+                [class.!bg-[#b3123b]]="
+                  selectedCategoryId === null
+                "
+                [class.!text-[#fff8dc]]="
+                  selectedCategoryId === null
+                "
+                [class.!bg-[#fff4e1]]="
+                  selectedCategoryId !== null
+                "
+                [class.!text-[#17233c]]="
+                  selectedCategoryId !== null
+                "
+                class="!min-h-[34px] !rounded-[18px] !border-0 !px-4 !py-1 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95"
+              >
+                All
+              </button>
+
+
+              @for (
+                category of categories;
+                track category.categoryId
+              ) {
+
+                <button
+                  type="button"
+                  (click)="
+                    selectCategory(
+                      category.categoryId
+                    )
+                  "
+                  [class.!bg-[#b3123b]]="
+                    selectedCategoryId ===
+                    category.categoryId
+                  "
+                  [class.!text-[#fff8dc]]="
+                    selectedCategoryId ===
+                    category.categoryId
+                  "
+                  [class.!bg-[#fff4e1]]="
+                    selectedCategoryId !==
+                    category.categoryId
+                  "
+                  [class.!text-[#17233c]]="
+                    selectedCategoryId !==
+                    category.categoryId
+                  "
+                  class="!min-h-[34px] !rounded-[18px] !border-0 !px-4 !py-1 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95"
+                >
+                  {{ category.categoryName }}
+                </button>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <!-- =======================================================
+             PRODUCTS LOADING
+        ======================================================== -->
+
+        @if (isProductsLoading) {
+
+          <div
+            class="mt-4 overflow-x-hidden"
+          >
+
+            <div
+              class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+            >
+
+              @for (
+                item of [1,2,3,4,5,6];
+                track item
+              ) {
+
+                <article
+                  class="flex h-full w-[105px] min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)] sm:w-[115px]"
+                >
+
+                  <div
+                    class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] animate-pulse rounded-[9px] bg-[#eee8d4] sm:h-[92px]"
+                  ></div>
+
+                  <div
+                    class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+                  >
+
+                    <div
+                      class="min-h-[29px]"
+                    >
+
+                      <div
+                        class="h-[8px] w-[88%] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="mt-[5px] h-[8px] w-[62%] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[4px] h-[9px] w-[35px] animate-pulse rounded-[3px] bg-[#eadfcb]"
+                    ></div>
+
+                    <div
+                      class="mt-[4px] h-[6px] w-[45px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                    ></div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <!-- =======================================================
+             PRODUCTS
+             
+             EXACTLY 2 ROWS
+             HORIZONTAL SCROLL
+        ======================================================== -->
+
+        @if (
+          !isProductsLoading &&
+          filteredProducts.length > 0
+        ) {
+
+          <div
+            class="mt-4 overflow-x-auto overflow-y-hidden scrollbar-hide"
+          >
+
+            <div
+              class="grid w-max auto-cols-[105px] grid-flow-col grid-rows-2 gap-[10px] pb-2 sm:auto-cols-[115px] sm:gap-[12px]"
+            >
+
+              @for (
+                product of filteredProducts;
+                track product.productId
+              ) {
+
+                <!-- =========================================
+                     PRODUCT CARD
+                ========================================== -->
+
+                <article
+                  class="relative flex h-full w-[105px] min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98] sm:w-[115px]"
+                  [class.opacity-60]="
+                    isOutOfStock(product)
+                  "
+                  (click)="
+                    !isOutOfStock(product) &&
+                    toggleProduct(product)
+                  "
+                >
+
+                  <!-- CHECKBOX -->
+
+                  <div
+                    class="absolute right-[6px] top-[6px] z-20 flex !h-[22px] !w-[22px] !items-center !justify-center !rounded-[5px] border-2"
+                    [class.!border-[#b3123b]]="
+                      isProductSelected(
+                        product.productId
+                      )
+                    "
+                    [class.!bg-[#b3123b]]="
+                      isProductSelected(
+                        product.productId
+                      )
+                    "
+                    [class.!border-[#dfcdb5]]="
+                      !isProductSelected(
+                        product.productId
+                      )
+                    "
+                    [class.!bg-white]="
+                      !isProductSelected(
+                        product.productId
+                      )
+                    "
+                  >
+
+                    @if (
+                      isProductSelected(
+                        product.productId
+                      )
+                    ) {
+
+                      <ion-icon
+                        name="checkmark-outline"
+                        class="!text-[15px] !text-white"
+                      ></ion-icon>
+
+                    }
+
+                  </div>
+
+
+                  <!-- PRODUCT IMAGE -->
+
+                  <div
+                    class="mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[92px]"
+                  >
+
+                    @if (
+                      product.images &&
+                      product.images.length > 0
+                    ) {
+
+                      <img
+                        [src]="product.images[0].imageUrl"
+                        [alt]="product.productName"
+                        class="block h-full w-full object-cover"
+                        loading="lazy"
+                      />
+
+                    } @else {
+
+                      <div
+                        class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                      >
+
+                        <ion-icon
+                          name="image-outline"
+                          class="!text-[25px] !text-[#806b68]"
+                        ></ion-icon>
+
+                      </div>
+
+                    }
+
+                  </div>
+
+
+                  <!-- PRODUCT DETAILS -->
+
+                  <div
+                    class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
+                  >
+
+                    <!-- PRODUCT NAME -->
+
+                    <div
+                      class="mt-[3px] min-h-[29px]"
+                    >
+
+                      <h3
+                        class="!m-0 !line-clamp-2 !overflow-hidden !font-sans !text-[10px] !font-bold !leading-[1.3] !text-[#17233c]"
+                      >
+                        {{ product.productName }}
+                      </h3>
+
+                    </div>
+
+
+                    <!-- PRICE -->
+
+                    <div
+                      class="mt-[2px] flex items-center gap-[3px]"
+                    >
+
+                      @if (
+                        product.mrp >
+                        product.sellingPrice
+                      ) {
+
+                        <span
+                          class="!font-sans !text-[8px] !font-medium !text-[#99917e] line-through"
+                        >
+                          ₹{{ product.mrp }}
+                        </span>
+
+                      }
+
+                      <span
+                        class="!font-sans !text-[10px] !font-bold !text-[#ef0b1c]"
+                      >
+                        ₹{{ product.sellingPrice }}
+                      </span>
+
+                    </div>
+
+
+                    <!-- STOCK -->
+
+                    <div
+                      class="mt-[3px] flex min-h-[13px] items-center"
+                    >
+
+                      @if (
+                        product.stockQuantity <= 0
+                      ) {
+
+                        <span
+                          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+                        ></span>
+
+                        <span
+                          class="!font-sans !text-[8px] !font-medium !text-[#9e2020]"
+                        >
+                          Out of Stock
+                        </span>
+
+                      } @else if (
+                        product.stockQuantity <= 10
+                      ) {
+
+                        <span
+                          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
+                        ></span>
+
+                        <span
+                          class="!font-sans !text-[8px] !font-medium !text-[#9e2020]"
+                        >
+                          Minimum Stock
+                        </span>
+
+                      } @else {
+
+                        <span
+                          class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#24722d]"
+                        ></span>
+
+                        <span
+                          class="!font-sans !text-[8px] !font-medium !text-[#24722d]"
+                        >
+                          In Stock
+                          {{ product.stockQuantity }}
+                        </span>
+
+                      }
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <!-- =======================================================
+             NO PRODUCTS
+        ======================================================== -->
+
+        @if (
+          !isProductsLoading &&
+          filteredProducts.length === 0
+        ) {
+
+          <section
+            class="flex min-h-[210px] flex-col items-center justify-center px-5 text-center"
+          >
+
+            <div
+              class="mb-3 flex !h-[58px] !w-[58px] items-center justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+            >
+
+              <ion-icon
+                name="search-outline"
+                class="!text-[27px]"
+              ></ion-icon>
+
+            </div>
+
+            <h3
+              class="!m-0 !font-sans !text-[17px] !font-black !text-[#17233c]"
+            >
+              No Products Found
+            </h3>
+
+            <p
+              class="!m-[5px_0_0] max-w-[260px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+            >
+              No products match the selected category or search.
+            </p>
+
+          </section>
+
+        }
+
+      </section>
+
+
+      <!-- =======================================================
+           SELECTED PRODUCTS
+      ======================================================== -->
+
+      @if (
+        selectedProducts.length > 0
+      ) {
+
+        <section
+          class="mt-4 rounded-[15px] bg-[#fffdf7] p-3 shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
+        >
+
+          <!-- HEADER -->
+
+          <div
+            class="flex items-center justify-between border-b border-[#eee5d9] pb-2.5"
+          >
+
+            <h2
+              class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-[#17233c]"
+            >
+              Selected Products
+              ({{ selectedProductCount }})
+            </h2>
+
+            <button
+              type="button"
+              (click)="clearSelectedProducts()"
+              class="flex items-center gap-1 !border-0 !bg-transparent !p-1 !font-sans !text-[10px] !font-bold !text-[#8f071f]"
+            >
+
+              <ion-icon
+                name="trash-outline"
+                class="!text-[15px]"
+              ></ion-icon>
+
+              Clear All
+
+            </button>
+
+          </div>
+
+
+          <!-- SELECTED ITEMS -->
+
+          <div>
+
+            @for (
+              item of selectedProducts;
+              track item.product.productId
+            ) {
+
+              <div
+                class="grid grid-cols-[48px_minmax(0,1fr)_112px_45px_22px] items-center gap-2 border-b border-[#eee5d9] py-2.5 last:border-b-0"
+              >
+
+                <!-- IMAGE -->
+
+                <div
+                  class="flex h-[46px] w-[48px] items-center justify-center overflow-hidden rounded-[7px] bg-[#f7f3df]"
+                >
+
+                  @if (
+                    item.product.images &&
+                    item.product.images.length > 0
+                  ) {
+
+                    <img
+                      [src]="
+                        item.product.images[0].imageUrl
+                      "
+                      [alt]="
+                        item.product.productName
+                      "
+                      class="block h-full w-full object-cover"
+                    />
+
+                  } @else {
+
+                    <ion-icon
+                      name="image-outline"
+                      class="!text-[20px] !text-[#806b68]"
+                    ></ion-icon>
+
+                  }
+
+                </div>
+
+
+                <!-- PRODUCT INFO -->
+
+                <div
+                  class="min-w-0"
+                >
+
+                  <h3
+                    class="!m-0 truncate !font-sans !text-[11px] !font-bold !text-[#17233c]"
+                  >
+                    {{ item.product.productName }}
+                  </h3>
+
+                  <p
+                    class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                  >
+                    Unit Price:
+                    ₹{{ item.product.sellingPrice }}
+                  </p>
+
+                </div>
+
+
+                <!-- QUANTITY -->
+
+                <div
+                  class="flex items-center justify-center gap-1"
+                >
+
+                  <button
+                    type="button"
+                    (click)="
+                      decreaseSelectedQuantity(item);
+                      $event.stopPropagation()
+                    "
+                    class="flex !h-[32px] !w-[32px] !items-center !justify-center !rounded-[7px] !border-0 !bg-[#b3123b] !p-0 !text-white"
+                  >
+
+                    <ion-icon
+                      name="remove-outline"
+                      class="!text-[16px]"
+                    ></ion-icon>
+
+                  </button>
+
+
+                  <div
+                    class="flex h-[32px] w-[43px] items-center justify-center rounded-[7px] border border-[#e3e3e3] bg-white !font-sans !text-[11px] !font-bold !text-[#17233c]"
+                  >
+                    {{ item.quantity }}
+                  </div>
+
+
+                  <button
+                    type="button"
+                    (click)="
+                      increaseSelectedQuantity(item);
+                      $event.stopPropagation()
+                    "
+                    class="flex !h-[32px] !w-[32px] !items-center !justify-center !rounded-[7px] !border-0 !bg-[#b3123b] !p-0 !text-white"
+                  >
+
+                    <ion-icon
+                      name="add-outline"
+                      class="!text-[16px]"
+                    ></ion-icon>
+
+                  </button>
+
+                </div>
+
+
+                <!-- TOTAL -->
+
+                <span
+                  class="text-right !font-sans !text-[11px] !font-extrabold !text-[#17233c]"
+                >
+                  ₹{{
+                    item.product.sellingPrice *
+                    item.quantity
+                  }}
+                </span>
+
+
+                <!-- REMOVE -->
+
+                <button
+                  type="button"
+                  (click)="
+                    removeSelectedProduct(
+                      item.product.productId
+                    );
+                    $event.stopPropagation()
+                  "
+                  aria-label="Remove product"
+                  class="flex !h-[25px] !w-[22px] !items-center !justify-center !border-0 !bg-transparent !p-0 !text-[#b3123b]"
+                >
+
+                  <ion-icon
+                    name="close-outline"
+                    class="!text-[22px]"
+                  ></ion-icon>
+
+                </button>
+
+              </div>
+
+            }
+
+          </div>
+
+        </section>
+
+      }
+
+
+      <!-- =======================================================
+           PRICE + COMBO PREVIEW
+      ======================================================== -->
+
+      @if (
+        selectedProducts.length > 0
+      ) {
+
+        <section
+          class="mt-3 grid gap-3 md:grid-cols-2"
+        >
+
+
+          <!-- =====================================================
+               SET COMBO PRICE
+          ====================================================== -->
+
+          <div
+            class="rounded-[15px] bg-[#fffdf7] p-3 shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
+          >
+
+            <h2
+              class="!m-0 !font-sans !text-[17px] !font-black !text-[#17233c]"
+            >
+              Set Combo Price
+            </h2>
+
+
+            <!-- ACTUAL -->
+
+            <div
+              class="mt-4 flex items-center justify-between"
+            >
+
+              <span
+                class="!font-sans !text-[11px] !font-medium !text-[#17233c]"
+              >
+                Total Actual Price
+              </span>
+
+              <span
+                class="!font-sans !text-[11px] !font-bold !text-[#7d8593] line-through"
+              >
+                ₹{{ totalActualPrice }}
+              </span>
+
+            </div>
+
+
+            <!-- SELLING PRICE -->
+
+            <div
+              class="mt-3 flex items-center justify-between gap-2"
+            >
+
+              <span
+                class="!font-sans !text-[11px] !font-medium !text-[#17233c]"
+              >
+                Combo Selling Price
+              </span>
+
+              <input
+                type="number"
+                [(ngModel)]="comboSellingPrice"
+                (ngModelChange)="onComboPriceChange()"
+                min="1"
+                [max]="totalActualPrice"
+                class="h-[43px] w-[120px] rounded-[10px] border border-[#efb9a9] bg-white px-3 !font-sans !text-[13px] !font-bold !text-[#17233c] !outline-none focus:border-[#b3123b]"
+              />
+
+            </div>
+
+
+            <!-- PRICE SLIDER -->
+
+            <input
+              type="range"
+              [(ngModel)]="comboSellingPrice"
+              (ngModelChange)="onComboPriceChange()"
+              min="1"
+              [max]="totalActualPrice || 1"
+              step="1"
+              class="mt-4 h-[5px] w-full cursor-pointer accent-[#b3123b]"
+            />
+
+
+            <!-- DISCOUNT BOX -->
+
+            <div
+              class="mt-4 flex items-center gap-3 rounded-[12px] bg-[#fff0ed] px-3 py-3"
+            >
+
+              <div
+                class="flex !h-[42px] !w-[42px] shrink-0 !items-center !justify-center !rounded-full !bg-[#b3123b] !text-white"
+              >
+
+                <span
+                  class="!font-sans !text-[19px] !font-extrabold"
+                >
+                  %
+                </span>
+
+              </div>
+
+              <div>
+
+                <p
+                  class="!m-0 !font-sans !text-[10px] !font-medium !text-[#9e2020]"
+                >
+                  You are giving a discount of
+                </p>
+
+                <strong
+                  class="!font-sans !text-[19px] !font-extrabold !text-[#b3123b]"
+                >
+                  {{ discountPercentage }}% OFF
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =====================================================
+               COMBO PREVIEW
+          ====================================================== -->
+
+          <div
+            class="rounded-[15px] bg-[#fffdf7] p-2.5 shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
+          >
+
+            <div
+              class="overflow-hidden rounded-[12px] border border-[#eadfcb]"
+            >
+
+              <!-- OFFER HEADER -->
+
+              <div
+                class="flex h-[38px] items-center justify-center bg-[#b3123b]"
+              >
+
+                <span
+                  class="!font-sans !text-[15px] !font-black !text-white"
+                >
+                  ✦ COMBO OFFER ✦
+                </span>
+
+              </div>
+
+
+              <!-- PRODUCT PREVIEW -->
+
+              <div
+                class="flex min-h-[108px] items-center justify-center gap-1.5 overflow-hidden bg-white px-2"
+              >
+
+                @for (
+                  item of selectedProducts.slice(0, 4);
+                  track item.product.productId
+                ) {
+
+                  <div
+                    class="flex h-[60px] w-[60px] shrink-0 items-center justify-center overflow-hidden rounded-[7px] bg-[#fffdf7]"
+                  >
+
+                    @if (
+                      item.product.images &&
+                      item.product.images.length > 0
+                    ) {
+
+                      <img
+                        [src]="
+                          item.product.images[0].imageUrl
+                        "
+                        [alt]="
+                          item.product.productName
+                        "
+                        class="block h-full w-full object-cover"
+                      />
+
+                    }
+
+                  </div>
+
+                  @if (!$last) {
+
+                    <span
+                      class="shrink-0 !font-sans !text-[15px] !font-bold !text-[#17233c]"
+                    >
+                      +
+                    </span>
+
+                  }
+
+                }
+
+              </div>
+
+
+              <!-- PRICE + DISCOUNT -->
+
+              <div
+                class="flex items-center justify-between bg-white px-4 pb-3"
+              >
+
+                <div>
+
+                  <span
+                    class="block !font-sans !text-[10px] !font-bold !text-[#9ca3af] line-through"
+                  >
+                    ₹{{ totalActualPrice }}
+                  </span>
+
+                  <strong
+                    class="block !font-sans !text-[23px] !font-extrabold !text-[#b3123b]"
+                  >
+                    ₹{{ comboSellingPrice }}
+                  </strong>
+
+                </div>
+
+
+                <div
+                  class="flex h-[58px] w-[58px] rotate-[5deg] items-center justify-center rounded-full border-[3px] border-[#b3123b] bg-[#fff7cc] text-center"
+                >
+
+                  <span
+                    class="!font-sans !text-[11px] !font-extrabold !leading-[1.05] !text-[#b3123b]"
+                  >
+                    {{ discountPercentage }}%
+                    <br />
+                    OFF
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- FOOTER -->
+
+              <div
+                class="bg-[#fff0ed] px-2 py-2 text-center"
+              >
+
+                <p
+                  class="!m-0 !font-sans !text-[9px] !font-medium !text-[#526075]"
+                >
+                  Get these
+                  {{ selectedProductCount }}
+                  products as a combo and
+                </p>
+
+                <strong
+                  class="!font-sans !text-[10px] !font-extrabold !text-[#b3123b]"
+                >
+                  save {{ discountPercentage }}%!
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      }
+
+
+      <!-- =======================================================
+           COMBO DETAILS
+      ======================================================== -->
+
+      @if (
+        selectedProducts.length > 0
+      ) {
+
+        <section
+          class="mt-3 rounded-[15px] bg-[#fffdf7] p-3 shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
+        >
+
+          <h2
+            class="!m-0 !font-sans !text-[17px] !font-black !text-[#17233c]"
+          >
+            Combo Details
+          </h2>
+
+
+          <div
+            class="mt-3 grid gap-3 md:grid-cols-2"
+          >
+
+            <!-- COMBO NAME -->
+
+            <div>
+
+              <label
+                class="mb-1.5 block !font-sans !text-[10px] !font-semibold !text-[#526075]"
+              >
+                Combo Name
+                <span class="text-[#b3123b]">*</span>
+              </label>
+
+              <input
+                type="text"
+                [(ngModel)]="comboName"
+                maxlength="100"
+                placeholder="Festival Fun Combo"
+                class="h-[43px] w-full rounded-[10px] border border-[#dcdfe5] bg-white px-3 !font-sans !text-[11px] !font-medium !text-[#17233c] !outline-none focus:border-[#b3123b]"
+              />
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div>
+
+              <label
+                class="mb-1.5 block !font-sans !text-[10px] !font-semibold !text-[#526075]"
+              >
+                Description
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#9ca3af]"
+                >
+                  (Optional)
+                </span>
+              </label>
+
+              <textarea
+                [(ngModel)]="comboDescription"
+                maxlength="200"
+                rows="2"
+                placeholder="Perfect combo for a joyful celebration!"
+                class="min-h-[43px] w-full resize-none rounded-[10px] border border-[#dcdfe5] bg-white px-3 py-2.5 !font-sans !text-[11px] !font-medium !leading-[1.4] !text-[#17233c] !outline-none focus:border-[#b3123b]"
+              ></textarea>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      }
+
+
+      <!-- =======================================================
+           ERROR
+      ======================================================== -->
+
+      @if (errorMessage) {
+
+        <div
+          class="mt-3 rounded-[10px] border border-[#f1c1c1] bg-[#fff1f1] px-3 py-2.5 !font-sans !text-[10px] !font-semibold !text-[#b32626]"
+        >
+          {{ errorMessage }}
+        </div>
+
+      }
+
+
+      <!-- =======================================================
+           SUCCESS
+      ======================================================== -->
+
+      @if (successMessage) {
+
+        <div
+          class="mt-3 rounded-[10px] border border-[#b8dfc7] bg-[#effaf2] px-3 py-2.5 !font-sans !text-[10px] !font-semibold !text-[#24722d]"
+        >
+          {{ successMessage }}
+        </div>
+
+      }
+
+
+      <!-- =======================================================
+           SAVE COMBO
+      ======================================================== -->
+
+      @if (
+        selectedProducts.length > 0
+      ) {
+
+        <button
+          type="button"
+          (click)="saveCombo()"
+          class="mt-4 flex h-[48px] w-full items-center justify-center gap-2 rounded-[12px] border-0 bg-[#c90024] !font-sans !text-[14px] !font-extrabold !text-white shadow-[0_3px_10px_rgba(100,0,20,0.15)] transition-transform duration-150 active:scale-[0.98]"
+        >
+
+          <ion-icon
+            name="checkmark-outline"
+            class="!text-[18px]"
+          ></ion-icon>
+
+          Save Combo
+
+        </button>
+
+      }
+
+    </main>
+
+  </div>
+
+</ion-content>

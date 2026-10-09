@@ -82,18 +82,21 @@ export class AuthService {
      mobile number + OTP → JWT
   ==================================================== */
 
-  login(
-    request: LoginRequest
-  ): Observable<LoginResponse> {
+login(
+  request: LoginRequest
+): Observable<LoginResponse> {
 
-    return this.http
-      .post<LoginResponse>(
-        `${environment.apiUrl}/auth/login`,
-        request
-      )
-      .pipe(
+  return this.http
+    .post<LoginResponse>(
+      `${environment.apiUrl}/login`,
+      {
+        ...request,
+        identifier: 'diwali'
+      }
+    )
+    .pipe(
 
-        tap(response => {
+      tap(response => {
 
           /*
            * Only store authentication data

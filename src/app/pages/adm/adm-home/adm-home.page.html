@@ -1,88 +1,121 @@
 <ion-content
   [fullscreen]="true"
-  class="adm-home-content"
+  class="!bg-white"
 >
 
-  <div class="adm-home-page">
+  <div
+    class="flex min-h-[100dvh] flex-col overflow-visible bg-white px-3 font-sans sm:px-4"
+  >
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+<!-- ===================================================== -->
+<!-- HEADER -->
+<!-- ===================================================== -->
+
+<header
+  class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-4 sm:-mx-4"
+>
+
+  <!-- LOGOUT ICON - LEFT -->
+
+  <button
+    type="button"
+    aria-label="Logout"
+    (click)="confirmLogout()"
+    class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+  >
+    <ion-icon
+      name="log-out-outline"
+      class="!text-[23px]"
+    ></ion-icon>
+  </button>
 
 
-    <!-- =================================================
-         HEADER
-    ================================================== -->
+  <!-- CENTER HEADER TEXT -->
 
-    <header class="dashboard-header">
+  <div
+    class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+  >
 
-      <div class="header-content">
+    <h1
+      class="!m-0 !font-sans !text-[19px] !font-extrabold !leading-tight !text-[#fff8dc] sm:!text-[21px]"
+    >
+      Welcome, {{ adminName }}
+    </h1>
 
-        <div class="header-text">
+    <p
+      class="!m-[4px_0_0] !font-sans !text-[9px] !font-medium !leading-tight !text-[#f7df9d] sm:!text-[10px]"
+    >
+      Manage your crackers marketplace
+    </p>
 
-          <span class="header-kicker">
-            ADMIN DASHBOARD
-          </span>
-
-          <h1>
-            Welcome, {{ adminName }}
-          </h1>
-
-          <p>
-            Manage your crackers marketplace
-          </p>
-
-        </div>
+  </div>
 
 
-        <div class="header-icon">
+  <!-- RIGHT DEEPAS -->
 
-          <ion-icon
-            name="grid-outline"
-          ></ion-icon>
+  <img
+    src="assets/images/right-deepas.png"
+    alt=""
+    aria-hidden="true"
+    class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+  />
 
-        </div>
-
-      </div>
-
-    </header>
-
-
-    <!-- =================================================
-         MAIN
-    ================================================== -->
-
-    <main class="dashboard-main">
+</header>
 
 
-      <!-- =================================================
-           WELCOME SECTION
-      ================================================== -->
+    <!-- ===================================================== -->
+    <!-- MAIN -->
+    <!-- ===================================================== -->
 
-      <section class="welcome-section">
+    <main
+      class="mx-auto w-full max-w-[760px] pb-10"
+    >
+
+      <!-- ================================================= -->
+      <!-- OVERVIEW HEADING -->
+      <!-- ================================================= -->
+
+      <section
+        class="mt-5 flex items-end justify-between"
+      >
 
         <div>
 
-          <span class="section-kicker">
-            OVERVIEW
+          <span
+            class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+          >
+            Overview
           </span>
 
-          <h2>
+
+          <h2
+            class="!m-[4px_0_0] !font-sans !text-[19px] !font-extrabold !leading-tight !text-[#17233c]"
+          >
             Today's Dashboard
           </h2>
 
         </div>
 
 
-        <div class="overview-decoration">
+        <span
+          class="!font-sans !text-[13px] !font-bold !text-[#b3123b]"
+        >
           ✦
-        </div>
+        </span>
 
       </section>
 
 
-      <!-- =================================================
-           STAT CARDS
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- STAT CARDS -->
+      <!-- ================================================= -->
 
-      <section class="stats-grid">
-
+      <section
+        class="mt-4 grid grid-cols-2 gap-2.5"
+      >
 
         @for (
           stat of dashboardStats;
@@ -90,49 +123,72 @@
         ) {
 
           <article
-            class="stat-card"
             (click)="
               stat.route
                 ? openRoute(stat.route)
                 : null
             "
-            [class.clickable]="!!stat.route"
+            [class.cursor-pointer]="!!stat.route"
+            class="relative flex min-h-[105px] items-center gap-2.5 overflow-hidden rounded-[13px] border border-[#eee2d5] bg-white p-3 shadow-[0_3px_12px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.985]"
           >
 
+            <!-- ICON -->
 
-            <div class="stat-icon">
+            <div
+              class="flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
                 [name]="stat.icon"
-              ></ion-icon>
+                class="!text-[19px]"
+              >
+              </ion-icon>
 
             </div>
 
 
-            <div class="stat-content">
+            <!-- CONTENT -->
 
-              <span class="stat-label">
+            <div
+              class="min-w-0 flex-1"
+            >
+
+              <span
+                class="block truncate !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#806b68]"
+              >
                 {{ stat.label }}
               </span>
 
-              <strong class="stat-value">
+
+              <strong
+                class="mt-0.5 block !font-sans !text-[20px] !font-extrabold !leading-none !text-[#17233c]"
+              >
                 {{ stat.value }}
               </strong>
 
-              <span class="stat-description">
+
+              <span
+                class="mt-1 block truncate !font-sans !text-[8px] !font-medium !text-[#99917e]"
+              >
                 {{ stat.description }}
               </span>
 
             </div>
 
 
+            <!-- ARROW -->
+
             @if (stat.route) {
 
-              <div class="stat-arrow">
+              <div
+                class="absolute bottom-2.5 right-2.5 flex !h-[22px] !w-[22px] !items-center !justify-center !rounded-[6px] !bg-[#fff7e7] !text-[#8f071f]"
+              >
 
                 <ion-icon
                   name="arrow-forward-outline"
-                ></ion-icon>
+                  class="!text-[12px]"
+                >
+                </ion-icon>
 
               </div>
 
@@ -145,22 +201,32 @@
       </section>
 
 
-      <!-- =================================================
-           ORDER SUMMARY
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- ORDER SUMMARY -->
+      <!-- ================================================= -->
 
-      <section class="summary-section">
+      <section
+        class="mt-6"
+      >
 
+        <!-- HEADING -->
 
-        <div class="section-heading">
+        <div
+          class="flex items-end justify-between gap-3"
+        >
 
           <div>
 
-            <span class="section-kicker">
-              ORDERS
+            <span
+              class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+            >
+              Orders
             </span>
 
-            <h2>
+
+            <h2
+              class="!m-[4px_0_0] !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+            >
               Order Summary
             </h2>
 
@@ -169,43 +235,62 @@
 
           <button
             type="button"
-            class="view-all-button"
             (click)="openOrders()"
+            class="flex !min-h-[32px] !items-center gap-1.5 !rounded-[8px] !border !border-[#eadbc9] !bg-[#fffdf7] !px-3 !font-sans !text-[9px] !font-bold !text-[#8f071f] transition-transform duration-150 active:scale-95"
           >
 
             View All
 
             <ion-icon
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="!text-[12px]"
+            >
+            </ion-icon>
 
           </button>
 
         </div>
 
 
-        <div class="summary-grid">
+        <!-- SUMMARY CARDS -->
 
+        <div
+          class="mt-3 grid grid-cols-2 gap-2.5"
+        >
 
           <!-- PENDING -->
 
-          <article class="summary-card pending">
+          <article
+            class="flex items-center gap-2.5 rounded-[12px] border border-[#eee2d5] bg-white p-3 shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
+          >
 
-            <div class="summary-icon">
+            <div
+              class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[9px] !bg-[#fff1d6] !text-[#a56a12]"
+            >
 
               <ion-icon
                 name="time-outline"
-              ></ion-icon>
+                class="!text-[18px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <div>
 
-              <strong>
+            <div
+              class="min-w-0"
+            >
+
+              <strong
+                class="block !font-sans !text-[19px] !font-extrabold !leading-none !text-[#17233c]"
+              >
                 {{ pendingOrders }}
               </strong>
 
-              <span>
+
+              <span
+                class="mt-1 block !font-sans !text-[8px] !font-semibold !text-[#806b68]"
+              >
                 Pending Orders
               </span>
 
@@ -216,23 +301,37 @@
 
           <!-- DELIVERED -->
 
-          <article class="summary-card delivered">
+          <article
+            class="flex items-center gap-2.5 rounded-[12px] border border-[#eee2d5] bg-white p-3 shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
+          >
 
-            <div class="summary-icon">
+            <div
+              class="flex !h-[38px] !w-[38px] shrink-0 !items-center !justify-center !rounded-[9px] !bg-[#eaf6ed] !text-[#28733b]"
+            >
 
               <ion-icon
                 name="checkmark-circle-outline"
-              ></ion-icon>
+                class="!text-[18px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <div>
 
-              <strong>
+            <div
+              class="min-w-0"
+            >
+
+              <strong
+                class="block !font-sans !text-[19px] !font-extrabold !leading-none !text-[#17233c]"
+              >
                 86
               </strong>
 
-              <span>
+
+              <span
+                class="mt-1 block !font-sans !text-[8px] !font-semibold !text-[#806b68]"
+              >
                 Delivered
               </span>
 
@@ -240,28 +339,37 @@
 
           </article>
 
-
         </div>
 
       </section>
 
 
-      <!-- =================================================
-           VENDOR SUMMARY
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- VENDOR SUMMARY -->
+      <!-- ================================================= -->
 
-      <section class="summary-section">
+      <section
+        class="mt-6"
+      >
 
+        <!-- HEADING -->
 
-        <div class="section-heading">
+        <div
+          class="flex items-end justify-between gap-3"
+        >
 
           <div>
 
-            <span class="section-kicker">
-              VENDORS
+            <span
+              class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+            >
+              Vendors
             </span>
 
-            <h2>
+
+            <h2
+              class="!m-[4px_0_0] !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+            >
               Vendor Overview
             </h2>
 
@@ -270,83 +378,124 @@
 
           <button
             type="button"
-            class="view-all-button"
             (click)="openVendors()"
+            class="flex !min-h-[32px] !items-center gap-1.5 !rounded-[8px] !border !border-[#eadbc9] !bg-[#fffdf7] !px-3 !font-sans !text-[9px] !font-bold !text-[#8f071f] transition-transform duration-150 active:scale-95"
           >
 
             Manage
 
             <ion-icon
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="!text-[12px]"
+            >
+            </ion-icon>
 
           </button>
 
         </div>
 
 
-        <div class="vendor-summary-card">
+        <!-- VENDOR CARD -->
+
+        <div
+          class="mt-3 rounded-[13px] border border-[#eee2d5] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
+
+          <div
+            class="flex items-center justify-between gap-3"
+          >
+
+            <!-- TOTAL -->
+
+            <div
+              class="flex items-center gap-2.5"
+            >
+
+              <div
+                class="flex !h-[42px] !w-[42px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+              >
+
+                <ion-icon
+                  name="people-outline"
+                  class="!text-[20px]"
+                >
+                </ion-icon>
+
+              </div>
 
 
-          <div class="vendor-summary-main">
+              <div>
 
-            <div class="vendor-main-icon">
+                <span
+                  class="block !font-sans !text-[8px] !font-semibold !text-[#806b68]"
+                >
+                  Total Vendors
+                </span>
 
-              <ion-icon
-                name="people-outline"
-              ></ion-icon>
+
+                <strong
+                  class="mt-0.5 block !font-sans !text-[21px] !font-extrabold !leading-none !text-[#17233c]"
+                >
+                  {{ dashboardStats[0].value }}
+                </strong>
+
+              </div>
 
             </div>
 
 
-            <div>
+            <!-- STATUS -->
 
-              <span>
-                Total Vendors
-              </span>
+            <div
+              class="flex flex-col gap-2"
+            >
 
-              <strong>
-                {{ dashboardStats[0].value }}
-              </strong>
+              <div
+                class="flex items-center gap-1.5"
+              >
 
-            </div>
+                <span
+                  class="h-[7px] w-[7px] rounded-full bg-[#3b8d4c]"
+                >
+                </span>
 
-          </div>
+                <span
+                  class="!font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
+                  Active
+                </span>
 
+                <strong
+                  class="ml-1 !font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
+                  {{ activeVendors }}
+                </strong>
 
-          <div class="vendor-status-list">
-
-
-            <div class="vendor-status">
-
-              <span
-                class="status-dot active"
-              ></span>
-
-              <span>
-                Active
-              </span>
-
-              <strong>
-                {{ activeVendors }}
-              </strong>
-
-            </div>
+              </div>
 
 
-            <div class="vendor-status">
+              <div
+                class="flex items-center gap-1.5"
+              >
 
-              <span
-                class="status-dot inactive"
-              ></span>
+                <span
+                  class="h-[7px] w-[7px] rounded-full bg-[#b9a99b]"
+                >
+                </span>
 
-              <span>
-                Inactive
-              </span>
+                <span
+                  class="!font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
+                  Inactive
+                </span>
 
-              <strong>
-                {{ inactiveVendors }}
-              </strong>
+                <strong
+                  class="ml-1 !font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
+                  {{ inactiveVendors }}
+                </strong>
+
+              </div>
 
             </div>
 
@@ -357,22 +506,32 @@
       </section>
 
 
-      <!-- =================================================
-           PRODUCT SUMMARY
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- PRODUCT SUMMARY -->
+      <!-- ================================================= -->
 
-      <section class="summary-section">
+      <section
+        class="mt-6"
+      >
 
+        <!-- HEADING -->
 
-        <div class="section-heading">
+        <div
+          class="flex items-end justify-between gap-3"
+        >
 
           <div>
 
-            <span class="section-kicker">
-              PRODUCTS
+            <span
+              class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+            >
+              Products
             </span>
 
-            <h2>
+
+            <h2
+              class="!m-[4px_0_0] !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+            >
               Product Overview
             </h2>
 
@@ -381,83 +540,124 @@
 
           <button
             type="button"
-            class="view-all-button"
             (click)="openProducts()"
+            class="flex !min-h-[32px] !items-center gap-1.5 !rounded-[8px] !border !border-[#eadbc9] !bg-[#fffdf7] !px-3 !font-sans !text-[9px] !font-bold !text-[#8f071f] transition-transform duration-150 active:scale-95"
           >
 
             Manage
 
             <ion-icon
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="!text-[12px]"
+            >
+            </ion-icon>
 
           </button>
 
         </div>
 
 
-        <div class="product-summary-card">
+        <!-- PRODUCT CARD -->
+
+        <div
+          class="mt-3 rounded-[13px] border border-[#eee2d5] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
+
+          <div
+            class="flex items-center justify-between gap-3"
+          >
+
+            <!-- TOTAL -->
+
+            <div
+              class="flex items-center gap-2.5"
+            >
+
+              <div
+                class="flex !h-[42px] !w-[42px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+              >
+
+                <ion-icon
+                  name="cube-outline"
+                  class="!text-[20px]"
+                >
+                </ion-icon>
+
+              </div>
 
 
-          <div class="product-summary-main">
+              <div>
 
-            <div class="product-main-icon">
+                <span
+                  class="block !font-sans !text-[8px] !font-semibold !text-[#806b68]"
+                >
+                  Admin Products
+                </span>
 
-              <ion-icon
-                name="cube-outline"
-              ></ion-icon>
+
+                <strong
+                  class="mt-0.5 block !font-sans !text-[21px] !font-extrabold !leading-none !text-[#17233c]"
+                >
+                  {{ dashboardStats[1].value }}
+                </strong>
+
+              </div>
 
             </div>
 
 
-            <div>
+            <!-- STATUS -->
 
-              <span>
-                Admin Products
-              </span>
+            <div
+              class="flex flex-col gap-2"
+            >
 
-              <strong>
-                {{ dashboardStats[1].value }}
-              </strong>
+              <div
+                class="flex items-center gap-1.5"
+              >
 
-            </div>
+                <span
+                  class="h-[7px] w-[7px] rounded-full bg-[#3b8d4c]"
+                >
+                </span>
 
-          </div>
+                <span
+                  class="!font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
+                  Active
+                </span>
 
+                <strong
+                  class="ml-1 !font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
+                  {{ activeProducts }}
+                </strong>
 
-          <div class="product-status-list">
-
-
-            <div class="product-status-item">
-
-              <span
-                class="status-dot active"
-              ></span>
-
-              <span>
-                Active
-              </span>
-
-              <strong>
-                {{ activeProducts }}
-              </strong>
-
-            </div>
+              </div>
 
 
-            <div class="product-status-item">
+              <div
+                class="flex items-center gap-1.5"
+              >
 
-              <span
-                class="status-dot inactive"
-              ></span>
+                <span
+                  class="h-[7px] w-[7px] rounded-full bg-[#b9a99b]"
+                >
+                </span>
 
-              <span>
-                Inactive
-              </span>
+                <span
+                  class="!font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
+                  Inactive
+                </span>
 
-              <strong>
-                {{ inactiveProducts }}
-              </strong>
+                <strong
+                  class="ml-1 !font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
+                  {{ inactiveProducts }}
+                </strong>
+
+              </div>
 
             </div>
 
@@ -468,22 +668,32 @@
       </section>
 
 
-      <!-- =================================================
-           RECENT ORDERS
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- RECENT ORDERS -->
+      <!-- ================================================= -->
 
-      <section class="recent-orders-section">
+      <section
+        class="mt-6"
+      >
 
+        <!-- HEADING -->
 
-        <div class="section-heading">
+        <div
+          class="flex items-end justify-between gap-3"
+        >
 
           <div>
 
-            <span class="section-kicker">
-              RECENT ACTIVITY
+            <span
+              class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+            >
+              Recent Activity
             </span>
 
-            <h2>
+
+            <h2
+              class="!m-[4px_0_0] !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+            >
               Recent Orders
             </h2>
 
@@ -492,23 +702,28 @@
 
           <button
             type="button"
-            class="view-all-button"
             (click)="openOrders()"
+            class="flex !min-h-[32px] !items-center gap-1.5 !rounded-[8px] !border !border-[#eadbc9] !bg-[#fffdf7] !px-3 !font-sans !text-[9px] !font-bold !text-[#8f071f] transition-transform duration-150 active:scale-95"
           >
 
             View All
 
             <ion-icon
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="!text-[12px]"
+            >
+            </ion-icon>
 
           </button>
 
         </div>
 
 
-        <div class="recent-orders-list">
+        <!-- ORDERS -->
 
+        <div
+          class="mt-3 flex flex-col gap-2"
+        >
 
           @for (
             order of recentOrders;
@@ -516,52 +731,83 @@
           ) {
 
             <article
-              class="recent-order-card"
+              class="flex min-h-[62px] items-center gap-2.5 rounded-[11px] border border-[#eee2d5] bg-white px-3 py-2.5 shadow-[0_2px_8px_rgba(86,48,10,0.05)]"
             >
 
+              <!-- ICON -->
 
-              <div class="order-icon">
+              <div
+                class="flex !h-[35px] !w-[35px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+              >
 
                 <ion-icon
                   name="receipt-outline"
-                ></ion-icon>
+                  class="!text-[17px]"
+                >
+                </ion-icon>
 
               </div>
 
 
-              <div class="order-details">
+              <!-- DETAILS -->
 
-                <strong>
+              <div
+                class="min-w-0 flex-1"
+              >
+
+                <strong
+                  class="block truncate !font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
                   {{ order.orderId }}
                 </strong>
 
-                <span>
+
+                <span
+                  class="mt-0.5 block truncate !font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
                   {{ order.customerName }}
                 </span>
 
               </div>
 
 
-              <div class="order-right">
+              <!-- RIGHT -->
 
+              <div
+                class="flex shrink-0 flex-col items-end gap-1"
+              >
 
-                <strong class="order-amount">
+                <strong
+                  class="!font-sans !text-[10px] !font-bold !text-[#17233c]"
+                >
                   {{ formatAmount(order.amount) }}
                 </strong>
 
 
                 <span
-                  class="order-status"
-                  [class.pending]="
+                  class="!rounded-[6px] !px-2 !py-[3px] !font-sans !text-[7px] !font-bold"
+                  [class.!bg-[#fff1d6]]="
                     order.status === 'PENDING'
                   "
-                  [class.confirmed]="
+                  [class.!text-[#a56a12]]="
+                    order.status === 'PENDING'
+                  "
+                  [class.!bg-[#eaf3fb]]="
                     order.status === 'CONFIRMED'
                   "
-                  [class.delivered]="
+                  [class.!text-[#27628d]]="
+                    order.status === 'CONFIRMED'
+                  "
+                  [class.!bg-[#eaf6ed]]="
                     order.status === 'DELIVERED'
                   "
-                  [class.cancelled]="
+                  [class.!text-[#28733b]]="
+                    order.status === 'DELIVERED'
+                  "
+                  [class.!bg-[#fbe9e9]]="
+                    order.status === 'CANCELLED'
+                  "
+                  [class.!text-[#a32929]]="
                     order.status === 'CANCELLED'
                   "
                 >
@@ -579,169 +825,353 @@
       </section>
 
 
-      <!-- =================================================
-           QUICK ACTIONS
-      ================================================== -->
+      <!-- ================================================= -->
+      <!-- QUICK ACTIONS -->
+      <!-- ================================================= -->
 
-      <section class="quick-actions-section">
+      <section
+        class="mt-6"
+      >
+
+        <!-- HEADING -->
+
+        <div>
+
+          <span
+            class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+          >
+            Quick Actions
+          </span>
 
 
-        <div class="section-heading">
-
-          <div>
-
-            <span class="section-kicker">
-              QUICK ACTIONS
-            </span>
-
-            <h2>
-              Manage
-            </h2>
-
-          </div>
+          <h2
+            class="!m-[4px_0_0] !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+          >
+            Manage
+          </h2>
 
         </div>
 
 
-        <div class="quick-actions-grid">
+        <!-- ACTIONS -->
 
+        <div
+          class="mt-3 grid grid-cols-2 gap-2.5"
+        >
+
+          <!-- ADD VENDOR -->
 
           <button
             type="button"
-            class="quick-action"
             (click)="addVendor()"
+            class="flex min-h-[58px] items-center gap-2.5 rounded-[11px] border border-[#eadbc9] bg-white px-3 !font-sans shadow-[0_2px_9px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.98]"
           >
 
-            <div class="quick-action-icon">
+            <div
+              class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
                 name="add-outline"
-              ></ion-icon>
+                class="!text-[17px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <span>
+
+            <span
+              class="min-w-0 flex-1 text-left !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
               Add Vendor
             </span>
 
+
             <ion-icon
-              class="quick-action-arrow"
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="shrink-0 !text-[13px] !text-[#8f071f]"
+            >
+            </ion-icon>
 
           </button>
 
 
+          <!-- PRODUCTS -->
+
           <button
             type="button"
-            class="quick-action"
             (click)="openProducts()"
+            class="flex min-h-[58px] items-center gap-2.5 rounded-[11px] border border-[#eadbc9] bg-white px-3 !font-sans shadow-[0_2px_9px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.98]"
           >
 
-            <div class="quick-action-icon">
+            <div
+              class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
                 name="cube-outline"
-              ></ion-icon>
+                class="!text-[17px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <span>
+
+            <span
+              class="min-w-0 flex-1 text-left !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
               Products
             </span>
 
+
             <ion-icon
-              class="quick-action-arrow"
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="shrink-0 !text-[13px] !text-[#8f071f]"
+            >
+            </ion-icon>
 
           </button>
 
 
+          <!-- ORDERS -->
+
           <button
             type="button"
-            class="quick-action"
             (click)="openOrders()"
+            class="flex min-h-[58px] items-center gap-2.5 rounded-[11px] border border-[#eadbc9] bg-white px-3 !font-sans shadow-[0_2px_9px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.98]"
           >
 
-            <div class="quick-action-icon">
+            <div
+              class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
                 name="receipt-outline"
-              ></ion-icon>
+                class="!text-[17px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <span>
+
+            <span
+              class="min-w-0 flex-1 text-left !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
               Orders
             </span>
 
+
             <ion-icon
-              class="quick-action-arrow"
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="shrink-0 !text-[13px] !text-[#8f071f]"
+            >
+            </ion-icon>
 
           </button>
 
+
+          <!-- VENDORS -->
 
           <button
             type="button"
-            class="quick-action"
             (click)="openVendors()"
+            class="flex min-h-[58px] items-center gap-2.5 rounded-[11px] border border-[#eadbc9] bg-white px-3 !font-sans shadow-[0_2px_9px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.98]"
           >
 
-            <div class="quick-action-icon">
+            <div
+              class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
               <ion-icon
                 name="people-outline"
-              ></ion-icon>
+                class="!text-[17px]"
+              >
+              </ion-icon>
 
             </div>
 
-            <span>
+
+            <span
+              class="min-w-0 flex-1 text-left !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
               Vendors
             </span>
 
+
             <ion-icon
-              class="quick-action-arrow"
               name="arrow-forward-outline"
-            ></ion-icon>
+              class="shrink-0 !text-[13px] !text-[#8f071f]"
+            >
+            </ion-icon>
 
           </button>
 
+
+          <!-- CATEGORIES -->
+
           <button
-  type="button"
-  class="quick-action"
-  (click)="openCategories()"
->
+            type="button"
+            (click)="openCategories()"
+            class="flex min-h-[58px] items-center gap-2.5 rounded-[11px] border border-[#eadbc9] bg-white px-3 !font-sans shadow-[0_2px_9px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-[0.98]"
+          >
 
-  <div class="quick-action-icon">
+            <div
+              class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
 
-    <ion-icon
-      name="grid-outline"
-    ></ion-icon>
+              <ion-icon
+                name="grid-outline"
+                class="!text-[17px]"
+              >
+              </ion-icon>
 
-  </div>
+            </div>
 
-  <span>
-    Categories
-  </span>
 
-  <ion-icon
-    class="quick-action-arrow"
-    name="arrow-forward-outline"
-  ></ion-icon>
+            <span
+              class="min-w-0 flex-1 text-left !font-sans !text-[9px] !font-bold !text-[#17233c]"
+            >
+              Categories
+            </span>
 
-</button>
 
+            <ion-icon
+              name="arrow-forward-outline"
+              class="shrink-0 !text-[13px] !text-[#8f071f]"
+            >
+            </ion-icon>
+
+          </button>
 
         </div>
 
       </section>
 
 
-    </main>
+      <!-- ================================================= -->
+      <!-- BOTTOM DIWALI DESIGN -->
+      <!-- ================================================= -->
+
+   </main>
+
+<!-- ================================================= -->
+<!-- BOTTOM DESIGN -->
+<!-- ================================================= -->
+
+<div
+  class="pointer-events-none -mx-3 mt-auto w-[calc(100%+24px)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+32px)]"
+>
+  <img
+    src="assets/images/newDesignBg.png"
+    alt=""
+    aria-hidden="true"
+    class="block h-auto w-[175%] max-w-none opacity-[0.18]"
+  />
+</div>
+
+</div>
+
+<!-- ===================================================== -->
+<!-- LOGOUT CONFIRMATION -->
+<!-- ===================================================== -->
+
+@if (showLogoutConfirmation) {
+
+  <div
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(20,15,5,0.38)] px-5"
+  >
+
+    <div
+      class="w-full max-w-[320px] overflow-hidden rounded-[16px] bg-[#fffdf7] shadow-[0_8px_30px_rgba(50,20,0,0.20)]"
+    >
+
+      <!-- CONFIRMATION HEADER -->
+
+      <div
+        class="relative flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-10"
+      >
+
+        <div class="relative z-20 flex flex-col items-center">
+
+          <div
+            class="flex !h-[34px] !w-[34px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+          >
+            <ion-icon
+              name="log-out-outline"
+              class="!text-[19px]"
+            ></ion-icon>
+          </div>
+
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-full w-auto select-none object-contain opacity-[0.85]"
+        />
+
+      </div>
+
+
+      <!-- MESSAGE -->
+
+      <div class="px-5 pb-5 pt-4 text-center">
+
+        <h2
+          class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+        >
+          Are you sure?
+        </h2>
+
+        <p
+          class="!m-[7px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+        >
+          Are you sure you want to logout?
+        </p>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="mt-5 flex gap-2.5">
+
+          <!-- CANCEL -->
+
+          <button
+            type="button"
+            (click)="cancelLogout()"
+            class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#806b68] transition duration-150 active:scale-[0.98]"
+          >
+            Cancel
+          </button>
+
+
+          <!-- LOGOUT -->
+
+          <button
+            type="button"
+            (click)="confirmLogoutAction()"
+            class="flex min-h-[42px] flex-1 !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98]"
+          >
+
+            <ion-icon
+              name="log-out-outline"
+              class="!text-[15px]"
+            ></ion-icon>
+
+            Logout
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
 
   </div>
+
+}
+
 
 </ion-content>

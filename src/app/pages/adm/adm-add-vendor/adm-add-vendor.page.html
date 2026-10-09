@@ -1,73 +1,151 @@
-
 <ion-content
   [fullscreen]="true"
-  class="adm-add-vendor-content">
+  class="!bg-white"
+>
+<div
+  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+>
 
-  <!-- STATIC SIDE DECORATIONS -->
+  <!-- =====================================================
+       GLOBAL HOME BOTTOM DESIGN
+       Positioned at the actual bottom of this page content
+       without taking layout space.
+  ====================================================== -->
 
-  <img
-    src="assets/images/left-bg.png"
-    alt=""
+  <div
+    class="pointer-events-none absolute bottom-0 left-0 z-[-1] h-[190px] w-full overflow-hidden"
     aria-hidden="true"
-    class="side-decoration side-decoration-left"
-  />
-
-  <img
-    src="assets/images/right-bg.png"
-    alt=""
-    aria-hidden="true"
-    class="side-decoration side-decoration-right"
-  />
-
-  <div class="adm-add-vendor-page">
+  >
+    <img
+      src="assets/images/newDesignBg.png"
+      alt=""
+      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+    />
+  </div>
 
     <!-- HEADER -->
 
-    <header class="add-vendor-header">
+    <header
+      class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
+    >
+
+      <!-- BACK BUTTON -->
 
       <button
         type="button"
-        class="back-button"
         aria-label="Go back"
-        (click)="goBack()">
-
-        <ion-icon name="arrow-back-outline"></ion-icon>
-
+        (click)="goBack()"
+        class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        >
+        </ion-icon>
       </button>
 
-      <div class="header-content">
-        <h1>Add Vendor</h1>
-        <p>Add a new cracker vendor</p>
+      <!-- HEADER TITLE -->
+
+      <div
+        class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+      >
+        <h1
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+        >
+          Add Vendor
+        </h1>
+
+        <p
+          class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
+        >
+          Add a new cracker vendor
+        </p>
       </div>
 
+      <!-- RIGHT DEEPAS -->
+
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
+      />
+
     </header>
+
 
     <!-- FORM -->
 
     <form
       [formGroup]="vendorForm"
       (ngSubmit)="addVendor()"
-      novalidate>
+      novalidate
+      class="mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-2"
+    >
 
       <!-- VENDOR INFORMATION -->
 
-      <section class="form-card">
+      <section
+        class="mt-4 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+      >
 
-        <div class="section-heading">
-          <h2>Vendor Information</h2>
-          <p>Enter the vendor's personal details</p>
+        <!-- SECTION HEADING -->
+
+        <div class="mb-4">
+
+          <div class="flex items-center gap-2.5">
+
+            <div
+              class="flex !h-[39px] !w-[39px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
+              <ion-icon
+                name="person-outline"
+                class="!text-[19px]"
+              >
+              </ion-icon>
+            </div>
+
+            <div>
+
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#17233c]"
+              >
+                Vendor Information
+              </h2>
+
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
+                Enter the vendor's personal details
+              </p>
+
+            </div>
+
+          </div>
+
         </div>
+
 
         <!-- NAME -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="vendor-name">Vendor Name</label>
+          <label
+            for="vendor-name"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Vendor Name
+          </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="name?.invalid && name?.dirty"
+          >
+
             <ion-icon
               name="person-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -76,32 +154,52 @@
               formControlName="name"
               placeholder="Enter vendor name"
               autocomplete="name"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (name?.invalid && name?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (name?.errors?.['required']) {
                 Vendor name is required.
               }
+
               @if (name?.errors?.['minlength']) {
                 Enter at least 2 characters.
               }
+
             </div>
+
           }
 
         </div>
 
+
         <!-- EMAIL -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="vendor-email">Email Address</label>
+          <label
+            for="vendor-email"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Email Address
+          </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="email?.invalid && email?.dirty"
+          >
+
             <ion-icon
               name="mail-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -110,32 +208,52 @@
               formControlName="email"
               placeholder="Enter email address"
               autocomplete="email"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (email?.invalid && email?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (email?.errors?.['required']) {
                 Email is required.
               }
+
               @if (email?.errors?.['email']) {
                 Enter a valid email address.
               }
+
             </div>
+
           }
 
         </div>
 
+
         <!-- MOBILE NUMBER -->
 
-        <div class="form-group">
+        <div>
 
-          <label for="vendor-mobile">Mobile Number</label>
+          <label
+            for="vendor-mobile"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Mobile Number
+          </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="mobileNumber?.invalid && mobileNumber?.dirty"
+          >
+
             <ion-icon
               name="call-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -146,43 +264,97 @@
               inputmode="numeric"
               maxlength="10"
               autocomplete="tel"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (mobileNumber?.invalid && mobileNumber?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (mobileNumber?.errors?.['required']) {
                 Mobile number is required.
               }
+
               @if (mobileNumber?.errors?.['pattern']) {
                 Enter a valid 10-digit mobile number.
               }
+
             </div>
+
           }
 
         </div>
 
       </section>
 
+
       <!-- SHOP INFORMATION -->
 
-      <section class="form-card">
+      <section
+        class="mt-3 rounded-[14px] bg-white p-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] sm:p-5"
+      >
 
-        <div class="section-heading">
-          <h2>Shop Information</h2>
-          <p>Enter the vendor's store details</p>
+        <!-- SECTION HEADING -->
+
+        <div class="mb-4">
+
+          <div class="flex items-center gap-2.5">
+
+            <div
+              class="flex !h-[39px] !w-[39px] shrink-0 !items-center !justify-center !rounded-[10px] !bg-[#f7e9bd] !text-[#8f071f]"
+            >
+              <ion-icon
+                name="storefront-outline"
+                class="!text-[19px]"
+              >
+              </ion-icon>
+            </div>
+
+            <div>
+
+              <h2
+                class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#17233c]"
+              >
+                Shop Information
+              </h2>
+
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
+                Enter the vendor's store details
+              </p>
+
+            </div>
+
+          </div>
+
         </div>
+
 
         <!-- STORE NAME -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-name">Store Name</label>
+          <label
+            for="store-name"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Store Name
+          </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="storeName?.invalid && storeName?.dirty"
+          >
+
             <ion-icon
               name="storefront-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -191,72 +363,125 @@
               formControlName="storeName"
               placeholder="Enter store name"
               autocomplete="organization"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (storeName?.invalid && storeName?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (storeName?.errors?.['required']) {
                 Store name is required.
               }
+
               @if (storeName?.errors?.['minlength']) {
                 Enter at least 2 characters.
               }
+
             </div>
+
           }
 
         </div>
 
+
         <!-- STORE IMAGE -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-image">Store Image</label>
+          <label
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Store Image
+          </label>
 
-          <div class="image-upload-card">
+          <div
+            class="overflow-hidden rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7]"
+            [class.!border-[#b32626]]="!!imageError"
+          >
 
             @if (imagePreview) {
 
-              <div class="image-preview-container">
+              <div class="relative">
 
                 <img
                   [src]="imagePreview"
                   alt="Selected store preview"
-                  class="store-image-preview"
+                  class="block h-[190px] w-full object-cover"
                 />
 
                 <button
                   type="button"
-                  class="remove-image-button"
                   aria-label="Remove selected image"
                   [disabled]="isLoading"
-                  (click)="removeImage(storeImageInput)">
-
-                  <ion-icon name="trash-outline"></ion-icon>
-
+                  (click)="removeImage(storeImageInput)"
+                  class="absolute right-2.5 top-2.5 flex !h-[32px] !w-[32px] !items-center !justify-center !rounded-[8px] !border-0 !bg-[#8f071f]/90 !p-0 !font-sans !text-[#fff8dc] shadow-[0_2px_7px_rgba(0,0,0,0.18)] transition-transform duration-150 active:scale-90"
+                >
+                  <ion-icon
+                    name="trash-outline"
+                    class="!text-[16px]"
+                  >
+                  </ion-icon>
                 </button>
 
               </div>
 
-              <p class="image-file-name">
-                {{ selectedImage?.name }}
-              </p>
+              <div
+                class="flex items-center justify-between gap-2 px-3 py-2.5"
+              >
+
+                <p
+                  class="min-w-0 truncate !m-0 !font-sans !text-[11px] !font-medium !text-[#806b68]"
+                >
+                  {{ selectedImage?.name }}
+                </p>
+
+                <label
+                  for="store-image"
+                  class="flex shrink-0 cursor-pointer items-center gap-1.5 !rounded-[8px] !border !border-[#eadbc9] !bg-[#f7e9bd] !px-2.5 !py-1.5 !font-sans !text-[8px] !font-bold !text-[#8f071f]"
+                >
+                  <ion-icon
+                    name="image-outline"
+                    class="!text-[13px]"
+                  >
+                  </ion-icon>
+                  Change Image
+                </label>
+
+              </div>
 
             } @else {
 
               <label
                 for="store-image"
-                class="image-upload-placeholder">
+                class="flex cursor-pointer flex-col items-center justify-center px-4 py-7 text-center transition-colors duration-150 active:bg-[#fdf6e7]"
+              >
 
-                <span class="image-upload-icon">
-                  <ion-icon name="image-outline"></ion-icon>
+                <span
+                  class="mb-2.5 flex !h-[48px] !w-[48px] !items-center !justify-center !rounded-[11px] !bg-[#f7e9bd] !text-[#8f071f]"
+                >
+
+                  <ion-icon
+                    name="image-outline"
+                    class="!text-[24px]"
+                  >
+                  </ion-icon>
+
                 </span>
 
-                <span class="image-upload-title">
+                <span
+                  class="!font-sans !text-[11px] !font-bold !text-[#17233c]"
+                >
                   Choose store image
                 </span>
 
-                <span class="image-upload-description">
+                <span
+                  class="mt-1 !font-sans !text-[8px] !font-medium !text-[#806b68]"
+                >
                   JPG, PNG or WEBP · Maximum 5 MB
                 </span>
 
@@ -269,121 +494,195 @@
               id="store-image"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              class="image-file-input"
               [disabled]="isLoading"
+              class="hidden"
               (change)="onImageSelected($event)"
             />
-
-            @if (imagePreview) {
-              <label
-                for="store-image"
-                class="change-image-button">
-
-                <ion-icon name="image-outline"></ion-icon>
-                Change Image
-
-              </label>
-            }
 
           </div>
 
           @if (imageError) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
               {{ imageError }}
             </div>
+
           }
 
         </div>
 
+
         <!-- ADDRESS -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-address">Address</label>
+          <label
+            for="store-address"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Address
+          </label>
 
-          <div class="input-wrapper textarea-wrapper">
+          <div
+            class="flex min-h-[90px] items-start rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="address?.invalid && address?.dirty"
+          >
+
             <ion-icon
               name="home-outline"
-              class="input-icon textarea-icon">
+              class="ml-3 mt-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <textarea
               id="store-address"
               formControlName="address"
               placeholder="Enter shop address"
-              rows="3">
-            </textarea>
+              rows="3"
+              class="min-h-[86px] flex-1 resize-none bg-transparent px-2.5 py-2.5 !font-sans !text-[12px] !font-medium !leading-[1.45] !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
+            ></textarea>
+
           </div>
 
           @if (address?.invalid && address?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (address?.errors?.['required']) {
                 Address is required.
               }
+
               @if (address?.errors?.['minlength']) {
                 Enter a valid address.
               }
+
             </div>
+
           }
 
         </div>
 
+
         <!-- STATE -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-state">State</label>
+          <label
+            for="store-state"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            State
+          </label>
 
-          <div class="select-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="state?.invalid && state?.dirty"
+          >
+
             <ion-icon
               name="map-outline"
-              class="select-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
-            <select id="store-state" formControlName="state">
-              @for (stateOption of states; track stateOption) {
-                <option [value]="stateOption">
+            <select
+              id="store-state"
+              formControlName="state"
+              class="h-full min-w-0 flex-1 appearance-none bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none"
+            >
+
+              @for (
+                stateOption of states;
+                track stateOption
+              ) {
+
+                <option
+                  [value]="stateOption"
+                >
                   {{ stateOption }}
                 </option>
+
               }
+
             </select>
+
           </div>
 
         </div>
+
 
         <!-- CITY -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-city">City</label>
+          <label
+            for="store-city"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            City
+          </label>
 
-          <div class="select-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="city?.invalid && city?.dirty"
+          >
+
             <ion-icon
               name="location-outline"
-              class="select-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
-            <select id="store-city" formControlName="city">
-              @for (cityOption of cities; track cityOption) {
-                <option [value]="cityOption">
+            <select
+              id="store-city"
+              formControlName="city"
+              class="h-full min-w-0 flex-1 appearance-none bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none"
+            >
+
+              @for (
+                cityOption of cities;
+                track cityOption
+              ) {
+
+                <option
+                  [value]="cityOption"
+                >
                   {{ cityOption }}
                 </option>
+
               }
+
             </select>
+
           </div>
 
         </div>
 
+
         <!-- PINCODE -->
 
-        <div class="form-group">
+        <div class="mb-4">
 
-          <label for="store-pincode">Pincode</label>
+          <label
+            for="store-pincode"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
+            Pincode
+          </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="pincode?.invalid && pincode?.dirty"
+          >
+
             <ion-icon
               name="location-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -394,34 +693,52 @@
               inputmode="numeric"
               maxlength="6"
               autocomplete="postal-code"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (pincode?.invalid && pincode?.touched) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (pincode?.errors?.['required']) {
                 Pincode is required.
               }
+
               @if (pincode?.errors?.['pattern']) {
                 Enter a valid 6-digit pincode.
               }
+
             </div>
+
           }
 
         </div>
 
+
         <!-- DELIVERY RADIUS -->
 
-        <div class="form-group">
+        <div>
 
-          <label for="delivery-radius">
+          <label
+            for="delivery-radius"
+            class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+          >
             Delivery Radius (KM)
           </label>
 
-          <div class="input-wrapper">
+          <div
+            class="flex h-[45px] items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)]"
+            [class.!border-[#b32626]]="deliveryRadiusKm?.invalid && deliveryRadiusKm?.dirty"
+          >
+
             <ion-icon
               name="location-outline"
-              class="input-icon">
+              class="ml-3 shrink-0 !text-[16px] !text-[#8f071f]"
+            >
             </ion-icon>
 
             <input
@@ -433,78 +750,160 @@
               max="500"
               step="0.5"
               inputmode="decimal"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
             />
+
           </div>
 
           @if (
             deliveryRadiusKm?.invalid &&
             deliveryRadiusKm?.touched
           ) {
-            <div class="error-message">
+
+            <div
+              class="mt-1.5 !font-sans !text-[8px] !font-medium !text-[#b32626]"
+            >
+
               @if (deliveryRadiusKm?.errors?.['required']) {
                 Delivery radius is required.
               }
+
               @if (deliveryRadiusKm?.errors?.['min']) {
                 Delivery radius must be at least 1 KM.
               }
+
               @if (deliveryRadiusKm?.errors?.['max']) {
                 Delivery radius cannot exceed 500 KM.
               }
+
             </div>
+
           }
 
         </div>
 
       </section>
+
 
       <!-- SUCCESS MESSAGE -->
 
       @if (successMessage) {
-        <div class="success-message">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
-          <span>{{ successMessage }}</span>
+
+        <div
+          class="mt-3 flex items-center gap-2.5 rounded-[11px] border border-[#cde8d3] bg-[#f0faf2] px-3.5 py-3"
+        >
+
+          <ion-icon
+            name="checkmark-circle-outline"
+            class="shrink-0 !text-[19px] !text-[#2e7d32]"
+          >
+          </ion-icon>
+
+          <span
+            class="!font-sans !text-[9px] !font-semibold !leading-[1.4] !text-[#2e7d32]"
+          >
+            {{ successMessage }}
+          </span>
+
         </div>
+
       }
 
-      <!-- ERROR MESSAGE -->
+
+      <!-- API ERROR -->
 
       @if (errorMessage) {
-        <div class="api-error-message">
-          <ion-icon name="close-outline"></ion-icon>
-          <span>{{ errorMessage }}</span>
+
+        <div
+          class="mt-3 flex items-start gap-2.5 rounded-[11px] border border-[#efd0d0] bg-[#fff5f5] px-3.5 py-3"
+        >
+
+          <ion-icon
+            name="close-outline"
+            class="mt-[1px] shrink-0 !text-[19px] !text-[#b32626]"
+          >
+          </ion-icon>
+
+          <span
+            class="!font-sans !text-[10px] !font-semibold !leading-[1.4] !text-[#b32626]"
+          >
+            {{ errorMessage }}
+          </span>
+
         </div>
+
       }
+
 
       <!-- ACTION BUTTONS -->
 
-      <section class="form-actions">
+      <section
+        class="mt-4 flex gap-2.5"
+      >
+
+        <!-- CLEAR -->
 
         <button
           type="button"
-          class="clear-button"
           [disabled]="isLoading"
-          (click)="clearForm()">
+          (click)="clearForm()"
+          class="flex !min-h-[43px] flex-1 !items-center !justify-center gap-1.5 !rounded-[9px] !border !border-[#dfd3c8] !bg-[#fffdf7] !px-4 !font-sans !text-[10px] !font-bold !text-[#806b68] shadow-[0_2px_6px_rgba(86,48,10,0.04)] transition-transform duration-150 disabled:!opacity-50 active:scale-[0.98]"
+        >
 
-          <ion-icon name="close-outline"></ion-icon>
-          <span>Clear</span>
+          <ion-icon
+            name="close-outline"
+            class="!text-[16px]"
+          >
+          </ion-icon>
+
+          <span>
+            Clear
+          </span>
 
         </button>
 
+
+        <!-- ADD VENDOR -->
+
         <button
           type="submit"
-          class="add-button"
-          [disabled]="isLoading">
+          [disabled]="isLoading"
+          class="flex !min-h-[43px] flex-[1.45] !items-center !justify-center gap-1.5 !rounded-[9px] !border-0 !bg-[#b3123b] !px-4 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 disabled:!cursor-not-allowed disabled:!opacity-50 active:scale-[0.98]"
+        >
 
           @if (isLoading) {
-            <span>Adding...</span>
+
+            <span
+              class="h-[14px] w-[14px] animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"
+            >
+            </span>
+
+            <span>
+              Adding...
+            </span>
+
           } @else {
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
-            <span>Add Vendor</span>
+
+            <ion-icon
+              name="checkmark-circle-outline"
+              class="!text-[16px]"
+            >
+            </ion-icon>
+
+            <span>
+              Add Vendor
+            </span>
+
           }
 
         </button>
 
       </section>
+
+
+      <!-- BOTTOM DIWALI DESIGN -->
+
+
 
     </form>
 

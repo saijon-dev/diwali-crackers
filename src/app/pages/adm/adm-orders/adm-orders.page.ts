@@ -26,12 +26,17 @@ import {
   cubeOutline,
   personOutline,
   storefrontOutline,
-  closeOutline
+  closeOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 
 import {
   OrderService
 } from '../../../services/order.service';
+
+import {
+  VendorService
+} from '../../../services/vendor.service';
 
 
 /* =========================================================
@@ -126,23 +131,51 @@ export interface AdminOrderPageResponse {
 }
 
 
+/* =========================================================
+   VENDOR
+========================================================= */
+
+export interface AdminOrderVendor {
+
+  userId: number;
+
+  name: string;
+
+  storeName: string;
+
+}
+
+
+/* =========================================================
+   COMPONENT
+========================================================= */
+
 @Component({
+
   selector: 'app-adm-orders',
+
   standalone: true,
 
   templateUrl: './adm-orders.page.html',
 
-  styleUrls: ['./adm-orders.page.scss'],
-
   imports: [
+
     IonContent,
+
     IonIcon,
+
     IonSelect,
+
     IonSelectOption,
-      FormsModule,
-  DecimalPipe
+
+    FormsModule,
+
+    DecimalPipe
+
   ]
+
 })
+
 export class AdmOrdersPage implements OnInit {
 
 
@@ -165,38 +198,12 @@ export class AdmOrdersPage implements OnInit {
 
 
   /* =======================================================
-     FILTER
+     VENDOR FILTER
   ======================================================= */
 
-  selectedPriceRange = 'ALL';
+  vendors: AdminOrderVendor[] = [];
 
-
-  priceRanges = [
-    {
-      label: 'All Orders',
-      value: 'ALL'
-    },
-    {
-      label: 'Below ₹500',
-      value: 'BELOW_500'
-    },
-    {
-      label: '₹500 - ₹1,000',
-      value: '500_1000'
-    },
-    {
-      label: '₹1,000 - ₹5,000',
-      value: '1000_5000'
-    },
-    {
-      label: '₹5,000 - ₹10,000',
-      value: '5000_10000'
-    },
-    {
-      label: 'Above ₹10,000',
-      value: 'ABOVE_10000'
-    }
-  ];
+  selectedVendorId: number | 'ALL' = 'ALL';
 
 
   /* =======================================================
@@ -208,9 +215,18 @@ export class AdmOrdersPage implements OnInit {
   errorMessage = '';
 
 
+  /* =======================================================
+     CONSTRUCTOR
+  ======================================================= */
+
   constructor(
+
     private orderService: OrderService,
+
+    private vendorService: VendorService,
+
     private cdr: ChangeDetectorRef
+
   ) {
 
     addIcons({
@@ -233,16 +249,61 @@ export class AdmOrdersPage implements OnInit {
 
       storefrontOutline,
 
-      closeOutline
+      closeOutline,
+
+      arrowBackOutline
 
     });
 
   }
 
 
+  /* =======================================================
+     INIT
+  ======================================================= */
+
   ngOnInit(): void {
 
+    this.loadVendors();
+
     this.loadOrders();
+
+  }
+
+
+  /* =======================================================
+     LOAD VENDORS
+  ======================================================= */
+
+  loadVendors(): void {
+
+    this.vendorService
+      .getAllVendors(0, 100)
+      .subscribe({
+
+        next: (response: any) => {
+
+          this.vendors =
+            response?.vendors || [];
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Admin Vendors Error:',
+            error
+          );
+
+          this.vendors = [];
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
 
   }
 
@@ -261,10 +322,14 @@ export class AdmOrdersPage implements OnInit {
 
 
     this.orderService
+
       .getAdminOrders(0, 10)
+
       .subscribe({
 
-        next: (response: AdminOrderPageResponse) => {
+        next: (
+          response: AdminOrderPageResponse
+        ) => {
 
           console.log(
             'Admin Orders Response:',
@@ -276,7 +341,7 @@ export class AdmOrdersPage implements OnInit {
             response?.content || [];
 
 
-          this.applyPriceFilter();
+          this.applyVendorFilter();
 
 
           this.isLoading = false;
@@ -302,8 +367,11 @@ export class AdmOrdersPage implements OnInit {
 
 
           this.errorMessage =
+
             error?.error?.message ||
+
             error?.message ||
+
             'Unable to load orders.';
 
 
@@ -317,86 +385,65 @@ export class AdmOrdersPage implements OnInit {
 
 
   /* =======================================================
-     PRICE FILTER
+     VENDOR FILTER CHANGED
   ======================================================= */
 
-  onPriceRangeChanged(): void {
+  onVendorChanged(): void {
 
-    this.applyPriceFilter();
+    this.applyVendorFilter();
 
   }
 
 
-  applyPriceFilter(): void {
+  /* =======================================================
+     APPLY VENDOR FILTER
+  ======================================================= */
 
-    switch (this.selectedPriceRange) {
+  applyVendorFilter(): void {
 
-      case 'BELOW_500':
+    /*
+     * Show every order when
+     * "All Vendors" is selected.
+     */
 
-        this.filteredOrders =
-          this.orders.filter(
-            order =>
-              order.totalAmount < 500
-          );
+    if (
+      this.selectedVendorId === 'ALL'
+    ) {
 
-        break;
+      this.filteredOrders = [
+        ...this.orders
+      ];
 
-
-      case '500_1000':
-
-        this.filteredOrders =
-          this.orders.filter(
-            order =>
-              order.totalAmount >= 500 &&
-              order.totalAmount <= 1000
-          );
-
-        break;
-
-
-      case '1000_5000':
-
-        this.filteredOrders =
-          this.orders.filter(
-            order =>
-              order.totalAmount > 1000 &&
-              order.totalAmount <= 5000
-          );
-
-        break;
-
-
-      case '5000_10000':
-
-        this.filteredOrders =
-          this.orders.filter(
-            order =>
-              order.totalAmount > 5000 &&
-              order.totalAmount <= 10000
-          );
-
-        break;
-
-
-      case 'ABOVE_10000':
-
-        this.filteredOrders =
-          this.orders.filter(
-            order =>
-              order.totalAmount > 10000
-          );
-
-        break;
-
-
-      default:
-
-        this.filteredOrders =
-          [...this.orders];
-
-        break;
+      return;
 
     }
+
+
+    /*
+     * An order can contain products
+     * from multiple vendors.
+     *
+     * Therefore, show the order when
+     * at least one order item belongs
+     * to the selected vendor.
+     */
+
+    this.filteredOrders =
+
+      this.orders.filter(
+
+        order =>
+
+          order.items?.some(
+
+            item =>
+
+              item.vendorId ===
+              this.selectedVendorId
+
+          )
+
+      );
 
   }
 
@@ -405,7 +452,9 @@ export class AdmOrdersPage implements OnInit {
      OPEN ORDER DETAILS
   ======================================================= */
 
-  openOrder(order: AdminOrder): void {
+  openOrder(
+    order: AdminOrder
+  ): void {
 
     this.selectedOrder = order;
 
@@ -444,30 +493,37 @@ export class AdmOrdersPage implements OnInit {
     ) {
 
       case 'PLACED':
+
         return 'status-placed';
 
 
       case 'CONFIRMED':
+
         return 'status-confirmed';
 
 
       case 'PACKED':
+
         return 'status-packed';
 
 
       case 'OUT_FOR_DELIVERY':
+
         return 'status-out-for-delivery';
 
 
       case 'DELIVERED':
+
         return 'status-delivered';
 
 
       case 'CANCELLED':
+
         return 'status-cancelled';
 
 
       default:
+
         return 'status-default';
 
     }
@@ -484,17 +540,25 @@ export class AdmOrdersPage implements OnInit {
   ): string {
 
     if (!status) {
+
       return 'Unknown';
+
     }
 
 
     return status
-      .replace(/_/g, ' ')
+
+      .replace(/\_/g, ' ')
+
       .toLowerCase()
+
       .replace(
+
         /\b\w/g,
+
         character =>
           character.toUpperCase()
+
       );
 
   }
@@ -509,7 +573,9 @@ export class AdmOrdersPage implements OnInit {
   ): string {
 
     if (!date) {
+
       return '-';
+
     }
 
 
@@ -517,9 +583,11 @@ export class AdmOrdersPage implements OnInit {
       new Date(date);
 
 
-    if (Number.isNaN(
-      parsedDate.getTime()
-    )) {
+    if (
+      Number.isNaN(
+        parsedDate.getTime()
+      )
+    ) {
 
       return date;
 
@@ -527,12 +595,19 @@ export class AdmOrdersPage implements OnInit {
 
 
     return parsedDate.toLocaleDateString(
+
       'en-IN',
+
       {
+
         day: '2-digit',
+
         month: 'short',
+
         year: 'numeric'
+
       }
+
     );
 
   }
@@ -547,7 +622,9 @@ export class AdmOrdersPage implements OnInit {
   ): string {
 
     if (!date) {
+
       return '-';
+
     }
 
 
@@ -555,9 +632,11 @@ export class AdmOrdersPage implements OnInit {
       new Date(date);
 
 
-    if (Number.isNaN(
-      parsedDate.getTime()
-    )) {
+    if (
+      Number.isNaN(
+        parsedDate.getTime()
+      )
+    ) {
 
       return date;
 
@@ -565,14 +644,23 @@ export class AdmOrdersPage implements OnInit {
 
 
     return parsedDate.toLocaleString(
+
       'en-IN',
+
       {
+
         day: '2-digit',
+
         month: 'short',
+
         year: 'numeric',
+
         hour: '2-digit',
+
         minute: '2-digit'
+
       }
+
     );
 
   }
@@ -587,17 +675,23 @@ export class AdmOrdersPage implements OnInit {
   ): number {
 
     if (!order?.items) {
+
       return 0;
+
     }
 
 
     return order.items.reduce(
+
       (
         total,
         item
       ) =>
+
         total + item.quantity,
+
       0
+
     );
 
   }
@@ -617,6 +711,55 @@ export class AdmOrdersPage implements OnInit {
 
 
   /* =======================================================
+     ORDER VENDORS
+  ======================================================= */
+
+  getOrderVendors(
+    order: AdminOrder
+  ): string {
+
+    if (
+      !order?.items?.length
+    ) {
+
+      return '';
+
+    }
+
+
+    const vendorNames = [
+
+      ...new Set(
+
+        order.items
+
+          .map(
+            item => item.vendorName
+          )
+
+          .filter(
+
+            (
+              name
+            ): name is string =>
+
+              !!name?.trim()
+
+          )
+
+      )
+
+    ];
+
+
+    return vendorNames.join(
+      ' • '
+    );
+
+  }
+
+
+  /* =======================================================
      TRACKED PRODUCT IMAGE
   ======================================================= */
 
@@ -629,5 +772,36 @@ export class AdmOrdersPage implements OnInit {
     );
 
   }
+
+
+  /* =======================================================
+     GO BACK
+  ======================================================= */
+
+  goBack(): void {
+
+    window.history.back();
+
+  }
+
+getOrderImages(order: AdminOrder): string[] {
+  return (order?.items || [])
+    .map(item => item.productImageUrl)
+    .filter((url): url is string => !!url);
+}
+
+
+onOrderImageError(
+  event: Event,
+  order: AdminOrder
+): void {
+  const img = event.target as HTMLImageElement;
+
+  console.error('ORDER IMAGE FAILED', {
+    orderId: order.orderId,
+    productId: order.items?.[0]?.productId,
+    url: order.items?.[0]?.productImageUrl
+  });
+}
 
 }

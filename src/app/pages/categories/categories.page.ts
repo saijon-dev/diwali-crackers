@@ -1,7 +1,7 @@
 import {
+  ChangeDetectorRef,
   Component,
-  OnInit,
-  ChangeDetectorRef
+  OnInit
 } from '@angular/core';
 
 import {
@@ -15,15 +15,14 @@ import {
 
 import {
   IonContent,
-  IonIcon,
-  IonSelect,
-  IonSelectOption
+  IonIcon
 } from '@ionic/angular';
+
+import { forkJoin } from 'rxjs';
 
 import { addIcons } from 'ionicons';
 
 import {
-  chevronDownOutline,
   imageOutline,
   cartOutline,
   arrowBackOutline,
@@ -44,19 +43,11 @@ import {
 } from '../../services/cart.service';
 
 
-/* =====================================
-   STORE SECTION
-===================================== */
-
 interface StoreSection {
   storeName: string;
   products: Product[];
 }
 
-
-/* =====================================
-   CATEGORY SECTION
-===================================== */
 
 interface CategorySection {
   categoryId: number;
@@ -65,10 +56,6 @@ interface CategorySection {
 }
 
 
-/* =====================================
-   COMPONENT
-===================================== */
-
 @Component({
   selector: 'app-categories',
   templateUrl: './categories.page.html',
@@ -76,119 +63,41 @@ interface CategorySection {
   imports: [
     IonContent,
     IonIcon,
-    IonSelect,
-    IonSelectOption,
     FloatingCartComponent
   ]
 })
 export class CategoriesPage implements OnInit {
 
-
-  /* =====================================
-     CATEGORIES
-  ===================================== */
-
   categories: Category[] = [];
-
-
-  /* =====================================
-     VENDOR-SPECIFIC CATEGORIES
-  ===================================== */
 
   vendorCategories: Category[] = [];
 
-
-  /* =====================================
-     PRODUCTS
-
-     Always Product[].
-  ===================================== */
-
   products: Product[] = [];
-
-
-  /* =====================================
-     ALL PRODUCTS
-
-     Complete response from the normal
-     products API.
-
-     Used to restore all products.
-  ===================================== */
 
   allProducts: Product[] = [];
 
-
-  /* =====================================
-     CATEGORY SECTIONS
-  ===================================== */
-
   categorySections: CategorySection[] = [];
-
-
-  /* =====================================
-     STORE SECTIONS
-  ===================================== */
 
   storeSections: StoreSection[] = [];
 
-
-  /* =====================================
-     SELECTED CATEGORY
-  ===================================== */
-
   selectedCategoryId: number | null = null;
-
-
-  /* =====================================
-     SELECTED STORE
-  ===================================== */
 
   selectedStoreName: string | null = null;
 
-
-  /* =====================================
-     STORE VIEW
-  ===================================== */
-
   isStoreView = false;
 
-
-  /* =====================================
-     STORE PRODUCTS
-  ===================================== */
+  private returnToHome = false;
 
   selectedStoreProducts: Product[] = [];
 
-
-  /* =====================================
-     COMPLETE VENDOR PRODUCTS
-
-     Complete response from:
-
-     /api/{productStoreId}/all-vendor-products
-  ===================================== */
-
   private allSelectedStoreProducts: Product[] = [];
 
-
-  /* =====================================
-     LOADING
-  ===================================== */
+  private pageRequestId = 0;
 
   isLoading = false;
 
-
-  /* =====================================
-     ERROR
-  ===================================== */
-
   errorMessage = '';
 
-
-  /* =====================================
-     CONSTRUCTOR
-  ===================================== */
 
   constructor(
     private readonly productService: ProductService,
@@ -199,7 +108,6 @@ export class CategoriesPage implements OnInit {
   ) {
 
     addIcons({
-      chevronDownOutline,
       imageOutline,
       cartOutline,
       arrowBackOutline,
@@ -211,11 +119,9 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     INIT
-  ===================================== */
-
   ngOnInit(): void {
+
+    this.returnToHome = history.state?.returnTo === 'home';
 
     this.activatedRoute.queryParamMap.subscribe(
       params => {
@@ -227,28 +133,19 @@ export class CategoriesPage implements OnInit {
           params.get('storeId');
 
 
-        /* =================================
-           STORE ID FROM HOME VENDOR CARD
-        ================================= */
+        /*
+         * STORE VIEW
+         */
 
         if (storeIdParam !== null) {
 
           const storeId =
             Number(storeIdParam);
 
-
           if (
             Number.isInteger(storeId) &&
             storeId > 0
           ) {
-
-            /*
-             * Vendor card from Home gives
-             * us storeId directly.
-             *
-             * Do not convert storeId into
-             * productStoreId.
-             */
 
             this.loadStoreProducts(
               storeId
@@ -261,15 +158,14 @@ export class CategoriesPage implements OnInit {
         }
 
 
-        /* =================================
-           CATEGORY ID FROM HOME
-        ================================= */
+        /*
+         * CATEGORY FROM HOME
+         */
 
         if (categoryIdParam !== null) {
 
           const categoryId =
             Number(categoryIdParam);
-
 
           if (
             Number.isInteger(categoryId) &&
@@ -277,9 +173,10 @@ export class CategoriesPage implements OnInit {
           ) {
 
             /*
-             * Prevent unnecessary API calls
-             * when the selected category is
-             * already displayed.
+             * If the same category is already
+             * displayed, do not reload the API.
+             * Just move the selected category
+             * chip into the viewport.
              */
 
             if (
@@ -288,22 +185,21 @@ export class CategoriesPage implements OnInit {
               !this.isStoreView
             ) {
 
+              this.cdr.detectChanges();
+
+              this.scrollToCategory(
+                categoryId
+              );
+
               return;
 
             }
 
 
-            /*
-             * Make sure normal category
-             * mode is active.
-             */
-
             this.isStoreView = false;
-
 
             this.selectedCategoryId =
               categoryId;
-
 
             this.loadCategoriesAndProducts(
               categoryId
@@ -316,18 +212,19 @@ export class CategoriesPage implements OnInit {
         }
 
 
-        /* =================================
-           EXISTING STORE VIEW CHECK
-        ================================= */
+        /*
+         * If already inside store view,
+         * do not reset it.
+         */
 
         if (this.isStoreView) {
           return;
         }
 
 
-        /* =================================
-           NORMAL CATEGORIES PAGE
-        ================================= */
+        /*
+         * NORMAL CATEGORIES PAGE
+         */
 
         if (this.products.length === 0) {
 
@@ -338,19 +235,26 @@ export class CategoriesPage implements OnInit {
         }
 
 
-        /* =================================
-           ALL CATEGORIES
-        ================================= */
+        /*
+         * ALL CATEGORIES
+         */
 
-        this.selectedCategoryId =
-          null;
+        this.selectedCategoryId = null;
 
-        this.products =
-          [...this.allProducts];
+        if (this.allProducts.length > 0) {
 
-        this.buildStoreSections();
+          this.products =
+            [...this.allProducts];
 
-        this.cdr.detectChanges();
+          this.buildStoreSections();
+
+          this.cdr.detectChanges();
+
+        } else {
+
+          this.loadProducts();
+
+        }
 
       }
     );
@@ -358,17 +262,44 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     LOAD CATEGORIES AND PRODUCTS
+  /*
+   * Scroll a category selected from Home
+   * into the horizontal category viewport.
+   */
 
-     Initial page loading.
+  private scrollToCategory(
+    categoryId: number
+  ): void {
 
-     If categoryId exists:
-       → load category products
+    requestAnimationFrame(() => {
 
-     Otherwise:
-       → load all products
-  ===================================== */
+      requestAnimationFrame(() => {
+
+        const categoryButton =
+          document.querySelector(
+            `[data-category-id="${categoryId}"]`
+          ) as HTMLElement | null;
+
+        if (!categoryButton) {
+          return;
+        }
+
+        categoryButton.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest'
+        });
+
+      });
+
+    });
+
+  }
+
+
+  /*
+   * LOAD CATEGORIES AND PRODUCTS
+   */
 
   private loadCategoriesAndProducts(
     categoryId?: number
@@ -389,17 +320,6 @@ export class CategoriesPage implements OnInit {
             response
           );
 
-
-          /*
-           * Support either:
-           *
-           * Category[]
-           *
-           * or:
-           *
-           * { content: Category[] }
-           */
-
           this.categories =
             Array.isArray(response)
               ? response
@@ -407,8 +327,7 @@ export class CategoriesPage implements OnInit {
 
 
           /*
-           * If a category was supplied,
-           * load only that category.
+           * CATEGORY SELECTED FROM HOME
            */
 
           if (
@@ -418,6 +337,25 @@ export class CategoriesPage implements OnInit {
 
             this.selectedCategoryId =
               categoryId;
+
+            /*
+             * Render the category chips first.
+             */
+
+            this.cdr.detectChanges();
+
+            /*
+             * Move the selected category
+             * into the horizontal viewport.
+             */
+
+            this.scrollToCategory(
+              categoryId
+            );
+
+            /*
+             * Load products for that category.
+             */
 
             this.loadProductsByCategory(
               categoryId
@@ -429,14 +367,12 @@ export class CategoriesPage implements OnInit {
 
 
           /*
-           * Otherwise load complete
-           * product list.
+           * ALL CATEGORIES
            */
 
           this.loadProducts();
 
         },
-
 
         error: (error) => {
 
@@ -444,7 +380,6 @@ export class CategoriesPage implements OnInit {
             'Categories API Error:',
             error
           );
-
 
           this.categories = [];
 
@@ -472,38 +407,19 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     LOAD STORE PRODUCTS
-
-     API:
-
-     /api/stores/product-stores/{storeId}/store-products
-
-     Example:
-
-     /api/stores/product-stores/22/store-products
-  ===================================== */
+  /*
+   * LOAD STORE PRODUCTS
+   */
 
   private loadStoreProducts(
     storeId: number
   ): void {
-
-    /*
-     * Enter vendor/store view.
-     */
 
     this.isStoreView = true;
 
     this.isLoading = true;
 
     this.errorMessage = '';
-
-
-    /*
-     * Reset previous vendor data.
-     */
-
-    this.selectedStoreName = null;
 
     this.selectedCategoryId = null;
 
@@ -513,84 +429,25 @@ export class CategoriesPage implements OnInit {
 
     this.vendorCategories = [];
 
-
     /*
-     * The vendor categories require
-     * the global categories list.
-     *
-     * If categories are already loaded,
-     * reuse them.
-     *
-     * Otherwise load them first.
+     * Clear the global category list while
+     * vendor-specific categories are loading.
      */
 
-    if (this.categories.length > 0) {
+    this.categories = [];
 
-      this.fetchStoreProducts(
-        storeId
-      );
+    this.selectedStoreName = '';
 
-      return;
-
-    }
-
-
-    this.productService
-      .getCategories()
-      .subscribe({
-
-        next: (response: any) => {
-
-          console.log(
-            'Categories API Response for Store:',
-            response
-          );
-
-
-          this.categories =
-            Array.isArray(response)
-              ? response
-              : (response?.content ?? []);
-
-
-          this.fetchStoreProducts(
-            storeId
-          );
-
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Categories API Error for Store:',
-            error
-          );
-
-
-          /*
-           * Even if categories fail,
-           * we still try to load the
-           * vendor products.
-           */
-
-          this.categories = [];
-
-          this.fetchStoreProducts(
-            storeId
-          );
-
-        }
-
-      });
+    this.fetchStoreProducts(
+      storeId
+    );
 
   }
 
 
-  /* =====================================
-     FETCH STORE PRODUCTS
-
-     Called after categories are available.
-  ===================================== */
+  /*
+   * FETCH STORE PRODUCTS
+   */
 
   private fetchStoreProducts(
     storeId: number
@@ -604,112 +461,148 @@ export class CategoriesPage implements OnInit {
       )
       .subscribe({
 
-        next: (response: ProductPageResponse) => {
+        next: response => {
 
-          console.log(
-            'Store Products API Response:',
-            response
-          );
-
-
-          /*
-           * Store-products API returns:
-
-           * {
-           *   content: Product[],
-           *   ...
-           * }
-           *
-           * We need only content.
-           */
-
-          const storeProducts =
+          const products =
             response?.content ?? [];
 
-
-          /*
-           * Store products are now the
-           * vendor products displayed
-           * by the existing Categories UI.
-           */
+          this.selectedStoreProducts =
+            products;
 
           this.allSelectedStoreProducts =
-            [...storeProducts];
-
-
-          this.selectedStoreProducts =
-            [...storeProducts];
-
-
-          /*
-           * Also keep products populated.
-           *
-           * This allows existing product
-           * grouping / shared UI logic to
-           * continue working.
-           */
-
-          this.products =
-            [...storeProducts];
-
-
-          /*
-           * The store name is available
-           * from the product response.
-           */
+            [...products];
 
           this.selectedStoreName =
-            storeProducts.length > 0
-              ? (
-                  storeProducts[0]
-                    .storeName?.trim() ||
-                  'Store'
-                )
-              : null;
+            products[0]?.storeName ??
+            'Vendor Products';
 
 
           /*
-           * Build categories available
-           * for this vendor.
+           * Get productStoreId from any
+           * product belonging to this vendor.
            */
 
-          this.buildVendorCategories();
+          const productStoreId =
+            products.find(
+              product =>
+                product.productStoreId != null
+            )?.productStoreId;
+
+          if (!productStoreId) {
+
+            this.vendorCategories = [];
+
+            this.categories = [];
+
+            this.selectedCategoryId = null;
+
+            this.buildVendorCategories();
+
+            this.isLoading = false;
+
+            this.cdr.detectChanges();
+
+            return;
+
+          }
 
 
-          this.isLoading = false;
+          /*
+           * Load categories belonging
+           * specifically to this product store.
+           */
 
-          this.errorMessage = '';
+          this.productService
+            .getCategoriesByProductStore(
+              productStoreId
+            )
+            .subscribe({
 
-          this.cdr.detectChanges();
+              next: vendorCategories => {
 
-          this.scrollToTop();
+                this.vendorCategories =
+                  vendorCategories ?? [];
+
+                this.categories =
+                  this.vendorCategories;
+
+                /*
+                 * All Categories selected initially.
+                 */
+
+                this.selectedCategoryId = null;
+
+                /*
+                 * Keep all vendor products
+                 * available for category switching.
+                 */
+
+                this.allSelectedStoreProducts =
+                  [...products];
+
+                this.selectedStoreProducts =
+                  [...products];
+
+                this.isLoading = false;
+
+                this.cdr.detectChanges();
+
+              },
+
+              error: error => {
+
+                console.error(
+                  'Failed to load vendor categories:',
+                  error
+                );
+
+                /*
+                 * Products can still be displayed
+                 * even if vendor categories fail.
+                 */
+
+                this.vendorCategories = [];
+
+                this.categories = [];
+
+                this.selectedCategoryId = null;
+
+                this.selectedStoreProducts =
+                  [...products];
+
+                this.allSelectedStoreProducts =
+                  [...products];
+
+                this.isLoading = false;
+
+                this.cdr.detectChanges();
+
+              }
+
+            });
 
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
-            'Store Products API Error:',
+            'Failed to load vendor products:',
             error
           );
 
-
-          this.products = [];
+          this.selectedStoreProducts = [];
 
           this.allSelectedStoreProducts = [];
 
-          this.selectedStoreProducts = [];
-
           this.vendorCategories = [];
 
-          this.selectedStoreName = null;
+          this.categories = [];
+
+          this.selectedCategoryId = null;
 
           this.isLoading = false;
 
           this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
             'Unable to load vendor products.';
 
           this.cdr.detectChanges();
@@ -718,173 +611,314 @@ export class CategoriesPage implements OnInit {
 
       });
 
+    /*
+     * Keep category/store navigation from creating
+     * unnecessary browser history entries.
+     */
+
+    this.router.navigate(
+      ['/categories'],
+      {
+        queryParams: {},
+        replaceUrl: true
+      }
+    );
+
   }
 
 
-  /* =====================================
-     LOAD PRODUCTS
+  /*
+   * LOAD ALL PRODUCTS
+   */
 
-     Initial/all-categories API.
+private loadProducts(): void {
 
-     Response:
+  const requestId =
+    ++this.pageRequestId;
 
-     {
-       content: Product[],
-       ...
-     }
-  ===================================== */
+  this.isLoading = true;
+  this.errorMessage = '';
 
-  loadProducts(): void {
+  /*
+   * First request.
+   * We use a larger page size so that
+   * most products can be loaded in fewer requests.
+   */
+  this.productService
+    .getProducts(0, 50)
+    .subscribe({
 
-    this.isLoading = true;
+      next: (firstResponse: ProductPageResponse) => {
 
-    this.productService
-      .getProducts()
-      .subscribe({
+        /*
+         * Ignore stale response if user
+         * selected another category meanwhile.
+         */
+        if (
+          requestId !== this.pageRequestId
+        ) {
+          return;
+        }
 
-        next: (response: ProductPageResponse) => {
+        const firstProducts =
+          firstResponse?.content ?? [];
 
-          console.log(
-            'Products API Response:',
-            response
-          );
+        const totalPages =
+          firstResponse?.totalPages ?? 1;
 
-
-          /*
-           * IMPORTANT:
-           *
-           * response is ProductPageResponse.
-           *
-           * products must contain only
-           * response.content.
-           */
+        /*
+         * If everything fits in the first page,
+         * use it directly.
+         */
+        if (totalPages <= 1) {
 
           this.allProducts =
-            response?.content ?? [];
-
+            [...firstProducts];
 
           this.products =
             [...this.allProducts];
 
-
-          /*
-           * Build normal store sections.
-           */
-
           this.buildStoreSections();
 
-
+          this.selectedCategoryId = null;
           this.isLoading = false;
-
           this.errorMessage = '';
 
           this.cdr.detectChanges();
 
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'Products API Error:',
-            error
-          );
-
-
-          this.products = [];
-
-          this.allProducts = [];
-
-          this.categorySections = [];
-
-          this.storeSections = [];
-
-          this.selectedStoreProducts = [];
-
-          this.isLoading = false;
-
-          this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to load products.';
-
-          this.cdr.detectChanges();
-
+          return;
         }
 
-      });
+        /*
+         * More pages exist.
+         *
+         * Load pages 1...N and combine
+         * everything into one product list.
+         */
+        const remainingRequests = [];
 
-  }
+        for (
+          let page = 1;
+          page < totalPages;
+          page++
+        ) {
+          remainingRequests.push(
+            this.productService.getProducts(
+              page,
+              50
+            )
+          );
+        }
 
+        /*
+         * Import forkJoin from rxjs if it is
+         * not already imported.
+         */
+        forkJoin(remainingRequests)
+          .subscribe({
 
-  /* =====================================
-     LOAD PRODUCTS BY CATEGORY
+            next: (
+              responses: ProductPageResponse[]
+            ) => {
 
-     API:
+              if (
+                requestId !== this.pageRequestId
+              ) {
+                return;
+              }
 
-     /api/products/category/{categoryId}
+              const remainingProducts =
+                responses.flatMap(
+                  response =>
+                    response?.content ?? []
+                );
 
-     IMPORTANT:
+              /*
+               * Combine page 0 + all remaining pages.
+               */
+              this.allProducts = [
+                ...firstProducts,
+                ...remainingProducts
+              ];
 
-     This API returns ProductPageResponse,
-     NOT Product[].
+              /*
+               * Remove accidental duplicate
+               * product-store entries.
+               */
+              const uniqueProducts =
+                new Map<number, Product>();
 
-     Therefore:
+              this.allProducts.forEach(
+                product => {
 
-     response.content
-     ↓
-     this.products
-  ===================================== */
+                  if (
+                    product?.productStoreId != null
+                  ) {
+                    uniqueProducts.set(
+                      product.productStoreId,
+                      product
+                    );
+                  }
+
+                }
+              );
+
+              this.allProducts =
+                Array.from(
+                  uniqueProducts.values()
+                );
+
+              this.products =
+                [...this.allProducts];
+
+              /*
+               * Now group ALL products
+               * by store.
+               */
+              this.buildStoreSections();
+
+              this.selectedCategoryId = null;
+              this.isLoading = false;
+              this.errorMessage = '';
+
+              this.cdr.detectChanges();
+            },
+
+            error: (error) => {
+
+              if (
+                requestId !== this.pageRequestId
+              ) {
+                return;
+              }
+
+              console.error(
+                'Products API Error:',
+                error
+              );
+
+              this.products = [];
+              this.allProducts = [];
+              this.categorySections = [];
+              this.storeSections = [];
+              this.selectedStoreProducts = [];
+
+              this.isLoading = false;
+
+              this.errorMessage =
+                error?.error?.message ||
+                error?.message ||
+                'Unable to load products.';
+
+              this.cdr.detectChanges();
+            }
+
+          });
+
+      },
+
+      error: (error) => {
+
+        if (
+          requestId !== this.pageRequestId
+        ) {
+          return;
+        }
+
+        console.error(
+          'Products API Error:',
+          error
+        );
+
+        this.products = [];
+        this.allProducts = [];
+        this.categorySections = [];
+        this.storeSections = [];
+        this.selectedStoreProducts = [];
+
+        this.isLoading = false;
+
+        this.errorMessage =
+          error?.error?.message ||
+          error?.message ||
+          'Unable to load products.';
+
+        this.cdr.detectChanges();
+      }
+
+    });
+}
+
+  /*
+   * LOAD PRODUCTS BY CATEGORY
+   */
 
   private loadProductsByCategory(
     categoryId: number
   ): void {
+
+    /*
+     * Create a new request generation.
+     *
+     * This invalidates any previous
+     * All Products or Category Products request.
+     */
+
+    const requestId =
+      ++this.pageRequestId;
 
     this.isLoading = true;
 
     this.errorMessage = '';
 
     this.productService
-      .getProductsByCategory(categoryId)
+      .getProductsByCategory(
+        categoryId
+      )
       .subscribe({
 
-        next: (response: ProductPageResponse) => {
+        next: (
+          response: ProductPageResponse
+        ) => {
+
+          /*
+           * If another navigation/category
+           * selection happened after this request
+           * started, ignore this response.
+           */
+
+          if (
+            requestId !==
+            this.pageRequestId
+          ) {
+            return;
+          }
 
           console.log(
             'Category Products API Response:',
             response
           );
 
-
-          /*
-           * IMPORTANT FIX:
-           *
-           * Do NOT do:
-           *
-           * this.products = response;
-           *
-           * response is ProductPageResponse.
-           *
-           * We need response.content.
-           */
-
           this.products =
             response?.content ?? [];
-
 
           console.log(
             'Category Products:',
             this.products
           );
 
+          /*
+           * Keep the selected category.
+           */
+
+          this.selectedCategoryId =
+            categoryId;
 
           /*
-           * Build store sections from
-           * the category products.
+           * Group category products by store.
            */
 
           this.buildStoreSections();
-
 
           this.isLoading = false;
 
@@ -894,14 +928,23 @@ export class CategoriesPage implements OnInit {
 
         },
 
-
         error: (error) => {
+
+          /*
+           * Ignore errors from stale requests.
+           */
+
+          if (
+            requestId !==
+            this.pageRequestId
+          ) {
+            return;
+          }
 
           console.error(
             'Category Products API Error:',
             error
           );
-
 
           this.products = [];
 
@@ -925,17 +968,11 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     BUILD STORE SECTIONS
-
-     Groups products by storeName.
-  ===================================== */
+  /*
+   * GROUP PRODUCTS BY STORE
+   */
 
   buildStoreSections(): void {
-
-    /*
-     * Safety check.
-     */
 
     if (!Array.isArray(this.products)) {
 
@@ -952,17 +989,11 @@ export class CategoriesPage implements OnInit {
     const filteredProducts =
       [...this.products];
 
-
-    /*
-     * GROUP BY STORE
-     */
-
     const storeMap =
       new Map<
         string,
         StoreSection
       >();
-
 
     filteredProducts.forEach(
       product => {
@@ -971,10 +1002,8 @@ export class CategoriesPage implements OnInit {
           product.storeName?.trim() ||
           'Store';
 
-
         const storeKey =
           storeName.toLowerCase();
-
 
         if (!storeMap.has(storeKey)) {
 
@@ -988,7 +1017,6 @@ export class CategoriesPage implements OnInit {
 
         }
 
-
         storeMap
           .get(storeKey)!
           .products
@@ -996,7 +1024,6 @@ export class CategoriesPage implements OnInit {
 
       }
     );
-
 
     this.storeSections =
       Array.from(
@@ -1006,61 +1033,49 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     CATEGORY CHANGE
-
-     NORMAL VIEW:
-       API request
-
-     VENDOR VIEW:
-       local filtering
-  ===================================== */
+  /*
+   * CATEGORY CHANGE
+   *
+   * NORMAL VIEW:
+   *     API request
+   *
+   * STORE VIEW:
+   *     local filtering
+   */
 
   selectCategory(
     categoryId: number | null
   ): void {
 
-    /* ==================================
-       ALL CATEGORIES
-    ================================== */
+    this.selectedCategoryId =
+      categoryId;
 
-    if (categoryId === null) {
-
-      this.isStoreView = false;
-
-      this.selectedStoreName = null;
-
-      this.selectedStoreProducts = [];
-
-      this.allSelectedStoreProducts = [];
-
-      this.vendorCategories = [];
-
-      this.selectedCategoryId = null;
+    this.pageRequestId++;
 
 
-      /*
-       * Restore original complete
-       * product list.
-       */
+    /*
+     * VENDOR PRODUCTS VIEW
+     */
 
-      this.products =
-        [...this.allProducts];
+    if (this.isStoreView) {
 
+      if (categoryId === null) {
 
-      /*
-       * Remove query parameters.
-       */
+        this.selectedStoreProducts =
+          [
+            ...this.allSelectedStoreProducts
+          ];
 
-      this.router.navigate(
-        ['/categories'],
-        {
-          queryParams: {}
-        }
-      );
+      } else {
 
+        this.selectedStoreProducts =
+          this.allSelectedStoreProducts.filter(
+            product =>
+              product.categoryId ===
+              categoryId
+          );
 
-      this.buildStoreSections();
+      }
 
       this.cdr.detectChanges();
 
@@ -1069,41 +1084,70 @@ export class CategoriesPage implements OnInit {
     }
 
 
-    /* ==================================
-       NORMAL CATEGORY VIEW
-    ================================== */
+    /*
+     * NORMAL CATEGORIES VIEW
+     */
+
+    if (categoryId === null) {
+
+      /*
+       * Invalidate every category API request
+       * that is currently running.
+       */
+
+      this.isStoreView = false;
+
+      this.selectedStoreName = '';
+
+      this.selectedStoreProducts = [];
+
+      this.selectedCategoryId = null;
+
+      this.router.navigate(
+        ['/categories'],
+        {
+          queryParams: {},
+          replaceUrl: true
+        }
+      );
+
+      if (this.allProducts.length > 0) {
+
+        this.products =
+          [...this.allProducts];
+
+        this.buildStoreSections();
+
+        this.isLoading = false;
+
+        this.cdr.detectChanges();
+
+      } else {
+
+        this.loadProducts();
+
+      }
+
+      return;
+
+    }
+
 
     this.isStoreView = false;
 
-    this.selectedStoreName = null;
+    this.selectedStoreName = '';
 
     this.selectedStoreProducts = [];
-
-    this.allSelectedStoreProducts = [];
-
-    this.vendorCategories = [];
-
-    this.selectedCategoryId =
-      categoryId;
-
-
-    /*
-     * Keep category ID in URL.
-     */
 
     this.router.navigate(
       ['/categories'],
       {
         queryParams: {
           categoryId
-        }
+        },
+        replaceUrl: true
       }
     );
-
-
-    /*
-     * Load category products.
-     */
 
     this.loadProductsByCategory(
       categoryId
@@ -1112,223 +1156,28 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     CATEGORY DROPDOWN
-  ===================================== */
-
-  onCategoryChange(
-    event: CustomEvent
-  ): void {
-
-    const value =
-      event.detail?.value;
-
-
-    /* ==================================
-       VENDOR PRODUCTS VIEW
-    ================================== */
-
-    if (this.isStoreView) {
-
-      /*
-       * ALL CATEGORIES
-       */
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === 'all' ||
-        value === ''
-      ) {
-
-        this.selectedCategoryId = null;
-
-        this.loadAllSelectedStoreProducts();
-
-        return;
-
-      }
-
-
-      const categoryId =
-        Number(value);
-
-
-      if (
-        !Number.isInteger(categoryId) ||
-        categoryId <= 0
-      ) {
-
-        return;
-
-      }
-
-
-      this.selectedCategoryId =
-        categoryId;
-
-
-      this.filterSelectedStoreProducts(
-        categoryId
-      );
-
-      return;
-
-    }
-
-
-    /* ==================================
-       NORMAL CATEGORIES VIEW
-    ================================== */
-
-    if (
-      value === null ||
-      value === undefined ||
-      value === 'all' ||
-      value === ''
-    ) {
-
-      this.selectCategory(null);
-
-      return;
-
-    }
-
-
-    const categoryId =
-      Number(value);
-
-
-    if (
-      Number.isInteger(categoryId) &&
-      categoryId > 0
-    ) {
-
-      this.selectCategory(
-        categoryId
-      );
-
-    }
-
-  }
-
-
-  /* =====================================
-     FILTER VENDOR PRODUCTS
-  ===================================== */
-
-  private filterSelectedStoreProducts(
-    categoryId: number | null
-  ): void {
-
-    if (categoryId === null) {
-
-      this.selectedStoreProducts =
-        [...this.allSelectedStoreProducts];
-
-    } else {
-
-      this.selectedStoreProducts =
-        this.allSelectedStoreProducts.filter(
-          product =>
-            product.categoryId ===
-            categoryId
-        );
-
-    }
-
-
-    this.cdr.detectChanges();
-
-  }
-
-
-  /* =====================================
-     LOAD ALL SELECTED STORE PRODUCTS
-  ===================================== */
-
-  private loadAllSelectedStoreProducts(): void {
-
-    this.selectedStoreProducts =
-      [...this.allSelectedStoreProducts];
-
-    this.cdr.detectChanges();
-
-  }
-
-
-  /* =====================================
-     VIEW ALL STORE PRODUCTS
-
-     API:
-
-     /api/{productStoreId}/all-vendor-products
-
-     Any productStoreId belonging to the
-     selected store can be used.
-  ===================================== */
+  /*
+   * VIEW ALL PRODUCTS OF ONE STORE
+   */
 
   viewAllStore(
     store: StoreSection
   ): void {
 
-    if (
-      !store ||
-      !store.products ||
-      store.products.length === 0
-    ) {
-
+    if (!store?.products?.length) {
       return;
-
     }
-
-
-    /*
-     * Any productStoreId belonging
-     * to this store.
-     */
-
-    const productStoreId =
-      store.products[0]?.productStoreId;
-
-
-    if (!productStoreId) {
-
-      console.error(
-        'No productStoreId found for vendor:',
-        store.storeName
-      );
-
-      return;
-
-    }
-
-
-    /*
-     * Save selected store.
-     */
-
-    this.selectedStoreName =
-      store.storeName;
-
-
-    /*
-     * Enter vendor view.
-     */
 
     this.isStoreView = true;
 
+    this.isLoading = true;
 
-    /*
-     * Reset category.
-     */
+    this.errorMessage = '';
 
     this.selectedCategoryId = null;
 
-
-    /*
-     * Clear previous vendor data.
-     */
+    this.selectedStoreName =
+      store.storeName;
 
     this.selectedStoreProducts = [];
 
@@ -1336,88 +1185,144 @@ export class CategoriesPage implements OnInit {
 
     this.vendorCategories = [];
 
-
-    this.isLoading = true;
-
-    this.errorMessage = '';
-
-    this.cdr.detectChanges();
+    this.categories = [];
 
 
     /*
-     * ALL VENDOR PRODUCTS API
+     * Get productStoreId from any product
+     * belonging to this vendor.
+     */
+
+    const productStoreId =
+      store.products.find(
+        product =>
+          product.productStoreId != null
+      )?.productStoreId;
+
+
+    /*
+     * First load all products belonging
+     * to this vendor.
      */
 
     this.productService
-      .getAllVendorProducts(productStoreId)
+      .getAllVendorProducts(
+        productStoreId ?? 0
+      )
       .subscribe({
 
-        next: (response: ProductPageResponse) => {
+        next: response => {
 
-          console.log(
-            'All Vendor Products API Response:',
-            response
-          );
-
-
-          /*
-           * Vendor API returns:
-
-           * {
-           *   content: Product[],
-           *   ...
-           * }
-           */
-
-          this.allSelectedStoreProducts =
+          const products =
             response?.content ?? [];
 
-
-          /*
-           * Display all vendor products.
-           */
-
           this.selectedStoreProducts =
-            [...this.allSelectedStoreProducts];
+            [...products];
+
+          this.allSelectedStoreProducts =
+            [...products];
 
 
           /*
-           * Build vendor-specific categories.
+           * Use productStoreId from the
+           * returned vendor products if the
+           * first lookup didn't provide one.
            */
 
-          this.buildVendorCategories();
+          const vendorProductStoreId =
+            productStoreId ??
+            products.find(
+              product =>
+                product.productStoreId != null
+            )?.productStoreId;
+
+          if (!vendorProductStoreId) {
+
+            this.vendorCategories = [];
+
+            this.categories = [];
+
+            this.selectedCategoryId = null;
+
+            this.isLoading = false;
+
+            this.cdr.detectChanges();
+
+            return;
+
+          }
 
 
-          this.isLoading = false;
+          /*
+           * Load ONLY categories belonging
+           * to this vendor's product store.
+           */
 
-          this.errorMessage = '';
+          this.productService
+            .getCategoriesByProductStore(
+              vendorProductStoreId
+            )
+            .subscribe({
 
-          this.cdr.detectChanges();
+              next: categories => {
 
-          this.scrollToTop();
+                this.vendorCategories =
+                  categories ?? [];
+
+                this.categories =
+                  this.vendorCategories;
+
+                this.selectedCategoryId = null;
+
+                this.isLoading = false;
+
+                this.cdr.detectChanges();
+
+              },
+
+              error: error => {
+
+                console.error(
+                  'Failed to load vendor categories:',
+                  error
+                );
+
+                this.vendorCategories = [];
+
+                this.categories = [];
+
+                this.selectedCategoryId = null;
+
+                this.isLoading = false;
+
+                this.cdr.detectChanges();
+
+              }
+
+            });
 
         },
 
-
-        error: (error) => {
+        error: error => {
 
           console.error(
-            'All Vendor Products API Error:',
+            'Failed to load vendor products:',
             error
           );
 
+          this.selectedStoreProducts = [];
 
           this.allSelectedStoreProducts = [];
 
-          this.selectedStoreProducts = [];
-
           this.vendorCategories = [];
+
+          this.categories = [];
+
+          this.selectedCategoryId = null;
 
           this.isLoading = false;
 
           this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
             'Unable to load vendor products.';
 
           this.cdr.detectChanges();
@@ -1428,28 +1333,30 @@ export class CategoriesPage implements OnInit {
 
 
     /*
-     * Keep the same Categories route.
+     * Keep category/store navigation from
+     * creating unnecessary browser history entries.
      */
 
     this.router.navigate(
       ['/categories'],
       {
-        queryParams: {}
+        queryParams: {},
+        replaceUrl: true
       }
     );
 
   }
 
 
-  /* =====================================
-     BUILD VENDOR CATEGORIES
-  ===================================== */
+  /*
+   * BUILD CATEGORIES AVAILABLE
+   * FOR CURRENT STORE
+   */
 
   private buildVendorCategories(): void {
 
     const vendorCategoryIds =
       new Set<number>();
-
 
     this.allSelectedStoreProducts
       .forEach(
@@ -1469,12 +1376,6 @@ export class CategoriesPage implements OnInit {
         }
       );
 
-
-    /*
-     * Match product category IDs
-     * with the global categories list.
-     */
-
     this.vendorCategories =
       this.categories.filter(
         category =>
@@ -1486,9 +1387,9 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     BACK TO STORE GROUPS
-  ===================================== */
+  /*
+   * BACK TO STORE GROUPS
+   */
 
   backToStoreGroups(): void {
 
@@ -1504,18 +1405,10 @@ export class CategoriesPage implements OnInit {
 
     this.vendorCategories = [];
 
-
-    /*
-     * Restore complete initial
-     * product list.
-     */
-
     this.products =
       [...this.allProducts];
 
-
     this.buildStoreSections();
-
 
     this.router.navigate(
       ['/categories'],
@@ -1524,7 +1417,6 @@ export class CategoriesPage implements OnInit {
       }
     );
 
-
     this.scrollToTop();
 
     this.cdr.detectChanges();
@@ -1532,9 +1424,9 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     SCROLL TO TOP
-  ===================================== */
+  /*
+   * SCROLL TO TOP
+   */
 
   private scrollToTop(): void {
 
@@ -1544,7 +1436,6 @@ export class CategoriesPage implements OnInit {
         document.querySelector(
           'ion-content'
         ) as any;
-
 
       if (content?.scrollToTop) {
 
@@ -1557,9 +1448,9 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     OPEN PRODUCT
-  ===================================== */
+  /*
+   * OPEN PRODUCT
+   */
 
   openProduct(
     product: Product
@@ -1573,7 +1464,6 @@ export class CategoriesPage implements OnInit {
 
     }
 
-
     this.router.navigate([
       '/product',
       product.productStoreId
@@ -1582,9 +1472,9 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     ADD TO CART
-  ===================================== */
+  /*
+   * ADD TO CART
+   */
 
   addToCart(
     product: Product
@@ -1600,7 +1490,6 @@ export class CategoriesPage implements OnInit {
 
     }
 
-
     this.cartService
       .addToCart(
         product.productStoreId,
@@ -1615,18 +1504,11 @@ export class CategoriesPage implements OnInit {
             response
           );
 
-
-          /*
-           * Change + to check only
-           * after successful API response.
-           */
-
           product.alreadyAdded = true;
 
           this.cdr.detectChanges();
 
         },
-
 
         error: (error) => {
 
@@ -1634,11 +1516,6 @@ export class CategoriesPage implements OnInit {
             'Add to cart failed:',
             error
           );
-
-
-          /*
-           * Keep + enabled if API fails.
-           */
 
           product.alreadyAdded = false;
 
@@ -1651,46 +1528,35 @@ export class CategoriesPage implements OnInit {
   }
 
 
-  /* =====================================
-     BACK BUTTON
-  ===================================== */
-
+  /*
+   * BACK BUTTON
+   */
 handleBack(): void {
 
-  if (this.isStoreView) {
-    window.history.back();
+  // Vendor Products opened from Home
+  if (this.returnToHome) {
+    this.returnToHome = false;
+    this.router.navigate(['/home']);
     return;
   }
 
-  this.goHome();
+  // Vendor Products opened from Categories tab
+  if (this.isStoreView) {
+    this.backToStoreGroups();
+    return;
+  }
 
+  // Normal Categories view
+  this.router.navigate(['/home']);
 }
 
 
-  /* =====================================
-     HOME
-  ===================================== */
-
-  goHome(): void {
-
-    if (window.history.length > 1) {
-
-      window.history.back();
-
-    } else {
-
-      this.router.navigate([
-        '/home'
-      ]);
-
-    }
-
-  }
 
 
-  /* =====================================
-     TRACK STORE
-  ===================================== */
+
+  /*
+   * TRACK STORE
+   */
 
   trackStore(
     index: number,
@@ -1702,9 +1568,9 @@ handleBack(): void {
   }
 
 
-  /* =====================================
-     TRACK PRODUCT
-  ===================================== */
+  /*
+   * TRACK PRODUCT
+   */
 
   trackProduct(
     index: number,
@@ -1713,6 +1579,26 @@ handleBack(): void {
 
     return product.productStoreId;
 
+  }
+
+private readonly productBadgeMap = new Map<number, string>();
+  getProductBadge(product: Product): string {
+    const productKey = product.productStoreId;
+  
+    const existingBadge = this.productBadgeMap.get(productKey);
+  
+    if (existingBadge) {
+      return existingBadge;
+    }
+  
+    const badge =
+      Math.random() < 0.5
+        ? 'assets/images/15-badge.png'
+        : 'assets/images/20-badge.png';
+  
+    this.productBadgeMap.set(productKey, badge);
+  
+    return badge;
   }
 
 }

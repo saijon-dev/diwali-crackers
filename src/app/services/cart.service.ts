@@ -101,6 +101,7 @@ export interface CreateOrderRequest {
   cartToken: string;
   customerName: string;
   customerMobile: string;
+    alternativeMobileNumber: string;
   deliveryAddress: string;
 }
 
@@ -578,16 +579,14 @@ export class CartService {
      CREATE ORDER
   ==================================================== */
 
-  createOrder(
-    orderData: CreateOrderRequest
-  ): Observable<OrderResponse> {
-
-    return this.http.post<OrderResponse>(
-      `${this.apiUrl}/orders`,
-      orderData
-    );
-
-  }
+createOrder(
+  orderData: CreateOrderRequest
+): Observable<OrderResponse> {
+  return this.http.post<OrderResponse>(
+    `${this.apiUrl}/checkout`,
+    orderData
+  );
+}
 
 
   /* ====================================================

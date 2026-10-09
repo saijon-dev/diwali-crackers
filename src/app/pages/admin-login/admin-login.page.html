@@ -1,345 +1,407 @@
 <ion-content
-[fullscreen]="true"
-class="login-content"
-
+  [fullscreen]="true"
+  class="login-content"
 >
 
   <div class="login-page">
 
-```
-<!-- =====================================
-     BACKGROUND
-     ===================================== -->
+    <!-- =====================================
+         BACKGROUND
+         ===================================== -->
 
-<div class="login-background"></div>
+    <div class="login-background"></div>
 
-<!-- =====================================
-     DARK OVERLAY
-     ===================================== -->
+    <!-- =====================================
+         DARK OVERLAY
+         ===================================== -->
 
-<div class="login-overlay"></div>
+    <div class="login-overlay"></div>
 
-<!-- =====================================
-     BACK BUTTON
-     ===================================== -->
+    <!-- =====================================
+         BACK BUTTON
+         ===================================== -->
 
-<div class="back-button-container">
-
-  <ion-button
-    fill="clear"
-    (click)="goToHome()"
-  >
-    <ion-icon name="arrow-back-outline"></ion-icon>
-  </ion-button>
-
-</div>
-
-<!-- =====================================
-     MAIN CONTENT
-     ===================================== -->
-
-<div class="login-container">
-
-  <!-- ===================================
-       BRAND
-       =================================== -->
-
-  <div class="brand-section">
-
-    <div class="brand-name">
-      🪔 Diwali Crackers
-    </div>
-
-    <div class="brand-title">
-      Login Portal
-    </div>
-
-    <div class="brand-decoration">
-      ─── ✦ ───
-    </div>
-
-  </div>
-
-  <!-- ===================================
-       LOGIN CARD
-       =================================== -->
-
-  <div class="login-card">
-
-    <!-- =================================
-         CARD TITLE
-         ================================= -->
-
-    <div class="card-title">
-
-      @if (!isOtpStep) {
-        Login
-      }
-      @else {
-        Verify OTP
-      }
-
-    </div>
-
-    <!-- =================================
-         CARD SUBTITLE
-         ================================= -->
-
-    <div class="card-subtitle">
-
-      @if (!isOtpStep) {
-
-        Enter your registered mobile number
-        <br>
-        to receive an OTP
-
-      }
-      @else {
-
-        Enter the OTP sent to
-        <br>
-
-        <strong>
-          {{ mobileNumber?.value }}
-        </strong>
-
-      }
-
-    </div>
-
-    <!-- =================================
-         FORM
-         ================================= -->
-
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="onLogin()"
-      novalidate
-    >
-
-      <!-- =================================
-           MOBILE NUMBER
-           ================================= -->
-
-      @if (!isOtpStep) {
-
-        <div class="input-group">
-
-          <div class="input-wrapper">
-
-            <ion-icon
-              name="call-outline"
-              class="input-icon"
-            ></ion-icon>
-
-            <ion-input
-              type="tel"
-              formControlName="mobileNumber"
-              placeholder="Mobile Number"
-              autocomplete="tel"
-              inputmode="numeric"
-              maxlength="10"
-            >
-            </ion-input>
-
-          </div>
-
-          <!-- MOBILE VALIDATION -->
-
-          @if (
-            mobileNumber?.invalid &&
-            mobileNumber?.touched
-          ) {
-
-            <div class="error-message">
-
-              @if (
-                mobileNumber?.errors?.['required']
-              ) {
-                Mobile number is required
-              }
-
-              @if (
-                mobileNumber?.errors?.['pattern']
-              ) {
-                Enter a valid 10-digit mobile number
-              }
-
-            </div>
-
-          }
-
-          <!-- API ERROR -->
-
-          @if (errorMessage) {
-
-            <div class="api-error-message">
-              {{ errorMessage }}
-            </div>
-
-          }
-
-        </div>
-
-      }
-
-      <!-- =================================
-           OTP
-           ================================= -->
-
-      @if (isOtpStep) {
-
-        <div class="input-group">
-
-          <!-- =================================
-               OTP SIX BLOCKS
-               ================================= -->
-
-          <div
-            class="otp-container"
-            (click)="focusOtpInput()"
-          >
-
-            @for (
-              digit of otpDigits;
-              track $index
-            ) {
-
-              <div
-                class="otp-box"
-                [class.active]="
-                  otpFocusedIndex === $index
-                "
-              >
-                {{ digit }}
-              </div>
-
-            }
-
-          </div>
-
-          <!-- =================================
-               HIDDEN OTP INPUT
-               ================================= -->
-
-          <ion-input
-            #otpInput
-            class="otp-hidden-input"
-            type="tel"
-            formControlName="otp"
-            inputmode="numeric"
-            maxlength="6"
-            autocomplete="one-time-code"
-            (ionInput)="onOtpInput($event)"
-            (ionFocus)="onOtpFocus()"
-            (ionBlur)="onOtpBlur()"
-          >
-          </ion-input>
-
-          <!-- OTP VALIDATION -->
-
-          @if (
-            otp?.invalid &&
-            otp?.touched
-          ) {
-
-            <div class="error-message">
-
-              @if (
-                otp?.errors?.['required']
-              ) {
-                OTP is required
-              }
-
-              @if (
-                otp?.errors?.['pattern']
-              ) {
-                Enter a valid 6-digit OTP
-              }
-
-            </div>
-
-          }
-
-          <!-- API ERROR -->
-
-          @if (errorMessage) {
-
-            <div class="api-error-message">
-              {{ errorMessage }}
-            </div>
-
-          }
-
-        </div>
-
-        <!-- =================================
-             CHANGE MOBILE
-             ================================= -->
-
-        <button
-          type="button"
-          class="change-number-button"
-          (click)="changeMobileNumber()"
-        >
-          Change mobile number
-        </button>
-
-      }
-
-      <!-- =================================
-           LOGIN / VERIFY BUTTON
-           ================================= -->
+    <div class="back-button-container">
 
       <ion-button
-        type="submit"
-        expand="block"
-        class="login-button"
-        [disabled]="isLoading"
+        fill="clear"
+        (click)="goToHome()"
       >
 
-        @if (!isOtpStep) {
-
-          @if (isLoading) {
-            Sending OTP...
-          }
-          @else {
-            Send OTP
-          }
-
-        }
-
-        @else {
-
-          @if (isLoading) {
-            Verifying...
-          }
-          @else {
-            Verify & Login
-          }
-
-        }
+        <ion-icon
+          name="arrow-back-outline"
+        ></ion-icon>
 
       </ion-button>
 
-    </form>
+    </div>
 
-  </div>
 
-  <!-- ===================================
-       FOOTER TEXT
-       =================================== -->
+    <!-- =====================================
+         MAIN CONTENT
+         ===================================== -->
 
-  <div class="login-footer">
+    <div class="login-container">
 
-    Together let's make
-    <br>
-    every celebration brighter!
+      <!-- ===================================
+           BRAND
+           =================================== -->
 
-  </div>
+      <div class="brand-section">
 
-</div>
-```
+        <div class="brand-name">
+          🪔 Diwali Crackers
+        </div>
+
+        <div class="brand-title">
+          Login Portal
+        </div>
+
+        <div class="brand-decoration">
+          ─── ✦ ───
+        </div>
+
+      </div>
+
+
+      <!-- ===================================
+           LOGIN CARD
+           =================================== -->
+
+      <div class="login-card">
+
+
+        <!-- =================================
+             CARD TITLE
+             ================================= -->
+
+        <div class="card-title">
+
+          @if (!isOtpStep) {
+            Login
+          }
+          @else {
+            Verify OTP
+          }
+
+        </div>
+
+
+        <!-- =================================
+             CARD SUBTITLE
+             ================================= -->
+
+        <div class="card-subtitle">
+
+          @if (!isOtpStep) {
+
+            Enter your registered mobile number
+            <br>
+            to receive an OTP
+
+          }
+          @else {
+
+            Enter the OTP sent to
+            <br>
+
+            <strong>
+              {{ mobileNumber?.value }}
+            </strong>
+
+          }
+
+        </div>
+
+
+        <!-- =================================
+             FORM
+             ================================= -->
+
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onLogin()"
+          novalidate
+        >
+
+
+          <!-- =================================
+               MOBILE NUMBER
+               ================================= -->
+
+          @if (!isOtpStep) {
+
+            <div class="input-group">
+
+              <div class="input-wrapper">
+
+                <ion-icon
+                  name="call-outline"
+                  class="input-icon"
+                ></ion-icon>
+
+                <ion-input
+                  type="tel"
+                  formControlName="mobileNumber"
+                  placeholder="Mobile Number"
+                  autocomplete="tel"
+                  inputmode="numeric"
+                  maxlength="10"
+                >
+                </ion-input>
+
+              </div>
+
+
+              <!-- MOBILE VALIDATION -->
+
+              @if (
+                mobileNumber?.invalid &&
+                mobileNumber?.touched
+              ) {
+
+                <div class="error-message">
+
+                  @if (
+                    mobileNumber?.errors?.['required']
+                  ) {
+                    Mobile number is required
+                  }
+
+                  @if (
+                    mobileNumber?.errors?.['pattern']
+                  ) {
+                    Enter a valid 10-digit mobile number
+                  }
+
+                </div>
+
+              }
+
+
+              <!-- API ERROR -->
+
+              @if (errorMessage) {
+
+                <div class="api-error-message">
+                  {{ errorMessage }}
+                </div>
+
+              }
+
+            </div>
+
+          }
+
+
+          <!-- =================================
+               OTP
+               ================================= -->
+
+          @if (isOtpStep) {
+
+            <div class="input-group">
+
+
+              <!-- =================================
+                   OTP SIX BLOCKS
+                   ================================= -->
+
+              <div
+                class="otp-container"
+                (click)="focusOtpInput()"
+              >
+
+                @for (
+                  digit of otpDigits;
+                  track $index
+                ) {
+
+                  <div
+                    class="otp-box"
+                    [class.active]="
+                      otpFocusedIndex === $index
+                    "
+                  >
+
+                    {{ digit }}
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <!-- =================================
+                   HIDDEN OTP INPUT
+                   ================================= -->
+
+              <ion-input
+                #otpInput
+                class="otp-hidden-input"
+                type="tel"
+                formControlName="otp"
+                inputmode="numeric"
+                maxlength="6"
+                autocomplete="one-time-code"
+                (ionInput)="onOtpInput($event)"
+                (ionFocus)="onOtpFocus()"
+                (ionBlur)="onOtpBlur()"
+              >
+              </ion-input>
+
+
+              <!-- OTP VALIDATION -->
+
+              @if (
+                otp?.invalid &&
+                otp?.touched
+              ) {
+
+                <div class="error-message">
+
+                  @if (
+                    otp?.errors?.['required']
+                  ) {
+                    OTP is required
+                  }
+
+                  @if (
+                    otp?.errors?.['pattern']
+                  ) {
+                    Enter a valid 6-digit OTP
+                  }
+
+                </div>
+
+              }
+
+
+              <!-- API ERROR -->
+
+              @if (errorMessage) {
+
+                <div class="api-error-message">
+                  {{ errorMessage }}
+                </div>
+
+              }
+
+            </div>
+
+
+            <!-- =================================
+                 OTP TIMER / RESEND
+                 ================================= -->
+
+            <div class="otp-resend-section">
+
+              @if (otpTimeRemaining > 0) {
+
+                <div class="otp-timer">
+
+                  Resend OTP in
+                  <strong>
+                    {{ formattedOtpTime }}
+                  </strong>
+
+                </div>
+
+              }
+              @else {
+
+                <button
+                  type="button"
+                  class="resend-otp-button"
+                  [disabled]="isLoading"
+                  (click)="resendOtp()"
+                >
+
+                  @if (isLoading) {
+                    Sending...
+                  }
+                  @else {
+                    Resend OTP
+                  }
+
+                </button>
+
+              }
+
+            </div>
+
+
+            <!-- =================================
+                 CHANGE MOBILE
+                 ================================= -->
+
+            <button
+              type="button"
+              class="change-number-button"
+              (click)="changeMobileNumber()"
+            >
+
+              Change mobile number
+
+            </button>
+
+          }
+
+
+          <!-- =================================
+               LOGIN / VERIFY BUTTON
+               ================================= -->
+
+          <ion-button
+            type="submit"
+            expand="block"
+            class="login-button"
+            [disabled]="isLoading"
+          >
+
+            @if (!isOtpStep) {
+
+              @if (isLoading) {
+                Sending OTP...
+              }
+              @else {
+                Send OTP
+              }
+
+            }
+
+            @else {
+
+              @if (isLoading) {
+                Verifying...
+              }
+              @else {
+                Verify & Login
+              }
+
+            }
+
+          </ion-button>
+
+        </form>
+
+      </div>
+
+
+      <!-- ===================================
+           FOOTER TEXT
+           =================================== -->
+
+      <div class="login-footer">
+
+        Together let's make
+        <br>
+        every celebration brighter!
+
+      </div>
+
+    </div>
 
   </div>
 

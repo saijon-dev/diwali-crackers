@@ -10,7 +10,8 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  ToastController
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -27,7 +28,8 @@ import {
   checkmarkCircleOutline,
   closeOutline,
   imageOutline,
-  trashOutline
+  trashOutline,
+  alertCircleOutline
 } from 'ionicons/icons';
 
 import { Router } from '@angular/router';
@@ -42,7 +44,7 @@ import {
   standalone: true,
 
   templateUrl: './adm-add-vendor.page.html',
-  styleUrls: ['./adm-add-vendor.page.scss'],
+ 
 
   imports: [
     IonContent,
@@ -98,7 +100,8 @@ export class AdmAddVendorPage implements OnDestroy {
   constructor(
     private fb: FormBuilder,
     private vendorService: VendorService,
-    private router: Router
+    private router: Router,
+      private toastController: ToastController
   ) {
     addIcons({
       arrowBackOutline,
@@ -112,7 +115,8 @@ export class AdmAddVendorPage implements OnDestroy {
       checkmarkCircleOutline,
       closeOutline,
       imageOutline,
-      trashOutline
+      trashOutline,
+      alertCircleOutline
     });
 
     this.vendorForm = this.fb.group({
@@ -120,7 +124,8 @@ export class AdmAddVendorPage implements OnDestroy {
         '',
         [
           Validators.required,
-          Validators.minLength(2)
+          Validators.minLength(2),
+          Validators.pattern(/^[A-Za-z\s]+$/)
         ]
       ],
 
@@ -128,7 +133,8 @@ export class AdmAddVendorPage implements OnDestroy {
         '',
         [
           Validators.required,
-          Validators.email
+          Validators.email,
+          Validators.pattern(/^[^\s@]+@[^\s@]+\.com$/)
         ]
       ],
 
@@ -144,7 +150,8 @@ export class AdmAddVendorPage implements OnDestroy {
         '',
         [
           Validators.required,
-          Validators.minLength(2)
+          Validators.minLength(2),
+                    Validators.pattern(/^[A-Za-z\s]+$/)
         ]
       ],
 
@@ -152,7 +159,7 @@ export class AdmAddVendorPage implements OnDestroy {
         '',
         [
           Validators.required,
-          Validators.minLength(3)
+          Validators.minLength(6)
         ]
       ],
 
@@ -179,7 +186,8 @@ export class AdmAddVendorPage implements OnDestroy {
         '',
         [
           Validators.required,
-          Validators.pattern('^[0-9]{6}$')
+          Validators.pattern('^[0-9]{6}$'),
+       
         ]
       ]
     });
@@ -263,57 +271,75 @@ export class AdmAddVendorPage implements OnDestroy {
   // IMAGE SELECTION
   // =========================================
 
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+onImageSelected(event: Event): void {
 
-    this.imageError = '';
-    this.errorMessage = '';
-    this.successMessage = '';
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
 
-    if (!file) {
-      return;
-    }
+  this.imageError = '';
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    if (!this.allowedImageTypes.includes(file.type)) {
-      this.imageError =
-        'Choose a JPG, PNG, or WEBP image.';
-
-      input.value = '';
-      return;
-    }
-
-    if (file.size > this.maxImageSize) {
-      this.imageError =
-        'Image size must not exceed 5 MB.';
-
-      input.value = '';
-      return;
-    }
-
-    this.clearImagePreview();
-
-    this.selectedImage = file;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        this.imagePreview = reader.result;
-        this.imagePreviewUrl = reader.result;
-      }
-    };
-
-    reader.onerror = () => {
-      this.imageError = 'Unable to preview this image.';
-      this.selectedImage = null;
-      this.imagePreview = null;
-      this.imagePreviewUrl = null;
-      input.value = '';
-    };
-
-    reader.readAsDataURL(file);
+  if (!file) {
+    return;
   }
+
+
+  // =========================================
+  // VALIDATE TYPE
+  // =========================================
+
+  if (!this.allowedImageTypes.includes(file.type)) {
+
+    this.imageError =
+      'Choose a JPG, PNG, or WEBP image.';
+
+    input.value = '';
+
+    return;
+  }
+
+
+  // =========================================
+  // VALIDATE SIZE
+  // =========================================
+
+  if (file.size > this.maxImageSize) {
+
+    this.imageError =
+      'Image size must not exceed 5 MB.';
+
+    input.value = '';
+
+    return;
+  }
+
+
+  // =========================================
+  // CLEAR PREVIOUS IMAGE
+  // =========================================
+
+  this.clearImagePreview();
+
+
+  // =========================================
+  // STORE FILE
+  // =========================================
+
+  this.selectedImage = file;
+
+
+  // =========================================
+  // CREATE INSTANT LOCAL PREVIEW
+  // =========================================
+
+  const previewUrl =
+    URL.createObjectURL(file);
+
+  this.imagePreview = previewUrl;
+
+  this.imagePreviewUrl = previewUrl;
+}
 
   removeImage(fileInput: HTMLInputElement): void {
     this.selectedImage = null;
@@ -366,6 +392,10 @@ export class AdmAddVendorPage implements OnDestroy {
   // =========================================
 
  
+// =========================================
+// SUBMIT
+// =========================================
+
 addVendor(): void {
   this.errorMessage = '';
   this.successMessage = '';
@@ -394,22 +424,41 @@ addVendor(): void {
   this.vendorService
     .addVendor(vendorData, this.selectedImage)
     .subscribe({
-      next: response => {
-        this.isLoading = false;
 
-        console.log('Vendor created:', response);
+      // =========================================
+      // SUCCESS / API RESPONSE
+      // =========================================
+next: response => {
+  this.isLoading = false;
 
-        if (response?.success === false) {
-          this.errorMessage =
-            response.message || 'Unable to add vendor.';
-          return;
-        }
+  console.log('Vendor created:', response);
 
-        this.successMessage =
-          response?.message || 'Vendor added successfully.';
+  const backendMessage =
+    response?.message?.toString().trim();
 
-        this.clearForm();
-      },
+  if (response?.success === false) {
+    this.errorMessage =
+      backendMessage ||
+      'Unable to add vendor. Please try again later.';
+
+    void this.showToast(this.errorMessage, false);
+    return;
+  }
+
+  this.successMessage =
+    backendMessage || 'Vendor added successfully.';
+
+  void this.showToast(this.successMessage, true);
+
+  setTimeout(() => {
+    this.router.navigate(['/tabs/adm-vendors']);
+  }, 3000);
+},
+
+
+      // =========================================
+      // ERROR RESPONSE
+      // =========================================
 
       error: (error: unknown) => {
         this.isLoading = false;
@@ -418,7 +467,7 @@ addVendor(): void {
 
         const apiError = error as {
           status?: number;
-          error?: { message?: string } | string;
+          error?: unknown;
           message?: string;
         };
 
@@ -426,11 +475,90 @@ addVendor(): void {
         console.error('Response body:', apiError.error);
         console.error('Message:', apiError.message);
 
-        this.errorMessage =
+
+        // =========================================
+        // EXTRACT BACKEND MESSAGE
+        // =========================================
+
+        let backendMessage = '';
+
+
+        // Response body is an object
+        if (
+          apiError.error &&
           typeof apiError.error === 'object'
-            ? apiError.error?.message ||
-              'Unable to add vendor. Please try again.'
-            : 'Unable to add vendor. Please try again.';
+        ) {
+
+          const responseBody =
+            apiError.error as {
+              message?: unknown;
+              error?: unknown;
+              details?: unknown;
+            };
+
+          if (
+            typeof responseBody.message === 'string' &&
+            responseBody.message.trim()
+          ) {
+            backendMessage =
+              responseBody.message.trim();
+          }
+
+          // Some APIs may return message inside "error"
+          else if (
+            typeof responseBody.error === 'string' &&
+            responseBody.error.trim()
+          ) {
+            backendMessage =
+              responseBody.error.trim();
+          }
+
+          // Some APIs may return details
+          else if (
+            typeof responseBody.details === 'string' &&
+            responseBody.details.trim()
+          ) {
+            backendMessage =
+              responseBody.details.trim();
+          }
+        }
+
+
+        // =========================================
+        // RESPONSE BODY IS A STRING
+        // =========================================
+
+        else if (
+          typeof apiError.error === 'string' &&
+          apiError.error.trim()
+        ) {
+
+          backendMessage =
+            apiError.error.trim();
+        }
+
+
+        // =========================================
+        // ANGULAR ERROR MESSAGE
+        // =========================================
+
+        if (
+          !backendMessage &&
+          typeof apiError.message === 'string' &&
+          apiError.message.trim()
+        ) {
+          backendMessage =
+            apiError.message.trim();
+        }
+
+
+        // =========================================
+        // FINAL ERROR MESSAGE
+        // =========================================
+
+        this.errorMessage =
+          backendMessage ||
+          'Unable to add vendor. Please try again later.';
       }
     });
 }
@@ -438,4 +566,22 @@ addVendor(): void {
   ngOnDestroy(): void {
     this.clearImagePreview();
   }
+
+
+  private async showToast(
+  message: string,
+  isSuccess: boolean
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 3000,
+    position: 'bottom',
+    cssClass: 'diwali-toast',
+    icon: isSuccess
+      ? 'checkmark-circle-outline'
+      : 'alert-circle-outline'
+  });
+
+  await toast.present();
+}
 }

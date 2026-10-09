@@ -3,10 +3,24 @@
   [scrollEvents]="true"
   class="categories-content !bg-white"
 >
-
   <div
-    class="flex min-h-[100dvh] flex-col bg-white px-3 sm:px-4"
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
   >
+
+    <!-- =====================================================
+         GLOBAL HOME BOTTOM DESIGN
+    ====================================================== -->
+
+    <div
+      class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
+    </div>
 
     <!-- ==========================================
          HEADER
@@ -24,50 +38,35 @@
         aria-label="Back"
         class="relative z-30 flex !h-[40px] !w-[40px] shrink-0 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-
         <ion-icon
           name="arrow-back-outline"
           class="!text-[24px]"
         ></ion-icon>
-
       </button>
-
 
       <!-- Header title -->
 
       <div
         class="relative z-20 ml-1 min-w-0 flex-1 pr-[70px] sm:pr-[85px]"
       >
-
         <h1
           class="!m-0 truncate !font-serif !text-[20px] !font-bold !leading-none !tracking-[0.2px] !text-[#fff8dc] sm:!text-[22px]"
         >
-
           @if (isStoreView) {
-
             Vendor Products
-
           } @else {
-
             Categories
-
           }
-
         </h1>
 
-
         @if (isStoreView && selectedStoreName) {
-
           <p
             class="mt-[4px] !mb-0 truncate !font-sans !text-[8px] !font-medium !text-[#f4c8cf]"
           >
             {{ selectedStoreName }}
           </p>
-
         }
-
       </div>
-
 
       <!-- Right Deepas -->
 
@@ -81,84 +80,135 @@
     </header>
 
 
-    <!-- ==========================================
-         CATEGORY FILTER
-    =========================================== -->
+    @if (isStoreView && selectedStoreName) {
 
-    <div
-      class="sticky top-[68px] z-40 -mx-3 shrink-0 bg-white px-3 pb-[7px] pt-[10px] sm:-mx-4 sm:px-4"
-    >
+  <!-- ==========================================
+       VENDOR STORE HEADER
+  =========================================== -->
 
-      <div
-        class="flex h-[38px] items-center rounded-[11px] bg-[#fffdf7] px-3 shadow-[0_3px_10px_rgba(86,48,10,0.07)]"
-      >
+  <section class="mt-[12px] w-full px-[1px]">
 
-        <ion-select
-          [value]="selectedCategoryId"
-          (ionChange)="onCategoryChange($event)"
-          interface="popover"
-          aria-label="Select category"
-          class="category-select w-full !p-0 !font-sans !text-[10px] !font-medium !text-[#17233c] sm:!text-[11px]"
+    <div class="flex min-w-0 items-start justify-between gap-[8px]">
+
+      <div class="min-w-0 flex-1">
+
+        <!-- STORE NAME -->
+
+        <h2
+          class="!m-0 !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
         >
+          {{ selectedStoreName }}
+        </h2>
 
-          <!-- All -->
+        <!-- STORE LOCATION -->
 
-          <ion-select-option [value]="null">
-            All Categories
-          </ion-select-option>
+        @if (selectedStoreProducts.length > 0) {
 
+          <div
+            class="mt-[5px] flex min-w-0 items-start gap-[4px]"
+          >
 
-          <!-- Vendor categories -->
+            <ion-icon
+              name="location-outline"
+              class="mt-[1px] shrink-0 !text-[11px] !text-[#8f071f]"
+            ></ion-icon>
 
-          @if (isStoreView) {
+            <p
+              class="!m-0 min-w-0 truncate !font-sans !text-[10px] !font-semibold !leading-[1.3] !text-[#806b68]"
+            >
+              {{ selectedStoreProducts[0]?.storeAddress }}
+            </p>
 
-            @for (
-              category of vendorCategories;
-              track category.categoryId
-            ) {
+          </div>
 
-              <ion-select-option
-                [value]="category.categoryId"
-              >
-                {{ category.categoryName }}
-              </ion-select-option>
-
-            }
-
-          }
-
-
-          <!-- Normal categories -->
-
-          @else {
-
-            @for (
-              category of categories;
-              track category.categoryId
-            ) {
-
-              <ion-select-option
-                [value]="category.categoryId"
-              >
-                {{ category.categoryName }}
-              </ion-select-option>
-
-            }
-
-          }
-
-        </ion-select>
-
-
-        <ion-icon
-          name="chevron-down-outline"
-          class="pointer-events-none ml-auto shrink-0 !text-[14px] !text-[#9e2020]"
-        ></ion-icon>
+        }
 
       </div>
 
     </div>
 
+  </section>
+
+}
+
+    <!-- ==========================================
+         CATEGORY FILTER
+    =========================================== -->
+
+    @if (isLoading) {
+
+      <section class="mt-[10px]">
+        <div
+          class="flex w-full items-center gap-[6px] overflow-hidden py-[6px]"
+        >
+          <div
+            class="h-[34px] w-[58px] shrink-0 animate-pulse rounded-[18px] bg-[#eee8d4]"
+          ></div>
+
+          <div
+            class="h-[34px] w-[72px] shrink-0 animate-pulse rounded-[18px] bg-[#eee8d4]"
+          ></div>
+
+          <div
+            class="h-[34px] w-[82px] shrink-0 animate-pulse rounded-[18px] bg-[#eee8d4]"
+          ></div>
+
+          <div
+            class="h-[34px] w-[92px] shrink-0 animate-pulse rounded-[18px] bg-[#eee8d4]"
+          ></div>
+        </div>
+      </section>
+
+    } @else if (categories.length > 0) {
+
+      <section class="mt-[10px]">
+
+        <div
+          class="flex w-full items-center gap-2 overflow-x-auto overflow-y-hidden py-[5px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+
+          <!-- ALL -->
+
+          <button
+            type="button"
+            data-category-id="all"
+            (click)="selectCategory(null)"
+            [class.!bg-[#b3123b]]="selectedCategoryId === null"
+            [class.!text-[#fff8dc]]="selectedCategoryId === null"
+            [class.!bg-[#fff4e1]]="selectedCategoryId !== null"
+            [class.!text-[#17233c]]="selectedCategoryId !== null"
+            class="shrink-0 !min-h-[34px] !rounded-[18px] !border-0 !px-4 !py-1 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95"
+          >
+            All
+          </button>
+
+          <!-- CATEGORIES -->
+
+          @for (
+            category of categories;
+            track category.categoryId
+          ) {
+
+            <button
+              type="button"
+              [attr.data-category-id]="category.categoryId"
+              (click)="selectCategory(category.categoryId)"
+              [class.!bg-[#b3123b]]="selectedCategoryId === category.categoryId"
+              [class.!text-[#fff8dc]]="selectedCategoryId === category.categoryId"
+              [class.!bg-[#fff4e1]]="selectedCategoryId !== category.categoryId"
+              [class.!text-[#17233c]]="selectedCategoryId !== category.categoryId"
+              class="shrink-0 !min-h-[34px] !rounded-[18px] !border-0 !px-4 !py-1 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95"
+            >
+              {{ category.categoryName }}
+            </button>
+
+          }
+
+        </div>
+
+      </section>
+
+    }
 
     <!-- ==========================================
          MAIN CONTENT
@@ -169,25 +219,306 @@
     >
 
       <!-- ========================================
-           LOADING
+           LOADING SKELETON
       ========================================= -->
 
       @if (isLoading) {
 
-        <div
-          class="flex flex-1 items-center justify-center"
-        >
+        <div class="w-full">
 
-          <div
-            class="font-sans text-[12px] font-medium text-[#806b68]"
-          >
-            Loading products...
-          </div>
+          <!-- FIRST STORE SKELETON -->
+
+          <section class="mb-[25px]">
+
+            <div
+              class="mb-[9px] flex items-center justify-between"
+            >
+
+              <div
+                class="flex min-w-0 items-center"
+              >
+
+                <div
+                  class="mr-[5px] h-[17px] w-[3px] shrink-0 animate-pulse rounded-full bg-[#e7dfc8]"
+                ></div>
+
+                <div
+                  class="h-[17px] w-[105px] animate-pulse rounded-[5px] bg-[#eee8d4]"
+                ></div>
+
+              </div>
+
+              <div
+                class="h-[9px] w-[42px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+              ></div>
+
+            </div>
+
+            <div
+              class="grid grid-cols-3 gap-[10px] sm:gap-[12px]"
+            >
+
+              @for (item of [1, 2, 3, 4]; track item) {
+
+                <article
+                  class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+                >
+
+                  <div
+                    class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] animate-pulse rounded-[11px] bg-[#eee8d4] sm:h-[118px]"
+                  ></div>
+
+                  <div
+                    class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                  >
+
+                    <div
+                      class="mt-[3px] min-h-[34px]"
+                    >
+
+                      <div
+                        class="h-[9px] w-[82%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="mt-[5px] h-[9px] w-[60%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[2px] flex items-center gap-[4px]"
+                    >
+
+                      <div
+                        class="h-[7px] w-[25px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="h-[10px] w-[35px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[5px] flex items-center"
+                    >
+
+                      <div
+                        class="mr-[3px] h-[4px] w-[4px] animate-pulse rounded-full bg-[#ddd4b9]"
+                      ></div>
+
+                      <div
+                        class="h-[7px] w-[45px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </section>
+
+          <!-- SECOND STORE SKELETON -->
+
+          <section class="mb-[25px]">
+
+            <div
+              class="mb-[9px] flex items-center justify-between"
+            >
+
+              <div
+                class="flex min-w-0 items-center"
+              >
+
+                <div
+                  class="mr-[5px] h-[17px] w-[3px] shrink-0 animate-pulse rounded-full bg-[#e7dfc8]"
+                ></div>
+
+                <div
+                  class="h-[17px] w-[85px] animate-pulse rounded-[5px] bg-[#eee8d4]"
+                ></div>
+
+              </div>
+
+              <div
+                class="h-[9px] w-[42px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+              ></div>
+
+            </div>
+
+            <div
+              class="grid grid-cols-3 gap-[10px] sm:gap-[12px]"
+            >
+
+              @for (item of [1, 2, 3, 4]; track item) {
+
+                <article
+                  class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+                >
+
+                  <div
+                    class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] animate-pulse rounded-[11px] bg-[#eee8d4] sm:h-[118px]"
+                  ></div>
+
+                  <div
+                    class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                  >
+
+                    <div class="mt-[3px] min-h-[34px]">
+
+                      <div
+                        class="h-[9px] w-[78%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="mt-[5px] h-[9px] w-[55%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[2px] flex items-center gap-[4px]"
+                    >
+
+                      <div
+                        class="h-[7px] w-[25px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="h-[10px] w-[35px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[5px] flex items-center"
+                    >
+
+                      <div
+                        class="mr-[3px] h-[4px] w-[4px] animate-pulse rounded-full bg-[#ddd4b9]"
+                      ></div>
+
+                      <div
+                        class="h-[7px] w-[45px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </section>
+
+          <!-- THIRD STORE SKELETON -->
+
+          <section class="mb-[25px]">
+
+            <div
+              class="mb-[9px] flex items-center justify-between"
+            >
+
+              <div
+                class="flex min-w-0 items-center"
+              >
+
+                <div
+                  class="mr-[5px] h-[17px] w-[3px] shrink-0 animate-pulse rounded-full bg-[#e7dfc8]"
+                ></div>
+
+                <div
+                  class="h-[17px] w-[120px] animate-pulse rounded-[5px] bg-[#eee8d4]"
+                ></div>
+
+              </div>
+
+              <div
+                class="h-[9px] w-[42px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+              ></div>
+
+            </div>
+
+            <div
+              class="grid grid-cols-3 gap-[10px] sm:gap-[12px]"
+            >
+
+              @for (item of [1, 2, 3, 4]; track item) {
+
+                <article
+                  class="flex min-w-0 flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+                >
+
+                  <div
+                    class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] animate-pulse rounded-[11px] bg-[#eee8d4] sm:h-[118px]"
+                  ></div>
+
+                  <div
+                    class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                  >
+
+                    <div class="mt-[3px] min-h-[34px]">
+
+                      <div
+                        class="h-[9px] w-[85%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="mt-[5px] h-[9px] w-[58%] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[2px] flex items-center gap-[4px]"
+                    >
+
+                      <div
+                        class="h-[7px] w-[25px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                      <div
+                        class="h-[10px] w-[35px] animate-pulse rounded-[4px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                    <div
+                      class="mt-[5px] flex items-center"
+                    >
+
+                      <div
+                        class="mr-[3px] h-[4px] w-[4px] animate-pulse rounded-full bg-[#ddd4b9]"
+                      ></div>
+
+                      <div
+                        class="h-[7px] w-[45px] animate-pulse rounded-[3px] bg-[#eee8d4]"
+                      ></div>
+
+                    </div>
+
+                  </div>
+
+                </article>
+
+              }
+
+            </div>
+
+          </section>
 
         </div>
 
       }
-
 
       <!-- ========================================
            VENDOR PRODUCTS VIEW
@@ -201,29 +532,6 @@
             class="pb-[20px]"
           >
 
-            <!-- Vendor heading -->
-
-            <div
-              class="mb-[10px] flex items-center"
-            >
-
-              <span
-                class="mr-[5px] h-[17px] w-[3px] shrink-0 rounded-full bg-[#ef0b1c]"
-              ></span>
-
-
-              <h2
-                class="!m-0 truncate !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-              >
-                {{ selectedStoreName }}
-              </h2>
-
-            </div>
-
-
-            <!-- ==================================
-                 VENDOR PRODUCT GRID
-            =================================== -->
 
             <div
               class="grid grid-cols-3 gap-[10px] sm:gap-[12px]"
@@ -234,14 +542,10 @@
                 track product.productStoreId
               ) {
 
-                <!-- Product card -->
-
                 <article
                   (click)="openProduct(product)"
                   class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
                 >
-
-                  <!-- Product image -->
 
                   <div
                     class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[118px]"
@@ -261,26 +565,19 @@
                       <div
                         class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
                       >
-
                         <ion-icon
                           name="image-outline"
                           class="!text-[25px] !text-[#806b68]"
                         ></ion-icon>
-
                       </div>
 
                     }
 
                   </div>
 
-
-                  <!-- Product details -->
-
                   <div
                     class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
                   >
-
-                    <!-- Product name + Add -->
 
                     <div
                       class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
@@ -292,15 +589,7 @@
                         {{ product.productName }}
                       </h3>
 
-
-                      <!-- Add -->
-
-                
-
                     </div>
-
-
-                    <!-- Price -->
 
                     <div
                       class="mt-[2px] flex items-center gap-[4px]"
@@ -326,9 +615,6 @@
                       </span>
 
                     </div>
-
-
-                    <!-- Stock -->
 
                     <div
                       class="mt-[3px] flex items-center"
@@ -396,8 +682,6 @@
 
         @else {
 
-          <!-- No vendor products -->
-
           <div
             class="flex flex-1 flex-col items-center justify-center px-5 text-center"
           >
@@ -405,21 +689,17 @@
             <div
               class="mb-2 flex h-[48px] w-[48px] items-center justify-center rounded-full bg-[#fffdf7]"
             >
-
               <ion-icon
                 name="cube-outline"
                 class="!text-[25px] !text-[#9e2020]"
               ></ion-icon>
-
             </div>
-
 
             <p
               class="!m-0 font-sans text-[13px] font-semibold text-[#17233c]"
             >
               No crackers found
             </p>
-
 
             <p
               class="mt-1 !mb-0 font-sans text-[10px] text-[#806b68]"
@@ -433,7 +713,6 @@
 
       }
 
-
       <!-- ========================================
            NORMAL CATEGORIES VIEW
       ========================================= -->
@@ -446,78 +725,78 @@
             store of storeSections;
             track store.storeName
           ) {
+<section class="mb-[25px] pt-[12px]">
 
-            <section
-              class="mb-[25px]"
-            >
+              <!-- STORE HEADING -->
 
-              <!-- Vendor heading -->
+<div
+  class="mb-[8px] mt-[7px] flex items-start justify-between gap-[8px] px-[1px]"
+>
+  <div class="min-w-0 flex-1">
 
-              <div
-                class="mb-[9px] flex items-center justify-between"
-              >
+    <!-- STORE NAME -->
+    <h2
+      class="!m-0 !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
+    >
+      {{ store.storeName }}
+    </h2>
 
-                <div
-                  class="flex min-w-0 items-center"
-                >
+    <!-- STORE LOCATION -->
+    <div
+      class="mt-[4px] flex min-w-0 items-start gap-[4px]"
+    >
+      <ion-icon
+        name="location-outline"
+        class="mt-[1px] shrink-0 !text-[11px] !text-[#8f071f]"
+      ></ion-icon>
 
-                  <span
-                    class="mr-[5px] h-[17px] w-[3px] shrink-0 rounded-full bg-[#ef0b1c]"
-                  ></span>
+      <p
+        class="!m-0 min-w-0 truncate !font-sans !text-[10px] !font-semibold !leading-[1.3] !text-[#806b68]"
+      >
+        {{ store.products[0]?.storeAddress }}
+      </p>
+    </div>
 
+  </div>
 
-                  <h2
-                    class="!m-0 truncate !font-sans !text-[17px] !font-bold !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-                  >
-                    {{ store.storeName }}
-                  </h2>
+  @if (store.products.length <= 5) {
+    <button
+      type="button"
+      (click)="viewAllStore(store)"
+      class="mt-[3px] shrink-0 !border-0 !bg-transparent !p-0 !font-sans !text-[8px] !font-bold !text-[#9e2020]"
+    >
+      View All
+      <span class="ml-[2px]">→</span>
+    </button>
+  }
 
-                </div>
+</div>
 
-
-                <button
-                  type="button"
-                  (click)="viewAllStore(store)"
-                  class="shrink-0 !border-0 !bg-transparent !p-0 !font-sans !text-[8px] !font-bold !text-[#9e2020]"
-                >
-                  View All
-                  <span class="ml-[2px]">
-                    →
-                  </span>
-                </button>
-
-              </div>
-
-
-              <!-- ==================================
-                   PRODUCT GRID
-              =================================== -->
-
-              <div
-                class="grid grid-cols-3 gap-[10px] sm:gap-[12px]"
-              >
+              <!-- PRODUCT GRID -->
+<div
+  class="grid grid-cols-3 gap-[10px] pt-[14px] sm:gap-[12px]"
+>
 
                 @for (
-                  product of store.products.slice(0, 4);
-                  track product.productStoreId
+                  product of store.products.slice(0, 5);
+                  track product.productStoreId;
+                  let productIndex = $index
                 ) {
 
-                  <!-- Product card -->
+                  <!-- PRODUCT CARD -->
 
                   <article
                     (click)="openProduct(product)"
-                    class="flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
+                    class="relative flex min-h-0 w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-[13px] !border !border-[#eadfcb] !bg-white !opacity-100 shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
                   >
 
-                    <!-- Product image -->
+                    <!-- PRODUCT IMAGE -->
 
                     <div
-                      class="mx-auto mt-[7px] h-[108px] w-[calc(100%-22px)] shrink-0 overflow-hidden rounded-[11px] bg-[#f7f3df] sm:h-[118px]"
+                      class="relative mx-auto mt-[6px] h-[82px] w-[calc(100%-12px)] shrink-0 overflow-hidden rounded-[9px] bg-[#f7f3df] sm:h-[92px]"
                     >
 
-                      @if (
-                        product.images?.length
-                      ) {
+                      @if (product.images?.length) {
 
                         <img
                           [src]="product.images[0].imageUrl"
@@ -534,45 +813,42 @@
 
                           <ion-icon
                             name="image-outline"
-                            class="!text-[25px] !text-[#806b68]"
+                            class="!text-[23px] !text-[#806b68]"
                           ></ion-icon>
 
                         </div>
 
                       }
 
+                      <!-- RANDOM 15 / 20 BADGE -->
+
+                     <img
+    [src]="getProductBadge(product)"
+    alt="Discount"
+    aria-hidden="true"
+    class="pointer-events-none absolute left-[-4px] top-[-5px] z-30 h-[34px] w-[34px] object-contain"
+  />
+
                     </div>
 
-
-                    <!-- Product details -->
+                    <!-- PRODUCT DETAILS -->
 
                     <div
-                      class="flex flex-1 flex-col px-[9px] pb-[9px] pt-[7px]"
+                      class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
                     >
 
-                      <!-- Product name + Add -->
+                      <!-- PRODUCT NAME -->
 
-                      <div
-                        class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
+                      <h3
+                        class="!m-0 min-h-[29px] w-full !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[11px]"
                       >
+                        {{ product.productName }}
+                      </h3>
 
-                        <h3
-                          class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[11px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
-                        >
-                          {{ product.productName }}
-                        </h3>
-
-
-                        <!-- Add -->
-
-
-                      </div>
-
-
-                      <!-- Price -->
+                      <!-- PRICE -->
 
                       <div
-                        class="mt-[2px] flex items-center gap-[4px]"
+                        class="mt-[4px] flex min-w-0 items-center gap-[3px]"
                       >
 
                         @if (
@@ -581,7 +857,7 @@
                         ) {
 
                           <span
-                            class="font-sans text-[6px] text-[#99917e] line-through"
+                            class="truncate font-sans text-[7px] text-[#99917e] line-through sm:text-[8px]"
                           >
                             ₹{{ product.mrp }}
                           </span>
@@ -589,18 +865,17 @@
                         }
 
                         <span
-                          class="font-sans text-[10px] font-bold text-[#ef0b1c]"
+                          class="truncate font-sans text-[10px] font-bold text-[#ef0b1c]"
                         >
                           ₹{{ product.sellingPrice }}
                         </span>
 
                       </div>
 
-
-                      <!-- Stock -->
+                      <!-- STOCK -->
 
                       <div
-                        class="mt-[3px] flex items-center"
+                        class="mt-[4px] flex min-h-[10px] items-center"
                       >
 
                         @if (
@@ -608,7 +883,7 @@
                         ) {
 
                           <span
-                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+                            class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
                           ></span>
 
                           <span
@@ -624,7 +899,7 @@
                         ) {
 
                           <span
-                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#9e2020]"
+                            class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#9e2020]"
                           ></span>
 
                           <span
@@ -638,7 +913,7 @@
                         @else {
 
                           <span
-                            class="mr-[3px] h-[4px] w-[4px] rounded-full bg-[#24722d]"
+                            class="mr-[3px] h-[4px] w-[4px] shrink-0 rounded-full bg-[#24722d]"
                           ></span>
 
                           <span
@@ -655,6 +930,31 @@
 
                   </article>
 
+                  <!-- VIEW ALL BESIDE THE 5TH PRODUCT -->
+
+                  @if (
+                    productIndex === 4 &&
+                    store.products.length > 5
+                  ) {
+
+                    <button
+                      type="button"
+                      (click)="viewAllStore(store)"
+                      class="flex min-h-[150px] w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-[13px] !border !border-[#eadfcb] !bg-white !px-2 !py-3 !font-sans !text-[9px] !font-extrabold !text-[#9e2020] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
+                    >
+
+                      <span>View All</span>
+
+                      <span
+                        class="mt-[2px] text-[12px] leading-none"
+                      >
+                        →
+                      </span>
+
+                    </button>
+
+                  }
+
                 }
 
               </div>
@@ -667,7 +967,7 @@
 
         @else {
 
-          <!-- No products -->
+          <!-- NO PRODUCTS -->
 
           <div
             class="flex flex-1 flex-col items-center justify-center px-5 text-center"
@@ -684,13 +984,11 @@
 
             </div>
 
-
             <p
               class="!m-0 font-sans text-[13px] font-semibold text-[#17233c]"
             >
               No crackers found
             </p>
-
 
             <p
               class="mt-1 !mb-0 font-sans text-[10px] text-[#806b68]"
@@ -706,31 +1004,11 @@
 
     </main>
 
-
     <!-- ==========================================
          BOTTOM DESIGN
-         ONLY AFTER LOADING IS COMPLETE
     =========================================== -->
 
-    @if (!isLoading) {
-
-      <div
-        class="pointer-events-none mt-auto -mx-3 w-[calc(100%+1.5rem)] shrink-0 overflow-hidden sm:-mx-4 sm:w-[calc(100%+2rem)]"
-        aria-hidden="true"
-      >
-
-        <img
-          src="assets/images/newDesignBg.png"
-          alt=""
-          class="block h-auto w-[175%] max-w-none -translate-y-[5px] opacity-[0.18]"
-        />
-
-      </div>
-
-    }
-
   </div>
-
 
   <!-- ==========================================
        FLOATING CART
