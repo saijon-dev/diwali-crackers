@@ -1,5 +1,15 @@
 <ion-content [fullscreen]="true" class="!bg-white">
 
+  
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content
+    pullingText="Pull to refresh"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing product..."
+  ></ion-refresher-content>
+</ion-refresher>
+
+
   <!-- =========================================================
        PAGE WRAPPER
        ========================================================= -->
@@ -387,7 +397,9 @@
                   [(ngModel)]="product.isKidsSpecial"
                   interface="popover"
                   aria-label="Kids Special"
-                  class="h-[45px] w-full !font-sans !text-[11px] !font-medium !text-[#17233c] sm:!text-[12px]"
+              
+class="h-[45px] w-full !px-3 !font-sans !text-[11px] !font-medium !text-[#17233c] sm:!text-[12px]"
+
                 >
 
                   <ion-select-option [value]="true">
@@ -701,27 +713,6 @@
 
           </div>
 
-
-          <!-- BADGE -->
-
-          <div class="mt-4">
-
-            <label
-              for="editBadge"
-              class="mb-[7px] block !font-sans !text-[11px] !font-bold !text-[#17233c]"
-            >
-              Badge
-            </label>
-
-            <input
-              id="editBadge"
-              type="text"
-              [(ngModel)]="product.badge"
-              placeholder="Example: Trending"
-              class="h-[45px] w-full rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium text-[#17233c] outline-none transition placeholder:font-normal placeholder:text-[#a59a91] focus:border-[#b3123b] focus:bg-white focus:ring-2 focus:ring-[#b3123b]/10"
-            />
-
-          </div>
 
         </section>
 

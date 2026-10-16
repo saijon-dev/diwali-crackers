@@ -9,7 +9,9 @@ import {
   IonIcon,
   IonSelect,
   IonSelectOption,
-  ToastController
+  ToastController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -70,7 +72,9 @@ interface EditImage {
     IonIcon,
     FormsModule,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    IonRefresher,
+IonRefresherContent
   ]
 })
 
@@ -85,6 +89,8 @@ export class AdminEditPage implements OnInit {
   productStoreId!: number;
 
   product: VendorProduct | null = null;
+
+  private activeRefresher: HTMLIonRefresherElement | null = null;
 
 
   // =====================================================
@@ -431,6 +437,28 @@ export class AdminEditPage implements OnInit {
     }
 
   }
+
+
+  
+handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.loadProduct();
+  this.loadPackUnits();
+}
+
+private completeRefresh(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  void refresher.complete();
+}
+
 
 
   // =====================================================
@@ -1180,6 +1208,7 @@ updateProduct(): void {
 
 
           this.isLoadingPackUnits = false;
+          this.completeRefresh();
 
           this.cdr.detectChanges();
 
@@ -1204,6 +1233,7 @@ updateProduct(): void {
 
 
           this.isLoadingPackUnits = false;
+          this.completeRefresh();
 
           this.cdr.detectChanges();
 
@@ -1308,7 +1338,7 @@ updateProduct(): void {
   }
 
 
-  private async showToast(
+private async showToast(
   message: string,
   isSuccess: boolean = false
 ): Promise<void> {
@@ -1316,10 +1346,7 @@ updateProduct(): void {
     message,
     duration: 3000,
     position: 'middle',
-    cssClass: 'diwali-toast',
-    icon: isSuccess
-      ? 'checkmark-circle-outline'
-      : 'alert-circle-outline'
+    cssClass: 'diwali-toast'
   });
 
   await toast.present();

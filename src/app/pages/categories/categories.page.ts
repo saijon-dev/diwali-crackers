@@ -15,7 +15,9 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { forkJoin } from 'rxjs';
@@ -28,7 +30,8 @@ import {
   arrowBackOutline,
   homeOutline,
   addOutline,
-  checkmarkOutline
+  checkmarkOutline,
+  locateOutline
 } from 'ionicons/icons';
 
 import {
@@ -63,7 +66,9 @@ interface CategorySection {
   imports: [
     IonContent,
     IonIcon,
-    FloatingCartComponent
+    FloatingCartComponent,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class CategoriesPage implements OnInit {
@@ -94,6 +99,16 @@ export class CategoriesPage implements OnInit {
 
   private pageRequestId = 0;
 
+
+  
+private currentStoreId: number | null = null;
+private currentProductStoreId: number | null = null;
+
+private storeViewMode: 'store' | 'productStore' | null = null;
+
+private activeRefresher: any = null;
+
+
   isLoading = false;
 
   errorMessage = '';
@@ -113,7 +128,8 @@ export class CategoriesPage implements OnInit {
       arrowBackOutline,
       homeOutline,
       addOutline,
-      checkmarkOutline
+      checkmarkOutline,
+      locateOutline
     });
 
   }
@@ -131,6 +147,10 @@ export class CategoriesPage implements OnInit {
 
         const storeIdParam =
           params.get('storeId');
+
+          if (storeIdParam !== null) {
+  this.returnToHome = history.state?.returnTo === 'home';
+}
 
 
         /*
@@ -262,39 +282,106 @@ export class CategoriesPage implements OnInit {
   }
 
 
+
+  
+handleRefresh(event: any): void {
+  this.activeRefresher = event;
+
+  // Refresh the currently displayed vendor view.
+  if (this.isStoreView) {
+    if (
+      this.storeViewMode === 'store' &&
+      this.currentStoreId !== null
+    ) {
+      this.loadStoreProducts(this.currentStoreId);
+      return;
+    }
+
+    if (
+      this.storeViewMode === 'productStore' &&
+      this.currentProductStoreId !== null
+    ) {
+      this.viewAllStore({
+        storeName: this.selectedStoreName || 'Vendor Products',
+        products: [
+          {
+            productStoreId: this.currentProductStoreId
+          } as Product
+        ]
+      });
+      return;
+    }
+
+    this.completeRefresher();
+    return;
+  }
+
+  // Refresh the selected category, or all categories.
+  const categoryId = this.selectedCategoryId;
+
+  this.loadCategoriesAndProducts(
+    categoryId ?? undefined
+  );
+}
+
+private completeRefresher(): void {
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  if (
+    refresher?.target &&
+    typeof refresher.target.complete === 'function'
+  ) {
+    void refresher.target.complete();
+  }
+}
+
+
+
   /*
    * Scroll a category selected from Home
    * into the horizontal category viewport.
    */
 
-  private scrollToCategory(
-    categoryId: number
-  ): void {
 
+/**
+ * Scroll the selected category chip into view
+ * within the horizontal category bar only.
+ */
+
+private scrollToCategory(categoryId: number): void {
+  requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      const categoryScroller = document.querySelector(
+        '[data-category-scroller]'
+      ) as HTMLElement | null;
 
-      requestAnimationFrame(() => {
+      const categoryButton = categoryScroller?.querySelector(
+        `[data-category-id="${categoryId}"]`
+      ) as HTMLElement | null;
 
-        const categoryButton =
-          document.querySelector(
-            `[data-category-id="${categoryId}"]`
-          ) as HTMLElement | null;
+      if (!categoryScroller || !categoryButton) {
+        return;
+      }
 
-        if (!categoryButton) {
-          return;
-        }
+      const scrollerRect = categoryScroller.getBoundingClientRect();
+      const buttonRect = categoryButton.getBoundingClientRect();
 
-        categoryButton.scrollIntoView({
-          behavior: 'smooth',
-          inline: 'center',
-          block: 'nearest'
-        });
+      const targetScrollLeft =
+        categoryScroller.scrollLeft +
+        buttonRect.left -
+        scrollerRect.left -
+        (categoryScroller.clientWidth - buttonRect.width) / 2;
 
+      categoryScroller.scrollTo({
+        left: Math.max(0, targetScrollLeft),
+        behavior: 'smooth'
       });
-
     });
+  });
+}
 
-  }
+
 
 
   /*
@@ -393,6 +480,8 @@ export class CategoriesPage implements OnInit {
 
           this.isLoading = false;
 
+          this.completeRefresher();
+
           this.errorMessage =
             error?.error?.message ||
             error?.message ||
@@ -416,6 +505,12 @@ export class CategoriesPage implements OnInit {
   ): void {
 
     this.isStoreView = true;
+
+    
+this.storeViewMode = 'store';
+this.currentStoreId = storeId;
+this.currentProductStoreId = null;
+
 
     this.isLoading = true;
 
@@ -500,6 +595,8 @@ export class CategoriesPage implements OnInit {
 
             this.isLoading = false;
 
+            this.completeRefresher();
+
             this.cdr.detectChanges();
 
             return;
@@ -575,6 +672,8 @@ export class CategoriesPage implements OnInit {
 
                 this.isLoading = false;
 
+                this.completeRefresher();
+
                 this.cdr.detectChanges();
 
               }
@@ -601,6 +700,8 @@ export class CategoriesPage implements OnInit {
           this.selectedCategoryId = null;
 
           this.isLoading = false;
+
+          this.completeRefresher();
 
           this.errorMessage =
             'Unable to load vendor products.';
@@ -682,6 +783,8 @@ private loadProducts(): void {
 
           this.selectedCategoryId = null;
           this.isLoading = false;
+
+          this.completeRefresher();
           this.errorMessage = '';
 
           this.cdr.detectChanges();
@@ -779,6 +882,8 @@ private loadProducts(): void {
 
               this.selectedCategoryId = null;
               this.isLoading = false;
+
+this.completeRefresher();
               this.errorMessage = '';
 
               this.cdr.detectChanges();
@@ -804,6 +909,8 @@ private loadProducts(): void {
               this.selectedStoreProducts = [];
 
               this.isLoading = false;
+
+this.completeRefresher();
 
               this.errorMessage =
                 error?.error?.message ||
@@ -837,6 +944,8 @@ private loadProducts(): void {
         this.selectedStoreProducts = [];
 
         this.isLoading = false;
+
+this.completeRefresher();
 
         this.errorMessage =
           error?.error?.message ||
@@ -922,6 +1031,8 @@ private loadProducts(): void {
 
           this.isLoading = false;
 
+          this.completeRefresher();
+
           this.errorMessage = '';
 
           this.cdr.detectChanges();
@@ -953,6 +1064,8 @@ private loadProducts(): void {
           this.storeSections = [];
 
           this.isLoading = false;
+
+          this.completeRefresher();
 
           this.errorMessage =
             error?.error?.message ||
@@ -1168,6 +1281,8 @@ private loadProducts(): void {
       return;
     }
 
+      this.returnToHome = false;
+
     this.isStoreView = true;
 
     this.isLoading = true;
@@ -1198,6 +1313,12 @@ private loadProducts(): void {
         product =>
           product.productStoreId != null
       )?.productStoreId;
+
+      
+this.storeViewMode = 'productStore';
+this.currentProductStoreId = productStoreId ?? null;
+this.currentStoreId = null;
+
 
 
     /*
@@ -1246,6 +1367,8 @@ private loadProducts(): void {
 
             this.isLoading = false;
 
+            this.completeRefresher();
+
             this.cdr.detectChanges();
 
             return;
@@ -1276,6 +1399,8 @@ private loadProducts(): void {
 
                 this.isLoading = false;
 
+                this.completeRefresher();
+
                 this.cdr.detectChanges();
 
               },
@@ -1294,6 +1419,8 @@ private loadProducts(): void {
                 this.selectedCategoryId = null;
 
                 this.isLoading = false;
+
+                this.completeRefresher();
 
                 this.cdr.detectChanges();
 
@@ -1321,6 +1448,8 @@ private loadProducts(): void {
           this.selectedCategoryId = null;
 
           this.isLoading = false;
+
+          this.completeRefresher();
 
           this.errorMessage =
             'Unable to load vendor products.';
@@ -1457,7 +1586,7 @@ private loadProducts(): void {
   ): void {
 
     if (
-      !product?.productStoreId
+      !product?.productId
     ) {
 
       return;
@@ -1466,7 +1595,7 @@ private loadProducts(): void {
 
     this.router.navigate([
       '/product',
-      product.productStoreId
+      product.productId
     ]);
 
   }

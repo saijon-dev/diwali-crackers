@@ -1,5 +1,15 @@
 <ion-content [fullscreen]="true" class="!bg-white">
 
+  
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content
+    pullingText="Pull to refresh"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing orders..."
+  ></ion-refresher-content>
+</ion-refresher>
+
+
   <div
     class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
   >

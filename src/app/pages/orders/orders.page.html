@@ -1,87 +1,78 @@
-<ion-content
-  [fullscreen]="true"
-  class="!bg-white"
->
+<ion-content [fullscreen]="true" class="!bg-white">
 
-<div
-  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+  
+<ion-refresher
+  slot="fixed"
+  (ionRefresh)="handleRefresh($event)"
 >
+  <ion-refresher-content
+    pullingText="Pull to refresh"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing order..."
+  ></ion-refresher-content>
+</ion-refresher>
 
-  <!-- =====================================================
-       GLOBAL HOME BOTTOM DESIGN
-       Positioned at the actual bottom of this page content
-       without taking layout space.
-  ====================================================== -->
 
   <div
-    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
-    aria-hidden="true"
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
   >
-    <img
-      src="assets/images/newDesignBg.png"
-      alt=""
-      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
-    />
-  </div>
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+    <!-- BOTTOM BACKGROUND DESIGN -->
+    <div
+      class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
+    </div>
 
+    <!-- HEADER -->
     <header
       class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
     >
 
       <!-- BACK BUTTON -->
-
-    <button
-  type="button"
-  aria-label="Back"
-  (click)="goBack()"
-  class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
->
-  <ion-icon
-    name="arrow-back-outline"
-    class="!text-[24px]"
-  ></ion-icon>
-</button>
+      <button
+        type="button"
+        aria-label="Back"
+        (click)="goBack()"
+        class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+      </button>
 
       <!-- HEADER TITLE -->
-
       <div
         class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
       >
-
         <h1
-          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-tight !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
         >
-
-          @if (showDetails) {
+          @if (showDetails && selectedOrder) {
             Order Details
           } @else {
-            My Orders
+            Track Your Order
           }
-
         </h1>
-
 
         <p
           class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
         >
-
-          @if (showDetails) {
-            View your order information
+          @if (showDetails && selectedOrder) {
+            Order #{{ selectedOrder.orderId }}
           } @else {
-            Track your Diwali orders
+            Enter your Order ID to track delivery
           }
-
         </p>
-
       </div>
 
-
       <!-- RIGHT DEEPAS -->
-
       <img
         src="assets/images/right-deepas.png"
         alt=""
@@ -91,495 +82,141 @@
 
     </header>
 
-
-
     <!-- =====================================================
-         ORDER LIST VIEW
+         ORDER ID SEARCH VIEW
     ====================================================== -->
 
     @if (!showDetails) {
 
       <main
-        class="mx-auto flex w-full max-w-[760px] flex-1 flex-col"
+        class="relative z-10 mx-auto flex w-full max-w-[760px] flex-col"
       >
 
-        <!-- =================================================
-             SEARCH VIEW
-        ================================================== -->
+        <section
+          class="flex flex-1 flex-col items-center justify-center px-3 py-10 text-center"
+        >
 
-        @if (!hasSearched) {
-
-          <section
-            class="flex flex-1 flex-col items-center justify-center px-3 py-10 text-center"
+          <!-- SEARCH ICON -->
+          <div
+            class="mb-5 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
           >
+            <ion-icon
+              name="receipt-outline"
+              class="!text-[31px]"
+            ></ion-icon>
+          </div>
 
+          <!-- TITLE -->
+          <h2
+            class="!m-0 !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c]"
+          >
+            Find Your Order
+          </h2>
+
+          <p
+            class="!m-[8px_0_20px] max-w-[290px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
+            Enter your Order ID to view your order details, delivery address,
+            ordered items and current delivery status.
+          </p>
+
+          <!-- ORDER ID INPUT -->
+          <div class="w-full max-w-[360px]">
+            <ion-input
+              type="text"
+              inputmode="text"
+              placeholder="Enter Order ID"
+              [(ngModel)]="orderId"
+              (keyup.enter)="searchOrders()"
+              [disabled]="isSearching"
+              class="!h-[47px] !rounded-[12px] !border !border-[#e1d7d2] !bg-[#fffdf7] !px-3 !font-sans !text-[13px] !font-medium !text-[#17233c] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+            ></ion-input>
+          </div>
+
+          <!-- ERROR MESSAGE -->
+          @if (errorMessage) {
             <div
-              class="mb-5 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+              class="mt-3 w-full max-w-[360px] rounded-[10px] border border-[#f3c6c6] bg-[#fff3f3] px-3 py-2.5 text-left"
+              role="alert"
             >
+              <div class="flex items-start gap-2">
+                <ion-icon
+                  name="alert-circle-outline"
+                  class="mt-[1px] shrink-0 !text-[16px] !text-[#ef0b1c]"
+                ></ion-icon>
 
+                <p
+                  class="!m-0 !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#c62828]"
+                >
+                  {{ errorMessage }}
+                </p>
+              </div>
+            </div>
+          }
+
+          <!-- SEARCH BUTTON -->
+          <ion-button
+            expand="block"
+            (click)="searchOrders()"
+            [disabled]="isSearching"
+            class="orders-search-button mt-4 !h-[43px] !w-full !max-w-[360px] !rounded-[12px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)]"
+            style="--background: #b3123b; --background-activated: #8f071f; --background-focused: #b3123b; --background-hover: #b3123b; --color: #fff8dc;"
+          >
+            @if (isSearching) {
               <ion-icon
-                name="receipt-outline"
-                class="!text-[31px]"
+                name="hourglass-outline"
+                slot="start"
+                class="!text-[17px]"
               ></ion-icon>
 
-            </div>
-
-
-            <h2
-              class="!m-0 !font-sans !text-[21px] !font-extrabold !leading-tight !text-[#17233c]"
-            >
-              Find Your Orders
-            </h2>
-
-
-            <p
-              class="!m-[8px_0_20px] max-w-[290px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
-            >
-              Enter the mobile number used while placing your order.
-            </p>
-
-
-            <!-- MOBILE INPUT -->
-
-            <div
-              class="w-full max-w-[360px]"
-            >
-
-              <ion-input
-                type="tel"
-                inputmode="numeric"
-                maxlength="10"
-                placeholder="Enter 10 digit mobile number"
-                [(ngModel)]="customerMobile"
-                (keyup.enter)="searchOrders()"
-                class="!h-[47px] !rounded-[12px] !border !border-[#e1d7d2] !bg-[#fffdf7] !px-3 !font-sans !text-[13px] !font-medium !text-[#17233c] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
-              >
-              </ion-input>
-
-            </div>
-
-
-            <!-- ERROR -->
-
-            @if (errorMessage) {
-
-              <p
-                class="!m-[6px_0_8px] w-full max-w-[360px] text-left !font-sans !text-[10px] !font-medium !leading-[1.4] !text-[#ef0b1c]"
-              >
-                {{ errorMessage }}
-              </p>
-
-            }
-
-
-            <!-- FIND ORDERS -->
-
-            <ion-button
-              expand="block"
-              (click)="searchOrders()"
-              [disabled]="isSearching"
-              class="orders-search-button mt-3 !h-[43px] !w-full !max-w-[360px] !rounded-[12px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)]"
-              style="--background: #b3123b; --background-activated: #8f071f; --background-focused: #b3123b; --background-hover: #b3123b; --color: #fff8dc;"
-            >
-
+              Searching...
+            } @else {
               <ion-icon
                 name="search-outline"
                 slot="start"
                 class="!text-[18px]"
               ></ion-icon>
 
-              @if (isSearching) {
-                Searching...
-              } @else {
-                Find My Orders
-              }
+              Find My Order
+            }
+          </ion-button>
 
-            </ion-button>
-
-          </section>
-
-        }
-
-
-
-        <!-- =================================================
-             SEARCHED MOBILE
-        ================================================== -->
-
-        @if (hasSearched) {
-
-          <section
-            class="mt-4 flex w-full items-center justify-between gap-3 rounded-[14px] bg-white px-3.5 py-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+          <!-- SEARCH HELP -->
+          <p
+            class="!m-[18px_0_0] max-w-[300px] !font-sans !text-[9px] !font-medium !leading-[1.5] !text-[#99917e]"
           >
+            Please enter the Order ID provided when your order was placed.
+          </p>
 
-            <div
-              class="min-w-0"
-            >
-
-              <span
-                class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
-              >
-                Orders for
-              </span>
-
-
-              <strong
-                class="mt-[2px] block truncate !font-sans !text-[13px] !font-bold !text-[#17233c]"
-              >
-                {{ searchedMobile }}
-              </strong>
-
-            </div>
-
-
-            <button
-              type="button"
-              (click)="hasSearched = false"
-              class="shrink-0 !border-0 !bg-transparent !px-2 !py-1 !font-sans !text-[10px] !font-bold !text-[#8f071f]"
-            >
-              Change
-            </button>
-
-          </section>
-
-        }
-
-
-
-        <!-- =================================================
-             SEARCH LOADING
-        ================================================== -->
-
-        @if (
-          hasSearched &&
-          isSearching
-        ) {
-
-          <section
-            class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center"
-          >
-
-            <div
-              class="mb-3 h-7 w-7 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"
-            ></div>
-
-
-            <p
-              class="!m-0 !font-sans !text-[11px] !font-semibold !text-[#806b68]"
-            >
-              Loading your orders...
-            </p>
-
-          </section>
-
-        }
-
-
-
-        <!-- =================================================
-             NO ORDERS
-        ================================================== -->
-
-        @if (
-          hasSearched &&
-          !isSearching &&
-          orders.length === 0
-        ) {
-
-          <section
-            class="flex flex-1 flex-col items-center justify-center px-5 py-12 text-center"
-          >
-
-            <div
-              class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
-            >
-
-              <ion-icon
-                name="receipt-outline"
-                class="!text-[31px]"
-              ></ion-icon>
-
-            </div>
-
-
-            <h2
-              class="!m-0 !font-sans !text-[20px] !font-extrabold !text-[#17233c]"
-            >
-              No Records Found
-            </h2>
-
-
-            <p
-              class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
-            >
-              We couldn't find any orders for this mobile number.
-              Please check the number and try again.
-            </p>
-
-
-            <button
-              type="button"
-              (click)="hasSearched = false"
-              class="!min-h-[39px] !rounded-[20px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)]"
-            >
-              Search Again
-            </button>
-
-          </section>
-
-        }
-
-
-
-        <!-- =================================================
-             ORDERS LIST
-        ================================================== -->
-
-        @if (
-          hasSearched &&
-          !isSearching &&
-          orders.length > 0
-        ) {
-
-          <section
-            class="w-full px-0 pb-8 pt-5"
-          >
-
-            <div
-              class="mb-3 flex items-center justify-between"
-            >
-
-              <div>
-
-                <h2
-                  class="!m-0 !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
-                >
-                  Your Orders
-                </h2>
-
-
-                <p
-                  class="!m-[4px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
-                >
-                  {{ orders.length }}
-                  {{ orders.length === 1 ? 'order' : 'orders' }}
-                  found
-                </p>
-
-              </div>
-
-            </div>
-
-
-            <!-- ORDER CARDS -->
-
-            <div
-              class="flex flex-col gap-3"
-            >
-
-              @for (
-                order of orders;
-                track order.orderId
-              ) {
-
-                <article
-                  class="cursor-pointer rounded-[14px] bg-white px-3.5 py-3.5 shadow-[0_3px_12px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.985]"
-                  (click)="openOrder(order)"
-                >
-
-                  <!-- ORDER TOP -->
-
-                  <div
-                    class="flex items-start justify-between gap-3"
-                  >
-
-                    <div
-                      class="min-w-0"
-                    >
-
-                      <span
-                        class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
-                      >
-                        Order #{{ order.orderId }}
-                      </span>
-
-
-                      <h3
-                        class="!m-[4px_0_0] !font-sans !text-[14px] !font-bold !leading-tight !text-[#17233c]"
-                      >
-                        {{ order.items.length }}
-                        {{ order.items.length === 1 ? 'Item' : 'Items' }}
-                      </h3>
-
-                    </div>
-
-
-                    <div
-                      [ngClass]="getStatusClass(order.status)"
-                      class="flex shrink-0 items-center gap-1 !rounded-full px-2.5 py-1 !font-sans !text-[9px] !font-bold"
-                    >
-
-                      <ion-icon
-                        [name]="getStatusIcon(order.status)"
-                        class="!text-[13px]"
-                      ></ion-icon>
-
-                      <span>
-                        {{ order.status }}
-                      </span>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- ORDER INFORMATION -->
-
-                  <div
-                    class="mt-3.5 flex items-center justify-between gap-3"
-                  >
-
-                    <div
-                      class="flex min-w-0 items-center gap-2"
-                    >
-
-                      <ion-icon
-                        name="calendar-outline"
-                        class="shrink-0 !text-[17px] !text-[#8f071f]"
-                      ></ion-icon>
-
-
-                      <div
-                        class="min-w-0"
-                      >
-
-                        <span
-                          class="block !font-sans !text-[8px] !font-medium !text-[#806b68]"
-                        >
-                          Order Date
-                        </span>
-
-
-                        <strong
-                          class="block !font-sans !text-[10px] !font-semibold !text-[#17233c]"
-                        >
-                          {{ formatDate(order.createdAt) }}
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-
-                    <div
-                      class="shrink-0 text-right"
-                    >
-
-                      <span
-                        class="block !font-sans !text-[8px] !font-medium !text-[#806b68]"
-                      >
-                        Total Amount
-                      </span>
-
-
-                      <strong
-                        class="block !font-sans !text-[16px] !font-extrabold !text-[#8f071f]"
-                      >
-                        ₹{{ order.totalAmount | number:'1.2-2' }}
-                      </strong>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- ORDER FOOTER -->
-
-                  <div
-                    class="mt-3 flex items-center justify-between gap-3"
-                  >
-
-                    <span
-                      class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
-                    >
-                      {{ order.paymentMethod }}
-                    </span>
-
-
-                    <div
-                      class="flex items-center gap-1 !font-sans !text-[9px] !font-bold !text-[#b3123b]"
-                    >
-
-                      View Details
-
-                      <ion-icon
-                        name="chevron-forward-outline"
-                        class="!text-[13px]"
-                      ></ion-icon>
-
-                    </div>
-
-                  </div>
-
-                </article>
-
-              }
-
-            </div>
-
-          </section>
-
-        }
+        </section>
 
       </main>
 
-
-
-      <!-- =================================================
-           LIST BOTTOM DESIGN
-      ================================================== -->
-
-  
-
     }
-
-
 
     <!-- =====================================================
          ORDER DETAILS VIEW
     ====================================================== -->
 
-    @if (
-      showDetails &&
-      selectedOrder
-    ) {
+    @if (showDetails && selectedOrder) {
 
       <main
-        class="mx-auto flex w-full max-w-[760px] flex-1 flex-col px-0 pb-6 pt-4"
+        class="relative z-10 mx-auto flex w-full max-w-[760px] flex-col px-0 pb-6 pt-4"
       >
 
-        <!-- =================================================
-             ORDER SUMMARY
-        ================================================== -->
-
+        <!-- ORDER SUMMARY -->
         <section
           class="rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
         >
 
-          <div
-            class="flex items-start justify-between gap-3"
-          >
+          <div class="flex items-start justify-between gap-3">
 
-            <div
-              class="min-w-0"
-            >
-
+            <div class="min-w-0">
               <span
                 class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
               >
                 Order #{{ selectedOrder.orderId }}
               </span>
-
 
               <h2
                 class="!m-[5px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
@@ -587,53 +224,48 @@
                 Order Summary
               </h2>
 
+              <p
+                class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
+                Placed on {{ formatDateTime(selectedOrder.createdAt) }}
+              </p>
             </div>
-
 
             <div
               [ngClass]="getStatusClass(selectedOrder.status)"
-              class="flex shrink-0 items-center gap-1 !rounded-full px-2.5 py-1.5 !font-sans !text-[9px] !font-bold"
+              class="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1.5 !font-sans !text-[9px] !font-bold"
             >
-
               <ion-icon
                 [name]="getStatusIcon(selectedOrder.status)"
                 class="!text-[13px]"
               ></ion-icon>
 
-              {{ selectedOrder.status }}
-
+              <span>
+                {{ selectedOrder.status.replaceAll('_', ' ') }}
+              </span>
             </div>
 
           </div>
 
-
           <div
-            class="mt-4 flex items-center justify-between"
+            class="mt-4 flex items-center justify-between border-t border-[#f0e6dc] pt-3"
           >
-
             <span
               class="!font-sans !text-[10px] !font-medium !text-[#806b68]"
             >
               Total Amount
             </span>
 
-
             <strong
               class="!font-sans !text-[19px] !font-extrabold !text-[#8f071f]"
             >
               ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
             </strong>
-
           </div>
 
         </section>
 
-
-
-        <!-- =================================================
-             CUSTOMER DETAILS
-        ================================================== -->
-
+        <!-- CUSTOMER DETAILS -->
         <section
           class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
         >
@@ -644,74 +276,75 @@
             Customer Details
           </h2>
 
+          <div class="mt-3.5 space-y-3.5">
 
-          <div
-            class="mt-3.5 space-y-3.5"
-          >
-
+            <!-- CUSTOMER NAME -->
             <div>
-
               <span
                 class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Name
               </span>
 
-
               <strong
-                class="mt-[3px] block !font-sans !text-[11px] !font-semibold !text-[#17233c]"
+                class="mt-[3px] block break-words !font-sans !text-[11px] !font-semibold !text-[#17233c]"
               >
-                {{ selectedOrder.customerName }}
+                {{ selectedOrder.customerName || 'Not available' }}
               </strong>
-
             </div>
 
-
+            <!-- PRIMARY MOBILE -->
             <div>
-
               <span
                 class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
-                Mobile
+                Mobile Number
               </span>
-
 
               <strong
                 class="mt-[3px] block !font-sans !text-[11px] !font-semibold !text-[#17233c]"
               >
-                {{ selectedOrder.customerMobile }}
+                {{ selectedOrder.customerMobile || 'Not available' }}
               </strong>
-
             </div>
 
+            <!-- ALTERNATIVE MOBILE -->
+            @if (selectedOrder.alternativeMobileNumber) {
+              <div>
+                <span
+                  class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Alternative Mobile Number
+                </span>
 
+                <strong
+                  class="mt-[3px] block !font-sans !text-[11px] !font-semibold !text-[#17233c]"
+                >
+                  {{ selectedOrder.alternativeMobileNumber }}
+                </strong>
+              </div>
+            }
+
+            <!-- DELIVERY ADDRESS -->
             <div>
-
               <span
                 class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Delivery Address
               </span>
 
-
               <strong
-                class="mt-[3px] block !font-sans !text-[11px] !font-semibold !leading-[1.45] !text-[#17233c]"
+                class="mt-[3px] block break-words !font-sans !text-[11px] !font-semibold !leading-[1.5] !text-[#17233c]"
               >
-                {{ selectedOrder.deliveryAddress }}
+                {{ selectedOrder.deliveryAddress || 'Not available' }}
               </strong>
-
             </div>
 
           </div>
 
         </section>
 
-
-
-        <!-- =================================================
-             ORDER INFORMATION
-        ================================================== -->
-
+        <!-- ORDER INFORMATION -->
         <section
           class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
         >
@@ -722,100 +355,196 @@
             Order Information
           </h2>
 
+          <div class="mt-3.5 space-y-3.5">
 
-          <div
-            class="mt-3.5 space-y-3.5"
-          >
-
-            <div
-              class="flex items-start justify-between gap-4"
-            >
-
+            <!-- ORDER DATE -->
+            <div class="flex items-start justify-between gap-4">
               <span
                 class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Order Date
               </span>
 
-
               <strong
                 class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
               >
                 {{ formatDateTime(selectedOrder.createdAt) }}
               </strong>
-
             </div>
 
-
-            <div
-              class="flex items-start justify-between gap-4"
-            >
-
+            <!-- EXPECTED DELIVERY -->
+            <div class="flex items-start justify-between gap-4">
               <span
                 class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Expected Delivery
               </span>
 
-
               <strong
                 class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
               >
-                {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+                @if (selectedOrder.expectedDeliveryDate) {
+                  {{ formatDate(selectedOrder.expectedDeliveryDate) }}
+                } @else {
+                  To be confirmed
+                }
               </strong>
-
             </div>
 
-
-            <div
-              class="flex items-start justify-between gap-4"
-            >
-
+            <!-- PAYMENT METHOD -->
+            <div class="flex items-start justify-between gap-4">
               <span
                 class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Payment Method
               </span>
 
-
               <strong
                 class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
               >
-                {{ selectedOrder.paymentMethod }}
+                {{ selectedOrder.paymentMethod || 'COD' }}
               </strong>
-
             </div>
 
-
-            <div
-              class="flex items-start justify-between gap-4"
-            >
-
+            <!-- CURRENT STATUS -->
+            <div class="flex items-start justify-between gap-4">
               <span
                 class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
               >
                 Current Status
               </span>
 
-
               <strong
                 class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
               >
-                {{ selectedOrder.status }}
+                {{ selectedOrder.status.replaceAll('_', ' ') }}
               </strong>
-
             </div>
+
+            <!-- CONFIRMED DATE -->
+            @if (selectedOrder.confirmedAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Confirmed On
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.confirmedAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- PACKED DATE -->
+            @if (selectedOrder.packedAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Packed On
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.packedAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- SHIPPED DATE -->
+            @if (selectedOrder.shippedAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Shipped On
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.shippedAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- OUT FOR DELIVERY DATE -->
+            @if (selectedOrder.outForDeliveryAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Out for Delivery
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.outForDeliveryAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- DELIVERED DATE -->
+            @if (selectedOrder.deliveredAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Delivered On
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.deliveredAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- CANCELLED DATE -->
+            @if (selectedOrder.cancelledAt) {
+              <div class="flex items-start justify-between gap-4">
+                <span
+                  class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Cancelled On
+                </span>
+
+                <strong
+                  class="text-right !font-sans !text-[10px] !font-semibold !text-[#17233c]"
+                >
+                  {{ formatDateTime(selectedOrder.cancelledAt) }}
+                </strong>
+              </div>
+            }
+
+            <!-- CANCELLATION REASON -->
+            @if (selectedOrder.cancellationReason) {
+              <div>
+                <span
+                  class="block !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                >
+                  Cancellation Reason
+                </span>
+
+                <strong
+                  class="mt-[3px] block break-words !font-sans !text-[10px] !font-semibold !leading-[1.5] !text-[#c62828]"
+                >
+                  {{ selectedOrder.cancellationReason }}
+                </strong>
+              </div>
+            }
 
           </div>
 
         </section>
 
-
-
-        <!-- =================================================
-             ORDERED ITEMS
-        ================================================== -->
-
+        <!-- ORDERED ITEMS -->
         <section
           class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
         >
@@ -826,285 +555,257 @@
             Ordered Items
           </h2>
 
+          <div class="mt-3.5">
 
-          <div
-            class="mt-3.5"
-          >
+            @if (selectedOrder.items?.length) {
 
-            @for (
-              item of selectedOrder.items;
-              track item.orderItemId
-            ) {
-
-              <div
-                class="flex items-start gap-3 py-2.5"
-              >
-
-                <!-- PRODUCT IMAGE -->
+              @for (
+                item of selectedOrder.items;
+                track item.orderItemId
+              ) {
 
                 <div
-                  class="h-[74px] w-[74px] shrink-0 overflow-hidden rounded-[10px] bg-[#f7f3df]"
+                  class="flex items-start gap-3 border-b border-[#f2e9df] py-3 last:border-b-0"
                 >
 
-                  @if (item.productImageUrl) {
-
-                    <img
-                      [src]="item.productImageUrl"
-                      [alt]="item.productName"
-                      class="block h-full w-full object-cover"
-                      loading="lazy"
-                    />
-
-                  } @else {
-
-                    <div
-                      class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
-                    >
-
-                      <ion-icon
-                        name="cube-outline"
-                        class="!text-[27px] !text-[#806b68]"
-                      ></ion-icon>
-
-                    </div>
-
-                  }
-
-                </div>
-
-
-                <!-- PRODUCT DETAILS -->
-
-                <div
-                  class="min-w-0 flex-1"
-                >
-
-                  <h3
-                    class="!m-0 !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c]"
+                  <!-- PRODUCT IMAGE -->
+                  <div
+                    class="h-[74px] w-[74px] shrink-0 overflow-hidden rounded-[10px] bg-[#f7f3df]"
                   >
-                    {{ item.productName }}
-                  </h3>
 
+                    @if (item.productImageUrl) {
 
-                  @if (item.brandName) {
+                      <img
+                        [src]="item.productImageUrl"
+                        [alt]="item.productName"
+                        class="block h-full w-full object-cover"
+                        loading="lazy"
+                      />
 
-                    <p
-                      class="!m-[3px_0_0] !font-sans !text-[9px] !font-semibold !text-[#9e2020]"
+                    } @else {
+
+                      <div
+                        class="flex h-full w-full items-center justify-center bg-[#f7e9bd]"
+                      >
+                        <ion-icon
+                          name="cube-outline"
+                          class="!text-[27px] !text-[#806b68]"
+                        ></ion-icon>
+                      </div>
+
+                    }
+
+                  </div>
+
+                  <!-- PRODUCT DETAILS -->
+                  <div class="min-w-0 flex-1">
+
+                    <h3
+                      class="!m-0 !font-sans !text-[12px] !font-bold !leading-[1.35] !text-[#17233c]"
                     >
-                      {{ item.brandName }}
-                    </p>
+                      {{ item.productName }}
+                    </h3>
 
-                  }
+                    @if (item.brandName) {
+                      <p
+                        class="!m-[3px_0_0] !font-sans !text-[9px] !font-semibold !text-[#9e2020]"
+                      >
+                        {{ item.brandName }}
+                      </p>
+                    }
 
+                    @if (item.vendorName) {
+                      <span
+                        class="mt-[3px] block break-words !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                      >
+                        {{ item.vendorName }}
+                      </span>
+                    }
 
-                  <span
-                    class="mt-[3px] block !font-sans !text-[9px] !font-medium !text-[#806b68]"
-                  >
-                    {{ item.vendorName }}
-                  </span>
-
-
-                  @if (
-                    item.size ||
-                    item.packQuantity ||
-                    item.packUnit
-                  ) {
-
-                    <small
-                      class="mt-[3px] block !font-sans !text-[8px] !font-medium !text-[#99917e]"
-                    >
-
-                      @if (item.size) {
-                        {{ item.size }}
-                      }
-
-                      @if (
-                        item.packQuantity &&
-                        item.packUnit
-                      ) {
-
+                    @if (item.size || item.packQuantity || item.packUnit) {
+                      <small
+                        class="mt-[3px] block !font-sans !text-[8px] !font-medium !text-[#99917e]"
+                      >
                         @if (item.size) {
-                          •
+                          {{ item.size }}
                         }
 
-                        {{ item.packQuantity }}
-                        {{ item.packUnit }}
+                        @if (item.packQuantity && item.packUnit) {
+                          @if (item.size) {
+                            ·
+                          }
 
-                      }
+                          {{ item.packQuantity }} {{ item.packUnit }}
+                        }
+                      </small>
+                    }
 
-                    </small>
-
-                  }
-
-
-                  <div
-                    class="mt-2 flex items-center justify-between gap-3"
-                  >
-
-                    <span
-                      class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                    <div
+                      class="mt-2 flex items-center justify-between gap-3"
                     >
-                      Qty: {{ item.quantity }}
-                    </span>
+                      <span
+                        class="!font-sans !text-[9px] !font-medium !text-[#806b68]"
+                      >
+                        Qty: {{ item.quantity }}
+                      </span>
 
-
-                    <strong
-                      class="!font-sans !text-[13px] !font-extrabold !text-[#8f071f]"
-                    >
-                      ₹{{ item.subtotal | number:'1.2-2' }}
-                    </strong>
+                      <strong
+                        class="!font-sans !text-[13px] !font-extrabold !text-[#8f071f]"
+                      >
+                        ₹{{ item.subtotal | number:'1.2-2' }}
+                      </strong>
+                    </div>
 
                   </div>
 
                 </div>
 
-              </div>
+              }
+
+            } @else {
+
+              <p
+                class="!m-0 py-4 !font-sans !text-[10px] !font-medium !text-[#806b68]"
+              >
+                No item details are available for this order.
+              </p>
 
             }
 
           </div>
 
-
+          <!-- ORDER TOTAL -->
           <div
-            class="mt-3 flex items-center justify-between"
+            class="mt-3 flex items-center justify-between border-t border-[#f0e6dc] pt-3"
           >
-
             <span
               class="!font-sans !text-[11px] !font-bold !text-[#17233c]"
             >
               Order Total
             </span>
 
-
             <strong
               class="!font-sans !text-[17px] !font-extrabold !text-[#8f071f]"
             >
               ₹{{ selectedOrder.totalAmount | number:'1.2-2' }}
             </strong>
-
           </div>
 
         </section>
 
+        <!-- ORDER TRACKING -->
+        <section
+          class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
+        >
 
+          <h2
+            class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]"
+          >
+            Order Tracking
+          </h2>
 
-        <!-- =================================================
-             ORDER TRACKING
-        ================================================== -->
+          <!-- CURRENT ORDER STATUS -->
+          <div class="mt-3 flex items-center justify-between gap-3">
 
-   <!-- =====================================================
-     ORDER TRACKING
-====================================================== -->
+            <div class="min-w-0">
+              <strong
+                class="block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+              >
+                {{ selectedOrder.status.replaceAll('_', ' ') }}
+              </strong>
 
-<section
-  class="mt-3 rounded-[14px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]"
->
-  <h2
-    class="!m-0 !font-sans !text-[15px] !font-extrabold !text-[#8f071f]"
-  >
-    Order Tracking
-  </h2>
+              <p
+                class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+              >
+                Current Order Status
+              </p>
+            </div>
 
-  <!-- CURRENT ORDER STATUS -->
-  <div class="mt-3 flex items-center justify-between gap-3">
-    <div class="min-w-0">
-      <strong
-        class="block !font-sans !text-[11px] !font-bold !text-[#17233c]"
-      >
-        {{ selectedOrder.status.replaceAll('_', ' ') }}
-      </strong>
-
-      <p
-        class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
-      >
-        Current Order Status
-      </p>
-    </div>
-
-    <span
-      [ngClass]="getStatusClass(selectedOrder.status)"
-      class="shrink-0 rounded-full px-2.5 py-1 !font-sans !text-[9px] !font-bold"
-    >
-      {{ selectedOrder.status.replaceAll('_', ' ') }}
-    </span>
-  </div>
-
-  <!-- ORDER STATUS HISTORY -->
-  @if (isLoadingDetails) {
-    <div class="flex items-center justify-center py-5">
-      <div
-        class="h-6 w-6 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"
-      ></div>
-    </div>
-  } @else if (orderHistory.length > 0) {
-    <div class="mt-4 space-y-4 border-l-2 border-[#f0d9c5] pl-3">
-      @for (history of orderHistory; track history.changedAt) {
-        <div class="relative flex items-start justify-between gap-3">
-          <div
-            class="absolute -left-[18px] top-[3px] h-2.5 w-2.5 rounded-full border-2 border-white bg-[#b3123b]"
-          ></div>
-
-          <div class="min-w-0 flex-1">
-            <strong
-              class="block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+            <span
+              [ngClass]="getStatusClass(selectedOrder.status)"
+              class="shrink-0 rounded-full px-2.5 py-1 !font-sans !text-[9px] !font-bold"
             >
-              {{ history.status.replaceAll('_', ' ') }}
-            </strong>
+              {{ selectedOrder.status.replaceAll('_', ' ') }}
+            </span>
 
-            <p
-              class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
-            >
-              Updated by {{ history.changedBy }}
-            </p>
           </div>
 
-          <span
-            class="shrink-0 text-right !font-sans !text-[8px] !font-medium !text-[#99917e]"
-          >
-            {{ formatDateTime(history.changedAt) }}
-          </span>
-        </div>
-      }
-    </div>
-  } @else {
-    <p
-      class="!m-[10px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
-    >
-      No previous status updates available.
-    </p>
-  }
-</section>
+          <!-- TRACKING HISTORY -->
+          @if (isLoadingDetails) {
 
+            <div class="flex items-center justify-center py-5">
+              <div
+                class="h-6 w-6 animate-spin rounded-full border-[2px] border-[#ead8b9] border-t-[#8f071f]"
+              ></div>
+            </div>
 
+          } @else if (orderHistory.length > 0) {
 
-        <!-- =================================================
-             BACK TO ORDERS
-        ================================================== -->
+            <div class="mt-4 space-y-4 border-l-2 border-[#f0d9c5] pl-3">
 
+              @for (history of orderHistory; track history.changedAt) {
+
+                <div
+                  class="relative flex items-start justify-between gap-3"
+                >
+
+                  <div
+                    class="absolute -left-[18px] top-[3px] h-2.5 w-2.5 rounded-full border-2 border-white bg-[#b3123b]"
+                  ></div>
+
+                  <div class="min-w-0 flex-1">
+                    <strong
+                      class="block !font-sans !text-[11px] !font-bold !text-[#17233c]"
+                    >
+                      {{ history.status.replaceAll('_', ' ') }}
+                    </strong>
+
+                    <p
+                      class="!m-[3px_0_0] !font-sans !text-[9px] !font-medium !text-[#806b68]"
+                    >
+                      Updated by {{ history.changedBy }}
+                    </p>
+                  </div>
+
+                  <span
+                    class="shrink-0 text-right !font-sans !text-[8px] !font-medium !text-[#99917e]"
+                  >
+                    {{ formatDateTime(history.changedAt) }}
+                  </span>
+
+                </div>
+
+              }
+
+            </div>
+
+          } @else {
+
+            <p
+              class="!m-[10px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+            >
+              No previous status updates are available.
+            </p>
+
+          }
+
+        </section>
+
+        <!-- BACK TO ORDER SEARCH -->
         <button
           type="button"
           (click)="backToOrders()"
           class="mt-4 flex !min-h-[43px] w-full !items-center !justify-center gap-2 !rounded-[12px] !border-0 !bg-[#b3123b] !px-4 !font-sans !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.14)] transition-transform duration-150 active:scale-[0.98]"
         >
-
           <ion-icon
-            name="arrow-back-outline"
+            name="search-outline"
             class="!text-[17px]"
           ></ion-icon>
 
-          Back to My Orders
-
+          Track Another Order
         </button>
 
       </main>
-
-
-
-      <!-- =================================================
-           DETAILS BOTTOM DESIGN
-      ================================================== -->
-
-
 
     }
 

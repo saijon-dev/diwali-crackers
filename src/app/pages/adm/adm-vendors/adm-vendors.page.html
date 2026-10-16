@@ -1,5 +1,19 @@
 <ion-content [fullscreen]="true" class="!bg-white">
-  <div class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4">
+
+
+  
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content
+    pullingText="Pull to refresh"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing vendors..."
+  ></ion-refresher-content>
+</ion-refresher>
+
+
+  <div
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
+  >
 
     <!-- GLOBAL BOTTOM DESIGN -->
     <div
@@ -21,12 +35,17 @@
         type="button"
         (click)="goBack()"
         aria-label="Go back"
-        class="absolute left-1 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 items-center justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90"
+        class="absolute left-1 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-        <ion-icon name="arrow-back-outline" class="!text-[24px]"></ion-icon>
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
       </button>
 
-      <div class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none">
+      <div
+        class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+      >
         <h1
           class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
         >
@@ -34,7 +53,7 @@
         </h1>
 
         <p
-          class="!m-[5px_0_0] !font-serif !text-[9px] !font-medium !italic !leading-none !text-[#f7df9d] sm:!text-[10px]"
+          class="!m-[5px_0_0] !font-sans !text-[11px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[12px]"
         >
           Manage your Diwali stores and vendors
         </p>
@@ -49,39 +68,53 @@
     </header>
 
     <!-- MAIN CONTENT -->
-    <main class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col">
+    <main
+      class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col"
+    >
 
       <!-- SEARCH + ADD VENDOR -->
-      <section class="mt-4 flex items-center gap-2.5">
-        <div class="relative flex min-w-0 flex-1 items-center">
-          <ion-icon
-            name="search-outline"
-            class="pointer-events-none absolute left-3 z-10 !text-[17px] !text-[#8f071f]"
-          ></ion-icon>
+      <section class="mt-4">
+        <div class="flex items-center gap-2.5">
 
-          <input
-            type="text"
-            [(ngModel)]="searchText"
-            placeholder="Search vendors..."
-            autocomplete="off"
-            class="!m-0 !h-[44px] w-full !rounded-[12px] !border !border-[#eadfcb] !bg-[#fffdf7] !pl-10 !pr-3 !font-sans !text-[11px] !font-medium !text-[#17233c] !outline-none shadow-[0_3px_10px_rgba(86,48,10,0.05)] placeholder:!font-sans placeholder:!text-[10px] placeholder:!font-medium placeholder:!text-[#a3988d] focus:!border-[#b3123b]"
-          />
+          <!-- SEARCH BOX -->
+          <div
+            class="relative flex h-[43px] min-w-0 flex-1 items-center rounded-[11px] border border-[#e1d7d2] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.05)]"
+          >
+            <ion-icon
+              name="search-outline"
+              class="ml-3 shrink-0 !text-[17px] !text-[#8f071f]"
+            ></ion-icon>
+
+            <input
+              type="text"
+              [(ngModel)]="searchText"
+              placeholder="Search vendors..."
+              autocomplete="off"
+              class="h-full min-w-0 flex-1 bg-transparent px-2.5 !font-sans !text-[14px] !font-medium !text-[#17233c] outline-none placeholder:!text-[#a69a94]"
+            />
+          </div>
+
+          <!-- ADD VENDOR -->
+          <button
+            type="button"
+            (click)="addVendor()"
+            aria-label="Add vendor"
+            class="flex !h-[43px] !w-[43px] shrink-0 !items-center !justify-center !rounded-[11px] !border-0 !bg-[#b3123b] !p-0 !font-sans !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)] transition-transform duration-150 active:scale-95"
+          >
+            <ion-icon
+              name="add-outline"
+              class="!text-[21px]"
+            ></ion-icon>
+          </button>
+
         </div>
-
-        <button
-          type="button"
-          aria-label="Add vendor"
-          (click)="addVendor()"
-          class="flex !h-[44px] !w-[44px] shrink-0 !items-center !justify-center !rounded-[12px] !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.18)] transition-transform duration-150 active:scale-95"
-        >
-          <ion-icon name="add-outline" class="!text-[21px]"></ion-icon>
-        </button>
       </section>
 
       <!-- STATUS FILTERS -->
       <section
         class="mt-3 flex items-center gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
+
         <button
           type="button"
           (click)="selectStatus('ALL')"
@@ -91,7 +124,7 @@
           [class.!bg-[#fffdf7]]="selectedStatus !== 'ALL'"
           [class.!text-[#806b68]]="selectedStatus !== 'ALL'"
           [class.!border-[#eadfcb]]="selectedStatus !== 'ALL'"
-          class="flex !h-[36px] min-w-[72px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
+          class="flex !h-[36px] min-w-[72px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[11px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
         >
           All
         </button>
@@ -105,7 +138,7 @@
           [class.!bg-[#fffdf7]]="selectedStatus !== 'Active'"
           [class.!text-[#806b68]]="selectedStatus !== 'Active'"
           [class.!border-[#eadfcb]]="selectedStatus !== 'Active'"
-          class="flex !h-[36px] min-w-[82px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
+          class="flex !h-[36px] min-w-[82px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[11px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
         >
           Active
         </button>
@@ -119,178 +152,297 @@
           [class.!bg-[#fffdf7]]="selectedStatus !== 'Inactive'"
           [class.!text-[#806b68]]="selectedStatus !== 'Inactive'"
           [class.!border-[#eadfcb]]="selectedStatus !== 'Inactive'"
-          class="flex !h-[36px] min-w-[90px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[10px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
+          class="flex !h-[36px] min-w-[90px] shrink-0 !items-center !justify-center !rounded-[10px] !border !px-4 !font-sans !text-[11px] !font-bold shadow-[0_2px_7px_rgba(86,48,10,0.06)] transition-all duration-150 active:scale-[0.97]"
         >
           Inactive
         </button>
+
       </section>
 
-      <!-- CONTENT -->
+      <!-- VENDOR CONTENT -->
       <section class="mt-4 flex-1">
 
+        <!-- LOADING SKELETONS -->
+        @if (isLoading) {
 
+          <section
+            class="grid grid-cols-3 items-stretch gap-2 pb-8 sm:gap-3"
+            aria-label="Loading vendors"
+          >
+            @for (item of [1, 2, 3, 4, 5, 6]; track item) {
 
+              <article
+                class="flex min-w-0 animate-pulse flex-col overflow-hidden rounded-[13px] border border-[#eadfcb] bg-white p-2 shadow-[0_3px_12px_rgba(80,30,20,0.07)] sm:rounded-[16px] sm:p-3"
+              >
 
-        <!-- VENDOR LIST -->
-     <!-- VENDOR LIST -->
-@if (isLoading) {
-  <!-- VENDOR CARD SKELETONS -->
-  <section class="grid grid-cols-3 items-stretch gap-2 pb-8 sm:gap-3">
-    @for (item of [1, 2, 3, 4, 5, 6]; track item) {
-      <article
-        class="flex min-w-0 animate-pulse flex-col overflow-hidden rounded-[13px] border border-[#eadfcb] bg-white p-2 shadow-[0_3px_12px_rgba(80,30,20,0.07)] sm:rounded-[16px] sm:p-3"
-      >
-        <!-- IMAGE SKELETON -->
-        <div
-          class="mb-2 aspect-square w-full rounded-[10px] bg-[#eee8d4] sm:rounded-[11px]"
-        ></div>
+                <!-- IMAGE SKELETON -->
+                <div
+                  class="mb-2 aspect-square w-full rounded-[10px] bg-[#eee8d4] sm:rounded-[11px]"
+                ></div>
 
-        <!-- STORE NAME SKELETON -->
-        <div class="flex flex-1 flex-col gap-2">
-          <div class="h-[10px] w-[85%] rounded-[4px] bg-[#eadfcb] sm:h-[12px]"></div>
-          <div class="h-[8px] w-[60%] rounded-[4px] bg-[#eee8d4]"></div>
+                <!-- DETAILS SKELETON -->
+                <div class="flex flex-1 flex-col gap-2">
+                  <div
+                    class="h-[13px] w-[85%] rounded-[4px] bg-[#eadfcb] sm:h-[15px]"
+                  ></div>
 
-          <!-- LOCATION SKELETON -->
-          <div class="mt-1 flex items-center gap-1">
-            <div class="h-[9px] w-[9px] shrink-0 rounded-full bg-[#eadfcb]"></div>
-            <div class="h-[7px] w-[75%] rounded-[4px] bg-[#eee8d4]"></div>
-          </div>
+                  <div
+                    class="h-[10px] w-[60%] rounded-[4px] bg-[#eee8d4]"
+                  ></div>
 
-          <!-- MOBILE NUMBER SKELETON -->
-          <div class="mt-1 h-[7px] w-[65%] rounded-[4px] bg-[#eee8d4]"></div>
-        </div>
+                  <div class="mt-1 flex items-center gap-1">
+                    <div
+                      class="h-[11px] w-[11px] shrink-0 rounded-full bg-[#eadfcb]"
+                    ></div>
 
-        <!-- BUTTON SKELETON -->
-        <div class="mt-2 border-t border-[#eadfcb] pt-2">
-          <div class="h-[32px] w-full rounded-[9px] bg-[#eee8d4]"></div>
-        </div>
-      </article>
-    }
-  </section>
-}
+                    <div
+                      class="h-[9px] w-[75%] rounded-[4px] bg-[#eee8d4]"
+                    ></div>
+                  </div>
 
-@if (!isLoading && !errorMessage) {
-  <section class="grid grid-cols-3 items-stretch gap-2 pb-8 sm:gap-3">
-    @for (vendor of filteredVendors; track vendor.id) {
-      <article
-        role="group"
-        [attr.aria-label]="vendor.storeName"
-        [attr.tabindex]="vendor.status === 'Active' ? 0 : -1"
-        [class.cursor-pointer]="vendor.status === 'Active'"
-        [class.active:scale-[0.98]]="vendor.status === 'Active'"
-        (click)="vendor.status === 'Active' && openVendor(vendor)"
-        (keydown.enter)="vendor.status === 'Active' && openVendor(vendor)"
-        (keydown.space)="vendor.status === 'Active' && openVendor(vendor); $event.preventDefault()"
-        class="relative flex min-w-0 flex-col overflow-hidden rounded-[13px] border border-[#eadfcb] bg-white p-2 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-150 sm:rounded-[16px] sm:p-3"
-      >
-        <!-- VENDOR IMAGE -->
-        <div class="relative mb-2 aspect-square w-full overflow-hidden rounded-[10px] bg-[#f7f3df] sm:rounded-[11px]">
-          @if (vendor.image) {
-            <img
-              [src]="vendor.image"
-              [alt]="vendor.storeName"
-              class="block h-full w-full object-cover"
-              (error)="onVendorImageError($event)"
-            />
-          } @else {
-            <div class="flex h-full w-full items-center justify-center bg-[#fffdf7]">
+                  <div
+                    class="mt-1 h-[9px] w-[65%] rounded-[4px] bg-[#eee8d4]"
+                  ></div>
+                </div>
+
+                <!-- BUTTON SKELETON -->
+                <div class="mt-2 border-t border-[#eadfcb] pt-2">
+                  <div
+                    class="h-[34px] w-full rounded-[9px] bg-[#eee8d4]"
+                  ></div>
+                </div>
+
+              </article>
+            }
+          </section>
+
+        } @else if (errorMessage) {
+
+          <!-- ERROR STATE -->
+          <section
+            class="flex min-h-[45vh] flex-col items-center justify-center px-5 py-14 text-center"
+          >
+
+            <div
+              class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+            >
               <ion-icon
                 name="people-outline"
-                class="!text-[28px] !text-[#b7a58f]"
+                class="!text-[31px]"
               ></ion-icon>
             </div>
-          }
 
-          <!-- STATUS BADGE -->
-          <span
-            class="absolute left-1 top-1 rounded-[6px] px-1.5 py-1 !font-sans !text-[8px] !font-extrabold shadow-sm"
-            [class.!bg-[#e6f4e8]]="vendor.status === 'Active'"
-            [class.!text-[#24722d]]="vendor.status === 'Active'"
-            [class.!bg-[#f8e5e7]]="vendor.status !== 'Active'"
-            [class.!text-[#9e2020]]="vendor.status !== 'Active'"
+            <h3
+              class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+            >
+              Unable to load vendors
+            </h3>
+
+            <p
+              class="!m-[7px_0_17px] max-w-[290px] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
+            >
+              {{ errorMessage }}
+            </p>
+
+            <button
+              type="button"
+              (click)="loadVendors()"
+              class="!min-h-[40px] !rounded-[9px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
+            >
+              Try Again
+            </button>
+
+          </section>
+
+        } @else {
+
+          <!-- VENDOR LIST -->
+          <section
+            class="grid grid-cols-3 items-stretch gap-2 pb-8 sm:gap-3"
           >
-            {{ vendor.status }}
-          </span>
-        </div>
 
-        <!-- VENDOR DETAILS -->
-        <div class="min-w-0 flex-1">
-          <h2 class="!m-0 line-clamp-2 break-words !font-sans !text-[11px] !font-bold !leading-[1.3] !text-[#17233c] sm:!text-[12px]">
-            {{ vendor.storeName }}
-          </h2>
+            @for (vendor of filteredVendors; track vendor.id) {
 
-          <p class="!m-[4px_0_0] truncate !font-sans !text-[9px] !font-semibold !text-[#8f071f] sm:!text-[10px]">
-            {{ vendor.name }}
-          </p>
+              <article
+                role="group"
+                [attr.aria-label]="vendor.storeName"
+                [attr.tabindex]="vendor.status === 'Active' ? 0 : -1"
+                [class.cursor-pointer]="vendor.status === 'Active'"
+                [class.active:scale-[0.98]]="vendor.status === 'Active'"
+                (click)="vendor.status === 'Active' && openVendor(vendor)"
+                (keydown.enter)="vendor.status === 'Active' && openVendor(vendor)"
+                (keydown.space)="vendor.status === 'Active' && openVendor(vendor); $event.preventDefault()"
+                class="relative flex min-w-0 flex-col overflow-hidden rounded-[13px] border border-[#eadfcb] bg-white p-2 shadow-[0_3px_12px_rgba(80,30,20,0.07)] transition-transform duration-150 sm:rounded-[16px] sm:p-3"
+              >
 
-          <div class="mt-1 flex min-w-0 items-start gap-1">
-            <ion-icon
-              name="location-outline"
-              class="mt-[1px] shrink-0 !text-[11px] !text-[#8f071f]"
-            ></ion-icon>
-            <span class="line-clamp-2 min-w-0 !font-sans !text-[8px] !leading-[1.35] !text-[#806b68] sm:!text-[9px]">
-              {{ vendor.location }}
-            </span>
-          </div>
+                <!-- VENDOR IMAGE -->
+                <div
+                  class="relative mb-2 aspect-square w-full overflow-hidden rounded-[10px] bg-[#f7f3df] sm:rounded-[11px]"
+                >
 
-          <p class="!m-[4px_0_0] truncate !font-sans !text-[8px] !font-medium !text-[#806b68] sm:!text-[9px]">
-            {{ vendor.mobileNumber }}
-          </p>
-        </div>
+                  @if (vendor.image) {
 
-        <!-- CARD ACTIONS -->
-        <div class="mt-2 flex flex-col gap-1.5 border-t border-[#eadfcb] pt-2">
-          @if (vendor.status === 'Active') {
-            <button
-              type="button"
-              aria-label="Make vendor inactive"
-              (click)="confirmChangeStatus(vendor); $event.stopPropagation()"
-              class="flex !min-h-[32px] w-full items-center justify-center rounded-[9px] border border-[#eadfcb] bg-[#fffdf7] px-1 py-1 !font-sans !text-[9px] !font-extrabold !text-[#8f071f] shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95 sm:!text-[10px]"
-            >
-              Make Inactive
-            </button>
-          } @else {
-            <button
-              type="button"
-              aria-label="Make vendor active"
-              (click)="confirmChangeStatus(vendor); $event.stopPropagation()"
-              class="flex !min-h-[32px] w-full items-center justify-center rounded-[9px] border-0 bg-[#b3123b] px-1 py-1 !font-sans !text-[9px] !font-extrabold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-95 sm:!text-[10px]"
-            >
-              Make Active
-            </button>
-          }
-        </div>
-      </article>
-    }
+                    <img
+                      [src]="vendor.image"
+                      [alt]="vendor.storeName"
+                      class="block h-full w-full object-cover"
+                      loading="lazy"
+                      (error)="onVendorImageError($event)"
+                    />
 
-    <!-- NO RESULTS: only after loading finishes -->
-    @if (filteredVendors.length === 0) {
-      <div class="col-span-3 flex flex-col items-center justify-center px-5 py-14 text-center">
-        <div class="mb-4 flex !h-[64px] !w-[64px] items-center justify-center rounded-full bg-[#f7e9bd] text-[#8f071f]">
-          <ion-icon name="people-outline" class="!text-[30px]"></ion-icon>
-        </div>
+                  } @else {
 
-        <h3 class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]">
-          No vendors found
-        </h3>
+                    <div
+                      class="flex h-full w-full items-center justify-center bg-[#fffdf7]"
+                    >
+                      <ion-icon
+                        name="people-outline"
+                        class="!text-[28px] !text-[#b7a58f]"
+                      ></ion-icon>
+                    </div>
 
-        <p class="!m-[7px_0_0] max-w-[280px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]">
-          Try changing your search or filter.
-        </p>
-      </div>
-    }
-  </section>
-}
+                  }
+
+                  <!-- STATUS BADGE -->
+                  <span
+                    class="absolute left-1 top-1 rounded-[6px] px-1.5 py-1 !font-sans !text-[9px] !font-bold leading-none shadow-sm sm:!text-[10px]"
+                    [class.!bg-[#e6f4e8]]="vendor.status === 'Active'"
+                    [class.!text-[#24722d]]="vendor.status === 'Active'"
+                    [class.!bg-[#f8e5e7]]="vendor.status !== 'Active'"
+                    [class.!text-[#9e2020]]="vendor.status !== 'Active'"
+                  >
+                    {{ vendor.status }}
+                  </span>
+
+                </div>
+
+                <!-- VENDOR DETAILS -->
+                <div class="min-w-0 flex-1 px-[1px] pb-[1px] pt-1">
+
+                  <!-- STORE NAME -->
+              <h2
+  class="!m-0 truncate !font-sans !text-[13px] !font-extrabold !leading-[1.3] !text-[#17233c] sm:!text-[14px]"
+>
+  {{ vendor.storeName }}
+</h2>
+
+                  <!-- VENDOR NAME -->
+                  <p
+                    class="!m-[4px_0_0] truncate !font-sans !text-[11px] !font-semibold !leading-[1.4] !text-[#8f071f] sm:!text-[12px]"
+                  >
+                    {{ vendor.name }}
+                  </p>
+
+                  <!-- LOCATION -->
+                  <div class="mt-2 flex min-w-0 items-start gap-1">
+
+                    <ion-icon
+                      name="location-outline"
+                      class="mt-[2px] shrink-0 !text-[13px] !text-[#8f071f]"
+                    ></ion-icon>
+
+                    <span
+                      class="line-clamp-2 min-w-0 !font-sans !text-[10px] !font-medium !leading-[1.4] !text-[#806b68] sm:!text-[11px]"
+                    >
+                      {{ vendor.location }}
+                    </span>
+
+                  </div>
+
+                  <!-- MOBILE NUMBER -->
+                  <p
+                    class="!m-[6px_0_0] break-words !font-sans !text-[10px] !font-medium !leading-[1.4] !text-[#806b68] sm:!text-[11px]"
+                  >
+                    {{ vendor.mobileNumber }}
+                  </p>
+
+                </div>
+
+                <!-- CARD ACTIONS -->
+                <div
+                  class="mt-3 flex flex-col gap-1.5 border-t border-[#eadfcb] pt-2"
+                >
+
+                  @if (vendor.status === 'Active') {
+
+                    <button
+                      type="button"
+                      aria-label="Make vendor inactive"
+                      (click)="confirmChangeStatus(vendor); $event.stopPropagation()"
+                      class="flex !min-h-[34px] w-full items-center justify-center rounded-[9px] border border-[#eadfcb] bg-[#fffdf7] px-1.5 py-1 !font-sans !text-[10px] !font-bold !leading-tight !text-[#8f071f] shadow-[0_2px_7px_rgba(86,48,10,0.05)] transition-transform duration-150 active:scale-95 sm:!text-[11px]"
+                    >
+                      Make Inactive
+                    </button>
+
+                  } @else {
+
+                    <button
+                      type="button"
+                      aria-label="Make vendor active"
+                      (click)="confirmChangeStatus(vendor); $event.stopPropagation()"
+                      class="flex !min-h-[34px] w-full items-center justify-center rounded-[9px] border-0 bg-[#b3123b] px-1.5 py-1 !font-sans !text-[10px] !font-bold !leading-tight !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-95 sm:!text-[11px]"
+                    >
+                      Make Active
+                    </button>
+
+                  }
+
+                </div>
+
+              </article>
+
+            }
+
+            <!-- NO RESULTS -->
+            @if (filteredVendors.length === 0) {
+
+              <div
+                class="col-span-3 flex flex-col items-center justify-center px-5 py-14 text-center"
+              >
+
+                <div
+                  class="mb-4 flex !h-[64px] !w-[64px] items-center justify-center rounded-full bg-[#f7e9bd] text-[#8f071f]"
+                >
+                  <ion-icon
+                    name="people-outline"
+                    class="!text-[30px]"
+                  ></ion-icon>
+                </div>
+
+                <h3
+                  class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-tight !text-[#17233c]"
+                >
+                  No vendors found
+                </h3>
+
+                <p
+                  class="!m-[8px_0_0] max-w-[280px] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
+                >
+                  Try changing your search or filter.
+                </p>
+
+              </div>
+
+            }
+
+          </section>
+
+        }
+
       </section>
+
     </main>
+
   </div>
 
   <!-- STATUS CONFIRMATION MODAL -->
   @if (showStatusConfirmation && selectedVendorForStatus) {
+
     <div
       class="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(20,15,5,0.38)] px-5"
       (click)="cancelStatusChange()"
     >
+
       <div
         class="w-full max-w-[320px] overflow-hidden rounded-[16px] bg-[#fffdf7] shadow-[0_8px_30px_rgba(50,20,0,0.20)]"
         (click)="$event.stopPropagation()"
@@ -300,12 +452,18 @@
         <div
           class="relative flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-10"
         >
+
           <div class="relative z-20 flex flex-col items-center">
+
             <div
               class="flex !h-[38px] !w-[38px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
             >
-              <ion-icon name="people-outline" class="!text-[20px]"></ion-icon>
+              <ion-icon
+                name="people-outline"
+                class="!text-[20px]"
+              ></ion-icon>
             </div>
+
           </div>
 
           <img
@@ -314,78 +472,89 @@
             aria-hidden="true"
             class="pointer-events-none absolute right-0 top-0 z-10 h-full w-auto select-none object-contain opacity-[0.85]"
           />
+
         </div>
 
         <!-- MODAL CONTENT -->
         <div class="px-5 pb-5 pt-4 text-center">
 
           @if (selectedVendorForStatus.status === 'Active') {
+
             <h2
-              class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+              class="!m-0 !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
             >
               Make Vendor Inactive?
             </h2>
 
             <p
-              class="!m-[8px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+              class="!m-[8px_0_0] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
             >
               Are you sure you want to make
-              <span class="!font-bold !text-[#8f071f]">
+              <span class="!font-sans !font-bold !text-[#8f071f]">
                 {{ selectedVendorForStatus.storeName }}
               </span>
               inactive?
             </p>
+
           } @else {
+
             <h2
-              class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+              class="!m-0 !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
             >
               Make Vendor Active?
             </h2>
 
             <p
-              class="!m-[8px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+              class="!m-[8px_0_0] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
             >
               Are you sure you want to make
-              <span class="!font-bold !text-[#8f071f]">
+              <span class="!font-sans !font-bold !text-[#8f071f]">
                 {{ selectedVendorForStatus.storeName }}
               </span>
               active?
             </p>
+
           }
 
           <!-- SUCCESS MESSAGE -->
           @if (statusSuccessMessage) {
+
             <div
               class="mt-4 rounded-[9px] border border-[#c9e6cc] bg-[#eef8ef] px-3 py-2"
             >
               <p
-                class="!m-0 !font-sans !text-[9px] !font-semibold !leading-[1.4] !text-[#2e7d32]"
+                class="!m-0 !font-sans !text-[12px] !font-semibold !leading-[1.4] !text-[#2e7d32]"
               >
                 {{ statusSuccessMessage }}
               </p>
             </div>
+
           }
 
           <!-- ERROR MESSAGE -->
           @if (statusErrorMessage) {
+
             <div
               class="mt-4 rounded-[9px] border border-[#ecd0d0] bg-[#fdf0f0] px-3 py-2"
             >
               <p
-                class="!m-0 !font-sans !text-[9px] !font-semibold !leading-[1.4] !text-[#9e2020]"
+                class="!m-0 !font-sans !text-[12px] !font-semibold !leading-[1.4] !text-[#9e2020]"
               >
                 {{ statusErrorMessage }}
               </p>
             </div>
+
           }
 
           <!-- MODAL ACTIONS -->
           @if (!isChangingStatus) {
+
             <div class="mt-5 flex gap-2.5">
+
               <button
                 type="button"
                 (click)="cancelStatusChange()"
-                class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#eadfcb] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#806b68] transition duration-150 active:scale-[0.98]"
+                class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#eadfcb] !bg-white px-3 !font-sans !text-[12px] !font-bold !text-[#806b68] transition duration-150 active:scale-[0.98]"
               >
                 Cancel
               </button>
@@ -393,7 +562,7 @@
               <button
                 type="button"
                 (click)="confirmStatusChange()"
-                class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98]"
+                class="flex min-h-[42px] flex-1 !items-center !justify-center !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98]"
               >
                 @if (selectedVendorForStatus.status === 'Active') {
                   Make Inactive
@@ -401,8 +570,11 @@
                   Make Active
                 }
               </button>
+
             </div>
+
           } @else {
+
             <div
               class="mt-5 flex min-h-[42px] items-center justify-center gap-2 rounded-[10px] bg-[#f7e9bd]"
             >
@@ -410,13 +582,21 @@
                 class="h-[16px] w-[16px] animate-spin rounded-full border-[2px] border-[#d8c59b] border-t-[#8f071f]"
               ></div>
 
-              <span class="!font-sans !text-[10px] !font-bold !text-[#806b68]">
+              <span
+                class="!font-sans !text-[12px] !font-bold !text-[#806b68]"
+              >
                 Updating vendor...
               </span>
             </div>
+
           }
+
         </div>
+
       </div>
+
     </div>
+
   }
+
 </ion-content>

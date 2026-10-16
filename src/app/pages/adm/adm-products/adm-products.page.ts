@@ -11,11 +11,15 @@ import {
   IonSelectOption,
   IonSelect,
   AlertController,
-  ToastController
+  ToastController,
+  Platform,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
+import { Subscription } from 'rxjs';
 
 import {
   arrowBackOutline,
@@ -47,7 +51,9 @@ import {
     IonIcon,
     FormsModule,
     IonSelectOption,
-    IonSelect
+    IonSelect,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class AdmProductsPage implements OnInit, OnDestroy {
@@ -55,7 +61,7 @@ export class AdmProductsPage implements OnInit, OnDestroy {
   // =====================================================
   // CATEGORIES
   // =====================================================
-
+private backButtonSubscription?: Subscription;
   categories: Category[] = [];
 
   // =====================================================
@@ -66,6 +72,7 @@ export class AdmProductsPage implements OnInit, OnDestroy {
   isLoadingProducts = false;
   productErrorMessage = '';
   showLogoutConfirmation = false;
+  private activeRefresher: HTMLIonRefresherElement | null = null;
 
   // =====================================================
   // SEARCH
@@ -129,13 +136,14 @@ export class AdmProductsPage implements OnInit, OnDestroy {
   // CONSTRUCTOR
   // =====================================================
 
-  constructor(
-    private router: Router,
-    private cdr: ChangeDetectorRef,
-    private productService: ProductService,
-    private alertController: AlertController,
-    private toastController: ToastController
-  ) {
+constructor(
+  private router: Router,
+  private cdr: ChangeDetectorRef,
+  private productService: ProductService,
+  private alertController: AlertController,
+  private toastController: ToastController,
+  private platform: Platform
+)  {
     addIcons({
       arrowBackOutline,
       searchOutline,
@@ -153,20 +161,63 @@ export class AdmProductsPage implements OnInit, OnDestroy {
   // INIT
   // =====================================================
 
-  ngOnInit(): void {
-    this.loadCategories();
-    this.loadAdminProducts();
+
+handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.refreshRequestsRemaining = 2;
+
+  this.loadCategories();
+  this.loadAdminProducts();
+}
+
+private refreshRequestsRemaining = 0;
+
+private completeRefreshRequest(): void {
+  if (!this.activeRefresher) {
+    return;
   }
+
+  this.refreshRequestsRemaining--;
+
+  if (this.refreshRequestsRemaining <= 0) {
+    const refresher = this.activeRefresher;
+    this.activeRefresher = null;
+    this.refreshRequestsRemaining = 0;
+
+    void refresher.complete();
+  }
+}
+
+
+
+
+ngOnInit(): void {
+  this.loadCategories();
+  this.loadAdminProducts();
+
+
+}
+
+
+ionViewWillEnter(): void {
+  this.loadCategories();
+
+    this.loadAdminProducts();
+}
 
   // =====================================================
   // DESTROY
   // =====================================================
 
-  ngOnDestroy(): void {
-    this.revokePreviewUrls();
+ngOnDestroy(): void {
+  this.backButtonSubscription?.unsubscribe();
 
-    document.body.classList.remove('adm-modal-open');
-  }
+  this.revokePreviewUrls();
+
+  document.body.classList.remove('adm-modal-open');
+}
 
   // =====================================================
   // TOAST MESSAGE
@@ -209,6 +260,8 @@ export class AdmProductsPage implements OnInit, OnDestroy {
         this.products = response?.products ?? [];
 
         this.isLoadingProducts = false;
+
+this.completeRefreshRequest();
         this.cdr.detectChanges();
       },
 
@@ -216,6 +269,8 @@ export class AdmProductsPage implements OnInit, OnDestroy {
         console.error('Admin Products API Error:', error);
 
         this.isLoadingProducts = false;
+
+this.completeRefreshRequest();
 
         this.productErrorMessage =
           error?.error?.message ||
@@ -235,11 +290,15 @@ export class AdmProductsPage implements OnInit, OnDestroy {
     this.productService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories ?? [];
+
+this.completeRefreshRequest();
         this.cdr.detectChanges();
       },
 
       error: (error) => {
         console.error('Failed to load categories:', error);
+
+this.completeRefreshRequest();
       }
     });
   }

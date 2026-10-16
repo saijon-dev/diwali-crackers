@@ -26,13 +26,18 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "src/assets",
-                "output": "assets"
-              }
-            ],
+       
+"assets": [
+  {
+    "glob": "**/*",
+    "input": "src/assets",
+    "output": "assets",
+    "ignore": [
+      "**/apple-splash-*.png"
+    ]
+  }
+],
+
             "styles": ["src/global.scss", "src/theme/variables.scss"],
             "scripts": [],
             "browser": "src/main.ts"

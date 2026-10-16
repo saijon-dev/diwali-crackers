@@ -15,7 +15,9 @@ import {
   IonContent,
   IonIcon,
   IonButton,
-  ToastController
+  ToastController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -54,7 +56,9 @@ import {
     IonContent,
     IonIcon,
     IonButton,
-    FormsModule
+    FormsModule,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class AdmEditPage implements OnInit {
@@ -75,6 +79,12 @@ export class AdmEditPage implements OnInit {
   storeImagePreview: string | null = null;
 
   isStoreImageRemoved = false;
+
+  hasChanges = false;
+
+private originalVendorSnapshot = '';
+
+private activeRefresher: HTMLIonRefresherElement | null = null;
 
 
   constructor(
@@ -124,33 +134,83 @@ export class AdmEditPage implements OnInit {
      INITIALIZE
   ========================================== */
 
-  ngOnInit(): void {
-
-    const id =
-      this.route.snapshot.paramMap.get('id');
 
 
-    if (
-      !id ||
-      !Number.isInteger(Number(id)) ||
-      Number(id) <= 0
-    ) {
 
-      this.errorMessage =
-        'Vendor ID not found.';
+  handleRefresh(event: CustomEvent): void {
+  const refresher =
+    event.target as HTMLIonRefresherElement;
 
-      this.isLoading = false;
+  // Do not discard unsaved form or image changes.
+  if (this.isSaving || this.hasChanges) {
+    void refresher.complete();
 
-      return;
+    void this.showToast(
+      this.isSaving
+        ? 'Please wait until the update finishes.'
+        : 'Save or discard your changes before refreshing.'
+    );
 
-    }
-
-
-    this.vendorId = Number(id);
-
-    this.loadVendor();
-
+    return;
   }
+
+  this.activeRefresher = refresher;
+  this.loadVendor();
+}
+
+private completeRefresh(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  void refresher.complete();
+}
+
+ngOnInit(): void {
+  const id = this.route.snapshot.paramMap.get('id');
+
+  if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+    this.errorMessage = 'Vendor ID not found.';
+    this.isLoading = false;
+    return;
+  }
+
+  this.vendorId = Number(id);
+
+  const navigationVendor = history.state?.vendor;
+
+  if (
+    navigationVendor &&
+    Number(navigationVendor.id) === this.vendorId
+  ) {
+    this.vendor = {
+      userId: this.vendorId,
+      name: navigationVendor.name ?? '',
+      email: navigationVendor.email ?? '',
+      mobileNumber: navigationVendor.mobileNumber ?? '',
+      storeName: navigationVendor.storeName ?? '',
+      address: navigationVendor.address ?? '',
+      city: navigationVendor.city ?? '',
+      state: navigationVendor.state ?? '',
+      pincode: navigationVendor.pincode ?? '',
+      latitude: null,
+      longitude: null,
+      deliveryRadiusKm: null,
+      status: navigationVendor.status === 'Active'
+        ? 'ACTIVE'
+        : 'INACTIVE',
+      createdAt: '',
+      diwaliStoreImageKey: null,
+      diwaliStoreImageUrl: navigationVendor.image ?? null
+    };
+  }
+
+  // Always load the complete vendor details.
+  this.loadVendor();
+}
 
 
   /* =========================================
@@ -212,7 +272,11 @@ export class AdmEditPage implements OnInit {
 
           this.isLoading = false;
 
+          this.completeRefresh();
+
           this.cdr.detectChanges();
+
+          this.hasChanges = false;
 
           return;
 
@@ -253,6 +317,9 @@ this.vendor = {
     selectedVendor.diwaliStoreImageUrl ?? null
 };
 
+this.isEditing = true;
+this.captureOriginalVendorState();
+
 
         this.isLoading = false;
 
@@ -272,6 +339,8 @@ this.vendor = {
         this.vendor = null;
 
         this.isLoading = false;
+
+        this.completeRefresh();
 
 
         this.errorMessage =
@@ -449,6 +518,8 @@ this.vendor = {
 
     this.cdr.detectChanges();
 
+    this.refreshHasChanges();
+
   }
 
 
@@ -489,6 +560,8 @@ this.vendor = {
 
 
     this.cdr.detectChanges();
+
+    this.refreshHasChanges();
 
   }
 
@@ -722,20 +795,13 @@ this.vendorService.updateVendor(
      GO BACK
   ========================================== */
 
-  goBack(): void {
-
-    if (this.isSaving) {
-
-      return;
-
-    }
-
-
-    this.router.navigate([
-      '/tabs/adm-vendors'
-    ]);
-
+goBack(): void {
+  if (this.isSaving) {
+    return;
   }
+
+  window.history.back();
+}
 
 
   /* =========================================
@@ -747,6 +813,41 @@ this.vendorService.updateVendor(
     this.loadVendor();
 
   }
+
+
+  private getVendorSnapshot(): string {
+  if (!this.vendor) {
+    return '';
+  }
+
+  return JSON.stringify({
+    name: this.vendor.name,
+    email: this.vendor.email,
+    mobileNumber: this.vendor.mobileNumber,
+    storeName: this.vendor.storeName,
+    address: this.vendor.address,
+    city: this.vendor.city,
+    state: this.vendor.state,
+    pincode: this.vendor.pincode,
+    deliveryRadiusKm: this.vendor.deliveryRadiusKm
+  });
+}
+
+private captureOriginalVendorState(): void {
+  this.originalVendorSnapshot = this.getVendorSnapshot();
+  this.hasChanges = false;
+}
+
+onVendorFieldChange(): void {
+  this.refreshHasChanges();
+}
+
+private refreshHasChanges(): void {
+  this.hasChanges =
+    this.getVendorSnapshot() !== this.originalVendorSnapshot ||
+    this.selectedStoreImage !== null ||
+    this.isStoreImageRemoved;
+}
 
 
   private async showToast(

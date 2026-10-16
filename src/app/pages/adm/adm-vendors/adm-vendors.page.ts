@@ -11,7 +11,9 @@ import { Router } from '@angular/router';
 import {
   IonContent,
   IonIcon,
-  IonBackButton
+  IonBackButton,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -89,7 +91,9 @@ type VendorStatus =
     IonContent,
     IonIcon,
     FormsModule,
-    IonBackButton
+    IonBackButton,
+      IonRefresher,
+  IonRefresherContent
   ]
 })
 export class AdmVendorsPage implements OnInit {
@@ -141,6 +145,8 @@ export class AdmVendorsPage implements OnInit {
 
   statusErrorMessage = '';
 
+  private activeRefresher: HTMLIonRefresherElement | null = null;
+
 
   constructor(
     private router: Router,
@@ -176,6 +182,26 @@ export class AdmVendorsPage implements OnInit {
 
   }
 
+
+
+  
+handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.loadVendors();
+}
+
+private completeRefresh(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  void refresher.complete();
+}
 
   /* =========================================
      INITIALIZE
@@ -250,6 +276,7 @@ export class AdmVendorsPage implements OnInit {
 
 
           this.isLoading = false;
+          this.completeRefresh();
 
           this.cdr.detectChanges();
 
@@ -267,11 +294,14 @@ export class AdmVendorsPage implements OnInit {
           this.vendors = [];
 
           this.isLoading = false;
+              this.completeRefresh();
 
 
           this.errorMessage =
             this.getBackendMessage(error) ||
             'Unable to load vendors. Please try again later.';
+
+        
 
 
           this.cdr.detectChanges();
@@ -311,6 +341,7 @@ export class AdmVendorsPage implements OnInit {
 
 
             this.isLoading = false;
+            this.completeRefresh();
 
             this.cdr.detectChanges();
 
@@ -328,11 +359,13 @@ export class AdmVendorsPage implements OnInit {
             this.vendors = [];
 
             this.isLoading = false;
+            this.completeRefresh();
 
 
             this.errorMessage =
               this.getBackendMessage(error) ||
               'Unable to load active vendors. Please try again later.';
+
 
 
             this.cdr.detectChanges();
@@ -370,6 +403,7 @@ export class AdmVendorsPage implements OnInit {
 
 
           this.isLoading = false;
+              this.completeRefresh();
 
           this.cdr.detectChanges();
 
@@ -387,6 +421,8 @@ export class AdmVendorsPage implements OnInit {
           this.vendors = [];
 
           this.isLoading = false;
+
+              this.completeRefresh();
 
 
           this.errorMessage =
@@ -888,7 +924,14 @@ openVendor(vendor: Vendor): void {
     return;
   }
 
-  this.router.navigate(['/tabs/adm-edit', vendor.id]);
+  this.router.navigate(
+    ['/tabs/adm-edit', vendor.id],
+    {
+      state: {
+        vendor: { ...vendor }
+      }
+    }
+  );
 }
 
 

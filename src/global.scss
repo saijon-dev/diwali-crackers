@@ -1,212 +1,198 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-
- @import "tailwindcss";
-
-/* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
-@import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
-@import "@ionic/angular/css/typography.css";
-@import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
-@import "@ionic/angular/css/flex-utils.css";
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
-
-
-
-
-/* ======================================================
-   DIWALI CONFIRM ALERT
-====================================================== */
-
-ion-alert.diwali-confirm-alert {
-
-  --width: min(88%, 360px);
-
-  --max-width: 360px;
-
-  --backdrop-opacity: 0.42;
-
-}
-
-
-/* ALERT BOX */
-
-ion-alert.diwali-confirm-alert::part(container) {
-
-  border-radius: 20px;
-
-}
-
-
-/* ALERT HEADER */
-
-ion-alert.diwali-confirm-alert .alert-head {
-
-  padding:
-    20px 20px 8px;
-
-}
-
-
-ion-alert.diwali-confirm-alert .alert-title {
-
-  color:
-    #17233c;
-
-  font-family:
-    Georgia, serif;
-
-  font-size: 19px;
-
-  font-weight: 700;
-
-}
-
-
-/* ALERT MESSAGE */
-
-ion-alert.diwali-confirm-alert .alert-message {
-
-  padding:
-    5px 20px 18px;
-
-  color:
-    #6e6a60;
-
-  font-family:
-    'Poppins', sans-serif;
-
-  font-size: 11px;
-
-  line-height: 1.5;
-
-}
-
-
-/* ALERT BUTTON AREA */
-
-ion-alert.diwali-confirm-alert .alert-button-group {
-
-  padding:
-    8px 12px 12px;
-
-  gap: 8px;
-
-}
-
-
-/* BOTH BUTTONS */
-
-ion-alert.diwali-confirm-alert .alert-button {
-
-  min-height: 40px;
-
-  margin: 0;
-
-  border-radius: 11px;
-
-  font-family:
-    'Poppins', sans-serif;
-
-  font-size: 11px;
-
-  font-weight: 700;
-
-  text-transform: none;
-
-}
-
-
-/* CANCEL */
-
-ion-alert.diwali-confirm-alert .alert-button-role-cancel {
-
-  background:
-    #f1f1f1;
-
-  color:
-    #17233c;
-
-}
-
-
-/* ORDER */
-
-ion-alert.diwali-confirm-alert .alert-button:not(.alert-button-role-cancel) {
-
-  background:
-    #ef0b1c;
-
-  color:
-    #fff8dc;
-
-}
-
-
-/* ======================================================
-   DIWALI TOAST
-====================================================== */
 
 /*
  * App Global CSS
- * ----------------------------------------------------------------------------
- * Global styles for the entire Ionic + Angular application.
+ * Ionic + Angular + Tailwind
  */
 
+/* Tailwind */
 @import "tailwindcss";
 
-/* Core CSS required for Ionic components */
+/* Core Ionic CSS */
 @import "@ionic/angular/css/core.css";
-
-/* Basic Ionic styles */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional Ionic utilities */
+/* Ionic utility CSS */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/* Ionic Dark Mode */
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+/* Ionic dark mode */
 @import "@ionic/angular/css/palettes/dark.system.css";
 
 
 /* ======================================================
+   GLOBAL DIWALI DESIGN TOKENS
+====================================================== */
+
+:root {
+  --diwali-header-bg: #8f071f;
+  --diwali-header-text: #fff8dc;
+  --diwali-subtitle-text: #f7df9d;
+
+  --diwali-primary: #b3123b;
+  --diwali-primary-pressed: #8f071f;
+  --diwali-cart-red: #ef0b1c;
+
+  --diwali-page-bg: #ffffff;
+  --diwali-card-bg: #fffdf7;
+
+  --diwali-text-primary: #17233c;
+  --diwali-text-secondary: #806b68;
+  --diwali-text-muted: #99917e;
+
+  --diwali-border: #e1d7d2;
+  --diwali-card-radius: 14px;
+
+  /* Typography */
+  --diwali-header-title-size: 20px;
+  --diwali-header-title-size-lg: 22px;
+  --diwali-section-title-size: 18px;
+  --diwali-card-title-size: 15px;
+
+  --diwali-body-size: 14px;
+  --diwali-secondary-size: 12px;
+  --diwali-label-size: 11px;
+
+  /* Extra-bold headings */
+  --diwali-heading-weight: 800;
+
+  /* Shadows */
+  --diwali-card-shadow: 0 3px 12px rgba(86, 48, 10, 0.07);
+  --diwali-button-shadow: 0 3px 9px rgba(143, 7, 31, 0.16);
+
+
+  /* ====================================================
+     SAFE AREA SUPPORT — ANDROID & IOS
+  ==================================================== */
+
+  --app-safe-area-top:
+    var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+
+  --app-safe-area-bottom:
+    var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+
+  --app-safe-area-left:
+    var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+
+  --app-safe-area-right:
+    var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
+
+/* ======================================================
+   SAFE AREA UTILITY CLASSES
+====================================================== */
+
+.safe-area-top {
+  padding-top: var(--app-safe-area-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--app-safe-area-bottom);
+}
+
+.safe-area-horizontal {
+  padding-left: var(--app-safe-area-left);
+  padding-right: var(--app-safe-area-right);
+}
+
+
+/* ======================================================
+   BOTTOM TAB BAR — SYSTEM NAVIGATION SAFE AREA
+   Supports the reported safe-area inset.
+====================================================== */
+
+ion-tab-bar {
+  padding-bottom: var(--app-safe-area-bottom);
+  box-sizing: content-box;
+}
+
+
+/* ======================================================
+   REUSABLE TYPOGRAPHY
+   Apply selectively to page elements.
+   Do not override the Home Diwali heading globally.
+====================================================== */
+
+.diwali-page-title {
+  font-family: inherit;
+  font-size: var(--diwali-header-title-size);
+  font-weight: var(--diwali-heading-weight);
+  line-height: 1;
+  letter-spacing: 0.1px;
+  color: var(--diwali-header-text);
+}
+
+.diwali-page-subtitle {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--diwali-subtitle-text);
+}
+
+.diwali-section-title {
+  font-family: inherit;
+  font-size: var(--diwali-section-title-size);
+  font-weight: var(--diwali-heading-weight);
+  line-height: 1.25;
+  color: var(--diwali-text-primary);
+}
+
+.diwali-card-title {
+  font-family: inherit;
+  font-size: var(--diwali-card-title-size);
+  font-weight: var(--diwali-heading-weight);
+  line-height: 1.35;
+  color: var(--diwali-text-primary);
+}
+
+.diwali-body-text {
+  font-family: inherit;
+  font-size: var(--diwali-body-size);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--diwali-text-primary);
+}
+
+.diwali-secondary-text {
+  font-family: inherit;
+  font-size: var(--diwali-secondary-size);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--diwali-text-secondary);
+}
+
+
+/* ======================================================
+   REUSABLE DIWALI PRIMARY BUTTON
+====================================================== */
+
+.diwali-primary-button {
+  --background: var(--diwali-primary);
+  --background-activated: var(--diwali-primary-pressed);
+  --background-focused: var(--diwali-primary);
+  --background-hover: var(--diwali-primary);
+  --color: var(--diwali-header-text);
+
+  min-height: 43px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  border-radius: 12px;
+}
+
+
+/* ======================================================
    DIWALI CONFIRM ALERT
+   Use cssClass: 'diwali-confirm-alert'
 ====================================================== */
 
 ion-alert.diwali-confirm-alert {
@@ -224,17 +210,17 @@ ion-alert.diwali-confirm-alert .alert-head {
 }
 
 ion-alert.diwali-confirm-alert .alert-title {
-  color: #17233c;
-  font-family: 'Poppins', sans-serif;
+  color: var(--diwali-text-primary);
+  font-family: inherit;
   font-size: 19px;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 ion-alert.diwali-confirm-alert .alert-message {
   padding: 5px 20px 18px;
   color: #6e6a60;
-  font-family: 'Poppins', sans-serif;
-  font-size: 11px;
+  font-family: inherit;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -247,21 +233,21 @@ ion-alert.diwali-confirm-alert .alert-button {
   min-height: 40px;
   margin: 0;
   border-radius: 11px;
-  font-family: 'Poppins', sans-serif;
-  font-size: 11px;
+  font-family: inherit;
+  font-size: 13px;
   font-weight: 700;
   text-transform: none;
 }
 
 ion-alert.diwali-confirm-alert .alert-button-role-cancel {
   background: #f1f1f1;
-  color: #17233c;
+  color: var(--diwali-text-primary);
 }
 
 ion-alert.diwali-confirm-alert
   .alert-button:not(.alert-button-role-cancel) {
-  background: #b3123b;
-  color: #fff8dc;
+  background: var(--diwali-primary);
+  color: var(--diwali-header-text);
 }
 
 
@@ -271,70 +257,117 @@ ion-alert.diwali-confirm-alert
 ====================================================== */
 
 ion-toast.diwali-toast {
-  /* Festive cream background */
-  --background: #fffdf7;
-  --color: #17233c;
+  transform: translateY(-80px);
+  --background: #b3123b;
+  --color: #ffffff;
+  --border-radius: 5px;
+  --min-height: 0;
+  --width: fit-content;
+  --max-width: calc(100% - 48px);
+  --icon-color: #ffffff;
+  --button-color: #ffffff;
+  --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 
-  /* Toast shape and spacing */
-  --border-radius: 13px;
-  --min-height: 54px;
-  --max-width: 420px;
-  --width: calc(100% - 32px);
-
-  /* Maroon icon and close button */
-  --icon-color: #8f071f;
-  --button-color: #8f071f;
-
-  /* Soft shadow */
-  --box-shadow: 0 8px 25px rgba(23, 35, 60, 0.16);
-
-  /* Horizontal viewport spacing */
-  --start: 16px;
-  --end: 16px;
-
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.45;
-
-  /* Keep toast above ordinary page content */
-  z-index: 99999;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 12px;
 }
 
-/* Maroon festive accent strip */
 ion-toast.diwali-toast::part(container) {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid #eadfcb;
-  border-left: 5px solid #8f071f;
-  border-radius: 13px;
-  background: #fffdf7;
-  box-shadow: 0 8px 25px rgba(23, 35, 60, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid #b3123b;
+  border-radius: 5px;
+  background: #b3123b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Toast message typography */
 ion-toast.diwali-toast::part(message) {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  color: #17233c;
-  font-family: 'Poppins', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.45;
+  flex: 0 1 auto;
+  padding: 1px 8px;
+  margin: 0;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 12px;
+  text-align: center;
 }
 
-/* Optional toast icon */
 ion-toast.diwali-toast::part(icon) {
-  color: #8f071f;
+  flex-shrink: 0;
+  margin-inline-start: 7px;
+  margin-inline-end: -4px;
+  color: #ffffff;
+  font-size: 12px;
 }
 
-/* Close button, when enabled */
 ion-toast.diwali-toast::part(button) {
-  color: #8f071f;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 700;
+  align-self: center;
+  margin-inline-end: 5px;
+  padding: 0 3px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 
+/* ======================================================
+   RESPONSIVE TYPOGRAPHY
+====================================================== */
+
+@media (min-width: 640px) {
+  .diwali-page-title {
+    font-size: var(--diwali-header-title-size-lg);
+  }
+}
 
 
+/* ======================================================
+   CONTENT SAFE AREA
+====================================================== */
+
+ion-content.safe-area-maroon {
+  --background: #ffffff;
+  --padding-top: var(--app-safe-area-top);
+}
+
+ion-content {
+  --padding-top: var(--app-safe-area-top);
+}
+
+
+/* ======================================================
+   STATUS BAR BACKGROUND
+====================================================== */
+
+.status-bar-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--app-safe-area-top);
+  background: #8f071f;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+
+/* ======================================================
+   CHECKOUT MODAL — MOBILE
+====================================================== */
+
+@media (max-width: 640px) {
+  ion-modal.checkout-modal {
+    --height: 100%;
+    --width: 100%;
+    --max-width: 100%;
+    --border-radius: 0;
+    --box-shadow: none;
+  }
+}

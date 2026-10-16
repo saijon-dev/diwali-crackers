@@ -48,89 +48,128 @@ export class LocationService {
      CHECK LOCATION PERMISSION
   ==================================================== */
 
-  async checkPermission(): Promise<string> {
 
-    /*
-     * Browser
-     */
-
-    if (!this.isNativePlatform()) {
-
-      return 'prompt';
-
-    }
-
-
-    /*
-     * Android / Native
-     */
-
-    const permissions =
-      await Geolocation.checkPermissions();
-
-    return permissions.location;
-
+async checkPermission(): Promise<string> {
+  if (!Capacitor.isNativePlatform()) {
+    return 'prompt';
   }
 
+  try {
+    const permissions = await Geolocation.checkPermissions();
 
-  /* ====================================================
-     REQUEST LOCATION PERMISSION
-  ==================================================== */
-
-  async requestPermission(): Promise<string> {
-
-    /*
-     * Browser
-     *
-     * Browser permission is requested automatically
-     * when navigator.geolocation.getCurrentPosition()
-     * is called.
-     */
-
-    if (!this.isNativePlatform()) {
-
-      return 'prompt';
-
+    if (!permissions || typeof permissions !== 'object') {
+      throw new Error(
+        'Geolocation returned an invalid permission status.'
+      );
     }
 
+    if (
+      permissions.location === 'granted' ||
+      permissions.coarseLocation === 'granted'
+    ) {
+      return 'granted';
+    }
 
-    /*
-     * Android / Native
-     */
+    return 'denied';
+  } catch (error: unknown) {
+    console.error('Location permission check failed:', error);
+    throw error;
+  }
+}
 
-    const permissions =
-      await Geolocation.requestPermissions();
-
-    return permissions.location;
-
+async requestPermission(): Promise<string> {
+  if (!Capacitor.isNativePlatform()) {
+    return 'prompt';
   }
 
+  try {
+    const permissions = await Geolocation.requestPermissions({
+      permissions: ['location', 'coarseLocation']
+    });
 
-  /* ====================================================
-     GET CURRENT LOCATION
-  ==================================================== */
-/* ====================================================
-   GET CURRENT LOCATION
-==================================================== */
+    if (!permissions || typeof permissions !== 'object') {
+      throw new Error(
+        'Geolocation returned an invalid permission response.'
+      );
+    }
+
+    if (
+      permissions.location === 'granted' ||
+      permissions.coarseLocation === 'granted'
+    ) {
+      return 'granted';
+    }
+
+    return 'denied';
+  } catch (error: unknown) {
+    console.error('Location permission request failed:', error);
+    throw error;
+  }
+}
 
 async getCurrentLocation(): Promise<UserLocation> {
+  if (Capacitor.isNativePlatform()) {
+    try {
+      // Request permission directly. Android will not show
+      // another dialog if the required permission is granted.
+      const permission = await this.requestPermission();
 
-  /*
-   * TESTING LOCATION
-   * Vizag / Visakhapatnam
-   */
+      if (permission !== 'granted') {
+        throw new Error(
+          'Location permission was denied. Allow location access in Android Settings.'
+        );
+      }
+
+      const position = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 0
+      });
+
+      const location: UserLocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy
+      };
+
+      console.log('NATIVE GPS COORDINATES:', location);
+
+      return location;
+    } catch (error: unknown) {
+      console.error('Native location retrieval failed:', error);
+      throw error;
+    }
+  }
+
+  // Browser location: use Chrome/Edge's geolocation API.
+  if (!navigator.geolocation) {
+    throw new Error(
+      'Geolocation is not supported by this browser.'
+    );
+  }
+
+  const position = await new Promise<GeolocationPosition>(
+    (resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        resolve,
+        reject,
+        {
+          enableHighAccuracy: false,
+          timeout: 30000,
+          maximumAge: 0
+        }
+      );
+    }
+  );
 
   return {
-
-    latitude: 17.6868,
-
-    longitude: 83.2185,
-
-    accuracy: 1000
-
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+    accuracy: position.coords.accuracy
   };
-
 }
+
+
 
 
   /* ====================================================
@@ -303,6 +342,19 @@ private getBrowserLocation():
     );
 
   }
+
+
+  private async getNativePermissions() {
+  const permissions = await Geolocation.checkPermissions();
+
+  if (!permissions || typeof permissions !== 'object') {
+    throw new Error(
+      'Unable to read the device location permission status.'
+    );
+  }
+
+  return permissions;
+}
 
 
   /* ====================================================

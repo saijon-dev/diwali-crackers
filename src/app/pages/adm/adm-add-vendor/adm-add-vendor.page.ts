@@ -129,15 +129,14 @@ export class AdmAddVendorPage implements OnDestroy {
         ]
       ],
 
-      email: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-          Validators.pattern(/^[^\s@]+@[^\s@]+\.com$/)
-        ]
-      ],
-
+  email: [
+  '',
+  [
+    Validators.required,
+    Validators.email,
+    Validators.pattern(/^[^\s@]+@[^\s@]+\.com$/)
+  ]
+],
       mobileNumber: [
         '',
         [
@@ -264,7 +263,8 @@ export class AdmAddVendorPage implements OnDestroy {
   // =========================================
 
   goBack(): void {
-    this.router.navigate(['/tabs/adm-vendors']);
+  
+  window.history.back();
   }
 
   // =========================================
@@ -396,12 +396,17 @@ onImageSelected(event: Event): void {
 // SUBMIT
 // =========================================
 
+
 addVendor(): void {
   this.errorMessage = '';
   this.successMessage = '';
 
   if (this.vendorForm.invalid) {
     this.vendorForm.markAllAsTouched();
+    return;
+  }
+
+  if (this.isLoading) {
     return;
   }
 
@@ -428,38 +433,44 @@ addVendor(): void {
       // =========================================
       // SUCCESS / API RESPONSE
       // =========================================
-next: response => {
-  this.isLoading = false;
+      next: response => {
+        this.isLoading = false;
 
-  console.log('Vendor created:', response);
+        console.log('Vendor created:', response);
 
-  const backendMessage =
-    response?.message?.toString().trim();
+        const backendMessage =
+          response?.message?.toString().trim();
 
-  if (response?.success === false) {
-    this.errorMessage =
-      backendMessage ||
-      'Unable to add vendor. Please try again later.';
+        // Handle an unsuccessful API response.
+        if (response?.success === false) {
+          this.errorMessage =
+            backendMessage ||
+            'Unable to add vendor. Please try again later.';
 
-    void this.showToast(this.errorMessage, false);
-    return;
-  }
+          void this.showToast(this.errorMessage, false);
+          return;
+        }
 
-  this.successMessage =
-    backendMessage || 'Vendor added successfully.';
+        // Save the success message before clearing the form.
+        const successMessage =
+          backendMessage || 'Vendor added successfully.';
 
-  void this.showToast(this.successMessage, true);
+        // Clear all previous vendor details and image.
+        this.clearForm();
 
-  setTimeout(() => {
-    this.router.navigate(['/tabs/adm-vendors']);
-  }, 3000);
-},
+        this.successMessage = successMessage;
 
+        void this.showToast(this.successMessage, true);
+
+        // Navigate back to the vendor listing.
+        setTimeout(() => {
+          void this.router.navigate(['/tabs/adm-vendors']);
+        }, 3000);
+      },
 
       // =========================================
       // ERROR RESPONSE
       // =========================================
-
       error: (error: unknown) => {
         this.isLoading = false;
 
@@ -475,90 +486,63 @@ next: response => {
         console.error('Response body:', apiError.error);
         console.error('Message:', apiError.message);
 
-
         // =========================================
         // EXTRACT BACKEND MESSAGE
         // =========================================
-
         let backendMessage = '';
 
-
-        // Response body is an object
+        // Response body is an object.
         if (
           apiError.error &&
           typeof apiError.error === 'object'
         ) {
-
-          const responseBody =
-            apiError.error as {
-              message?: unknown;
-              error?: unknown;
-              details?: unknown;
-            };
+          const responseBody = apiError.error as {
+            message?: unknown;
+            error?: unknown;
+            details?: unknown;
+          };
 
           if (
             typeof responseBody.message === 'string' &&
             responseBody.message.trim()
           ) {
-            backendMessage =
-              responseBody.message.trim();
-          }
-
-          // Some APIs may return message inside "error"
-          else if (
+            backendMessage = responseBody.message.trim();
+          } else if (
             typeof responseBody.error === 'string' &&
             responseBody.error.trim()
           ) {
-            backendMessage =
-              responseBody.error.trim();
-          }
-
-          // Some APIs may return details
-          else if (
+            backendMessage = responseBody.error.trim();
+          } else if (
             typeof responseBody.details === 'string' &&
             responseBody.details.trim()
           ) {
-            backendMessage =
-              responseBody.details.trim();
+            backendMessage = responseBody.details.trim();
           }
         }
 
-
-        // =========================================
-        // RESPONSE BODY IS A STRING
-        // =========================================
-
+        // Response body is a string.
         else if (
           typeof apiError.error === 'string' &&
           apiError.error.trim()
         ) {
-
-          backendMessage =
-            apiError.error.trim();
+          backendMessage = apiError.error.trim();
         }
 
-
-        // =========================================
-        // ANGULAR ERROR MESSAGE
-        // =========================================
-
+        // Angular error message.
         if (
           !backendMessage &&
           typeof apiError.message === 'string' &&
           apiError.message.trim()
         ) {
-          backendMessage =
-            apiError.message.trim();
+          backendMessage = apiError.message.trim();
         }
 
-
-        // =========================================
-        // FINAL ERROR MESSAGE
-        // =========================================
-
+        // Final error message.
         this.errorMessage =
           backendMessage ||
           'Unable to add vendor. Please try again later.';
+
+        void this.showToast(this.errorMessage, false);
       }
     });
 }
@@ -584,4 +568,11 @@ next: response => {
 
   await toast.present();
 }
+
+
+
+ionViewWillEnter(): void {
+  this.clearForm();
+}
+
 }

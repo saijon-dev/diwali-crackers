@@ -13,7 +13,9 @@ import {
   IonContent,
   IonIcon,
   IonInput,
-  IonButton
+  IonButton,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -62,7 +64,9 @@ import { CartService } from '../../services/cart.service';
     IonInput,
     IonButton,
     NgClass,
-    DecimalPipe
+    DecimalPipe,
+    IonRefresher,
+    IonRefresherContent
   ]
 
 })
@@ -75,7 +79,7 @@ export class OrdersPage {
      MOBILE
   ==================================================== */
 
-  customerMobile = '';
+  orderId = '';
 
   searchedMobile = '';
 
@@ -161,7 +165,7 @@ export class OrdersPage {
 
     if (savedMobile) {
 
-      this.customerMobile =
+      this.orderId =
         savedMobile;
 
     }
@@ -169,101 +173,98 @@ export class OrdersPage {
   }
 
 
+
+
+  
+handleRefresh(event: any): void {
+  const refresher = event.target;
+
+  // Refresh the current order if an Order ID is available.
+if (this.orderId.trim()) {
+  this.activeRefresher = refresher;
+  this.searchOrders();
+  return;
+}
+
+  // Nothing to refresh yet.
+  void refresher.complete();
+}
+
+private activeRefresher: any = null;
+
+private completeRefresher(): void {
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  if (refresher && typeof refresher.complete === 'function') {
+    void refresher.complete();
+  }
+}
+
+
+
   /* ====================================================
      SEARCH ORDERS
   ==================================================== */
 
-  searchOrders(): void {
 
-    const mobile =
-      this.customerMobile.trim();
+searchOrders(): void {
+const orderId = this.orderId.trim();
 
+this.orderId = orderId;
 
-    if (!mobile) {
+if (!orderId) {
+  this.errorMessage = 'Please enter a valid Order ID.';
+  return;
+}
 
-      this.errorMessage =
-        'Please enter your mobile number.';
+  this.isSearching = true;
+  this.hasSearched = true;
+  this.showDetails = false;
+  this.selectedOrder = null;
+  this.orderHistory = [];
+  this.orders = [];
 
-      return;
+  this.orderService
+    .getCustomerOrders(orderId)
+ .pipe(
+  finalize(() => {
+    this.isSearching = false;
+    this.completeRefresher();
+    this.cdr.detectChanges();
+  })
+)
+    .subscribe({
+      next: (response: any) => {
+        console.log('CUSTOMER ORDER RESPONSE:', response);
 
-    }
+        // The API returns one order object directly.
+        if (response?.orderId != null) {
+          this.selectedOrder = response as Order;
+          this.searchedMobile = response.customerMobile ?? '';
+          this.showDetails = true;
 
-
-    if (
-      !/^[0-9]{10}$/.test(mobile)
-    ) {
-
-      this.errorMessage =
-        'Please enter a valid 10 digit mobile number.';
-
-      return;
-
-    }
-
-
-    this.errorMessage = '';
-
-    this.isSearching = true;
-
-    this.hasSearched = true;
-
-    this.showDetails = false;
-
-    this.selectedOrder = null;
-
-    this.orderHistory = [];
-
-    this.orders = [];
-
-    this.searchedMobile = mobile;
-
-
-    this.orderService
-      .getCustomerOrders(mobile)
-      .subscribe({
-next: (response) => {
-
-  console.log(
-    'CUSTOMER ORDERS RESPONSE:',
-    response
-  );
-
-
-  this.orders =
-    response?.content ?? [];
-
-
-  console.log(
-    'CUSTOMER ORDERS:',
-    this.orders
-  );
-
-
-  this.isSearching = false;
-
-  this.cdr.detectChanges();
-
-},
-
-
-        error: (error) => {
-
-          console.error(
-            'GET CUSTOMER ORDERS ERROR:',
-            error
-          );
-
-          this.orders = [];
-
-          this.isSearching = false;
-
-          this.cdr.detectChanges();
-
+          this.loadOrderHistory(response.orderId);
+        } else {
+          this.errorMessage = 'No order found for this Order ID.';
         }
+      },
 
-      });
+      error: (error) => {
+        console.error('GET CUSTOMER ORDER ERROR:', error);
 
-  }
+        this.selectedOrder = null;
+        this.showDetails = false;
+
+        this.errorMessage =
+          error?.status === 404
+            ? 'No order found for this Order ID.'
+            : error?.error?.message ||
+              'Unable to retrieve order details. Please try again.';
+      }
+    });
+}
+
 
 
   /* ====================================================
@@ -324,7 +325,7 @@ next: (response) => {
      ORDER HISTORY
   ==================================================== */
 
-private loadOrderHistory(orderId: number): void {
+private loadOrderHistory(orderId: string): void {
   this.isLoadingDetails = true;
   this.orderHistory = [];
 
@@ -556,9 +557,9 @@ private loadOrderHistory(orderId: number): void {
   ==================================================== */
 
   trackOrder(
-    index: number,
+    index: string,
     order: Order
-  ): number {
+  ): string {
 
     return order.orderId;
 
@@ -594,34 +595,25 @@ private loadOrderHistory(orderId: number): void {
     );
 
   }
-
-  goBack(): void {
-
+goBack(): void {
   if (this.showDetails) {
-
-    // Order Details → My Orders
+    // Order Details → Find Order
     this.backToOrders();
     return;
-
   }
 
   if (this.hasSearched) {
-
-    // My Orders → Find My Orders
+    // Search result/error → Find Order
     this.hasSearched = false;
     this.selectedOrder = null;
     this.orderHistory = [];
-    this.orders = [];
-    this.searchedMobile = '';
     this.errorMessage = '';
-
+    this.orderId = '';
     return;
-
   }
 
-  // Find My Orders → Home
+  // Find Order → Previous page
   window.history.back();
-
 }
 
 }

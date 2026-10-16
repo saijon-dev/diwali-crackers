@@ -31,8 +31,21 @@ export interface StoreProfile {
   state: string;
   pincode: string;
   deliveryRadiusKm: number;
+
+  email: string;
+  mobileNumber: string;
 }
 
+export interface UpdateStoreProfileRequest {
+  storeName: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  deliveryRadiusKm: number;
+  email: string;
+  mobileNumber: string;
+}
 
 /* =========================================
    ADD / UPDATE VENDOR RESPONSE
@@ -772,5 +785,61 @@ clearStoreProfileCache(storeId?: number): void {
 
   this.storeProfileCache.clear();
 }
+
+
+/* =========================================
+   UPDATE STORE PROFILE
+
+   PUT /diwali/stores/store-profile/{storeId}
+
+   multipart/form-data:
+   - storeDetails: application/json
+   - image: optional file
+========================================= */
+
+updateStoreProfile(
+  storeId: number,
+  storeDetails: UpdateStoreProfileRequest,
+  image?: File | null
+): Observable<StoreProfile> {
+
+  const formData = new FormData();
+
+  formData.append(
+    'storeDetails',
+    new Blob(
+      [JSON.stringify(storeDetails)],
+      { type: 'application/json' }
+    ),
+    'storeDetails.json'
+  );
+
+  if (image) {
+    formData.append(
+      'image',
+      image,
+      image.name
+    );
+  }
+
+  return this.http.put<StoreProfile>(
+    `${this.storesUrl}/store-profile/${storeId}`,
+    formData
+  ).pipe(
+    tap(response => {
+      if (response) {
+        this.storeProfileCache.set(
+          storeId,
+          response
+        );
+      } else {
+        this.clearStoreProfileCache(storeId);
+      }
+    })
+  );
+}
+
+
+
 
 }

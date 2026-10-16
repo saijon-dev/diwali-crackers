@@ -8,7 +8,9 @@ import {
   IonContent,
   IonIcon,
   IonSelect,
-  IonSelectOption
+  IonSelectOption,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { FormsModule } from '@angular/forms';
@@ -170,7 +172,10 @@ export interface AdminOrderVendor {
 
     FormsModule,
 
-    DecimalPipe
+    DecimalPipe,
+
+    IonRefresher,
+    IonRefresherContent
 
   ]
 
@@ -213,6 +218,10 @@ export class AdmOrdersPage implements OnInit {
   isLoading = false;
 
   errorMessage = '';
+
+
+  private activeRefresher: HTMLIonRefresherElement | null = null;
+private refreshRequestsRemaining = 0;
 
 
   /* =======================================================
@@ -258,6 +267,34 @@ export class AdmOrdersPage implements OnInit {
   }
 
 
+
+
+  handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.refreshRequestsRemaining = 2;
+
+  this.loadVendors();
+  this.loadOrders();
+}
+
+private completeRefreshRequest(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  this.refreshRequestsRemaining--;
+
+  if (this.refreshRequestsRemaining <= 0) {
+    const refresher = this.activeRefresher;
+
+    this.activeRefresher = null;
+    this.refreshRequestsRemaining = 0;
+
+    void refresher.complete();
+  }
+}
   /* =======================================================
      INIT
   ======================================================= */
@@ -285,6 +322,7 @@ export class AdmOrdersPage implements OnInit {
 
           this.vendors =
             response?.vendors || [];
+            this.completeRefreshRequest();
 
           this.cdr.detectChanges();
 
@@ -298,6 +336,7 @@ export class AdmOrdersPage implements OnInit {
           );
 
           this.vendors = [];
+          this.completeRefreshRequest();
 
           this.cdr.detectChanges();
 
@@ -345,6 +384,7 @@ export class AdmOrdersPage implements OnInit {
 
 
           this.isLoading = false;
+          this.completeRefreshRequest();
 
           this.cdr.detectChanges();
 
@@ -364,6 +404,8 @@ export class AdmOrdersPage implements OnInit {
           this.filteredOrders = [];
 
           this.isLoading = false;
+
+          this.completeRefreshRequest();
 
 
           this.errorMessage =

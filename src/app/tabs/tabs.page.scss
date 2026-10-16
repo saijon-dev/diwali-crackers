@@ -225,12 +225,18 @@ ion-tab-button ion-label {
 
 ========================================= */
 
+/* =========================================
+   ACTIVE TAB
+========================================= */
+
 ion-tab-button.tab-selected {
-
-  color: #ed1c24;
-
+  color: #ed1c24 !important;
 }
 
+ion-tab-button.tab-selected ion-icon,
+ion-tab-button.tab-selected ion-label {
+  color: #ed1c24 !important;
+}
 
 /* =========================================
 

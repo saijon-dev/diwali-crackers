@@ -28,6 +28,34 @@ export interface ProductImage {
 }
 
 
+interface ComboProduct {
+  productId: number;
+  productStoreId?: number;
+  productName: string;
+  quantity: number;
+  imageUrl?: string;
+}
+
+interface ComboOffer {
+  comboId: number;
+  comboName: string;
+  description: string;
+  comboImageUrl?: string;
+  comboSellingPrice: number;
+  totalActualPrice: number;
+  discountPercentage: number;
+
+  vendor: {
+    vendorId: number;
+    storeName: string;
+    city?: string;
+  };
+
+  products: ComboProduct[];
+  isAvailable: boolean;
+}
+
+
 /* =========================================================
    PACK UNIT LOOKUP
 ========================================================= */
@@ -38,6 +66,39 @@ export interface LookupUnit {
   lookupId: number;
   lookupValue: string;
   status: string;
+}
+
+export interface VendorCombo {
+  comboId: number;
+  comboName: string;
+  description?: string;
+  comboImageUrl?: string;
+  comboSellingPrice: number;
+  totalActualPrice: number;
+  discountAmount: number;
+  discountPercentage: number;
+  totalProducts: number;
+  totalItemQuantity: number;
+  isAvailable: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  products: {
+    productId: number;
+    productStoreId?: number;
+    productName: string;
+    quantity: number;
+    mrp?: number;
+    sellingPrice?: number;
+    images?: {
+      productImageId?: number;
+      imageUrl: string;
+    }[];
+  }[];
+  vendor?: {
+    vendorId: number;
+    storeName: string;
+    city: string;
+  };
 }
 
 
@@ -319,6 +380,9 @@ private readonly storeProductsCache =
 private readonly allVendorProductsCache =
   new Map<number, ProductPageResponse>();
 
+private readonly vendorCategoryProductsCache =
+  new Map<string, ProductPageResponse>();
+
   private adminProductsCache: AdminProductResponse | null = null;
 
 
@@ -344,6 +408,57 @@ clearAdminProductCache(): void {
   /* =========================================================
      CUSTOMER PRODUCTS
   ========================================================= */
+
+
+
+  getProductDetails(productId: number): Observable<Product> {
+  const cached = this.productDetailsCache.get(productId);
+
+  if (cached) {
+    return of(cached);
+  }
+
+  return this.http
+    .get<Product>(`${this.apiUrl}/products/${productId}`)
+    .pipe(
+      tap(product => {
+        this.productDetailsCache.set(productId, product);
+      })
+    );
+}
+
+
+getCategoryProductsForStore(
+  productStoreId: number,
+  categoryId: number
+): Observable<ProductPageResponse> {
+  const cacheKey = `${productStoreId}_${categoryId}`;
+
+  const cached = this.vendorCategoryProductsCache.get(cacheKey);
+
+  if (cached) {
+    return of(cached);
+  }
+
+  const params = new HttpParams().set(
+    'categoryId',
+    categoryId
+  );
+
+  return this.http
+    .get<ProductPageResponse>(
+      `${this.apiUrl}/products/${productStoreId}/category-products`,
+      { params }
+    )
+    .pipe(
+      tap(response => {
+        this.vendorCategoryProductsCache.set(
+          cacheKey,
+          response
+        );
+      })
+    );
+}
 
   getProducts(
     page: number = 0,
@@ -719,13 +834,15 @@ getProductsByCategory(
     this.categoriesCache = null;
   }
 
-
 clearCustomerCache(): void {
   this.clearProductCache();
   this.clearCategoryCache();
   this.clearCategoryProductsCache();
   this.clearStoreProductsCache();
   this.clearAllVendorProductsCache();
+  this.productDetailsCache.clear();
+  this.productStoreCategoriesCache.clear();
+  this.vendorCategoryProductsCache.clear();
 }
 
 
@@ -796,7 +913,7 @@ updateCategory(
   formData.append('categoryData', categoryBlob);
 
   if (image) {
-    formData.append('categoryImage', image);
+    formData.append('image', image);
   }
 
   return this.http.put(
@@ -1102,6 +1219,7 @@ getPackUnits(): Observable<LookupUnit[]> {
 
 clearCategoryProductsCache(): void {
   this.categoryProductsCache.clear();
+  this.vendorCategoryProductsCache.clear();
 }
 
 clearStoreProductsCache(): void {
@@ -1139,5 +1257,106 @@ getCategoriesByProductStore(
     );
 
 }
+
+
+
+
+addCombo(
+  comboDetails: {
+    comboName: string;
+    description: string;
+    comboSellingPrice: number;
+    products: {
+      productId: number;
+      quantity: number;
+    }[];
+  },
+  image?: File | null
+): Observable<any> {
+  const formData = new FormData();
+
+  const comboBlob = new Blob(
+    [JSON.stringify(comboDetails)],
+    { type: 'application/json' }
+  );
+
+  formData.append('comboDetails', comboBlob);
+
+  if (image) {
+    formData.append('image', image, image.name);
+  }
+
+  return this.http.post(
+    `${this.apiUrl}/diwali/combos`,
+    formData
+  );
+}
+
+getVendorCombos(): Observable<VendorCombo[]> {
+  return this.http.get<VendorCombo[]>(
+    `${this.apiUrl}/diwali/combos/my`
+  );
+}
+
+
+// UPDATE COMBO
+updateCombo(
+  comboId: number,
+  comboDetails: {
+    comboName: string;
+    description: string;
+    comboSellingPrice: number;
+    products: {
+      productId: number;
+      productStoreId: number;
+      quantity: number;
+    }[];
+  },
+  image: File | null
+): Observable<any> {
+  const formData = new FormData();
+
+  formData.append(
+    'comboDetails',
+    new Blob(
+      [JSON.stringify(comboDetails)],
+      { type: 'application/json' }
+    )
+  );
+
+  // Use the same image field name as addCombo().
+  if (image) {
+    formData.append('image', image);
+  }
+
+  return this.http.put<any>(
+    `${this.apiUrl}/diwali/combos/${comboId}`,
+    formData
+  );
+}
+
+// CHANGE COMBO STATUS
+updateComboStatus(
+  comboId: number,
+  status: 'ACTIVE' | 'INACTIVE'
+): Observable<any> {
+  const params = new HttpParams().set('status', status);
+
+  return this.http.put<any>(
+    `${this.apiUrl}/diwali/combos/${comboId}/status`,
+    null,
+    { params }
+  );
+}
+
+
+getCombos(): Observable<ComboOffer[]> {
+  return this.http.get<ComboOffer[]>(
+    `${this.apiUrl}/diwali/combos`
+  );
+}
+
+
+
 
 }

@@ -464,54 +464,32 @@ export class AdminLoginPage implements OnDestroy {
      ROLE BASED REDIRECTION
   ========================================= */
 
-  private redirectByRole(): void {
+private redirectByRole(): void {
+  const role = this.authService.getRole();
 
-    const role =
-      this.authService.getRole();
-
-
-    /* =====================================
-       ADMIN
-    ===================================== */
-
-    if (role === 'ADMIN') {
-
-      this.router.navigate([
-        '/tabs/adm-vendors'
-      ]);
-
-      return;
-
-    }
-
-
-    /* =====================================
-       VENDOR
-    ===================================== */
-
-    if (role === 'VENDOR') {
-
-      this.router.navigate([
-        '/tabs/products'
-      ]);
-
-      return;
-
-    }
-
-
-    /* =====================================
-       UNKNOWN ROLE
-    ===================================== */
-
-    this.errorMessage =
-      'Invalid user role. Please contact the administrator.';
-
-    this.authService.logout();
-
-    this.cdr.detectChanges();
-
+  if (role === 'ADMIN') {
+    this.router.navigate(
+      ['/tabs/products'],
+      { replaceUrl: true }
+    );
+    return;
   }
+
+  if (role === 'VENDOR') {
+    this.router.navigate(
+      ['/tabs/products'],
+      { replaceUrl: true }
+    );
+    return;
+  }
+
+  this.errorMessage =
+    'Invalid user role. Please contact the administrator.';
+
+  this.authService.logout();
+  this.cdr.detectChanges();
+}
+
 
 
   /* =========================================

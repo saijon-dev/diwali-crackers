@@ -5,19 +5,24 @@ import {
   OnInit
 } from '@angular/core';
 
+
+
+
 import {
   FormsModule
 } from '@angular/forms';
 
 import { ElementRef, ViewChild } from '@angular/core';
-
 import {
   IonBadge,
   IonButton,
   IonContent,
   IonIcon,
   IonPopover,
-  IonSearchbar
+  IonSearchbar,
+  IonRefresher,
+  IonRefresherContent,
+  Platform
 } from '@ionic/angular';
 
 import {
@@ -34,23 +39,23 @@ import {
   searchOutline,
   arrowForwardOutline,
   locationOutline,
-  personCircleOutline
+  personCircleOutline,
+  storefrontOutline
 } from 'ionicons/icons';
 
 import {
   Router
 } from '@angular/router';
 
-import {
-  Subscription,
-  finalize
-} from 'rxjs';
+import { Subscription, finalize, interval, take } from 'rxjs';
 
 import {
   Category,
   Product,
   ProductService
 } from '../../services/product.service';
+
+import { LocationService } from '../../services/location.service';
 
 import {
   CartService
@@ -64,6 +69,33 @@ import {
 import {
   FloatingCartComponent
 } from '../../components/floating-cart/floating-cart.component';
+
+interface ComboProduct {
+  productId: number;
+  productStoreId?: number;
+  productName: string;
+  quantity: number;
+  imageUrl?: string;
+}
+
+interface ComboOffer {
+  comboId: number;
+  comboName: string;
+  description: string;
+  comboImageUrl?: string;
+  comboSellingPrice: number;
+  totalActualPrice: number;
+  discountPercentage: number;
+
+  vendor: {
+    vendorId: number;
+    storeName: string;
+    city?: string;
+  };
+
+  products: ComboProduct[];
+  isAvailable: boolean;
+}
 
 
 @Component({
@@ -82,6 +114,9 @@ import {
     IonButton,
     IonBadge,
     IonPopover,
+    IonRefresher,
+    IonRefresherContent,
+
 
     FloatingCartComponent
   ]
@@ -166,6 +201,131 @@ isChangingProductPage = false;
   vendorErrorMessage = '';
 
 
+
+
+
+  /* ====================================================
+   COMBO OFFERS
+==================================================== */
+
+isCombosLoading = false;
+comboErrorMessage = '';
+
+combos: ComboOffer[] = [];
+
+showComboDetails = false;
+selectedCombo: ComboOffer | null = null;
+
+/*
+ * Temporary data until the customer combos GET API
+ * is connected. Replace this with the API response.
+ */
+private readonly mockCombos: ComboOffer[] = [
+  {
+    comboId: 501,
+    comboName: 'Kids Fun Combo',
+    description:
+      'A festive collection for a joyful Diwali celebration.',
+    comboImageUrl: '',
+    comboSellingPrice: 399,
+    totalActualPrice: 500,
+    discountPercentage: 20,
+    vendor: {
+      vendorId: 7,
+      storeName: 'Sri Venkata Ram Crackers',
+      city: 'Hyderabad'
+    },
+    products: [
+      {
+        productId: 101,
+        productStoreId: 101,
+        productName: '7 cm Sparklers',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      },
+      {
+        productId: 102,
+        productStoreId: 102,
+        productName: 'Flower Pots',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      },
+      {
+        productId: 103,
+        productStoreId: 103,
+        productName: 'Chakra',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      }
+    ],
+    isAvailable: true
+  },
+  {
+    comboId: 502,
+    comboName: 'Family Celebration Combo',
+    description:
+      'A festive selection for the whole family.',
+    comboImageUrl: '',
+    comboSellingPrice: 595,
+    totalActualPrice: 700,
+    discountPercentage: 15,
+    vendor: {
+      vendorId: 8,
+      storeName: 'Pavan Fireworks Store',
+      city: 'Hyderabad'
+    },
+    products: [
+      {
+        productId: 104,
+        productStoreId: 104,
+        productName: 'Sky Rockets',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      },
+      {
+        productId: 105,
+        productStoreId: 105,
+        productName: 'Flower Pots',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      }
+    ],
+    isAvailable: true
+  },
+  {
+    comboId: 503,
+    comboName: 'Grand Diwali Combo',
+    description:
+      'A special combination of festive favourites.',
+    comboSellingPrice: 799,
+    totalActualPrice: 999,
+    discountPercentage: 20,
+    vendor: {
+      vendorId: 9,
+      storeName: 'Lakshmi Crackers',
+      city: 'Hyderabad'
+    },
+    products: [
+      {
+        productId: 106,
+        productStoreId: 106,
+        productName: 'Sparklers',
+        quantity: 2,
+        imageUrl: 'assets/images/product-placeholder.png'
+      },
+      {
+        productId: 107,
+        productStoreId: 107,
+        productName: 'Ground Chakkar',
+        quantity: 1,
+        imageUrl: 'assets/images/product-placeholder.png'
+      }
+    ],
+    isAvailable: true
+  }
+];
+
+
   /* ====================================================
      PRODUCTS
   ==================================================== */
@@ -184,6 +344,7 @@ isChangingProductPage = false;
   cartCount = 0;
 
   private cartSubscription?: Subscription;
+  private comboBackSubscription?: Subscription;
 
 
   constructor(
@@ -195,7 +356,11 @@ isChangingProductPage = false;
 
     private readonly vendorService: VendorService,
 
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+
+    private readonly platform: Platform,
+
+    private readonly locationService: LocationService
   ) {
 
     addIcons({
@@ -218,11 +383,85 @@ isChangingProductPage = false;
 
       locationOutline,
 
-      personCircleOutline
+      personCircleOutline,
+
+      storefrontOutline
 
     });
 
   }
+
+
+
+
+  /* ====================================================
+   COMBO IMAGE CAROUSEL
+==================================================== */
+
+activeComboImageIndex = 0;
+
+private comboImageTimer?: Subscription;
+
+private readonly comboImageIntervalMs = 3000;
+
+private startComboImageTimer(): void {
+  this.stopComboImageTimer();
+
+  if (
+    !this.showComboDetails ||
+    !this.selectedCombo ||
+    this.selectedCombo.products.length <= 1
+  ) {
+    return;
+  }
+
+  this.comboImageTimer = interval(
+    this.comboImageIntervalMs
+  ).subscribe(() => {
+    this.nextComboImage(false);
+  });
+}
+
+private stopComboImageTimer(): void {
+  this.comboImageTimer?.unsubscribe();
+  this.comboImageTimer = undefined;
+}
+
+private resetComboImageTimer(): void {
+  this.startComboImageTimer();
+}
+
+nextComboImage(resetTimer = true): void {
+  const products = this.selectedCombo?.products ?? [];
+
+  if (products.length <= 1) {
+    return;
+  }
+
+  this.activeComboImageIndex =
+    (this.activeComboImageIndex + 1) % products.length;
+
+  if (resetTimer) {
+    this.resetComboImageTimer();
+  }
+
+  this.cdr.detectChanges();
+}
+
+previousComboImage(): void {
+  const products = this.selectedCombo?.products ?? [];
+
+  if (products.length <= 1) {
+    return;
+  }
+
+  this.activeComboImageIndex =
+    (this.activeComboImageIndex - 1 + products.length) %
+    products.length;
+
+  this.resetComboImageTimer();
+  this.cdr.detectChanges();
+}
 
 
   /* ====================================================
@@ -238,6 +477,7 @@ isChangingProductPage = false;
     this.loadVendors();
 
     this.loadProducts(0);
+    this.loadCombos();
 
     this.cartSubscription =
       this.cartService.cart$
@@ -252,6 +492,16 @@ isChangingProductPage = false;
 
         });
 
+        this.comboBackSubscription =
+  this.platform.backButton.subscribeWithPriority(
+    20,
+    () => {
+      if (this.showComboDetails) {
+        this.closeComboDetails();
+      }
+    }
+  );
+
   }
 
 
@@ -262,8 +512,75 @@ isChangingProductPage = false;
   ngOnDestroy(): void {
 
     this.cartSubscription?.unsubscribe();
+    this.comboBackSubscription?.unsubscribe();
+    this.stopComboImageTimer();
 
   }
+
+
+  /* ====================================================
+   PULL TO REFRESH
+==================================================== */
+
+handleRefresh(event: CustomEvent): void {
+
+  const refresher =
+    event.target as HTMLIonRefresherElement;
+
+  // Search mode should not refresh the Home screen.
+  if (this.isSearchMode) {
+    void refresher.complete();
+    return;
+  }
+
+  // Do not start a duplicate product request.
+  if (this.isChangingProductPage) {
+    void refresher.complete();
+    return;
+  }
+
+  // Reset errors before refreshing.
+  this.categoryErrorMessage = '';
+  this.vendorErrorMessage = '';
+  this.productErrorMessage = '';
+
+  // Start refreshing the Home data.
+  this.loadCategories();
+  this.loadVendors();
+  this.loadProducts(0);
+  this.loadCombos();
+
+  /*
+   * Wait for the three loaders to finish.
+   * Each loader sets its loading flag to false
+   * in both success and error callbacks.
+   */
+  const refreshSubscription = interval(100).subscribe(() => {
+
+    const categoriesFinished =
+      !this.isLoadingCategories;
+
+    const vendorsFinished =
+      !this.isVendorsLoading;
+
+    const productsFinished =
+      !this.isChangingProductPage &&
+      !this.isLoadingProducts;
+
+    if (
+      categoriesFinished &&
+      vendorsFinished &&
+      productsFinished
+    ) {
+
+      refreshSubscription.unsubscribe();
+
+      void refresher.complete();
+    }
+
+  });
+
+}
 
 
   /* ====================================================
@@ -1325,13 +1642,13 @@ openProduct(
   product: Product
 ): void {
 
-  if (!product?.productStoreId) {
+  if (!product?.productId) {
     return;
   }
 
   this.router.navigate([
     '/product',
-    product.productStoreId
+    product.productId
   ]);
 
 }
@@ -1464,6 +1781,139 @@ getProductBadge(product: Product): string {
   this.productBadgeMap.set(productKey, badge);
 
   return badge;
+}
+
+
+
+loadCombos(): void {
+  this.isCombosLoading = true;
+  this.comboErrorMessage = '';
+
+  this.cdr.detectChanges();
+
+  this.productService.getCombos().subscribe({
+    next: (response) => {
+      this.combos = (Array.isArray(response) ? response : [])
+        .map((combo: any): ComboOffer => ({
+          comboId: Number(combo.comboId),
+          comboName: combo.comboName ?? '',
+          description: combo.description ?? '',
+          comboImageUrl: combo.comboImageUrl ?? '',
+          comboSellingPrice: Number(combo.comboSellingPrice ?? 0),
+          totalActualPrice: Number(combo.totalActualPrice ?? 0),
+          discountPercentage: Number(combo.discountPercentage ?? 0),
+
+          vendor: {
+            vendorId: Number(combo.vendor?.vendorId ?? 0),
+            storeName: combo.vendor?.storeName ?? '',
+            city: combo.vendor?.city ?? ''
+          },
+
+          products: (combo.products ?? []).map((product: any) => ({
+            productId: Number(product.productId),
+            productStoreId: product.productStoreId != null
+              ? Number(product.productStoreId)
+              : undefined,
+            productName: product.productName ?? '',
+            quantity: Number(product.quantity ?? 1),
+
+            // The API returns images[] instead of imageUrl directly.
+            imageUrl: product.images?.[0]?.imageUrl ?? ''
+          })),
+
+          isAvailable: combo.isAvailable === true
+        }));
+
+      this.isCombosLoading = false;
+      this.comboErrorMessage = '';
+
+      this.cdr.detectChanges();
+    },
+
+    error: (error) => {
+      console.error('Combos API Error:', error);
+
+      this.combos = [];
+      this.isCombosLoading = false;
+
+      this.comboErrorMessage =
+        error?.error?.message ||
+        error?.message ||
+        'Unable to load combo offers. Please try again.';
+
+      this.cdr.detectChanges();
+    }
+  });
+}
+openComboDetails(combo: ComboOffer): void {
+  if (!combo?.comboId) {
+    return;
+  }
+
+  this.stopComboImageTimer();
+
+  this.selectedCombo = combo;
+  this.activeComboImageIndex = 0;
+  this.showComboDetails = true;
+
+  this.cdr.detectChanges();
+  this.startComboImageTimer();
+}
+
+closeComboDetails(): void {
+  this.stopComboImageTimer();
+
+  this.showComboDetails = false;
+  this.selectedCombo = null;
+  this.activeComboImageIndex = 0;
+
+  this.cdr.detectChanges();
+}
+
+openComboProduct(product: ComboProduct): void {
+  const productId = Number(
+    product.productStoreId ?? product.productId
+  );
+
+  if (!productId) {
+    return;
+  }
+
+  // Keep the Home page in the navigation stack.
+  // Native Back returns to the combo details view.
+  void this.router.navigate(['/product', productId]);
+}
+
+getComboImageStack(combo: ComboOffer): ComboProduct[] {
+  return (combo.products ?? []).slice(0, 3);
+}
+
+
+
+/* ====================================================
+   ADD COMBO TO CART
+==================================================== */
+
+addComboToCart(): void {
+  const combo = this.selectedCombo;
+
+  if (!combo || !combo.isAvailable) {
+    return;
+  }
+
+  if (!combo.comboId || combo.comboSellingPrice <= 0) {
+    console.error('Invalid combo details.');
+    return;
+  }
+
+  // TODO: Call the combo-cart API when available.
+  // Send comboId and quantity: 1.
+  // The backend should preserve the combo selling price.
+
+  console.log('Ready to add combo to cart:', {
+    comboId: combo.comboId,
+    quantity: 1
+  });
 }
 
 }

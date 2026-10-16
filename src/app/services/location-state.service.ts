@@ -17,6 +17,23 @@ import {
 } from './location.service';
 
 
+
+interface ReverseGeocodeResponse {
+  display_name?: string;
+  address?: {
+    road?: string;
+    neighbourhood?: string;
+    suburb?: string;
+    village?: string;
+    town?: string;
+    city?: string;
+    county?: string;
+    state?: string;
+    postcode?: string;
+  };
+}
+
+
 /* =========================================================
    NEARBY STORE
 ========================================================= */
@@ -97,8 +114,6 @@ export class LocationStateService {
     private readonly http: HttpClient
   ) {
 
-    this.restoreStoredLocation();
-
   }
 
 
@@ -117,15 +132,7 @@ export class LocationStateService {
     }
 
 
-    /*
-     * Try localStorage before requesting GPS.
-     */
-    this.restoreStoredLocation();
-
-
-    if (this.currentLocation) {
-      return this.currentLocation;
-    }
+   
 
 
     /*
@@ -161,9 +168,13 @@ export class LocationStateService {
 
   private async initializeFromGps():
     Promise<CustomerLocationState> {
+const location = await this.locationService.getCurrentLocation();
 
-    const location =
-      await this.locationService.getCurrentLocation();
+console.log('GPS coordinates received:', {
+  latitude: location.latitude,
+  longitude: location.longitude,
+  accuracy: location.accuracy
+});
 
 
     const nearbyStores =
@@ -249,7 +260,7 @@ export class LocationStateService {
       this.http.get<{
         content: NearbyStore[];
       }>(
-        `${this.apiUrl}/stores/nearby`,
+        `${this.apiUrl}/diwali/stores/nearby`,
         { params }
       )
     ).then(
@@ -608,5 +619,61 @@ export class LocationStateService {
     };
 
   }
+
+
+
+  async reverseGeocode(
+  latitude: number,
+  longitude: number
+): Promise<string> {
+  const params = new HttpParams()
+    .set('format', 'jsonv2')
+    .set('lat', latitude)
+    .set('lon', longitude)
+    .set('addressdetails', '1');
+
+  const result = await firstValueFrom(
+    this.http.get<ReverseGeocodeResponse>(
+      'https://nominatim.openstreetmap.org/reverse',
+      { params }
+    )
+  );
+
+  const address = result.address;
+
+  if (!address) {
+    throw new Error('No address details were found.');
+  }
+
+  const locality =
+    address.neighbourhood ||
+    address.suburb ||
+    address.village ||
+    address.town ||
+    address.city;
+
+  const city =
+    address.city ||
+    address.town ||
+    address.village ||
+    address.county;
+
+  const parts = [
+    address.road,
+    locality,
+    city,
+    address.state,
+    address.postcode
+  ].filter(
+    (part, index, all): part is string =>
+      !!part && all.indexOf(part) === index
+  );
+
+  if (parts.length === 0) {
+    throw new Error('Unable to determine the delivery address.');
+  }
+
+  return parts.join(', ');
+}
 
 }

@@ -1,7 +1,351 @@
-<ion-content
-  [fullscreen]="true"
-  class="!bg-white"
->
+
+<ion-content [fullscreen]="true" class="!bg-white">
+
+  @if (showComboList) {
+    <div class="!relative !min-h-full !w-full !overflow-x-clip !bg-white !px-3 sm:!px-4">
+
+      <!-- HEADER -->
+      <header class="!sticky !top-[-8px] !z-50 !-mx-3 !flex !h-[76px] !items-center !justify-center !overflow-hidden !bg-[#8f071f] !px-12 sm:!-mx-4">
+        <button
+          type="button"
+          aria-label="Back"
+          (click)="goBack()"
+          class="!absolute !left-2 !top-1/2 !z-30 !flex !h-[40px] !w-[40px] !-translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc]"
+        >
+          <ion-icon name="arrow-back-outline" class="!text-[24px]"></ion-icon>
+        </button>
+
+        <div class="!relative !z-20 !text-center">
+          <h1 class="!m-0 !font-sans !text-[20px] !font-extrabold !text-[#fff8dc]">
+            My Combos
+          </h1>
+          <p class="!mb-0 !mt-1 !font-sans !text-[11px] !font-medium !text-[#f7df9d]">
+            Manage your special offers
+          </p>
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="!pointer-events-none !absolute !right-0 !top-0 !z-10 !h-[76px] !w-auto !object-contain"
+        />
+      </header>
+
+      <main class="!mx-auto !w-full !max-w-[760px]">
+
+        <!-- SEARCH + ADD -->
+        <section class="!mt-4 !flex !items-center !gap-2">
+          <div class="!relative !min-w-0 !flex-1">
+            <ion-icon
+              name="search-outline"
+              class="!pointer-events-none !absolute !left-3 !top-1/2 !-translate-y-1/2 !text-[17px] !text-[#8f071f]"
+            ></ion-icon>
+
+            <input
+              type="text"
+              [(ngModel)]="comboSearchTerm"
+              placeholder="Search your combos..."
+              class="!h-[44px] !w-full !rounded-[10px] !border !border-[#e5dcd2] !bg-[#fffdf7] !pl-10 !pr-3 !font-sans !text-[12px] !font-medium !text-[#17233c] !outline-none focus:!border-[#b3123b]"
+            />
+          </div>
+
+          <button
+            type="button"
+            aria-label="Add combo"
+            (click)="openCreateCombo()"
+            class="!flex !h-[44px] !w-[44px] !shrink-0 !items-center !justify-center !rounded-[10px] !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] !shadow-[0_3px_9px_rgba(143,7,31,0.15)] active:!scale-95"
+          >
+            <ion-icon name="add-outline" class="!text-[23px]"></ion-icon>
+          </button>
+        </section>
+
+        <!-- SECTION HEADING -->
+        <section class="!mt-5 !flex !items-end !justify-between">
+          <div>
+            <span class="!block !font-sans !text-[10px] !font-bold !uppercase !tracking-[0.7px] !text-[#9e2020]">
+              COLLECTION
+            </span>
+            <h2 class="!m-0 !mt-[3px] !font-sans !text-[18px] !font-extrabold !text-[#17233c]">
+              All Combos
+            </h2>
+          </div>
+
+          <span class="!flex !h-[28px] !min-w-[32px] !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] !px-2 !font-sans !text-[12px] !font-extrabold !text-[#8f071f]">
+            {{ filteredCombos.length }}
+          </span>
+        </section>
+
+        <!-- LOADING SKELETON -->
+        @if (isCombosLoading) {
+          <section class="!mt-3 !grid !grid-cols-3 !gap-2">
+            @for (item of [1,2,3,4,5,6]; track item) {
+              <article class="!overflow-hidden !rounded-[10px] !border !border-[#f0e5d8] !bg-white !p-2">
+                <div class="!aspect-square !animate-pulse !rounded-[8px] !bg-[#f3ead5]"></div>
+                <div class="!mt-2 !h-[9px] !animate-pulse !rounded !bg-[#eee5d6]"></div>
+                <div class="!mt-2 !h-[7px] !w-2/3 !animate-pulse !rounded !bg-[#f1e9dc]"></div>
+              </article>
+            }
+          </section>
+        } @else if (comboLoadError) {
+
+          <!-- ERROR STATE -->
+          <section class="!py-12 !text-center">
+            <ion-icon
+              name="alert-circle-outline"
+              class="!text-[32px] !text-[#b3123b]"
+            ></ion-icon>
+
+            <p class="!font-sans !text-[12px] !font-medium !text-[#806b68]">
+              {{ comboLoadError }}
+            </p>
+
+            <button
+              type="button"
+              (click)="loadVendorCombos()"
+              class="!rounded-[10px] !border-0 !bg-[#b3123b] !px-4 !py-2.5 !font-sans !text-[12px] !font-bold !text-[#fff8dc]"
+            >
+              Try Again
+            </button>
+          </section>
+
+        } @else if (filteredCombos.length > 0) {
+
+  <!-- THREE-COLUMN COMBO GRID -->
+  <section class="!mt-3 !grid !grid-cols-3 !items-stretch !gap-2 !pb-8">
+
+    @for (combo of filteredCombos; track combo.comboId) {
+
+      <article
+        class="!relative !flex !min-w-0 !flex-col !overflow-hidden !rounded-[10px] !border !border-[#f0e5d8] !bg-white !p-2 !shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
+      >
+
+        <!-- CLICKABLE COMBO CONTENT -->
+        <div
+          role="button"
+          [attr.tabindex]="combo.isAvailable ? 0 : -1"
+          [attr.aria-label]="'Edit combo ' + combo.comboName"
+          [attr.aria-disabled]="!combo.isAvailable"
+          (click)="combo.isAvailable && openEditCombo(combo)"
+          (keydown.enter)="combo.isAvailable && openEditCombo(combo)"
+          (keydown.space)="combo.isAvailable && openEditCombo(combo); $event.preventDefault()"
+          class="!relative !flex !min-w-0 !flex-1 !flex-col !rounded-[8px] !text-left"
+          [ngClass]="combo.isAvailable
+            ? '!cursor-pointer active:!scale-[0.98]'
+            : '!cursor-default !opacity-90'"
+        >
+
+          <!-- COMBO IMAGE / STACKED PRODUCT IMAGES -->
+          <div
+            class="!relative !aspect-square !w-full !overflow-hidden !rounded-[8px] !bg-[#fff8e8]"
+          >
+
+            @if (combo.comboImageUrl) {
+
+              <!-- COMBO'S OWN IMAGE -->
+              <img
+                [src]="combo.comboImageUrl"
+                [alt]="combo.comboName"
+                loading="lazy"
+                class="!block !h-full !w-full !object-cover"
+              />
+
+            } @else if (getComboProductImages(combo).length > 0) {
+
+              <!-- STACKED PRODUCT IMAGES -->
+              <div
+                class="!relative !flex !h-full !w-full !items-center !justify-center !overflow-hidden !bg-[#fff8e8]"
+              >
+
+                @for (
+                  productImage of getComboProductImages(combo);
+                  track productImage.productId;
+                  let i = $index
+                ) {
+
+                  <div
+                    class="!absolute !h-[76%] !w-[58%] !overflow-hidden !rounded-[8px] !border-2 !border-white !bg-white !shadow-[0_3px_8px_rgba(50,20,0,0.20)]"
+                    [style.zIndex]="i + 1"
+                    [style.transform]="getProductImageStackTransform(i)"
+                  >
+
+                    <img
+                      [src]="productImage.imageUrl"
+                      [alt]="productImage.productName"
+                      loading="lazy"
+                      class="!block !h-full !w-full !object-cover"
+                    />
+
+                  </div>
+
+                }
+
+              </div>
+
+            } @else {
+
+              <!-- FALLBACK IMAGE -->
+              <div
+                class="!flex !h-full !w-full !items-center !justify-center !bg-[#f7e9bd]"
+              >
+                <ion-icon
+                  name="gift-outline"
+                  class="!text-[28px] !text-[#8f071f]"
+                ></ion-icon>
+              </div>
+
+            }
+
+            <!-- DISCOUNT BADGE -->
+            <span
+              class="!absolute !right-1 !top-1 !z-20 !rounded-[5px] !bg-[#b3123b] !px-1.5 !py-1 !font-sans !text-[9px] !font-extrabold !text-[#fff8dc] !shadow-sm"
+            >
+              {{ combo.discountPercentage }}% OFF
+            </span>
+
+          </div>
+
+          <!-- COMBO DETAILS -->
+          <div class="!w-full !min-w-0 !pt-2">
+
+            <h3
+              class="!m-0 !line-clamp-2 !font-sans !text-[11px] !font-extrabold !leading-[1.25] !text-[#17233c]"
+            >
+              {{ combo.comboName }}
+            </h3>
+
+            <p
+              class="!mb-0 !mt-1 !truncate !font-sans !text-[9px] !font-medium !text-[#806b68]"
+            >
+              {{ combo.products?.length ?? combo.totalProducts ?? 0 }}
+              products
+            </p>
+
+            <!-- PRICING -->
+            <div class="!mt-2 !flex !min-w-0 !flex-col">
+
+              @if (combo.totalActualPrice > combo.comboSellingPrice) {
+
+                <span
+                  class="!truncate !font-sans !text-[9px] !font-medium !text-[#99917e] !line-through"
+                >
+                  ₹{{ combo.totalActualPrice }}
+                </span>
+
+              }
+
+              <span
+                class="!truncate !font-sans !text-[13px] !font-extrabold !text-[#b3123b]"
+              >
+                ₹{{ combo.comboSellingPrice }}
+              </span>
+
+            </div>
+
+            <!-- AVAILABILITY BADGE -->
+            <span
+              class="!mt-2 !inline-flex !max-w-full !rounded-full !px-1.5 !py-1 !font-sans !text-[8px] !font-bold"
+              [ngClass]="combo.isAvailable
+                ? '!bg-[#e6f5e9] !text-[#26753a]'
+                : '!bg-[#f8e5e5] !text-[#a32132]'"
+            >
+              {{ combo.isAvailable ? 'Available' : 'Unavailable' }}
+            </span>
+
+            <!-- EDIT HINT -->
+            <p
+              class="!mb-0 !mt-2 !font-sans !text-[9px] !font-semibold !leading-tight"
+              [ngClass]="combo.isAvailable
+                ? '!text-[#8f071f]'
+                : '!text-[#806b68]'"
+            >
+              {{ combo.isAvailable
+                ? 'Tap to edit'
+                : 'Activate to enable' }}
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- SEPARATE STATUS BUTTON -->
+        <button
+          type="button"
+          [disabled]="isUpdatingComboStatus"
+          [attr.aria-label]="
+            (combo.isAvailable ? 'Deactivate ' : 'Activate ')
+            + combo.comboName
+          "
+          (click)="openComboStatusDialog(combo)"
+          class="!mt-2 !flex !min-h-[30px] !w-full !items-center !justify-center !gap-1 !rounded-[7px] !border !px-1 !py-1.5 !font-sans !text-[9px] !font-extrabold !transition-colors disabled:!cursor-not-allowed disabled:!opacity-50"
+          [ngClass]="combo.isAvailable
+            ? '!border-[#f0c7cd] !bg-[#fff1f2] !text-[#a32132] active:!bg-[#f8dfe3]'
+            : '!border-[#b9dfc1] !bg-[#edf8ef] !text-[#26753a] active:!bg-[#dcefe0]'"
+        >
+
+          @if (combo.isAvailable) {
+
+            <ion-icon
+              name="close-outline"
+              class="!text-[13px]"
+            ></ion-icon>
+
+            Deactivate
+
+          } @else {
+
+            <ion-icon
+              name="checkmark-outline"
+              class="!text-[13px]"
+            ></ion-icon>
+
+            Activate
+
+          }
+
+        </button>
+
+      </article>
+
+    }
+
+  </section>
+
+}  @else {
+
+          <!-- EMPTY STATE -->
+          <section class="!flex !flex-col !items-center !px-5 !py-14 !text-center">
+            <div class="!mb-4 !flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+              <ion-icon name="gift-outline" class="!text-[31px]"></ion-icon>
+            </div>
+
+            <h3 class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]">
+              {{ comboSearchTerm ? 'No combos found' : 'No combos yet' }}
+            </h3>
+
+            <p class="!mb-4 !mt-2 !font-sans !text-[12px] !font-medium !text-[#806b68]">
+              {{ comboSearchTerm ? 'Try a different search.' : 'Create your first combo offer.' }}
+            </p>
+
+            @if (!comboSearchTerm) {
+              <button
+                type="button"
+                (click)="openCreateCombo()"
+                class="!flex !items-center !gap-2 !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !py-3 !font-sans !text-[12px] !font-bold !text-[#fff8dc]"
+              >
+                <ion-icon name="add-outline" class="!text-[17px]"></ion-icon>
+                Add Combo
+              </button>
+            }
+          </section>
+
+        }
+      </main>
+    </div>
+  }@else {
+  <!-- KEEP YOUR EXISTING CREATE COMBO FORM HERE -->
+
+
 
   <div
     class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 pb-8 sm:px-4"
@@ -35,7 +379,7 @@
 
       <button
         type="button"
-        (click)="goBack()"
+       (click)="backToComboList()"
         aria-label="Back"
         class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
@@ -52,29 +396,21 @@
         class="relative z-20 flex flex-col items-center justify-center leading-none"
       >
 
-        <div
-          class="flex items-center gap-2"
-        >
+      <div class="flex items-center gap-2">
+  <span class="!font-sans text-[17px] font-extrabold text-[#f7df9d]">
+    ✦
+  </span>
 
-          <span
-            class="font-serif text-[17px] font-bold text-[#f7df9d]"
-          >
-            ✦
-          </span>
+  <span
+    class="font-sans text-[22px] font-extrabold tracking-[0.3px] text-[#fff8dc]"
+  >
+    {{ isEditMode ? 'Edit Combo' : 'Create Combo' }}
+  </span>
 
-          <span
-            class="font-serif text-[22px] font-bold tracking-[0.3px] text-[#fff8dc]"
-          >
-            Create Combo
-          </span>
-
-          <span
-            class="font-serif text-[17px] font-bold text-[#f7df9d]"
-          >
-            ✦
-          </span>
-
-        </div>
+  <span class="font-serif text-[17px] font-bold text-[#f7df9d]">
+    ✦
+  </span>
+</div>
 
         <span
           class="mt-1 font-serif text-[9px] font-semibold tracking-[0.2px] text-[#fff8dc]"
@@ -168,9 +504,11 @@
 
         @if (!isCategoriesLoading) {
 
-          <div
-            class="mt-4 w-full max-w-full overflow-x-auto overflow-y-hidden scrollbar-hide"
-          >
+    <div
+  class="mt-4 w-full max-w-full overflow-x-auto overflow-y-hidden
+         [scrollbar-width:none] [-ms-overflow-style:none]
+         [&::-webkit-scrollbar]:hidden"
+>
 
             <div
               class="flex w-max gap-2"
@@ -1192,5 +1530,227 @@
     </main>
 
   </div>
+
+}
+
+
+
+
+
+<!-- COMBO IMAGE DIALOG -->
+@if (showComboImageDialog) {
+  <div
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(20,15,5,0.38)] px-5">
+
+    <div
+      class="w-full max-w-[320px] overflow-hidden rounded-[16px] bg-[#fffdf7] shadow-[0_8px_30px_rgba(50,20,0,0.20)]">
+
+      <!-- FESTIVE HEADER -->
+      <div
+        class="relative flex h-[76px] items-center justify-center overflow-hidden bg-[#8f071f] px-10">
+
+        <div class="relative z-20 text-center">
+          <div
+            class="mx-auto mb-1.5 flex !h-[32px] !w-[32px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
+            <ion-icon name="image-outline" class="!text-[18px]"></ion-icon>
+          </div>
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="pointer-events-none absolute right-0 top-0 z-10 h-full w-auto select-none object-contain opacity-[0.85]">
+      </div>
+
+      <!-- DIALOG CONTENT -->
+      <div class="px-5 pb-5 pt-4 text-center">
+
+        <h2
+          class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]">
+          Make Your Combo Shine!
+        </h2>
+
+        <p
+          class="!m-[7px_0_0] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]">
+          Add a beautiful image that captures the spirit of your combo.
+          You can also skip this step and add an image later.
+        </p>
+
+        <!-- HIDDEN FILE INPUT -->
+        <input
+          #comboImageInput
+          type="file"
+          accept="image/*"
+          class="hidden"
+          (change)="onComboImageSelected($event)">
+
+        <!-- IMAGE PREVIEW -->
+        @if (comboImagePreview) {
+          <div
+            class="relative mx-auto mt-4 h-[110px] w-[140px] overflow-visible rounded-[12px] border border-[#eadcc9] bg-white p-1.5">
+
+            <img
+              [src]="comboImagePreview"
+              alt="Selected combo image preview"
+              class="h-full w-full rounded-[9px] object-cover">
+
+            <button
+              type="button"
+              aria-label="Remove selected image"
+              (click)="removeComboImage()"
+              class="absolute -right-2 -top-2 z-10 flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-[#fffdf7] bg-[#b3123b] text-white shadow-md">
+
+              <ion-icon
+                name="close-outline"
+                class="!text-[17px]">
+              </ion-icon>
+            </button>
+          </div>
+
+          <p
+            class="!mb-0 !mt-2 !font-sans !text-[10px] !font-medium !text-[#806b68]">
+            {{ selectedComboImage?.name }}
+          </p>
+        }
+
+        <!-- ACTIONS -->
+        <div class="mt-5 flex gap-2.5">
+
+          <!-- SKIP IMAGE -->
+          <button
+            type="button"
+            [disabled]="isSavingCombo"
+            (click)="skipComboImage()"
+            class="flex min-h-[42px] flex-1 items-center justify-center rounded-[10px] border border-[#e1d7d2] bg-white px-3 font-sans text-[12px] font-bold text-[#806b68] transition active:scale-[0.98] disabled:opacity-50">
+            Skip Image
+          </button>
+
+          <!-- UPLOAD OR SAVE -->
+          <button
+            type="button"
+            [disabled]="isSavingCombo"
+            (click)="selectedComboImage ? confirmComboSave() : openComboImagePicker()"
+            class="flex min-h-[42px] flex-1 items-center justify-center gap-1.5 !rounded-[10px] border-0 bg-[#b3123b] px-3 font-sans text-[12px] font-bold text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition active:scale-[0.98] disabled:opacity-50">
+
+            @if (isSavingCombo) {
+              Saving...
+            } @else if (selectedComboImage) {
+              <ion-icon name="checkmark-outline" class="!text-[15px]"></ion-icon>
+              Save Combo
+            } @else {
+              <ion-icon name="image-outline" class="!text-[15px]"></ion-icon>
+              Upload Image
+            }
+          </button>
+        </div>
+
+        <!-- CANCEL -->
+        <button
+          type="button"
+          [disabled]="isSavingCombo"
+          (click)="cancelComboImageDialog()"
+          class="mt-3 min-h-[30px] w-full font-sans text-[11px] font-semibold text-[#806b68] disabled:opacity-50">
+          Cancel
+        </button>
+
+      </div>
+    </div>
+  </div>
+}
+
+
+
+<!-- COMBO STATUS CONFIRMATION DIALOG -->
+@if (showComboStatusDialog && selectedStatusCombo) {
+  <div
+    class="!fixed !inset-0 !z-[10000] !flex !items-center !justify-center !bg-[rgba(20,15,5,0.45)] !px-5"
+    (click)="cancelComboStatusChange()"
+  >
+    <section
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="comboStatusDialogTitle"
+      class="!w-full !max-w-[320px] !overflow-hidden !rounded-[16px] !border !border-[#f0e5d8] !bg-[#fffdf7] !shadow-[0_8px_30px_rgba(50,20,0,0.22)]"
+      (click)="$event.stopPropagation()"
+    >
+
+      <!-- FESTIVE MAROON HEADER -->
+      <header
+        class="!relative !flex !min-h-[76px] !items-center !justify-center !overflow-hidden !bg-[#8f071f] !px-12"
+      >
+        <div class="!relative !z-20 !text-center">
+          <div class="!mx-auto !flex !h-[38px] !w-[38px] !items-center !justify-center !rounded-full !bg-[#fff8dc]">
+            <ion-icon
+              name="alert-circle-outline"
+              class="!text-[24px] !text-[#8f071f]"
+            ></ion-icon>
+          </div>
+        </div>
+
+        <img
+          src="assets/images/right-deepas.png"
+          alt=""
+          aria-hidden="true"
+          class="!pointer-events-none !absolute !right-0 !top-0 !z-10 !h-[76px] !w-auto !object-contain"
+        />
+      </header>
+
+      <!-- DIALOG CONTENT -->
+      <div class="!px-5 !pb-5 !pt-4 !text-center">
+
+        <h2
+          id="comboStatusDialogTitle"
+          class="!m-0 !font-sans !text-[17px] !font-extrabold !text-[#17233c]"
+        >
+          {{ pendingComboStatus === 'INACTIVE'
+            ? 'Make Combo Inactive?'
+            : 'Make Combo Active?' }}
+        </h2>
+
+        <p class="!mb-0 !mt-2 !break-words !font-sans !text-[12px] !font-bold !text-[#8f071f]">
+          {{ selectedStatusCombo.comboName }}
+        </p>
+
+        <p class="!mb-0 !mt-2 !font-sans !text-[11px] !font-medium !leading-[1.6] !text-[#806b68]">
+          {{ pendingComboStatus === 'INACTIVE'
+            ? 'This combo will no longer be available to customers. Are you sure you want to continue?'
+            : 'This combo will become available to customers again. Do you want to continue?' }}
+        </p>
+
+        <!-- DIALOG BUTTONS -->
+        <div class="!mt-5 !grid !grid-cols-2 !gap-2.5">
+
+          <button
+            type="button"
+            [disabled]="isUpdatingComboStatus"
+            (click)="cancelComboStatusChange()"
+            class="!min-h-[42px] !rounded-[10px] !border !border-[#e5dcd2] !bg-white !px-2 !font-sans !text-[11px] !font-bold !text-[#806b68] active:!scale-[0.98] disabled:!opacity-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            [disabled]="isUpdatingComboStatus"
+            (click)="confirmComboStatusChange()"
+            class="!min-h-[42px] !rounded-[10px] !border-0 !bg-[#b3123b] !px-2 !font-sans !text-[11px] !font-bold !text-[#fff8dc] !shadow-[0_3px_9px_rgba(143,7,31,0.15)] active:!scale-[0.98] disabled:!opacity-50"
+          >
+            @if (isUpdatingComboStatus) {
+              Updating...
+            } @else {
+              {{ pendingComboStatus === 'INACTIVE'
+                ? 'Make Inactive'
+                : 'Make Active' }}
+            }
+          </button>
+
+        </div>
+      </div>
+    </section>
+  </div>
+}
+
+
 
 </ion-content>

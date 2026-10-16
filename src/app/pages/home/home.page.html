@@ -1,10 +1,33 @@
+
 <ion-content
-  [fullscreen]="true"
-  class="!bg-white"
+  [fullscreen]="false"
+  class="safe-area-maroon !bg-white [--padding-top:var(--app-safe-area-top)]"
 >
+
+<ion-refresher
+  slot="fixed"
+  [disabled]="isSearchMode"
+  pullFactor="0.8"
+  pullMin="70"
+  pullMax="140"
+  (ionRefresh)="handleRefresh($event)"
+>
+  <ion-refresher-content
+    pullingText="Pull down to refresh"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing..."
+  >
+  </ion-refresher-content>
+</ion-refresher>
+
+
+
+
 <div
   class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
 >
+
+
 
   <!-- =====================================================
        GLOBAL HOME BOTTOM DESIGN
@@ -38,8 +61,9 @@
         =================================================== -->
 
         <header
-          class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
-        >
+     
+class="sticky top-0 z-50 -mx-3 flex h-[76px] shrink-0 items-center overflow-hidden bg-[#8f071f] px-3 sm:-mx-4 sm:px-4"
+   >
 
           <!-- BACK -->
 
@@ -142,7 +166,7 @@
                 >
 
                   <h2
-                    class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !text-black"
+                   class="!m-0 !font-sans !text-[17px] !font-extrabold !leading-tight !text-[#17233c]"
                   >
                     Recent Searches
                   </h2>
@@ -576,23 +600,18 @@
                     >
 
                       <!-- PRODUCT NAME + ADD -->
+<div
+  class="flex min-w-0 items-center justify-between gap-[5px]"
+>
+  <h3
+    class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !truncate !whitespace-nowrap sm:!text-[12px]"
+    [title]="product.productName"
+  >
+    {{ product.productName }}
+  </h3>
 
-                      <div
-                        class="mt-[3px] flex min-h-[34px] items-start justify-between gap-[5px]"
-                      >
-
-                        <h3
-                          class="!m-0 min-w-0 flex-1 !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[12px]"
-                        >
-                          {{ product.productName }}
-                        </h3>
-
-
-                        <!-- ADD BUTTON -->
-
-                  
-
-                      </div>
+  <!-- ADD BUTTON -->
+</div>
 
 
                       <!-- PRICE -->
@@ -754,15 +773,16 @@
          NORMAL HOME MODE
     ===================================================== -->
 
-    @if (!isSearchMode) {
+  @if (!isSearchMode && !showComboDetails) {
 
       <!-- ===================================================
            HEADER
       =================================================== -->
 
       <header
-        class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] items-center justify-center overflow-visible bg-[#8f071f] px-10 shadow-none sm:-mx-4"
-      >
+     
+class="sticky top-0 z-50 -mx-3 flex h-[76px] items-center justify-center overflow-visible bg-[#8f071f] px-10 shadow-none sm:-mx-4"
+ >
 
         <!-- LEFT DEEPAS -->
 
@@ -869,7 +889,7 @@
             <span
               class="font-serif text-[22px] font-bold tracking-[0.5px] text-[#fff8dc] sm:text-[24px]"
             >
-              DIWALI
+              DIZAAR
             </span>
 
             <span
@@ -897,7 +917,7 @@
       =================================================== -->
 
       <div
-        class="sticky top-[68px] z-40 -mx-3 bg-[#8f071f] px-3 pb-3 pt-3 sm:-mx-4 sm:px-4"
+        class="sticky top-[76px] z-40 -mx-3 bg-[#8f071f] px-3 pb-3 pt-3 sm:-mx-4 sm:px-4"
       >
 
         <ion-searchbar
@@ -1035,8 +1055,8 @@
         class="absolute left-0 top-0 flex h-[36px] w-full items-center justify-center"
       >
 
-        <h2
-          class="m-0 font-serif text-[22px] font-black leading-none tracking-[0.2px] text-[#fff8dc] [text-shadow:0.5px_0_0_currentColor,-0.5px_0_0_currentColor] sm:text-[24px]"
+  <h2
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
         >
           STORES
         </h2>
@@ -1146,7 +1166,7 @@
 @else if (vendorErrorMessage) {
 
   <div
-    class="flex min-h-[150px] w-full min-w-full shrink-0 translate-x-[75px] flex-col items-center justify-center px-4 text-center"
+    class="flex min-h-[150px] w-full min-w-full shrink-0 translate-x-[115px] flex-col items-center justify-center px-4 text-center"
   >
 
     <div
@@ -1159,7 +1179,7 @@
     </div>
 
     <p
-      class="!m-0 !mb-3 max-w-[280px] !font-sans !text-[10px] !font-semibold !leading-[1.5] !text-[#fff8dc]"
+      class="!m-0 !mb-3 max-w-[280px] !font-sans !text-[12px] !font-semibold !leading-[1.5] !text-[#fff8dc]"
     >
       {{ vendorErrorMessage }}
     </p>
@@ -1167,7 +1187,7 @@
     <button
       type="button"
       (click)="loadVendors()"
-      class="!min-h-[34px] !rounded-[10px] !border-0 !bg-transparent !px-5 !font-sans !text-[10px] !font-extrabold !text-[#fff8dc] !shadow-none transition-transform duration-150 active:scale-95"
+      class="!min-h-[34px] !rounded-[10px] !border-0 !bg-transparent !px-5 !font-sans !text-[12px] !font-extrabold !text-[#fff8dc] !shadow-none transition-transform duration-150 active:scale-95"
     >
       Try Again
     </button>
@@ -1188,12 +1208,13 @@
 
 
 
-  @if (!isVendorsLoading && vendorErrorMessage) {
+
+@if (!isVendorsLoading && vendorErrorMessage) {
   <div
-    class="flex min-h-[150px] w-full min-w-[300px] flex-col items-center justify-center px-4 text-center"
+    class="flex min-h-[268px] w-full min-w-0 flex-1 flex-col items-center justify-center px-4 text-center"
   >
     <div
-      class="mb-2 flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[#f8e5e7]"
+      class="mb-3 flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#fff8dc]"
     >
       <ion-icon
         name="close-outline"
@@ -1202,7 +1223,7 @@
     </div>
 
     <p
-      class="!m-0 !mb-3 max-w-[240px] !font-sans !text-[10px] !font-semibold !leading-[1.4] !text-[#806b68]"
+      class="!m-0 !mb-3 max-w-[240px] !font-sans !text-[12px] !font-semibold !leading-[1.4] !text-[#fff8dc]"
     >
       {{ vendorErrorMessage }}
     </p>
@@ -1210,12 +1231,13 @@
     <button
       type="button"
       (click)="loadVendors()"
-      class="!min-h-[34px] !rounded-[10px] !border-0 !bg-[#8f071f] !px-5 !font-sans !text-[10px] !font-extrabold !text-[#fff8dc] shadow-[0_3px_8px_rgba(100,0,20,0.15)] transition-transform duration-150 active:scale-95"
+      class="!min-h-[34px] !rounded-[10px] !border !border-[#f7df9d] !bg-[#fff8dc] !px-5 !font-sans !text-[12px] !font-extrabold !text-[#8f071f] shadow-[0_3px_8px_rgba(40,0,0,0.2)] transition-transform duration-150 active:scale-95"
     >
       Try Again
     </button>
   </div>
 }
+
 
           @for (
             vendor of vendors;
@@ -1297,8 +1319,7 @@
 
 
                   <p
-                    class="line-clamp-3 !m-0 !font-sans !text-[9px] !font-semibold !leading-[1.35] !tracking-[-0.05px] !text-[#806b68]"
-                  >
+                    class="line-clamp-3 !m-0 !font-sans !text-[11px] !font-medium !leading-[1.4] !text-[#806b68]" >
                     {{ vendor.address }}
                   </p>
 
@@ -1317,6 +1338,212 @@
     </div>
 
   </section>
+
+
+
+  
+<!-- =====================================================
+     COMBO OFFERS
+     Place immediately before CATEGORIES SECTION
+====================================================== -->
+
+<section
+  id="combo-offers"
+  class="relative z-30 -mx-3 mb-5 bg-white px-3 pt-0 sm:-mx-4 sm:px-4"
+>
+  <!-- COMBO BANNER -->
+  <button
+    type="button"
+    class="mb-3 block w-full overflow-hidden rounded-[12px] border-0 bg-transparent p-0"
+    aria-label="View combo offers"
+    (click)="openComboDetails(combos[0])"
+    [disabled]="!combos.length"
+  >
+    <img
+      src="assets/images/combo-banner.png"
+      alt="Festive Combo Offers"
+      class="block aspect-[3.05/1] w-full rounded-[12px] object-cover"
+      loading="lazy"
+    />
+  </button>
+
+  <!-- SECTION HEADING -->
+  <div
+    class="relative mb-3 flex h-[34px] w-full items-center justify-center overflow-hidden"
+  >
+    <img
+      src="assets/images/new-arrivals-bg-left.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute left-0 top-1/2 z-0 h-[88px] w-[52%] -translate-y-1/2 object-contain object-left"
+    />
+
+    <img
+      src="assets/images/new-arrivals-bg-right.png"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute right-0 top-1/2 z-0 h-[88px] w-[52%] -translate-y-1/2 object-contain object-right"
+    />
+
+
+  <h2
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-black sm:!text-[22px]"
+        >
+      COMBO OFFERS
+    </h2>
+  </div>
+
+  <!-- LOADING PLACEHOLDER -->
+  @if (isCombosLoading) {
+    <div class="grid grid-cols-3 gap-2">
+      @for (item of [1, 2, 3]; track item) {
+        <div
+          class="h-[205px] animate-pulse rounded-[12px] border border-[#eadfcb] bg-[#fffdf7]"
+        ></div>
+      }
+    </div>
+  }
+
+  <!-- COMBO CAROUSEL -->
+  @if (!isCombosLoading && combos.length > 0) {
+    <div
+      class="overflow-x-auto overflow-y-visible scrollbar-hide"
+    >
+      <div class="flex items-stretch gap-2 pb-3 pt-5">
+        @for (combo of combos; track combo.comboId) {
+          <article
+            class="relative min-w-0 flex-[0_0_calc((100%-16px)/3)] cursor-pointer rounded-[12px] border border-[#eadfcb] bg-[#fffdf7] shadow-[0_3px_10px_rgba(86,48,10,0.07)] transition-transform duration-150 active:scale-[0.98]"
+            (click)="openComboDetails(combo)"
+          >
+            <!-- DISCOUNT BADGE: above the card -->
+            <div
+              class="pointer-events-none absolute -left-[5px] -top-[17px] z-30 flex aspect-square w-[43px] items-center justify-center"
+            >
+              <img
+                src="assets/images/empty-badge.png"
+                alt=""
+                aria-hidden="true"
+                class="absolute inset-0 h-full w-full object-contain"
+              />
+              <span
+                class="relative z-10 mt-[-1px] flex flex-col items-center justify-center text-center font-sans text-[10px] font-extrabold leading-[1.05] text-white"
+              >
+                {{ combo.discountPercentage }}%
+                <span class="text-[8px]">OFF</span>
+              </span>
+            </div>
+
+            <!-- COMBO IMAGE -->
+            <div
+              class="relative mt-2 flex h-[82px] items-center justify-center overflow-hidden rounded-t-[11px] bg-[#fff8e8] px-1"
+            >
+              @if (combo.comboImageUrl) {
+                <img
+                  [src]="combo.comboImageUrl"
+                  [alt]="combo.comboName"
+                  class="h-full w-full object-cover"
+                  loading="lazy"
+                />
+              } @else {
+                <div
+                  class="relative flex h-[68px] w-full items-center justify-center"
+                >
+                  @for (
+                    product of getComboImageStack(combo);
+                    track product.productId;
+                    let i = $index
+                  ) {
+                    <img
+                      [src]="product.imageUrl || 'assets/images/product-placeholder.png'"
+                      [alt]="product.productName"
+                      class="absolute h-[58px] w-[43px] rounded-[5px] border border-white bg-white object-cover shadow-[0_2px_5px_rgba(0,0,0,0.12)]"
+                      [style.z-index]="10 + i"
+                      [style.transform]="'translateX(' + ((i - (getComboImageStack(combo).length - 1) / 2) * 18) + 'px) rotate(' + ((i - 1) * 7) + 'deg)'"
+                      loading="lazy"
+                    />
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- COMBO NAME -->
+            <div class="px-2 pt-1">
+<h3
+  class="m-0 min-h-[16px] overflow-hidden text-ellipsis whitespace-nowrap !font-sans !text-[13px] !font-extrabold leading-[1.25] text-[#17233c]"
+>
+  {{ combo.comboName }}
+</h3>
+            </div>
+
+            <!-- STORE NAME -->
+            <div
+              class="mx-1.5 mt-1 flex min-h-[28px] items-center rounded-[7px] bg-[#fff0e5] px-1.5"
+            >
+              <ion-icon
+                name="storefront-outline"
+                class="mr-1 shrink-0 text-[13px] text-[#8f071f]"
+              ></ion-icon>
+              <span
+                class="truncate font-sans text-[8px] font-bold text-[#8f071f]"
+                [title]="combo.vendor.storeName"
+              >
+                {{ combo.vendor.storeName }}
+              </span>
+            </div>
+
+            <!-- PRICES -->
+            <div class="px-2 pb-2 pt-2">
+              <p
+                class="m-0 truncate font-sans text-[9px] font-medium text-[#8a8a8a] line-through"
+              >
+                ₹{{ combo.totalActualPrice }}
+              </p>
+
+              <div class="flex min-w-0 items-center justify-between gap-1">
+                <span
+                  class="truncate font-sans text-[14px] font-extrabold text-[#ef0b1c]"
+                >
+                  ₹{{ combo.comboSellingPrice }}
+                </span>
+                <span
+                  class="shrink-0 rounded-full bg-[#fde5e5] px-1.5 py-1 font-sans text-[8px] font-extrabold text-[#b3123b]"
+                >
+                  {{ combo.discountPercentage }}%
+                </span>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ERROR -->
+  @if (!isCombosLoading && comboErrorMessage) {
+    <div
+      class="rounded-[10px] bg-[#fff1f1] px-3 py-3 text-center font-sans text-[11px] font-semibold text-[#8f071f]"
+    >
+      {{ comboErrorMessage }}
+      <button
+        type="button"
+        class="ml-2 font-sans font-extrabold underline"
+        (click)="loadCombos()"
+      >
+        Retry
+      </button>
+    </div>
+  }
+
+  <!-- EMPTY STATE -->
+  @if (!isCombosLoading && !comboErrorMessage && combos.length === 0) {
+    <p
+      class="py-5 text-center font-sans text-[11px] font-medium text-[#806b68]"
+    >
+      Combo offers will appear here soon.
+    </p>
+  }
+</section>
+
 
 
   <!-- =================================================
@@ -1353,9 +1580,10 @@
   <div
     class="relative z-10 flex flex-col items-center justify-center bg-white px-2"
   >
-    <h2
-      class="!m-0 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-    >
+
+  <h2
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-black sm:!text-[22px]"
+        >
       CATEGORIES
     </h2>
 
@@ -1367,33 +1595,6 @@
   </div>
 </div>
 
-<!-- PRODUCT PAGE DOTS -->
-@if (productsTotalPages > 1) {
-  <div
-    class="mt-[5px] flex w-full items-center justify-center gap-[5px]"
-  >
-    @for (
-      page of [].constructor(productsTotalPages);
-      track $index
-    ) {
-      <button
-        type="button"
-        [attr.aria-label]="'Go to products page ' + ($index + 1)"
-        (click)="goToProductsPage($index)"
-        class="!m-0 !border-0 !p-0 transition-all duration-200"
-        [class.!h-[6px]]="productsPage === $index"
-        [class.!w-[16px]]="productsPage === $index"
-        [class.!rounded-[4px]]="productsPage === $index"
-        [class.!bg-[#8f071f]]="productsPage === $index"
-        [class.!h-[6px]]="productsPage !== $index"
-        [class.!w-[6px]]="productsPage !== $index"
-        [class.!rounded-full]="productsPage !== $index"
-        [class.!bg-[#eadfcb]]="productsPage !== $index"
-      >
-      </button>
-    }
-  </div>
-}
 
 
     <!-- CATEGORY SCROLLER -->
@@ -1626,8 +1827,8 @@
 
   <!-- TEXT -->
   <h2
-    class="relative z-10 !m-0 bg-white px-2 !font-sans !text-[17px] !font-black !leading-tight !tracking-[-0.2px] !text-black sm:!text-[18px]"
-  >
+          class="!m-0 !font-sans !text-[17px] !font-extrabold !leading-none !tracking-[0.1px] !text-black sm:!text-[22px]"
+        >
     NEW ARRIVALS
   </h2>
 </div>
@@ -1831,13 +2032,13 @@
   <div
     class="flex flex-1 flex-col px-[7px] pb-[7px] pt-[6px]"
   >
-
-    <!-- PRODUCT NAME -->
-    <h3
-      class="!m-0 min-h-[29px] w-full !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !line-clamp-2 sm:!text-[11px]"
-    >
-      {{ product.productName }}
-    </h3>
+<!-- PRODUCT NAME -->
+<h3
+  class="!m-0 w-full min-w-0 !overflow-hidden !font-sans !text-[12px] !font-bold !leading-[1.3] !text-[#17233c] !truncate !whitespace-nowrap sm:!text-[11px]"
+  [title]="product.productName"
+>
+  {{ product.productName }}
+</h3>
 
     <!-- PRICE -->
     <div
@@ -2007,6 +2208,290 @@
  
 
     }
+
+
+
+
+  
+<!-- =====================================================
+     COMBO DETAILS VIEW
+====================================================== -->
+
+@if (!isSearchMode && showComboDetails && selectedCombo) {
+  <div class="fixed inset-0 z-[100] flex flex-col bg-white">
+
+    <!-- HEADER -->
+<header
+  class="!relative !flex !h-[76px] !shrink-0 !items-center !overflow-hidden !bg-[#8f071f] !px-3 !text-[#fff8dc]"
+>
+      <button
+        type="button"
+        aria-label="Back to home"
+        (click)="closeComboDetails()"
+        class="flex h-[40px] w-[40px] shrink-0 items-center justify-center border-0 bg-transparent text-[#fff8dc]"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="text-[24px]"
+        ></ion-icon>
+      </button>
+
+ <h1
+  class="ml-2 -translate-y-1 truncate !font-sans !text-[20px] !font-extrabold"
+>
+        Combo Details
+      </h1>
+
+      <!-- RIGHT DEEPAS DECORATION -->
+<img
+  src="assets/images/right-deepas.png"
+  alt=""
+  aria-hidden="true"
+  class="pointer-events-none !absolute !right-0 !top-[-9] !z-30 !h-[88px] !w-auto !select-none !object-contain"
+/>
+    </header>
+
+    <!-- SCROLLABLE DETAILS -->
+    <div class="min-h-0 flex-1 overflow-y-auto bg-white px-3 pb-6 pt-4">
+
+
+<!-- =====================================================
+     SINGLE-PRODUCT IMAGE CAROUSEL
+====================================================== -->
+
+<div
+  class="!relative !overflow-hidden !rounded-[14px] !border !border-[#eadfcb] !bg-[#fffdf7]"
+>
+  @if (selectedCombo.products.length > 0) {
+    <div
+      class="!relative !flex !aspect-[4/3] !w-full !items-center !justify-center !overflow-hidden !bg-[#fff8e8]"
+    >
+      <!-- CURRENT PRODUCT IMAGE -->
+      <img
+        [src]="selectedCombo.products[activeComboImageIndex].imageUrl || 'assets/images/product-placeholder.png'"
+        [alt]="selectedCombo.products[activeComboImageIndex].productName"
+        class="!block !h-full !w-full !object-contain"
+      />
+
+      <!-- PREVIOUS BUTTON -->
+      @if (selectedCombo.products.length > 1) {
+        <button
+          type="button"
+          aria-label="Previous product image"
+          (click)="previousComboImage()"
+          class="!absolute !left-3 !top-1/2 !z-20 !flex !h-[38px] !w-[38px] !-translate-y-1/2 !items-center !justify-center !rounded-full !border !border-[#eadfcb] !bg-[#fffdf7]/95 !p-0 !text-[#8f071f] !shadow-md"
+        >
+          <ion-icon
+            name="arrow-back-outline"
+            class="!text-[21px]"
+          ></ion-icon>
+        </button>
+
+        <!-- NEXT BUTTON -->
+        <button
+          type="button"
+          aria-label="Next product image"
+          (click)="nextComboImage()"
+          class="!absolute !right-3 !top-1/2 !z-20 !flex !h-[38px] !w-[38px] !-translate-y-1/2 !items-center !justify-center !rounded-full !border !border-[#eadfcb] !bg-[#fffdf7]/95 !p-0 !text-[#8f071f] !shadow-md"
+        >
+          <ion-icon
+            name="arrow-forward-outline"
+            class="!text-[21px]"
+          ></ion-icon>
+        </button>
+      }
+
+      <!-- IMAGE COUNTER -->
+      <span
+        class="!absolute !bottom-3 !right-3 !z-20 !rounded-full !bg-[#8f071f]/90 !px-3 !py-1.5 !font-sans !text-[11px] !font-extrabold !text-[#fff8dc]"
+      >
+        {{ activeComboImageIndex + 1 }} /
+        {{ selectedCombo.products.length }}
+      </span>
+    </div>
+
+    <!-- CURRENT PRODUCT NAME -->
+    <div
+      class="!flex !min-h-[42px] !items-center !justify-center !px-3 !py-2"
+    >
+      <p
+        class="!m-0 !text-center !font-sans !text-[13px] !font-extrabold !text-[#17233c]"
+      >
+        {{ selectedCombo.products[activeComboImageIndex].productName }}
+      </p>
+    </div>
+  } @else {
+    <div
+      class="!flex !aspect-[4/3] !items-center !justify-center !bg-[#fff8e8] !font-sans !text-[12px] !font-semibold !text-[#806b68]"
+    >
+      No product images available
+    </div>
+  }
+</div>
+
+
+      <!-- NAME AND DISCOUNT -->
+      <div class="mt-4 flex items-start justify-between gap-3">
+        <h2
+          class="m-0 min-w-0 !font-sans !text-[23px] !font-extrabold leading-tight !text-[#17233c]"
+        >
+          {{ selectedCombo.comboName }}
+        </h2>
+
+        <span
+          class="shrink-0 !rounded-full bg-[#fde5e5] px-3 py-2 !font-sans !text-[12px] !font-extrabold !text-[#b3123b]"
+        >
+          {{ selectedCombo.discountPercentage }}% OFF
+        </span>
+      </div>
+
+      <p
+        class="mt-2 font-sans text-[13px] font-medium leading-relaxed text-[#806b68]"
+      >
+        {{ selectedCombo.description }}
+      </p>
+
+      <!-- STORE -->
+      <div
+        class="mt-4 rounded-[12px] border border-[#f0dfc9] bg-[#fff8ee] p-3"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full bg-[#f7e9bd]"
+          >
+            <ion-icon
+              name="storefront-outline"
+              class="text-[25px] text-[#8f071f]"
+            ></ion-icon>
+          </div>
+
+          <div class="min-w-0">
+            <h3
+              class="m-0 !font-sans !text-[14px] !font-extrabold !text-[#8f071f]"
+            >
+              {{ selectedCombo.vendor.storeName }}
+            </h3>
+
+            <p
+              class="mt-1 font-sans text-[11px] font-medium text-[#806b68]"
+            >
+              {{ selectedCombo.vendor.city || 'Store location unavailable' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- INCLUDED PRODUCTS -->
+      <h3
+        class="mb-3 mt-9 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+      >
+        Items Included ({{ selectedCombo.products.length }})
+      </h3>
+
+      <div class="rounded-[14px] bg-[#fffdf7] px-3">
+        @for (
+          product of selectedCombo.products;
+          track product.productId
+        ) {
+          <button
+            type="button"
+            (click)="openComboProduct(product)"
+            class="flex w-full items-center gap-3 border-0 border-b border-[#eadfcb] bg-transparent py-3 text-left last:border-b-0"
+          >
+            <div
+              class="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[9px] bg-[#f7e9bd]"
+            >
+              <img
+                [src]="product.imageUrl || 'assets/images/product-placeholder.png'"
+                [alt]="product.productName"
+                class="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <p
+                class="m-0 truncate font-sans text-[13px] font-extrabold text-[#17233c]"
+              >
+                {{ product.productName }}
+              </p>
+
+              <p
+                class="mt-1 font-sans text-[11px] font-medium text-[#806b68]"
+              >
+                Included quantity: {{ product.quantity }}
+              </p>
+            </div>
+
+            <ion-icon
+              name="arrow-forward-outline"
+              class="shrink-0 text-[19px] text-[#8f071f]"
+            ></ion-icon>
+          </button>
+        }
+      </div>
+
+      <!-- PRICE SUMMARY -->
+      <div class="mt-4 rounded-[14px] bg-[#fffdf7] p-4">
+        <div class="flex items-center justify-between gap-3">
+          <span
+            class="font-sans text-[12px] font-semibold text-[#806b68]"
+          >
+            Actual Price
+          </span>
+
+          <span
+            class="font-sans text-[13px] font-bold text-[#99917e] line-through"
+          >
+            ₹{{ selectedCombo.totalActualPrice }}
+          </span>
+        </div>
+
+        <div class="mt-2 flex items-center justify-between gap-3">
+          <span
+            class="font-sans text-[13px] font-extrabold text-[#17233c]"
+          >
+            Combo Price
+          </span>
+
+          <span
+            class="font-sans text-[23px] font-extrabold text-[#ef0b1c]"
+          >
+            ₹{{ selectedCombo.comboSellingPrice }}
+          </span>
+        </div>
+
+        <p
+          class="mb-0 mt-2 font-sans text-[11px] font-bold text-[#24722d]"
+        >
+          You save ₹{{ selectedCombo.totalActualPrice - selectedCombo.comboSellingPrice }}
+        </p>
+      </div>
+
+      
+</div>
+
+<!-- FIXED ADD COMBO TO CART -->
+    <div
+      class="!relative !z-[110] !w-full !shrink-0 !border-t !border-[#eadfcb] !bg-[#fffdf7] !px-3 !pt-3 !pb-[max(12px,env(safe-area-inset-bottom))]"
+    >
+      <button
+        type="button"
+        (click)="addComboToCart()"
+        [disabled]="!selectedCombo || !selectedCombo.isAvailable"
+        class="!flex !h-[52px] !w-full !items-center !justify-center !gap-3 rounded-full !border-0 !bg-[#b3123b] !px-4 !font-sans !text-[15px] !font-extrabold !text-[#fff8dc] !shadow-[0_4px_10px_rgba(143,7,31,0.18)] !transition-transform active:!scale-[0.98] disabled:!cursor-not-allowed disabled:!opacity-50"
+      >
+        <ion-icon
+          name="cart-outline"
+          class="!text-[22px]"
+        ></ion-icon>
+
+        Add Combo to Cart · ₹{{ selectedCombo.comboSellingPrice }}
+      </button>
+    </div>
+  </div>
+}
+
 
   </div>
 

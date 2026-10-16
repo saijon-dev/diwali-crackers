@@ -134,27 +134,27 @@ export interface OrderItem {
 ====================================================== */
 
 export interface Order {
-
-  orderId: number;
-
+  orderId: string;
   customerName: string;
-
   customerMobile: string;
-
+  alternativeMobileNumber: string | null;
   deliveryAddress: string;
-
   totalAmount: number;
-
   paymentMethod: string;
-
   status: string;
-
   expectedDeliveryDate: string;
-
   createdAt: string;
 
-  items: OrderItem[];
+  confirmedAt: string | null;
+  packedAt: string | null;
+  shippedAt: string | null;
+  outForDeliveryAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+  cancellationReason: string | null;
 
+  orderStoreIds: number[];
+  items: OrderItem[];
 }
 
 
@@ -251,7 +251,7 @@ getCustomerOrders(
 ): Observable<OrderPageResponse> {
 
   return this.http.get<OrderPageResponse>(
-    `${this.apiUrl}/orders/customer/${customerMobile}`
+    `${this.apiUrl}/orders/customer/order/${customerMobile}`
   );
 
 }
@@ -262,7 +262,7 @@ getCustomerOrders(
   ==================================================== */
 
   getOrderDetails(
-    orderId: number,
+    orderId: string,
     customerMobile: string
   ): Observable<Order> {
 
@@ -289,7 +289,7 @@ getCustomerOrders(
   ==================================================== */
 
   getOrderHistory(
-    orderId: number,
+    orderId: string,
     customerMobile: string
   ): Observable<OrderHistory[]> {
 

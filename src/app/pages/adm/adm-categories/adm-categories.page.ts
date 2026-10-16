@@ -7,7 +7,10 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  ToastController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import {
@@ -45,14 +48,16 @@ import {
 
   templateUrl: './adm-categories.page.html',
 
-  styleUrls: ['./adm-categories.page.scss'],
+
 
   standalone: true,
 
   imports: [
     IonContent,
     IonIcon,
-    FormsModule
+    FormsModule,
+    IonRefresher,
+  IonRefresherContent
   ]
 })
 
@@ -135,6 +140,8 @@ export class AdmCategoriesPage
 
   private objectUrl: string | null = null;
 
+  private activeRefresher: HTMLIonRefresherElement | null = null;
+
 
   // =====================================================
   // CONSTRUCTOR
@@ -143,7 +150,8 @@ export class AdmCategoriesPage
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private productService: ProductService
+    private productService: ProductService,
+      private toastController: ToastController
   ) {
 
     addIcons({
@@ -172,6 +180,43 @@ export class AdmCategoriesPage
   // =====================================================
   // INIT
   // =====================================================
+
+
+  handleRefresh(event: CustomEvent): void {
+  const refresher =
+    event.target as HTMLIonRefresherElement;
+
+  // Protect unsaved category form changes.
+  if (this.isSaving || this.isCategoryModalOpen) {
+    void refresher.complete();
+
+    void this.showToast(
+      this.isSaving
+        ? 'Please wait until saving finishes.'
+        : 'Close the category form before refreshing.'
+    );
+
+    return;
+  }
+
+  this.activeRefresher = refresher;
+
+  // Ensure the refresh requests fresh category data.
+  this.productService.clearCategoryCache();
+
+  this.loadCategories();
+}
+
+private completeRefresh(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  void refresher.complete();
+}
 
 ngOnInit(): void {
 
@@ -230,6 +275,9 @@ ngOnInit(): void {
 
           this.categoryLoadError = '';
 
+
+this.completeRefresh();
+
           this.cdr.detectChanges();
 
         },
@@ -252,6 +300,9 @@ ngOnInit(): void {
             error?.error?.message ||
             error?.message ||
             'Unable to load categories. Please try again.';
+
+
+this.completeRefresh();
 
 
           this.cdr.detectChanges();
@@ -732,58 +783,40 @@ saveCategory(): void {
       )
       .subscribe({
 
-        next: (response) => {
+  next: (response) => {
+  console.log('Category update successful:', response);
 
-          console.log(
-            'Category update successful:',
-            response
-          );
+  this.isSaving = false;
 
+  this.productService.clearCategoryCache();
+  this.loadCategories();
 
-          this.isSaving = false;
+  // Close the modal after a successful update.
+  this.closeCategoryModal();
 
-
-          /*
-           * Refresh categories so the
-           * updated name/description appears
-           * immediately.
-           */
-
-          this.productService
-            .clearCategoryCache();
-
-          this.loadCategories();
+  // Show success feedback.
+  void this.showToast(
+    'Category updated successfully.',
+    true
+  );
+},
 
 
-          /*
-           * Close automatically after success.
-           */
+error: (error) => {
+  console.error('Failed to update category:', error);
 
-          this.closeCategoryModal();
+  this.isSaving = false;
 
-        },
+  this.saveErrorMessage =
+    error?.error?.message ||
+    'Unable to update category. Please try again later.';
 
+  this.cdr.detectChanges();
 
-        error: (error) => {
-
-          console.error(
-            'Failed to update category:',
-            error
-          );
-
-
-          this.isSaving = false;
-
-
-          this.saveErrorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to update category. Please try again.';
-
-
-          this.cdr.detectChanges();
-
-        }
+  void this.showToast(
+    'Unable to update category. Please try again later.'
+  );
+}
 
       });
 
@@ -834,44 +867,35 @@ next: (response) => {
 
   this.isSaving = false;
 
-  // Invalidate cached category data
   this.productService.clearCategoryCache();
-
-  // Always fetch the latest categories from the backend
   this.loadCategories();
 
-  // Close the modal
+  // Close the modal after successful creation.
   this.closeCategoryModal();
 
-  this.cdr.detectChanges();
+  // Show success feedback.
+  void this.showToast(
+    'Category added successfully.',
+    true
+  );
 },
 
 
-      error: (error) => {
+     error: (error) => {
+  console.error('Failed to add category:', error);
 
-        console.error(
-          'Failed to add category:',
-          error
-        );
+  this.isSaving = false;
 
+  this.saveErrorMessage =
+    error?.error?.message ||
+    'Unable to add category. Please try again later.';
 
-        this.isSaving = false;
+  this.cdr.detectChanges();
 
-
-        this.saveErrorMessage =
-          error?.error?.message ||
-          error?.message ||
-          'Unable to add category. Please try again.';
-
-
-        /*
-         * Keep modal open so the backend
-         * error message is visible.
-         */
-
-        this.cdr.detectChanges();
-
-      }
+  void this.showToast(
+    'Unable to add category. Please try again later.'
+  );
+}
 
     });
 
@@ -921,5 +945,22 @@ next: (response) => {
     return category as Category;
 
   }
+
+
+
+  private async showToast(
+  message: string,
+  isSuccess: boolean = false
+): Promise<void> {
+  const toast = await this.toastController.create({
+    message,
+    duration: 2500,
+    position: 'bottom',
+    cssClass: 'diwali-toast',
+    color: isSuccess ? 'success' : 'danger'
+  });
+
+  await toast.present();
+}
 
 }

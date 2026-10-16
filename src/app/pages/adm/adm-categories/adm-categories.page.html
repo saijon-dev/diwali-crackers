@@ -3,58 +3,49 @@
   class="!bg-white"
 >
 
-<div
-  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
->
-
-  <!-- =====================================================
-       GLOBAL HOME BOTTOM DESIGN
-       Positioned at the actual bottom of this page content
-       without taking layout space.
-  ====================================================== -->
-
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content
+    pullingText="Pull down to refresh categories"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing categories..."
+  ></ion-refresher-content>
+</ion-refresher>
   <div
-    class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
-    aria-hidden="true"
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
   >
-    <img
-      src="assets/images/newDesignBg.png"
-      alt=""
-      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
-    />
-  </div>
+    <!-- GLOBAL HOME BOTTOM DESIGN -->
+    <div
+      class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
+    </div>
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
+    <!-- HEADER -->
     <header
       class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
     >
-
       <!-- BACK BUTTON -->
-
       <button
         type="button"
         aria-label="Back"
         (click)="goBack()"
         class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-
         <ion-icon
           name="arrow-back-outline"
           class="!text-[24px]"
         ></ion-icon>
-
       </button>
 
-
       <!-- HEADER TITLE -->
-
       <div
         class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
       >
-
         <h1
           class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
         >
@@ -62,96 +53,62 @@
         </h1>
 
         <p
-          class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[10px]"
+          class="!m-[5px_0_0] !font-sans !text-[11px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[12px]"
         >
           Manage cracker categories
         </p>
-
       </div>
 
-
       <!-- RIGHT DEEPAS -->
-
       <img
         src="assets/images/right-deepas.png"
         alt=""
         aria-hidden="true"
         class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
       />
-
     </header>
 
-
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
-
+    <!-- MAIN CONTENT -->
     <main
       class="mx-auto flex w-full max-w-[760px] flex-1 flex-col"
     >
-
-      <!-- =================================================
-           SEARCH
-      ================================================== -->
-
-      <section
-        class="mt-4 flex items-center"
-      >
-
-        <div
-          class="relative flex min-w-0 flex-1 items-center"
-        >
-
+      <!-- SEARCH -->
+      <section class="mt-4 flex items-center">
+        <div class="relative flex min-w-0 flex-1 items-center">
           <ion-icon
             name="search-outline"
             class="pointer-events-none absolute left-3 z-10 !text-[17px] !text-[#8f071f]"
           ></ion-icon>
-
 
           <input
             type="text"
             [(ngModel)]="searchText"
             placeholder="Search categories..."
             autocomplete="off"
-            class="!m-0 !h-[44px] w-full !rounded-[10px] !border !border-[#e5dcd2] !bg-[#fffdf7] !pl-10 !pr-10 !font-sans !text-[11px] !font-medium !text-[#17233c] !outline-none shadow-[0_3px_10px_rgba(86,48,10,0.05)] placeholder:!font-sans placeholder:!text-[10px] placeholder:!font-medium placeholder:!text-[#a3988d] focus:!border-[#b3123b]"
+            class="!m-0 !h-[44px] w-full !rounded-[10px] !border !border-[#e5dcd2] !bg-[#fffdf7] !pl-10 !pr-10 !font-sans !text-[14px] !font-medium !text-[#17233c] !outline-none shadow-[0_3px_10px_rgba(86,48,10,0.05)] placeholder:!font-sans placeholder:!text-[12px] placeholder:!font-medium placeholder:!text-[#a3988d] focus:!border-[#b3123b]"
           />
 
-
           @if (searchText) {
-
             <button
               type="button"
               aria-label="Clear search"
               (click)="searchText = ''"
               class="absolute right-2 flex !h-[30px] !w-[30px] !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#99917e] transition-transform duration-150 active:scale-90"
             >
-
               <ion-icon
                 name="close-outline"
                 class="!text-[17px]"
               ></ion-icon>
-
             </button>
-
           }
-
         </div>
-
       </section>
 
-
-      <!-- =================================================
-           SECTION HEADING
-      ================================================== -->
-
-      <section
-        class="mt-5 flex items-end justify-between"
-      >
-
+      <!-- SECTION HEADING -->
+      <section class="mt-5 flex items-end justify-between">
         <div>
-
           <span
-            class="block !font-sans !text-[8px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
+            class="block !font-sans !text-[10px] !font-bold uppercase tracking-[0.7px] !text-[#9e2020]"
           >
             COLLECTION
           </span>
@@ -161,326 +118,216 @@
           >
             All Categories
           </h2>
-
         </div>
 
-
         <!-- CATEGORY COUNT -->
-
         <div
-          class="flex !h-[28px] !min-w-[32px] !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] px-2 !font-sans !text-[10px] !font-extrabold !text-[#8f071f]"
+          class="flex !h-[28px] !min-w-[32px] !items-center !justify-center !rounded-[8px] !bg-[#f7e9bd] px-2 !font-sans !text-[12px] !font-extrabold !text-[#8f071f]"
         >
           {{ filteredCategories.length }}
         </div>
-
       </section>
 
+      <!-- CATEGORY LIST -->
 
-      <!-- =================================================
-           CATEGORY LIST
-      ================================================== -->
-<!-- =================================================
-     CATEGORY LIST
-================================================== -->
-
-@if (isLoadingCategories) {
-
-  <!-- =================================================
-       CATEGORY SKELETON LOADER
-  ================================================== -->
-
-  <section
-    class="mt-3 grid grid-cols-3 gap-2 pb-8"
-    aria-label="Loading categories"
-  >
-
-    @for (item of [1, 2, 3, 4, 5, 6]; track item) {
-
-      <article
-        class="min-w-0 overflow-hidden rounded-[10px] border border-[#f0e5d8] bg-white p-2 shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
-      >
-
-        <!-- IMAGE SKELETON -->
-
-        <div
-          class="h-[78px] w-full animate-pulse rounded-[8px] bg-[#f3ead5]"
-        ></div>
-
-
-        <!-- TEXT SKELETON -->
-
-        <div class="px-0.5 pt-2">
-
-          <div
-            class="h-[5px] w-[42px] animate-pulse rounded-[3px] bg-[#eadfca]"
-          ></div>
-
-
-          <div
-            class="mt-2 h-[9px] w-[78%] animate-pulse rounded-[4px] bg-[#eee5d6]"
-          ></div>
-
-
-          <div
-            class="mt-1.5 h-[7px] w-[92%] animate-pulse rounded-[4px] bg-[#f1e9dc]"
-          ></div>
-
-
-          <div
-            class="mt-1 h-[7px] w-[70%] animate-pulse rounded-[4px] bg-[#f1e9dc]"
-          ></div>
-
-        </div>
-
-      </article>
-
-    }
-
-  </section>
-
-
-} @else if (categoryLoadError) {
-
-  <!-- =================================================
-       CATEGORY API ERROR
-  ================================================== -->
-
-  <section
-    class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
-  >
-
-    <div
-      class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
-    >
-
-      <ion-icon
-        name="grid-outline"
-        class="!text-[31px]"
-      ></ion-icon>
-
-    </div>
-
-
-    <h3
-      class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
-    >
-      Unable to load categories
-    </h3>
-
-
-    <p
-      class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
-    >
-      {{ categoryLoadError }}
-    </p>
-
-
-    <button
-      type="button"
-      (click)="retryLoadCategories()"
-      class="flex !min-h-[40px] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
-    >
-
-      <ion-icon
-        name="refresh-outline"
-        class="!text-[16px]"
-      ></ion-icon>
-
-      Try Again
-
-    </button>
-
-  </section>
-
-
-} @else if (filteredCategories.length > 0) {
-
-  <!-- =================================================
-       CATEGORY CARDS
-  ================================================== -->
-
-  <section
-    class="mt-3 grid grid-cols-3 gap-2 pb-8"
-  >
-
-    @for (
-      category of filteredCategories;
-      track category.categoryId
-    ) {
-
-  <article
-  class="relative min-w-0 overflow-hidden rounded-[10px] border border-[#f0e5d8] bg-white p-2 shadow-[0_3px_10px_rgba(86,48,10,0.06)] transition-transform duration-150"
-  [class.cursor-pointer]="!isVendor"
-  [class.active:scale-[0.97]]="!isVendor"
-  (click)="!isVendor && openEditCategory(category)"
->
-
-        <!-- CATEGORY IMAGE -->
-
-        <div
-          class="relative ml-0.5 h-[78px] w-[calc(100%-2px)] overflow-hidden rounded-[8px] bg-[#f7e9bd]"
+      @if (isLoadingCategories) {
+        <!-- CATEGORY SKELETON LOADER -->
+        <section
+          class="mt-3 grid grid-cols-3 gap-2 pb-8"
+          aria-label="Loading categories"
         >
-
-          @if (category.categoryImageUrl) {
-
-            <img
-              [src]="category.categoryImageUrl"
-              [alt]="category.categoryName"
-              loading="lazy"
-              class="block h-full w-full object-cover"
-            />
-
-          } @else {
-
-            <div
-              class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#8f071f]"
+          @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+            <article
+              class="min-w-0 overflow-hidden rounded-[10px] border border-[#f0e5d8] bg-white p-2 shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
             >
+              <!-- IMAGE SKELETON -->
+              <div
+                class="h-[78px] w-full animate-pulse rounded-[8px] bg-[#f3ead5]"
+              ></div>
 
-              <ion-icon
-                name="grid-outline"
-                class="!text-[22px]"
-              ></ion-icon>
+              <!-- TEXT SKELETON -->
+              <div class="px-0.5 pt-2">
+                <div
+                  class="h-[5px] w-[42px] animate-pulse rounded-[3px] bg-[#eadfca]"
+                ></div>
 
-            </div>
+                <div
+                  class="mt-2 h-[9px] w-[78%] animate-pulse rounded-[4px] bg-[#eee5d6]"
+                ></div>
 
+                <div
+                  class="mt-1.5 h-[7px] w-[92%] animate-pulse rounded-[4px] bg-[#f1e9dc]"
+                ></div>
+
+                <div
+                  class="mt-1 h-[7px] w-[70%] animate-pulse rounded-[4px] bg-[#f1e9dc]"
+                ></div>
+              </div>
+            </article>
           }
-
-        </div>
-
-
-        <!-- CATEGORY INFORMATION -->
-
-        <div
-          class="min-w-0 px-0.5 pt-1.5"
+        </section>
+      } @else if (categoryLoadError) {
+        <!-- CATEGORY API ERROR -->
+        <section
+          class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
         >
-
-          <span
-            class="block truncate !font-sans !text-[5.5px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
+          <div
+            class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
           >
-            CATEGORY
-          </span>
-
+            <ion-icon
+              name="grid-outline"
+              class="!text-[31px]"
+            ></ion-icon>
+          </div>
 
           <h3
-            class="!m-[2px_0_0] line-clamp-2 !font-sans !text-[11px] !font-bold !leading-[1.2] !text-[#17233c]"
+            class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
           >
-            {{ category.categoryName }}
+            Unable to load categories
           </h3>
 
+          <p
+            class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
+            {{ categoryLoadError }}
+          </p>
 
-          @if (category.description) {
+          <button
+            type="button"
+            (click)="retryLoadCategories()"
+            class="flex !min-h-[40px] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
+          >
+            <ion-icon
+              name="refresh-outline"
+              class="!text-[16px]"
+            ></ion-icon>
 
-            <p
-              class="!m-[3px_0_0] line-clamp-2 !font-sans !text-[8px] !font-medium !leading-[1.3] !text-[#806b68]"
+            Try Again
+          </button>
+        </section>
+      } @else if (filteredCategories.length > 0) {
+        <!-- CATEGORY CARDS -->
+        <section
+          class="mt-3 grid grid-cols-3 gap-2 pb-8"
+        >
+          @for (
+            category of filteredCategories;
+            track category.categoryId
+          ) {
+            <article
+              class="relative min-w-0 overflow-hidden rounded-[10px] border border-[#f0e5d8] bg-white p-2 shadow-[0_3px_10px_rgba(86,48,10,0.06)] transition-transform duration-150"
+              [class.cursor-pointer]="!isVendor"
+              [class.active:scale-[0.97]]="!isVendor"
+              (click)="!isVendor && openEditCategory(category)"
             >
-              {{ category.description }}
-            </p>
+              <!-- CATEGORY IMAGE -->
+              <div
+                class="relative ml-0.5 h-[78px] w-[calc(100%-2px)] overflow-hidden rounded-[8px] bg-[#f7e9bd]"
+              >
+                @if (category.categoryImageUrl) {
+                  <img
+                    [src]="category.categoryImageUrl"
+                    [alt]="category.categoryName"
+                    loading="lazy"
+                    class="block h-full w-full object-cover"
+                  />
+                } @else {
+                  <div
+                    class="flex h-full w-full items-center justify-center bg-[#f7e9bd] text-[#8f071f]"
+                  >
+                    <ion-icon
+                      name="grid-outline"
+                      class="!text-[22px]"
+                    ></ion-icon>
+                  </div>
+                }
+              </div>
 
+              <!-- CATEGORY INFORMATION -->
+              <div class="min-w-0 px-0.5 pt-1.5">
+                <span
+                  class="block truncate !font-sans !text-[9px] !font-bold uppercase tracking-[0.3px] !text-[#9e2020]"
+                >
+                  CATEGORY
+                </span>
+
+                <h3
+                  class="!m-[2px_0_0] line-clamp-2 !font-sans !text-[12px] !font-extrabold !leading-[1.2] !text-[#17233c]"
+                >
+                  {{ category.categoryName }}
+                </h3>
+
+                @if (category.description) {
+                  <p
+                    class="!m-[3px_0_0] line-clamp-2 !font-sans !text-[10px] !font-medium !leading-[1.3] !text-[#806b68]"
+                  >
+                    {{ category.description }}
+                  </p>
+                }
+              </div>
+            </article>
           }
+        </section>
+      } @else {
+        <!-- NO CATEGORIES / NO SEARCH RESULTS -->
+        <section
+          class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
+        >
+          <div
+            class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+          >
+            <ion-icon
+              name="grid-outline"
+              class="!text-[31px]"
+            ></ion-icon>
+          </div>
 
-        </div>
+          <h3
+            class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+          >
+            No categories found
+          </h3>
 
-      </article>
+          <p
+            class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
+          >
+            Try a different search or create a new category.
+          </p>
 
-    }
+          <button
+            type="button"
+            (click)="openAddCategory()"
+            class="flex !min-h-[40px] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
+          >
+            <ion-icon
+              name="add-outline"
+              class="!text-[16px]"
+            ></ion-icon>
 
-
-  </section>
-
-
-} @else {
-
-  <!-- =================================================
-       NO CATEGORIES / NO SEARCH RESULTS
-  ================================================== -->
-
-  <section
-    class="flex flex-1 flex-col items-center justify-center px-5 py-14 text-center"
-  >
-
-    <div
-      class="mb-4 flex !h-[66px] !w-[66px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
-    >
-
-      <ion-icon
-        name="grid-outline"
-        class="!text-[31px]"
-      ></ion-icon>
-
-    </div>
-
-
-    <h3
-      class="!m-0 !font-sans !text-[19px] !font-extrabold !text-[#17233c]"
-    >
-      No categories found
-    </h3>
-
-
-    <p
-      class="!m-[8px_0_18px] max-w-[280px] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
-    >
-      Try a different search or create a new category.
-    </p>
-
-
-    <button
-      type="button"
-      (click)="openAddCategory()"
-      class="flex !min-h-[40px] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
-    >
-
-      <ion-icon
-        name="add-outline"
-        class="!text-[16px]"
-      ></ion-icon>
-
-      Add Category
-
-    </button>
-
-  </section>
-
-}
-
+            Add Category
+          </button>
+        </section>
+      }
     </main>
-
-
-
-
   </div>
 
-
-  <!-- =====================================================
-       ADD / UPDATE CATEGORY MODAL
-  ====================================================== -->
-
+  <!-- ADD / UPDATE CATEGORY MODAL -->
   @if (isCategoryModalOpen) {
-
     <div
       class="fixed inset-0 z-[9999] flex items-center justify-center bg-[rgba(20,15,5,0.42)] px-3 py-5 backdrop-blur-[1px]"
       (click)="closeCategoryModal()"
     >
-
       <div
         class="flex max-h-[92dvh] w-full max-w-[520px] flex-col overflow-hidden rounded-[16px] bg-[#fffdf7] shadow-[0_10px_35px_rgba(50,20,0,0.22)]"
         (click)="$event.stopPropagation()"
       >
-
-        <!-- =================================================
-             MODAL HEADER
-        ================================================== -->
-
+        <!-- MODAL HEADER -->
         <div
           class="relative flex h-[76px] shrink-0 items-center justify-between overflow-hidden bg-[#8f071f] px-4"
         >
-
-          <div
-            class="relative z-20 min-w-0"
-          >
-
+          <div class="relative z-20 min-w-0">
             <span
-              class="block !font-sans !text-[7px] !font-bold uppercase tracking-[0.7px] !text-[#f7df9d]"
+              class="block !font-sans !text-[10px] !font-bold uppercase tracking-[0.7px] !text-[#f7df9d]"
             >
               {{
                 isEditMode
@@ -488,7 +335,6 @@
                   : 'NEW CATEGORY'
               }}
             </span>
-
 
             <h2
               class="!m-[3px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#fff8dc]"
@@ -499,36 +345,9 @@
                   : 'Add Category'
               }}
             </h2>
-
           </div>
 
-
-
-          @if (saveErrorMessage) {
-
-  <div
-    class="mb-3 flex items-start gap-2 rounded-[10px] border border-[#efcaca] bg-[#fff3f3] px-3 py-2.5"
-  >
-
-    <ion-icon
-      name="close-outline"
-      class="mt-[1px] shrink-0 !text-[16px] !text-[#b32626]"
-    ></ion-icon>
-
-
-    <p
-      class="!m-0 !font-sans !text-[9px] !font-semibold !leading-[1.4] !text-[#b32626]"
-    >
-      {{ saveErrorMessage }}
-    </p>
-
-  </div>
-
-}
-
-
           <!-- MODAL CLOSE -->
-
           <button
             type="button"
             aria-label="Close"
@@ -536,84 +355,75 @@
             [disabled]="isSaving"
             class="relative z-30 flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[9px] !border !border-[rgba(255,248,220,0.22)] !bg-[rgba(255,248,220,0.08)] !p-0 !text-[#fff8dc] transition-transform duration-150 active:scale-90 disabled:opacity-50"
           >
-
             <ion-icon
               name="close-outline"
               class="!text-[19px]"
             ></ion-icon>
-
           </button>
 
-
           <!-- RIGHT DEEPAS -->
-
           <img
             src="assets/images/right-deepas.png"
             alt=""
             aria-hidden="true"
             class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.78]"
           />
-
         </div>
 
-
-        <!-- =================================================
-             MODAL CONTENT
-        ================================================== -->
-
+        <!-- MODAL CONTENT -->
         <div
           class="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-3"
         >
+          <!-- SAVE ERROR -->
+          @if (saveErrorMessage) {
+            <div
+              class="mb-3 flex items-start gap-2 rounded-[10px] border border-[#efcaca] bg-[#fff3f3] px-3 py-2.5"
+            >
+              <ion-icon
+                name="close-outline"
+                class="mt-[1px] shrink-0 !text-[16px] !text-[#b32626]"
+              ></ion-icon>
+
+              <p
+                class="!m-0 !font-sans !text-[11px] !font-semibold !leading-[1.4] !text-[#b32626]"
+              >
+                {{ saveErrorMessage }}
+              </p>
+            </div>
+          }
 
           <!-- DECORATION -->
-
-          <div
-            class="mb-4 flex items-center gap-2.5"
-          >
-
+          <div class="mb-4 flex items-center gap-2.5">
             <span
               class="!font-sans !text-[9px] !font-bold !text-[#b3123b]"
             >
               ✦
             </span>
 
-            <div
-              class="h-px flex-1 bg-[#ead8b9]"
-            ></div>
+            <div class="h-px flex-1 bg-[#ead8b9]"></div>
 
             <span
               class="!font-sans !text-[9px] !font-bold !text-[#b3123b]"
             >
               ✦
             </span>
-
           </div>
 
-
-          <!-- =================================================
-               CATEGORY NAME
-          ================================================== -->
-
-          <div
-            class="mb-4"
-          >
-
+          <!-- CATEGORY NAME -->
+          <div class="mb-4">
             <label
-              class="mb-[6px] block !font-sans !text-[9px] !font-bold !text-[#17233c]"
+              class="mb-[6px] block !font-sans !text-[12px] !font-bold !text-[#17233c]"
             >
               Category Name
             </label>
 
-
             <div
               class="relative flex h-[45px] items-center overflow-hidden rounded-[10px] border border-[#e5dcd2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)] focus-within:border-[#b3123b]"
             >
-
               <ion-icon
                 name="grid-outline"
                 class="ml-3 shrink-0 !text-[15px] !text-[#8f071f]"
               ></ion-icon>
-
 
               <input
                 type="text"
@@ -622,106 +432,80 @@
                 maxlength="100"
                 autocomplete="off"
                 [disabled]="isSaving"
-                class="!m-0 h-full min-w-0 flex-1 !border-0 !bg-transparent !px-2.5 !font-sans !text-[11px] !font-medium !text-[#17233c] !outline-none placeholder:!font-sans placeholder:!text-[10px] placeholder:!text-[#a3988d]"
+                class="!m-0 h-full min-w-0 flex-1 !border-0 !bg-transparent !px-2.5 !font-sans !text-[13px] !font-medium !text-[#17233c] !outline-none placeholder:!font-sans placeholder:!text-[12px] placeholder:!font-medium placeholder:!text-[#a3988d]"
               />
-
             </div>
-
           </div>
 
-
-          <!-- =================================================
-               DESCRIPTION
-          ================================================== -->
-
-          <div
-            class="mb-4"
-          >
-
+          <!-- DESCRIPTION -->
+          <div class="mb-4">
             <label
-              class="mb-[6px] block !font-sans !text-[9px] !font-bold !text-[#17233c]"
+              class="mb-[6px] block !font-sans !text-[12px] !font-bold !text-[#17233c]"
             >
               Description
             </label>
 
-
             <div
               class="overflow-hidden rounded-[10px] border border-[#e5dcd2] bg-[#fffdf7] shadow-[0_2px_7px_rgba(86,48,10,0.04)] focus-within:border-[#b3123b]"
             >
-
               <textarea
                 [(ngModel)]="categoryDescription"
                 placeholder="Enter category description"
                 maxlength="250"
                 rows="3"
                 [disabled]="isSaving"
-                class="!m-0 block min-h-[86px] w-full resize-none !border-0 !bg-transparent px-3 py-2.5 !font-sans !text-[11px] !font-medium !leading-[1.45] !text-[#17233c] !outline-none placeholder:!font-sans placeholder:!text-[10px] placeholder:!text-[#a3988d]"
+                class="!m-0 block min-h-[86px] w-full resize-none !border-0 !bg-transparent px-3 py-2.5 !font-sans !text-[13px] !font-medium !leading-[1.45] !text-[#17233c] !outline-none placeholder:!font-sans placeholder:!text-[12px] placeholder:!font-medium placeholder:!text-[#a3988d]"
               ></textarea>
-
             </div>
-
           </div>
 
 
-          <!-- =================================================
-               IMAGE
-          ================================================== -->
+<!-- CATEGORY IMAGE -->
+<div class="mb-4">
+  <div class="mb-[6px] flex items-center justify-between gap-2">
+    <label class="!font-sans !text-[12px] !font-bold !text-[#17233c]">
+      Category Image
+    </label>
 
-          <div
-            class="mb-4"
-          >
+    @if (selectedImage) {
+      <span class="!font-sans !text-[10px] !font-semibold !text-[#2e7d32]">
+        New image selected
+      </span>
+    }
+  </div>
 
-            <div
-              class="mb-[6px] flex items-center justify-between gap-2"
-            >
+  <!-- IMAGE SIZE NOTE -->
+  <p
+    class="mb-2 mt-1 !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#806b68]"
+  >
+    <ion-icon
+      name="information-circle-outline"
+      class="mr-1 inline-block align-middle !text-[14px] !text-[#8f071f]"
+    ></ion-icon>
+    Upload only images smaller than 2 MB.
+  </p>
 
-              <label
-                class="!font-sans !text-[9px] !font-bold !text-[#17233c]"
-              >
-                Category Image
-              </label>
-
-
-              @if (selectedImage) {
-
-                <span
-                  class="!font-sans !text-[8px] !font-semibold !text-[#2e7d32]"
-                >
-                  New image selected
-                </span>
-
-              }
-
-            </div>
 
 
             <!-- UPLOAD BOX -->
-
             <label
               for="categoryImage"
               class="flex h-[58px] cursor-pointer items-center gap-2.5 overflow-hidden rounded-[11px] border border-dashed border-[#e0cda8] bg-[#fffdf7] px-3 transition-colors duration-150 active:bg-[#fff8e8]"
               [class.pointer-events-none]="isSaving"
               [class.opacity-60]="isSaving"
             >
-
               <div
                 class="flex !h-[34px] !w-[34px] shrink-0 !items-center !justify-center !rounded-[9px] !bg-[#f7e9bd] !text-[#8f071f]"
               >
-
                 <ion-icon
                   name="cloud-upload-outline"
                   class="!text-[17px]"
                 ></ion-icon>
-
               </div>
 
-
-              <div
-                class="min-w-0 flex-1"
-              >
-
+              <div class="min-w-0 flex-1">
                 <strong
-                  class="block truncate !font-sans !text-[9px] !font-bold !text-[#17233c]"
+                  class="block truncate !font-sans !text-[11px] !font-bold !text-[#17233c]"
                 >
                   {{
                     isEditMode
@@ -731,22 +515,18 @@
                 </strong>
 
                 <span
-                  class="mt-[2px] block !font-sans !text-[8px] !font-medium !text-[#99917e]"
+                  class="mt-[2px] block !font-sans !text-[10px] !font-medium !text-[#99917e]"
                 >
                   Choose an image
                 </span>
-
               </div>
-
 
               <div
                 class="flex !h-[29px] !w-[29px] shrink-0 !items-center !justify-center !rounded-[8px] !bg-[#b3123b] !font-sans !text-[18px] !font-bold !leading-none !text-[#fff8dc]"
               >
                 +
               </div>
-
             </label>
-
 
             <input
               id="categoryImage"
@@ -757,19 +537,11 @@
               (change)="onImageSelected($event)"
             />
 
-
-            <!-- =================================================
-                 IMAGE PREVIEW
-            ================================================== -->
-
+            <!-- IMAGE PREVIEW -->
             @if (imagePreview) {
-
-              <div
-                class="mt-3"
-              >
-
+              <div class="mt-3">
                 <div
-                  class="mb-2 !font-sans !text-[8px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
+                  class="mb-2 !font-sans !text-[10px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
                 >
                   {{
                     isEditMode && !selectedImage
@@ -778,20 +550,16 @@
                   }}
                 </div>
 
-
                 <div
                   class="relative h-[145px] w-full overflow-hidden rounded-[11px] bg-[#f7e9bd]"
                 >
-
                   <img
                     [src]="imagePreview"
                     [alt]="categoryName"
                     class="block h-full w-full object-cover"
                   />
 
-
                   <!-- REMOVE -->
-
                   <button
                     type="button"
                     aria-label="Remove image"
@@ -799,71 +567,50 @@
                     [disabled]="isSaving"
                     class="absolute right-2 top-2 flex !h-[30px] !w-[30px] !items-center !justify-center !rounded-[8px] !border-0 !bg-[rgba(143,7,31,0.88)] !p-0 !text-[#fff8dc] shadow-[0_2px_7px_rgba(50,20,0,0.18)] transition-transform duration-150 active:scale-90"
                   >
-
                     <ion-icon
                       name="trash-outline"
                       class="!text-[14px]"
                     ></ion-icon>
-
                   </button>
 
-
                   <!-- MAIN BADGE -->
-
                   <span
-                    class="absolute bottom-2 left-2 rounded-[6px] bg-[#b3123b] px-2 py-1 !font-sans !text-[7px] !font-bold !text-[#fff8dc] shadow-[0_2px_6px_rgba(50,20,0,0.15)]"
+                    class="absolute bottom-2 left-2 rounded-[6px] bg-[#b3123b] px-2 py-1 !font-sans !text-[9px] !font-bold !text-[#fff8dc] shadow-[0_2px_6px_rgba(50,20,0,0.15)]"
                   >
                     Main
                   </span>
-
                 </div>
-
               </div>
-
             }
-
           </div>
-
         </div>
 
-
-        <!-- =================================================
-             MODAL ACTIONS
-        ================================================== -->
-
+        <!-- MODAL ACTIONS -->
         <div
           class="flex shrink-0 gap-2.5 border-t border-[#f0e5d8] bg-[#fffdf7] px-4 py-3"
         >
-
           <!-- CANCEL -->
-
           <button
             type="button"
             (click)="closeCategoryModal()"
             [disabled]="isSaving"
-            class="flex min-h-[43px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[10px] !font-bold !text-[#806b68] transition-transform duration-150 active:scale-[0.98] disabled:opacity-50"
+            class="flex min-h-[43px] flex-1 !items-center !justify-center !rounded-[10px] !border !border-[#e1d7d2] !bg-white px-3 !font-sans !text-[12px] !font-bold !text-[#806b68] transition-transform duration-150 active:scale-[0.98] disabled:opacity-50"
           >
             Cancel
           </button>
 
-
           <!-- SAVE -->
-
           <button
             type="button"
             [disabled]="!hasCategoryChanges() || isSaving"
             (click)="saveCategory()"
-            class="flex min-h-[43px] flex-[1.4] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[10px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex min-h-[43px] flex-[1.4] !items-center !justify-center gap-1.5 !rounded-[10px] !border-0 !bg-[#b3123b] px-3 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.15)] transition duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-
             @if (isSaving) {
-
               <span
                 class="h-[14px] w-[14px] animate-spin rounded-full border-[2px] border-[rgba(255,248,220,0.35)] border-t-[#fff8dc]"
               ></span>
-
             } @else {
-
               <ion-icon
                 [name]="
                   isEditMode
@@ -872,55 +619,39 @@
                 "
                 class="!text-[15px]"
               ></ion-icon>
-
             }
 
-
             <span>
-
               {{
                 isSaving
                   ? (
-                    isEditMode
-                      ? 'Updating...'
-                      : 'Adding...'
-                  )
+                      isEditMode
+                        ? 'Updating...'
+                        : 'Adding...'
+                    )
                   : (
-                    isEditMode
-                      ? 'Update Category'
-                      : 'Add Category'
-                  )
+                      isEditMode
+                        ? 'Update Category'
+                        : 'Add Category'
+                    )
               }}
-
             </span>
-
           </button>
-
         </div>
-
       </div>
-
     </div>
-
   }
 
-
-  <!-- =====================================================
-       FLOATING ADD CATEGORY BUTTON
-  ====================================================== -->
-
+  <!-- FLOATING ADD CATEGORY BUTTON -->
   <button
     type="button"
     aria-label="Add category"
     (click)="openAddCategory()"
     class="fixed bottom-[76px] right-4 z-[100] flex !h-[44px] !w-[44px] !items-center !justify-center !rounded-[10px] !border-0 !bg-[#b3123b] !p-0 !text-[#fff8dc] shadow-[0_4px_12px_rgba(143,7,31,0.22)] transition-transform duration-150 active:scale-90"
   >
-
     <ion-icon
       name="add-outline"
       class="!text-[22px]"
     ></ion-icon>
-
   </button>
-
 </ion-content>

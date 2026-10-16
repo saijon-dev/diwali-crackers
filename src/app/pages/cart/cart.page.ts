@@ -3,10 +3,21 @@ import {
   OnInit,
   ChangeDetectorRef
 } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
 
 import {
-  FormsModule
-} from '@angular/forms';
+  LocationService
+} from '../../services/location.service';
+
+import {
+  LocationStateService
+} from '../../services/location-state.service';
 
 import {
   IonContent,
@@ -17,7 +28,9 @@ import {
   IonTextarea,
   IonAlert,
   IonToast,
-  AlertController
+  AlertController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { DecimalPipe } from '@angular/common';
@@ -65,7 +78,7 @@ import { Product } from '../../services/product.service';
   standalone: true,
 
   imports: [
-    FormsModule,
+ReactiveFormsModule,
     IonContent,
     IonIcon,
     IonModal,
@@ -75,7 +88,9 @@ import { Product } from '../../services/product.service';
     IonAlert,
     IonToast,
     FloatingCartComponent,
-    DecimalPipe
+    DecimalPipe,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class CartPage implements OnInit {
@@ -153,19 +168,51 @@ export class CartPage implements OnInit {
      CHECKOUT DETAILS
   ==================================================== */
 
-customerName = '';
+checkoutForm = new FormGroup({
+  customerName: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ\s.'-]+$/),
+      Validators.maxLength(80)
+    ]
+  }),
 
-customerMobile = '';
+  customerMobile: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[0-9]{10}$/)
+    ]
+  }),
 
-alternativeMobileNumber = '';
+  alternativeMobileNumber: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.pattern(/^[0-9]{10}$/)
+    ]
+  }),
 
-deliveryAddress = '';
+  deliveryAddress: new FormControl('', {
+    nonNullable: true,
+    validators: [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(300)
+    ]
+  })
+});
+
+isResolvingAddress = false;
 
   /* ====================================================
      ORDER
   ==================================================== */
 
   isCreatingOrder = false;
+
+  isCheckoutScreen = false;
 
   createdOrder: OrderResponse | null = null;
 
@@ -189,7 +236,9 @@ deliveryAddress = '';
     private router: Router,
     private cdr: ChangeDetectorRef,
     private cartService: CartService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private locationService: LocationService,
+private locationStateService: LocationStateService
   ) {
 
     addIcons({
@@ -226,108 +275,69 @@ deliveryAddress = '';
      LOAD CART
   ==================================================== */
 
-  loadCart(): void {
+loadCart(refresher?: any): void {
+  const token = this.cartService.getCartToken();
 
-    const token =
-      this.cartService.getCartToken();
+  if (!token) {
+    this.cartStores = [];
+    this.cartItems = [];
+    this.cartToken = '';
 
+    this.calculateTotals();
+    this.completeRefresher(refresher);
+    return;
+  }
 
-    if (!token) {
+  this.isLoading = true;
+  this.errorMessage = '';
 
-      this.cartStores = [];
+  this.cartService.getCart().subscribe({
+    next: (response) => {
+      this.cartToken = response.cartToken || '';
+      this.cartStores = response.stores ?? [];
 
-      this.cartItems = [];
+      this.cartItems = this.flattenStoreItems(
+        this.cartStores
+      );
 
-      this.cartToken = '';
+      this.subtotal = response.subtotal || 0;
+
+      this.isLoading = false;
+      this.errorMessage = '';
 
       this.calculateTotals();
+      this.cdr.detectChanges();
 
-      return;
+      this.completeRefresher(refresher);
+    },
 
+    error: (error) => {
+      console.error('Get Cart Error:', error);
+
+      this.cartStores = [];
+      this.cartItems = [];
+
+      this.isLoading = false;
+      this.errorMessage =
+        error?.error?.message ||
+        error?.message ||
+        'Unable to load cart.';
+
+      this.cdr.detectChanges();
+
+      this.completeRefresher(refresher);
     }
+  });
+}
 
+private completeRefresher(refresher?: any): void {
+  const target = refresher?.target;
 
-    this.isLoading = true;
-
-    this.errorMessage = '';
-
-
-    this.cartService
-      .getCart()
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Cart Response:',
-            response
-          );
-
-
-          this.cartToken =
-            response.cartToken || '';
-
-
-          /*
-           * Backend now returns stores[].
-           */
-
-          this.cartStores =
-            response.stores ?? [];
-
-
-          /*
-           * Keep a flattened list for
-           * totals and existing methods.
-           */
-
-          this.cartItems =
-            this.flattenStoreItems(
-              this.cartStores
-            );
-
-
-          this.subtotal =
-            response.subtotal || 0;
-
-
-          this.isLoading = false;
-
-          this.errorMessage = '';
-
-          this.calculateTotals();
-
-          this.cdr.detectChanges();
-
-        },
-
-
-        error: (error) => {
-
-          console.error(
-            'Get Cart Error:',
-            error
-          );
-
-
-          this.cartStores = [];
-
-          this.cartItems = [];
-
-          this.isLoading = false;
-
-          this.errorMessage =
-            error?.error?.message ||
-            error?.message ||
-            'Unable to load cart.';
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
+  if (target && typeof target.complete === 'function') {
+    void target.complete();
   }
+}
+
 
 
   /* ====================================================
@@ -779,153 +789,106 @@ deliveryAddress = '';
   /* ====================================================
      CONTINUE TO CHECKOUT
   ==================================================== */
-
-  continueToCheckout(): void {
-
-    if (
-      this.cartItems.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    this.errorMessage = '';
-
-    this.isCheckoutModalOpen = true;
-
+async continueToCheckout(): Promise<void> {
+  if (this.cartItems.length === 0 || this.isLoading) {
+    return;
   }
+
+  this.errorMessage = '';
+  this.isCheckoutScreen = true;
+
+  // await this.loadDeliveryAddressFromGps();
+}
+
+
+async loadDeliveryAddressFromGps(): Promise<void> {
+  if (this.isResolvingAddress) {
+    return;
+  }
+
+  this.isResolvingAddress = true;
+  this.cdr.detectChanges();
+
+  try {
+    // Get the customer's actual GPS coordinates.
+    const location =
+      await this.locationService.getCurrentLocation();
+
+    // Convert latitude and longitude into an address.
+    const address =
+      await this.locationStateService.reverseGeocode(
+        location.latitude,
+        location.longitude
+      );
+
+    // Populate the checkout address field.
+this.checkoutForm.controls.deliveryAddress.setValue(address);
+
+    console.log('GPS Coordinates:', {
+      latitude: location.latitude,
+      longitude: location.longitude
+    });
+
+    console.log('Resolved Delivery Address:', address);
+  } catch (error) {
+    console.error('Address Lookup Error:', error);
+
+    this.showToast(
+      'Unable to detect your address. Please enter it manually.',
+      'warning'
+    );
+  } finally {
+    this.isResolvingAddress = false;
+    this.cdr.detectChanges();
+  }
+}
 
 
   /* ====================================================
      CLOSE CHECKOUT MODAL
   ==================================================== */
 
-  closeCheckoutModal(): void {
-
-    if (this.isCreatingOrder) {
-
-      return;
-
-    }
-
-
-    this.isCheckoutModalOpen = false;
-
+closeCheckoutModal(): void {
+  if (this.isCreatingOrder) {
+    return;
   }
 
+  this.isCheckoutScreen = false;
+}
 
   /* ====================================================
      MAKE ORDER
   ==================================================== */
 
-  async makeOrder(): Promise<void> {
-
-    if (this.isCreatingOrder) {
-
-      return;
-
-    }
-
-
-    if (
-      !this.customerName.trim()
-    ) {
-
-      this.showToast(
-        'Please enter your name.',
-        'warning'
-      );
-
-      return;
-
-    }
-
-
-    const mobile =
-      this.customerMobile.trim();
-
-
-    if (!mobile) {
-
-      this.showToast(
-        'Please enter your mobile number.',
-        'warning'
-      );
-
-      return;
-
-    }
-
-
-    const alternativeMobile =
-  this.alternativeMobileNumber.trim();
-
-if (!alternativeMobile) {
-  this.showToast(
-    'Please enter your alternative mobile number.',
-    'warning'
-  );
-  return;
-}
-
-if (!/^\d{10}$/.test(alternativeMobile)) {
-  this.showToast(
-    'Please enter a valid 10-digit alternative mobile number.',
-    'warning'
-  );
-  return;
-}
-
-
-    if (!/^\d{10}$/.test(mobile)) {
-
-      this.showToast(
-        'Please enter a valid 10-digit mobile number.',
-        'warning'
-      );
-
-      return;
-
-    }
-
-
-    if (
-      !this.deliveryAddress.trim()
-    ) {
-
-      this.showToast(
-        'Please enter your delivery address.',
-        'warning'
-      );
-
-      return;
-
-    }
-
-
-    const token =
-      this.cartService.getCartToken();
-
-
-    if (!token) {
-
-      this.showToast(
-        'Your cart session could not be found.',
-        'danger'
-      );
-
-      return;
-
-    }
-
-
-   this.isCheckoutModalOpen = false;
-this.showOrderConfirmation = true;
-
+async makeOrder(): Promise<void> {
+  if (this.isCreatingOrder) {
+    return;
   }
 
+  if (this.checkoutForm.invalid) {
+    this.checkoutForm.markAllAsTouched();
+
+    this.showToast(
+      'Please correct the highlighted checkout fields.',
+      'warning'
+    );
+
+    return;
+  }
+
+  const token = this.cartService.getCartToken();
+
+  if (!token) {
+    this.showToast(
+      'Your cart session could not be found.',
+      'danger'
+    );
+
+    return;
+  }
+
+  this.showOrderConfirmation = true;
+}
 
   /* ====================================================
      PLACE ORDER
@@ -940,13 +903,15 @@ this.showOrderConfirmation = true;
     this.errorMessage = '';
 
 
- const orderData: CreateOrderRequest = {
+const formValue = this.checkoutForm.getRawValue();
+
+const orderData: CreateOrderRequest = {
   cartToken: token,
-  customerName: this.customerName.trim(),
-  customerMobile: this.customerMobile.trim(),
+  customerName: formValue.customerName.trim(),
+  customerMobile: formValue.customerMobile.trim(),
   alternativeMobileNumber:
-    this.alternativeMobileNumber.trim(),
-  deliveryAddress: this.deliveryAddress.trim()
+    formValue.alternativeMobileNumber.trim(),
+  deliveryAddress: formValue.deliveryAddress.trim()
 };
 
 
@@ -976,9 +941,9 @@ this.showOrderConfirmation = true;
           this.isCreatingOrder = false;
 
 
-          this.cartService.saveCustomerMobile(
-            this.customerMobile.trim()
-          );
+     this.cartService.saveCustomerMobile(
+  this.checkoutForm.controls.customerMobile.value.trim()
+);
 
 
           this.cartService.clearLocalCart();
@@ -994,13 +959,7 @@ this.showOrderConfirmation = true;
           this.calculateTotals();
 
 
-          this.customerName = '';
-
-          this.customerMobile = '';
-
-          this.alternativeMobileNumber = '';
-
-          this.deliveryAddress = '';
+this.checkoutForm.reset();
 
 
           this.cdr.detectChanges();
@@ -1153,16 +1112,20 @@ this.showOrderConfirmation = true;
   }
 }
 
+goHome(): void{
+  this.router.navigate(['/home'])
+}
 
-openProduct(productStoreId: number): void {
 
-  if (!productStoreId) {
+openProduct(productId: number): void {
+
+  if (!productId) {
     return;
   }
 
   this.router.navigate([
     '/product',
-    productStoreId
+    productId
   ]);
 
 }
@@ -1170,7 +1133,7 @@ openProduct(productStoreId: number): void {
 
 cancelOrderConfirmation(): void {
   this.showOrderConfirmation = false;
-  this.isCheckoutModalOpen = true;
+  this.isCheckoutScreen = true;
 }
 
 confirmOrderAndPlace(): void {

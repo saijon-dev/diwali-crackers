@@ -1,129 +1,154 @@
-
 <ion-content [fullscreen]="true" class="!bg-white">
-<div
-  class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
->
 
-  <!-- =====================================================
-       GLOBAL HOME BOTTOM DESIGN
-       Positioned at the actual bottom of this page content
-       without taking layout space.
-  ====================================================== -->
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content
+    pullingText="Pull down to refresh vendor details"
+    refreshingSpinner="crescent"
+    refreshingText="Refreshing vendor..."
+  ></ion-refresher-content>
+</ion-refresher>
 
   <div
-    class="pointer-events-none absolute bottom-0 left-0 z-[-1] h-[190px] w-full overflow-hidden"
-    aria-hidden="true"
+    class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
   >
-    <img
-      src="assets/images/newDesignBg.png"
-      alt=""
-      class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
-    />
-  </div>
+
+    <!-- BOTTOM BACKGROUND DECORATION -->
+    <div
+      class="pointer-events-none absolute bottom-0 left-0 z-0 h-[190px] w-full overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src="assets/images/newDesignBg.png"
+        alt=""
+        class="absolute bottom-0 left-0 block h-auto w-[175%] max-w-none opacity-[0.18]"
+      />
+    </div>
+
     <!-- HEADER -->
     <header
       class="sticky top-[-8px] z-50 -mx-3 flex h-[76px] shrink-0 items-center justify-center overflow-hidden bg-[#8f071f] px-12 sm:-mx-4 sm:px-14"
     >
+
+      <!-- BACK BUTTON -->
       <button
         type="button"
-        aria-label="Go back"
         (click)="goBack()"
-        class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !text-[#fff8dc] active:scale-90"
+        aria-label="Go back"
+        class="absolute left-2 top-1/2 z-30 flex !h-[40px] !w-[40px] -translate-y-1/2 !items-center !justify-center !rounded-full !border-0 !bg-transparent !p-0 !font-sans !text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
-        <ion-icon name="arrow-back-outline" class="!text-[24px]"></ion-icon>
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[23px]"
+        ></ion-icon>
       </button>
 
-      <div class="relative z-20 flex min-w-0 flex-col items-center text-center">
-        <h1 class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !text-[#fff8dc] sm:!text-[22px]">
+      <!-- HEADER TITLE -->
+      <div
+        class="relative z-20 flex min-w-0 flex-col items-center justify-center text-center leading-none"
+      >
+        <h1
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
+        >
           Vendor Details
         </h1>
 
-        <p class="!m-[5px_0_0] !font-sans !text-[9px] !font-medium !text-[#f7df9d] sm:!text-[10px]">
+        <p
+          class="!m-[5px_0_0] !font-sans !text-[11px] !font-medium !leading-none !text-[#f7df9d] sm:!text-[12px]"
+        >
           Manage vendor information
         </p>
       </div>
 
+      <!-- RIGHT DEEPAS -->
       <img
         src="assets/images/right-deepas.png"
         alt=""
         aria-hidden="true"
-        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-90"
+        class="pointer-events-none absolute right-0 top-0 z-10 h-[76px] w-auto select-none object-contain opacity-[0.9]"
       />
+
     </header>
 
     <!-- LOADING -->
     @if (isLoading) {
-      <section class="flex min-h-[65vh] flex-col items-center justify-center gap-3 text-center">
-        <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-[#ead8b9] border-t-[#8f071f]"></div>
 
-        <p class="!m-0 !text-[11px] !font-semibold !text-[#806b68]">
+      <section
+        class="relative z-10 flex min-h-[65vh] flex-col items-center justify-center gap-3 text-center"
+      >
+        <div
+          class="h-8 w-8 animate-spin rounded-full border-[3px] border-[#ead8b9] border-t-[#8f071f]"
+        ></div>
+
+        <p
+          class="!m-0 !font-sans !text-[12px] !font-medium !text-[#806b68]"
+        >
           Loading vendor details...
         </p>
       </section>
+
     }
 
     <!-- ERROR STATE -->
     @if (!isLoading && errorMessage && !vendor) {
-      <section class="flex min-h-[65vh] flex-col items-center justify-center px-5 text-center">
-        <div class="mb-4 flex !h-[64px] !w-[64px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]">
-          <ion-icon name="close-outline" class="!text-[30px]"></ion-icon>
+
+      <section
+        class="relative z-10 flex min-h-[65vh] flex-col items-center justify-center px-5 text-center"
+      >
+
+        <div
+          class="mb-4 flex !h-[60px] !w-[60px] !items-center !justify-center !rounded-full !bg-[#f7e9bd] !text-[#8f071f]"
+        >
+          <ion-icon
+            name="alert-circle-outline"
+            class="!text-[29px]"
+          ></ion-icon>
         </div>
 
-        <h2 class="!m-0 !text-[19px] !font-extrabold !text-[#17233c]">
-          Unable to Load Vendor
+        <h2
+          class="!m-0 !font-sans !text-[18px] !font-extrabold !text-[#17233c]"
+        >
+          Unable to load vendor
         </h2>
 
-        <p class="!mt-2 !text-[11px] !text-[#806b68]">
+        <p
+          class="!m-[7px_0_17px] max-w-[290px] !font-sans !text-[12px] !font-medium !leading-[1.5] !text-[#806b68]"
+        >
           {{ errorMessage }}
         </p>
 
-        <ion-button
+        <button
+          type="button"
           (click)="retryLoadVendor()"
-          class="mt-3 !rounded-[12px] !font-sans !text-[12px] !font-bold"
-          style="--background: #b3123b; --color: #fff8dc;"
+          class="!min-h-[38px] !rounded-[9px] !border-0 !bg-[#b3123b] !px-5 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.15)] transition-transform duration-150 active:scale-[0.97]"
         >
-          Retry
-        </ion-button>
+          Try Again
+        </button>
+
       </section>
+
     }
 
     <!-- VENDOR DETAILS -->
     @if (!isLoading && vendor) {
-      <main class="mx-auto w-full max-w-[760px] flex-1 pb-8 pt-3">
 
-        <!-- EDIT / CANCEL BUTTON -->
-        <div class="mb-3 flex justify-end">
-          @if (!isEditing) {
-            <button
-              type="button"
-              (click)="enableEdit()"
-              class="flex min-h-[38px] items-center justify-center gap-2 rounded-[10px] bg-[#b3123b] px-4 !text-[11px] !font-bold !text-[#fff8dc] shadow-[0_3px_8px_rgba(143,7,31,0.12)] active:scale-[0.98]"
-            >
-              <ion-icon name="create-outline" class="!text-[16px]"></ion-icon>
-              Edit Vendor
-            </button>
-          } @else {
-            <button
-              type="button"
-              (click)="cancelEdit()"
-              [disabled]="isSaving"
-              class="flex min-h-[38px] items-center justify-center gap-2 rounded-[10px] border border-[#e8dfd2] bg-white px-4 !text-[11px] !font-bold !text-[#8f071f] active:scale-[0.98] disabled:opacity-50"
-            >
-              <ion-icon name="close-outline" class="!text-[16px]"></ion-icon>
-              Cancel Editing
-            </button>
-          }
-        </div>
+      <main
+        class="relative z-10 mx-auto flex w-full max-w-[760px] flex-1 flex-col pb-28 pt-4"
+      >
 
-        <!-- STORE PROFILE / IMAGE -->
-        <section class="mb-3 flex items-center gap-3.5 rounded-[16px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
+        <!-- STORE PROFILE -->
+        <section
+          class="mb-4 flex min-w-0 items-center gap-3 rounded-[14px] border border-[#f0e5d8] bg-white p-3 shadow-[0_3px_12px_rgba(86,48,10,0.06)]"
+        >
 
-          <!-- IMAGE AREA -->
+          <!-- STORE IMAGE -->
           <div class="relative h-[76px] w-[76px] shrink-0">
 
-            <!-- EXISTING IMAGE OR NEW IMAGE PREVIEW -->
             @if (storeImagePreview || (!isStoreImageRemoved && vendor.diwaliStoreImageUrl)) {
-              <div class="h-full w-full overflow-hidden rounded-[12px] border border-[#eee4c9] bg-[#fffdf7]">
+
+              <div
+                class="h-full w-full overflow-hidden rounded-[11px] border border-[#eadbc9] bg-[#fffdf7]"
+              >
                 <img
                   [src]="storeImagePreview || vendor.diwaliStoreImageUrl"
                   [alt]="vendor.storeName + ' store image'"
@@ -131,447 +156,485 @@
                 />
               </div>
 
-              <!-- REMOVE IMAGE IN EDIT MODE -->
-              @if (isEditing) {
-                <button
-                  type="button"
-                  aria-label="Remove store image"
-                  (click)="removeStoreImage()"
-                  [disabled]="isSaving"
-                  class="absolute -right-2 -top-2 z-10 flex !h-[25px] !w-[25px] !items-center !justify-center !rounded-full !border-2 !border-white !bg-[#b3123b] !p-0 !text-white shadow-sm active:scale-90 disabled:opacity-50"
-                >
-                  <ion-icon
-                    name="close-outline"
-                    class="!text-[15px]"
-                  ></ion-icon>
-                </button>
-              }
-            }
+              <button
+                type="button"
+                aria-label="Remove store image"
+                (click)="removeStoreImage()"
+                [disabled]="isSaving"
+                class="absolute -right-1.5 -top-1.5 z-10 flex !h-[24px] !w-[24px] !items-center !justify-center !rounded-full !border-2 !border-white !bg-[#b3123b] !p-0 !text-white shadow-sm transition-transform duration-150 active:scale-90 disabled:opacity-50"
+              >
+                <ion-icon
+                  name="close-outline"
+                  class="!text-[15px]"
+                ></ion-icon>
+              </button>
 
-            <!-- UPLOAD BOX: SHOWN WHEN IMAGE IS ABSENT OR REMOVED -->
-            @else if (isEditing) {
+            } @else {
+
               <label
                 for="storeImageUpload"
-                class="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[12px] border-2 border-dashed border-[#d9c6b7] bg-[#fffdf7] text-center transition-colors active:bg-[#f7e9bd]/50"
+                class="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[11px] border border-dashed border-[#d9c8b7] bg-[#fffdf7] text-center active:bg-[#fdf6e7]"
                 [class.opacity-50]="isSaving"
               >
                 <ion-icon
                   name="cloud-upload-outline"
-                  class="!text-[25px] !text-[#8f071f]"
+                  class="!text-[23px] !text-[#8f071f]"
                 ></ion-icon>
 
-                <span class="!text-[8px] !font-bold !leading-tight !text-[#8f071f]">
+                <span
+                  class="!font-sans !text-[9px] !font-bold !text-[#8f071f]"
+                >
                   Upload image
                 </span>
               </label>
+
             }
 
-            <!-- VIEW MODE PLACEHOLDER WHEN NO IMAGE EXISTS -->
-            @else {
-              <div class="flex h-full w-full items-center justify-center rounded-[12px] border border-[#eee4c9] bg-[#fffdf7]">
-                <ion-icon
-                  name="storefront-outline"
-                  class="!text-[30px] !text-[#b8a58b]"
-                ></ion-icon>
-              </div>
-            }
+            <input
+              id="storeImageUpload"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="hidden"
+              [disabled]="isSaving"
+              (change)="onStoreImageSelected($event)"
+            />
 
-            <!-- HIDDEN FILE INPUT -->
-            @if (isEditing) {
-              <input
-                id="storeImageUpload"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                class="hidden"
-                [disabled]="isSaving"
-                (change)="onStoreImageSelected($event)"
-              />
-            }
           </div>
 
           <!-- STORE INFORMATION -->
           <div class="min-w-0 flex-1">
-            <h2 class="!m-0 break-words !text-[15px] !font-extrabold !leading-tight !text-[#17233c]">
+
+            <span
+              class="block !font-sans !text-[9px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
+            >
+              Store profile
+            </span>
+
+            <h2
+              class="!m-[3px_0_0] break-words !font-sans !text-[15px] !font-extrabold !leading-[1.3] !text-[#17233c]"
+            >
               {{ vendor.storeName }}
             </h2>
 
-            <p class="!mb-2 !mt-1 flex items-center gap-1 !text-[10px] !font-medium !text-[#806b68]">
+            <p
+              class="!m-[4px_0_0] flex min-w-0 items-center gap-1.5 !font-sans !text-[11px] !font-medium !text-[#806b68]"
+            >
               <ion-icon
                 name="person-outline"
-                class="!text-[13px] !text-[#8f071f]"
+                class="shrink-0 !text-[13px] !text-[#8f071f]"
               ></ion-icon>
-              <span class="truncate">{{ vendor.name }}</span>
+
+              <span class="truncate">
+                {{ vendor.name }}
+              </span>
             </p>
 
             <span
-              class="inline-flex rounded-full px-2.5 py-1 !text-[9px] !font-bold"
-              [class.bg-[#e7f6e9]]="vendor.status === 'ACTIVE'"
-              [class.text-[#24722d]]="vendor.status === 'ACTIVE'"
-              [class.bg-[#fff0ed]]="vendor.status !== 'ACTIVE'"
-              [class.text-[#d51425]]="vendor.status !== 'ACTIVE'"
+              class="mt-1.5 inline-flex rounded-[5px] px-2 py-[3px] !font-sans !text-[9px] !font-bold"
+              [class.!bg-[#eaf6ed]]="vendor.status === 'ACTIVE'"
+              [class.!text-[#28733b]]="vendor.status === 'ACTIVE'"
+              [class.!bg-[#fbe9e9]]="vendor.status !== 'ACTIVE'"
+              [class.!text-[#a32929]]="vendor.status !== 'ACTIVE'"
             >
               {{ vendor.status }}
             </span>
 
-            <!-- SELECTED FILE DETAILS -->
-            @if (selectedStoreImage && isEditing) {
-              <div class="mt-2 flex min-w-0 items-center gap-1.5">
+            @if (selectedStoreImage) {
+              <p
+                class="!m-[5px_0_0] flex min-w-0 items-center gap-1 !font-sans !text-[10px] !font-medium !text-[#28733b]"
+              >
                 <ion-icon
-                  name="cloud-upload-outline"
-                  class="shrink-0 !text-[13px] !text-[#24722d]"
+                  name="checkmark-circle-outline"
+                  class="shrink-0 !text-[13px]"
                 ></ion-icon>
 
-                <span class="truncate !text-[9px] !font-medium !text-[#24722d]">
+                <span class="truncate">
                   {{ selectedStoreImage.name }}
                 </span>
-              </div>
-            }
-
-            @if (isEditing && !selectedStoreImage && isStoreImageRemoved) {
-              <p class="!mb-0 !mt-2 !text-[9px] !font-medium !text-[#806b68]">
-                No image selected
               </p>
             }
+
+            @if (!selectedStoreImage && isStoreImageRemoved) {
+              <p
+                class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !text-[#806b68]"
+              >
+                Store image will be removed
+              </p>
+            }
+
           </div>
         </section>
 
-        <!-- SUCCESS MESSAGE -->
-        @if (successMessage) {
-          <div class="mb-3 rounded-[12px] border border-[#b7dfbd] bg-[#edf8ef] px-3.5 py-3 !text-[11px] !font-semibold !text-[#24722d]">
-            {{ successMessage }}
-          </div>
-        }
+  
 
         <!-- ERROR MESSAGE -->
         @if (errorMessage && vendor) {
-          <div class="mb-3 rounded-[12px] border border-[#f4c7c7] bg-[#fff0ed] px-3.5 py-3 !text-[11px] !font-medium !text-[#c62828]">
+
+          <div
+            class="mb-3 rounded-[10px] border border-[#f4c7c7] bg-[#fff0ed] px-3 py-2.5 !font-sans !text-[11px] !font-medium !leading-[1.5] !text-[#a32929]"
+          >
             {{ errorMessage }}
           </div>
+
         }
 
-        <form (ngSubmit)="updateVendor()" class="space-y-3">
+        <form
+          (ngSubmit)="updateVendor()"
+          class="space-y-3"
+        >
 
           <!-- PERSONAL DETAILS -->
-          <section class="rounded-[15px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
+          <section
+            class="rounded-[14px] border border-[#f0e5d8] bg-white p-3 shadow-[0_2px_8px_rgba(86,48,10,0.04)]"
+          >
 
-            <div class="mb-4 flex items-center justify-center gap-2">
-              <span class="!text-[10px] !text-[#9e2020]">✦</span>
-              <h2 class="!m-0 !text-[16px] !font-extrabold !text-[#8f071f]">
+            <!-- HEADING: NO RED SLICE -->
+            <div class="mb-4">
+
+              <span
+                class="block !font-sans !text-[9px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
+              >
+                Vendor information
+              </span>
+
+              <h2
+                class="!m-[4px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
+              >
                 Personal Details
               </h2>
-              <span class="!text-[10px] !text-[#9e2020]">✦</span>
+
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
               <!-- VENDOR NAME -->
               <div class="min-w-0">
-                <label for="vendorName" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="vendorName"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Vendor Name
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="vendorName"
-                    name="name"
-                    type="text"
-                    [(ngModel)]="vendor.name"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-center gap-2 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <ion-icon name="person-outline" class="shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                    <span class="break-words !text-[11px] !font-medium">{{ vendor.name }}</span>
-                  </div>
-                }
+                <input
+                  id="vendorName"
+                  name="name"
+                  type="text"
+                  [(ngModel)]="vendor.name"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="name"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
               <!-- EMAIL -->
               <div class="min-w-0">
-                <label for="vendorEmail" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="vendorEmail"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Email Address
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="vendorEmail"
-                    name="email"
-                    type="email"
-                    [(ngModel)]="vendor.email"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-center gap-2 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <ion-icon name="mail-outline" class="shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                    <span class="break-all !text-[11px] !font-medium">{{ vendor.email }}</span>
-                  </div>
-                }
+                <input
+                  id="vendorEmail"
+                  name="email"
+                  type="email"
+                  [(ngModel)]="vendor.email"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="email"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
               <!-- MOBILE -->
               <div class="min-w-0">
-                <label for="vendorMobile" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="vendorMobile"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Mobile Number
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="vendorMobile"
-                    name="mobileNumber"
-                    type="tel"
-                    inputmode="numeric"
-                    maxlength="15"
-                    [(ngModel)]="vendor.mobileNumber"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-center gap-2 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <ion-icon name="call-outline" class="shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                    <span class="break-words !text-[11px] !font-medium">{{ vendor.mobileNumber }}</span>
-                  </div>
-                }
+                <input
+                  id="vendorMobile"
+                  name="mobileNumber"
+                  type="tel"
+                  inputmode="numeric"
+                  maxlength="15"
+                  [(ngModel)]="vendor.mobileNumber"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="tel"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
-           
             </div>
           </section>
 
           <!-- STORE DETAILS -->
-          <section class="rounded-[15px] bg-white p-4 shadow-[0_3px_12px_rgba(86,48,10,0.07)]">
+          <section
+            class="rounded-[14px] border border-[#f0e5d8] bg-white p-3 shadow-[0_2px_8px_rgba(86,48,10,0.04)]"
+          >
 
-            <div class="mb-4 flex items-center justify-center gap-2">
-              <span class="!text-[10px] !text-[#9e2020]">✦</span>
-              <h2 class="!m-0 !text-[16px] !font-extrabold !text-[#8f071f]">
+            <!-- HEADING: NO RED SLICE -->
+            <div class="mb-4">
+
+              <span
+                class="block !font-sans !text-[9px] !font-bold uppercase tracking-[0.5px] !text-[#9e2020]"
+              >
+                Store information
+              </span>
+
+              <h2
+                class="!m-[4px_0_0] !font-sans !text-[18px] !font-extrabold !leading-tight !text-[#17233c]"
+              >
                 Store Details
               </h2>
-              <span class="!text-[10px] !text-[#9e2020]">✦</span>
+
             </div>
 
             <div class="space-y-3">
 
               <!-- STORE NAME -->
               <div>
-                <label for="storeName" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="storeName"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Store Name
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="storeName"
-                    name="storeName"
-                    type="text"
-                    [(ngModel)]="vendor.storeName"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-center gap-2 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <ion-icon name="storefront-outline" class="shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                    <span class="break-words !text-[11px] !font-medium">{{ vendor.storeName }}</span>
-                  </div>
-                }
+                <input
+                  id="storeName"
+                  name="storeName"
+                  type="text"
+                  [(ngModel)]="vendor.storeName"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="organization"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
               <!-- ADDRESS -->
               <div>
-                <label for="storeAddress" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="storeAddress"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Store Address
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="storeAddress"
-                    name="address"
-                    type="text"
-                    [(ngModel)]="vendor.address"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-start gap-2 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3 py-3">
-                    <ion-icon name="location-outline" class="mt-0.5 shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                    <span class="break-words !text-[11px] !font-medium">{{ vendor.address }}</span>
-                  </div>
-                }
+                <input
+                  id="storeAddress"
+                  name="address"
+                  type="text"
+                  [(ngModel)]="vendor.address"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="street-address"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
               <!-- CITY / STATE -->
               <div class="grid grid-cols-2 gap-3">
 
                 <div class="min-w-0">
-                  <label for="storeCity" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                  <label
+                    for="storeCity"
+                    class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                  >
                     City
                   </label>
 
-                  @if (isEditing) {
-                    <input
-                      id="storeCity"
-                      name="city"
-                      type="text"
-                      [(ngModel)]="vendor.city"
-                      required
-                      [disabled]="isSaving"
-                      class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                    />
-                  } @else {
-                    <div class="flex min-h-[43px] items-center rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                      <span class="break-words !text-[11px] !font-medium">{{ vendor.city }}</span>
-                    </div>
-                  }
+                  <input
+                    id="storeCity"
+                    name="city"
+                    type="text"
+                    [(ngModel)]="vendor.city"
+                    (ngModelChange)="onVendorFieldChange()"
+                    required
+                    autocomplete="address-level2"
+                    [disabled]="isSaving"
+                    class="h-[43px] w-full min-w-0 rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                  />
+
                 </div>
 
                 <div class="min-w-0">
-                  <label for="storeState" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                  <label
+                    for="storeState"
+                    class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                  >
                     State
                   </label>
 
-                  @if (isEditing) {
-                    <input
-                      id="storeState"
-                      name="state"
-                      type="text"
-                      [(ngModel)]="vendor.state"
-                      required
-                      [disabled]="isSaving"
-                      class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                    />
-                  } @else {
-                    <div class="flex min-h-[43px] items-center rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                      <span class="break-words !text-[11px] !font-medium">{{ vendor.state }}</span>
-                    </div>
-                  }
+                  <input
+                    id="storeState"
+                    name="state"
+                    type="text"
+                    [(ngModel)]="vendor.state"
+                    (ngModelChange)="onVendorFieldChange()"
+                    required
+                    autocomplete="address-level1"
+                    [disabled]="isSaving"
+                    class="h-[43px] w-full min-w-0 rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-2.5 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                  />
+
                 </div>
+
               </div>
 
               <!-- PINCODE -->
               <div>
-                <label for="storePincode" class="mb-1.5 block !text-[10px] !font-semibold !text-[#806b68]">
+
+                <label
+                  for="storePincode"
+                  class="mb-1.5 block !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
                   Pincode
                 </label>
 
-                @if (isEditing) {
-                  <input
-                    id="storePincode"
-                    name="pincode"
-                    type="text"
-                    inputmode="numeric"
-                    maxlength="10"
-                    [(ngModel)]="vendor.pincode"
-                    required
-                    [disabled]="isSaving"
-                    class="h-[43px] w-full rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] px-3 !text-[12px] !font-medium text-[#17233c] outline-none focus:border-[#b3123b] disabled:opacity-60"
-                  />
-                } @else {
-                  <div class="flex min-h-[43px] items-center rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <span class="!text-[11px] !font-medium">{{ vendor.pincode }}</span>
-                  </div>
-                }
+                <input
+                  id="storePincode"
+                  name="pincode"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="10"
+                  [(ngModel)]="vendor.pincode"
+                  (ngModelChange)="onVendorFieldChange()"
+                  required
+                  autocomplete="postal-code"
+                  [disabled]="isSaving"
+                  class="h-[43px] w-full rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none transition-colors focus:border-[#b3123b] focus:ring-2 focus:ring-[#b3123b]/10 disabled:opacity-60"
+                />
+
               </div>
 
               <!-- DELIVERY RADIUS -->
               <div>
-                <label for="deliveryRadiusKm" class="mb-1.5 flex items-center gap-1.5 !text-[10px] !font-semibold !text-[#806b68]">
-                  <ion-icon name="navigate-outline" class="!text-[14px] !text-[#8f071f]"></ion-icon>
+
+                <label
+                  for="deliveryRadiusKm"
+                  class="mb-1.5 flex items-center gap-1.5 !font-sans !text-[12px] !font-bold !text-[#806b68]"
+                >
+                  <ion-icon
+                    name="navigate-outline"
+                    class="!text-[14px] !text-[#8f071f]"
+                  ></ion-icon>
+
                   Delivery Radius
                 </label>
 
-                @if (isEditing) {
-                  <div class="flex h-[45px] overflow-hidden rounded-[10px] border border-[#e8dfd2] bg-[#fffdf7] focus-within:border-[#b3123b]">
-                    <input
-                      id="deliveryRadiusKm"
-                      name="deliveryRadiusKm"
-                      type="number"
-                      inputmode="decimal"
-                      min="0.1"
-                      step="any"
-                      [(ngModel)]="vendor.deliveryRadiusKm"
-                      required
-                      [disabled]="isSaving"
-                      placeholder="Maximum delivery distance from your store"
-                      class="min-w-0 flex-1 border-0 bg-transparent px-3 !text-[12px] !font-medium text-[#17233c] outline-none placeholder:!text-[10px] placeholder:!font-normal placeholder:!text-[#a49a8b] disabled:opacity-60"
-                    />
+                <div
+                  class="flex h-[43px] overflow-hidden rounded-[10px] border border-[#e1d7d2] bg-[#fffdf7] focus-within:border-[#b3123b] focus-within:ring-2 focus-within:ring-[#b3123b]/10"
+                >
 
-                    <span class="flex shrink-0 items-center border-l border-[#eee4c9] bg-[#f7e9bd]/50 px-3 !text-[10px] !font-bold !text-[#8f071f]">
-                      km
-                    </span>
-                  </div>
+                  <input
+                    id="deliveryRadiusKm"
+                    name="deliveryRadiusKm"
+                    type="number"
+                    inputmode="decimal"
+                    min="0.1"
+                    step="any"
+                    [(ngModel)]="vendor.deliveryRadiusKm"
+                    (ngModelChange)="onVendorFieldChange()"
+                    required
+                    [disabled]="isSaving"
+                    placeholder="Maximum delivery distance"
+                    class="h-full min-w-0 flex-1 border-0 bg-transparent px-3 !font-sans !text-[12px] !font-medium !text-[#17233c] outline-none placeholder:!text-[10px] placeholder:!font-normal placeholder:!text-[#a69a94] disabled:opacity-60"
+                  />
 
-                  <p class="!mb-0 !mt-1.5 !text-[9px] !font-medium !leading-[1.5] !text-[#806b68]">
-                    Set the maximum distance your store can deliver orders.
-                  </p>
-                } @else {
-                  <div class="flex min-h-[43px] items-center justify-between gap-3 rounded-[10px] border border-[#eee4c9] bg-[#fffdf7] px-3">
-                    <div class="flex min-w-0 items-center gap-2">
-                      <ion-icon name="navigate-outline" class="shrink-0 !text-[15px] !text-[#8f071f]"></ion-icon>
-                      <span class="!text-[11px] !font-medium">
-                        {{ vendor.deliveryRadiusKm ?? 'Not specified' }}
-                      </span>
-                    </div>
+                  <span
+                    class="flex shrink-0 items-center border-l border-[#e1d7d2] bg-[#f7e9bd]/40 px-3 !font-sans !text-[11px] !font-bold !text-[#8f071f]"
+                  >
+                    km
+                  </span>
 
-                    @if (vendor.deliveryRadiusKm != null) {
-                      <span class="rounded-full bg-[#f7e9bd] px-2.5 py-1 !text-[9px] !font-bold !text-[#8f071f]">
-                        km
-                      </span>
-                    }
-                  </div>
-                }
+                </div>
+
+                <p
+                  class="!m-[5px_0_0] !font-sans !text-[10px] !font-medium !leading-[1.5] !text-[#806b68]"
+                >
+                  Set the maximum distance your store can deliver orders.
+                </p>
+
               </div>
+
             </div>
           </section>
 
-   
-
-          <!-- UPDATE BUTTONS -->
-          @if (isEditing) {
-            <div class="pt-1">
-
-              <div class="mb-2 text-center !text-[9px] !font-medium !tracking-[1px] !text-[#9e2020]">
-                ✦ &nbsp; UPDATE VENDOR DETAILS &nbsp; ✦
-              </div>
-
-              <ion-button
-                type="submit"
-                expand="block"
-                [disabled]="isSaving"
-                class="!h-[46px] !rounded-[12px] !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.16)]"
-                style="--background: #b3123b; --background-activated: #8f071f; --background-focused: #b3123b; --background-hover: #b3123b; --color: #fff8dc;"
-              >
-                <ion-icon
-                  [name]="isSaving ? 'create-outline' : 'save-outline'"
-                  slot="start"
-                  class="!text-[17px]"
-                ></ion-icon>
-
-                {{ isSaving ? 'Updating Vendor...' : 'Update Vendor' }}
-              </ion-button>
-
-              <button
-                type="button"
-                (click)="cancelEdit()"
-                [disabled]="isSaving"
-                class="mt-2 flex min-h-[40px] w-full items-center justify-center gap-2 rounded-[12px] border border-[#e8dfd2] bg-white !text-[11px] !font-bold !text-[#8f071f] active:scale-[0.98] disabled:opacity-50"
-              >
-                <ion-icon name="close-outline" class="!text-[16px]"></ion-icon>
-                Cancel Changes
-              </button>
-            </div>
-          }
         </form>
-
-  
 
       </main>
 
-            <!-- BOTTOM DECORATION -->
-    
     }
+
   </div>
+
+  <!-- FIXED UPDATE BUTTON: ABOVE BOTTOM TABS -->
+  @if (hasChanges && vendor && !isLoading) {
+
+    <div
+      slot="fixed"
+  class="fixed inset-x-0 bottom-[calc(7px+env(safe-area-inset-bottom))] z-[100] border-t border-[#eadfda] bg-white/95 px-3 pb-0 pt-2 shadow-[0_-4px_14px_rgba(23,35,60,0.08)] backdrop-blur-sm sm:px-4" >
+
+      <div class="mx-auto w-full max-w-[760px]">
+
+        <button
+          type="button"
+          (click)="updateVendor()"
+          [disabled]="isSaving"
+          class="flex h-[43px] w-full items-center justify-center gap-2 rounded-[10px] border-0 bg-[#b3123b] px-4 !font-sans !text-[12px] !font-bold !text-[#fff8dc] shadow-[0_3px_9px_rgba(143,7,31,0.14)] transition-transform duration-150 disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98]"
+        >
+
+          @if (isSaving) {
+
+            <span
+              class="h-[14px] w-[14px] animate-spin rounded-full border-2 border-[#fff8dc]/40 border-t-[#fff8dc]"
+            ></span>
+
+          } @else {
+
+            <ion-icon
+              name="save-outline"
+              class="!text-[16px]"
+            ></ion-icon>
+
+          }
+
+          <span>
+            {{ isSaving ? 'Updating Vendor...' : 'Update Vendor' }}
+          </span>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  }
+
 </ion-content>

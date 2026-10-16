@@ -15,7 +15,9 @@ import {
   IonSelectOption,
   IonInput,
   IonBackButton,
-  ToastController
+  ToastController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { DecimalPipe } from '@angular/common';
@@ -66,11 +68,16 @@ type VendorOrderStatus =
     DecimalPipe,
     IonInput,
     IonBackButton,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class VendOrdersPage {
 
 
+
+private activeRefresher: HTMLIonRefresherElement | null = null;
+private refreshRequestsRemaining = 0;
 
 
   pendingStatus: VendorOrderStatus | '' = '';
@@ -166,6 +173,10 @@ loadNewOrders(): void {
 
         this.cdr.detectChanges();
 
+        
+this.completeRefreshRequest();
+
+
       },
 
       error: (error) => {
@@ -184,10 +195,42 @@ loadNewOrders(): void {
 
         this.cdr.detectChanges();
 
+        
+this.completeRefreshRequest();
+
+
       }
 
     });
 }
+
+
+
+
+handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.refreshRequestsRemaining = 2;
+  this.loadOrders();
+}
+
+private completeRefreshRequest(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  this.refreshRequestsRemaining--;
+
+  if (this.refreshRequestsRemaining <= 0) {
+    const refresher = this.activeRefresher;
+    this.activeRefresher = null;
+    this.refreshRequestsRemaining = 0;
+
+    void refresher.complete();
+  }
+}
+
 loadConfirmedOrders(): void {
 
   this.isLoadingConfirmedOrders = true;
@@ -205,6 +248,10 @@ loadConfirmedOrders(): void {
 
         this.cdr.detectChanges();
 
+        
+this.completeRefreshRequest();
+
+
       },
 
       error: (error) => {
@@ -219,6 +266,10 @@ loadConfirmedOrders(): void {
         this.isLoadingConfirmedOrders = false;
 
         this.cdr.detectChanges();
+
+        
+this.completeRefreshRequest();
+
 
       }
 

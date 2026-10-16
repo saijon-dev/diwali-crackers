@@ -9,6 +9,9 @@ import {
   ViewChildren
 } from '@angular/core';
 
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
 import {
   ActivatedRoute,
   Router
@@ -20,7 +23,9 @@ import {
 
 import {
   IonContent,
-  IonIcon
+  IonIcon,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -75,7 +80,9 @@ interface ProductCategory {
   imports: [
     IonContent,
     IonIcon,
-    FloatingCartComponent
+    FloatingCartComponent,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class ProductPage implements OnInit, OnDestroy {
@@ -112,6 +119,12 @@ export class ProductPage implements OnInit, OnDestroy {
 
   categories: ProductCategory[] = [];
 
+
+
+get visibleCategories(): ProductCategory[] {
+  return this.categories;
+}
+
   selectedCategoryId: number | null = null;
 
   private categoryScrollFrame: number | null = null;
@@ -131,27 +144,9 @@ export class ProductPage implements OnInit, OnDestroy {
    * The currently displayed main product is excluded.
    */
 
-  get categoryProducts(): Product[] {
-
-    if (this.selectedCategoryId === null) {
-      return [];
-    }
-
-    const selectedCategory = this.categories.find(
-      category =>
-        category.categoryId === this.selectedCategoryId
-    );
-
-    if (!selectedCategory) {
-      return [];
-    }
-
-    return this.exploreProducts.filter(
-      item =>
-        (item.categoryName || '').trim().toLowerCase() ===
-        selectedCategory.categoryName.trim().toLowerCase()
-    );
-  }
+ get categoryProducts(): Product[] {
+  return this.exploreProducts;
+}
 
 
   /* =========================================================
@@ -197,6 +192,22 @@ export class ProductPage implements OnInit, OnDestroy {
   errorMessage = '';
 
 
+
+  
+private categoryProductsCache = new Map<string, Product[]>();
+private categoryTotalElementsCache = new Map<string, number>();
+
+private categoryCacheStoreId: number | null = null;
+private allCategories: ProductCategory[] = [];
+
+private getCategoryCacheKey(
+  storeId: number,
+  categoryId: number
+): string {
+  return `${storeId}_${categoryId}`;
+}
+
+
   /* =========================================================
      CONSTRUCTOR
   ========================================================= */
@@ -224,64 +235,248 @@ export class ProductPage implements OnInit, OnDestroy {
   }
 
 
+  private activeRefresher: HTMLIonRefresherElement | null = null;
+
+handleRefresh(event: CustomEvent): void {
+  const refresher = event.target as HTMLIonRefresherElement;
+  const productStoreId = Number(this.route.snapshot.paramMap.get('id'));
+
+  if (!productStoreId || productStoreId <= 0) {
+    void refresher.complete();
+    return;
+  }
+
+  this.activeRefresher = refresher;
+
+if (this.product) {
+this.loadCategories(
+  Number(this.product.storeId),
+  Number(this.product.productStoreId)
+);
+}
+
+this.loadVendorProducts(productStoreId);
+}
+
+private completeRefresher(): void {
+  const refresher = this.activeRefresher;
+  this.activeRefresher = null;
+
+  if (refresher) {
+    void refresher.complete();
+  }
+}
+
   /* =========================================================
      INIT
   ========================================================= */
+ngOnInit(): void {
+  this.route.paramMap.subscribe(params => {
+    const productId = Number(params.get('id'));
 
-  ngOnInit(): void {
+    if (!Number.isInteger(productId) || productId <= 0) {
+      this.errorMessage = 'Invalid product.';
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      return;
+    }
 
-    this.route.paramMap.subscribe(params => {
+    // Reuse the current product and category caches whenever possible.
+    const cachedProduct = this.findCachedProduct(productId);
 
-      /*
-       * The Product Details route receives productStoreId.
-       *
-       * Example:
-       * /product/22
-       *
-       * 22 = productStoreId
-       */
+    if (cachedProduct) {
+      this.displayProductFromCache(cachedProduct);
+      return;
+    }
 
-      const productStoreId =
-        Number(params.get('id'));
+    // Fetch details only when the product is not already cached.
+    this.loadMainProduct(productId);
+  });
+}
 
 
-      if (
-        !productStoreId ||
-        productStoreId <= 0
-      ) {
 
-        this.errorMessage =
-          'Invalid product.';
+private findCachedProduct(productId: number): Product | undefined {
+  // Check the existing vendor product list first.
+  const fromVendorProducts = this.allVendorProducts.find(
+    item =>
+      Number(item.productId) === productId ||
+      Number(item.productStoreId) === productId
+  );
 
+  if (fromVendorProducts) {
+    return fromVendorProducts;
+  }
+
+  // Search all cached category product lists.
+  for (const products of this.categoryProductsCache.values()) {
+    const match = products.find(
+      item =>
+        Number(item.productId) === productId ||
+        Number(item.productStoreId) === productId
+    );
+
+    if (match) {
+      return match;
+    }
+  }
+
+  // The currently displayed product may not be in the cache.
+  if (
+    this.product &&
+    (
+      Number(this.product.productId) === productId ||
+      Number(this.product.productStoreId) === productId
+    )
+  ) {
+    return this.product;
+  }
+
+  return undefined;
+}
+
+private displayProductFromCache(product: Product): void {
+  this.stopImageSlider();
+
+  this.errorMessage = '';
+  this.isLoading = false;
+
+  // Do not clear categories, cached products, or the category scroller.
+  this.setMainProduct(product);
+
+const storeId = Number(product.storeId);
+const categoryId = Number(product.categoryId);
+
+if (
+  Number.isInteger(storeId) &&
+  storeId > 0 &&
+  Number.isInteger(categoryId) &&
+  categoryId > 0 &&
+  this.categoryProductsCache.has(
+    this.getCategoryCacheKey(storeId, categoryId)
+  )
+) {
+  this.selectedCategoryId = categoryId;
+  this.displayCachedCategoryProducts(categoryId);
+} else if (this.selectedCategoryId !== null) {
+  this.displayCachedCategoryProducts(this.selectedCategoryId);
+}
+}
+
+
+
+
+private loadMainProduct(productId: number): void {
+  this.stopImageSlider();
+
+  this.isLoading = true;
+ if (this.categories.length === 0) {
+  this.isCategoriesLoading = true;
+}
+  this.errorMessage = '';
+  this.product = null;
+  this.exploreProducts = [];
+  this.allVendorProducts = [];
+  this.selectedImageIndex = 0;
+  this.quantity = 1;
+  this.isAddingToCart = false;
+  this.isAddedToCart = false;
+  this.selectedCategoryId = null;
+
+  this.cdr.detectChanges();
+
+  this.productService.getProductDetails(productId).subscribe({
+    next: product => {
+      if (!product) {
         this.isLoading = false;
-
+        this.isCategoriesLoading = false;
+        this.errorMessage = 'Unable to find the selected product.';
         this.cdr.detectChanges();
-
         return;
       }
 
+      this.setMainProduct(product);
+      this.isLoading = false;
 
-      /* =========================================
-         LOAD ONLY VENDOR-USED CATEGORIES
-      ========================================= */
+      // Categories are specific to the product's vendor listing.
+const storeId = Number(product.storeId);
+const productStoreId = Number(product.productStoreId);
 
-      this.loadCategories(
-        productStoreId
-      );
+if (storeId > 0 && productStoreId > 0) {
+  this.loadCategories(storeId, productStoreId);
+}
+
+      // Fetch the selected product's category for this vendor.
 
 
-      /* =========================================
-         LOAD VENDOR PRODUCTS
-      ========================================= */
+      this.cdr.detectChanges();
+      this.startImageSlider();
+    },
+    error: error => {
+      console.error('Product Details API Error:', error);
 
-      this.loadVendorProducts(
-        productStoreId
-      );
+      this.isLoading = false;
+      this.isCategoriesLoading = false;
+      this.errorMessage =
+        error?.error?.message ||
+        error?.message ||
+        'Unable to load product details.';
 
-    });
+      this.cdr.detectChanges();
+    }
+  });
+}
 
+
+private loadCategoryProducts(
+  storeId: number,
+  productStoreId: number,
+  categoryId: number
+): void {
+  const cacheKey = this.getCategoryCacheKey(storeId, categoryId);
+  const cachedProducts = this.categoryProductsCache.get(cacheKey);
+
+  if (cachedProducts !== undefined) {
+    this.exploreProducts = cachedProducts.filter(
+      product =>
+        Number(product.productStoreId) !== Number(this.product?.productStoreId)
+    );
+
+    this.cdr.detectChanges();
+    return;
   }
 
+  // Keep the existing API parameter: productStoreId.
+  this.productService
+    .getCategoryProductsForStore(productStoreId, categoryId)
+    .subscribe({
+      next: (response: any) => {
+        const products: Product[] = Array.isArray(response)
+          ? response
+          : response?.content ??
+            response?.data ??
+            response?.products ??
+            [];
+
+        this.categoryProductsCache.set(cacheKey, products);
+
+        this.categoryTotalElementsCache.set(
+          cacheKey,
+          Number(response?.totalElements ?? products.length)
+        );
+
+        this.exploreProducts = products.filter(
+          product =>
+            Number(product.productStoreId) !== Number(this.product?.productStoreId)
+        );
+
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error('Failed to load category products:', error);
+      }
+    });
+}
 
   /* =========================================================
      LOAD CATEGORIES FOR PRODUCT STORE
@@ -293,90 +488,131 @@ export class ProductPage implements OnInit, OnDestroy {
      GET /api/categories/product-stores/{productStoreId}/categories
   ========================================================= */
 
-  private loadCategories(productStoreId: number): void {
 
-    this.isCategoriesLoading = true;
-
-    this.productService
-      .getCategoriesByProductStore(productStoreId)
-      .subscribe({
-
-        next: categories => {
-
-          this.categories = categories
-            .map(category => ({
-              categoryId: Number(category.categoryId),
-              categoryName: String(
-                category.categoryName || ''
-              ).trim()
-            }))
-            .filter(category =>
-              Number.isFinite(category.categoryId) &&
-              category.categoryId > 0 &&
-              category.categoryName.length > 0
-            );
-
-
-          /* =========================================
-             SELECT PRODUCT CATEGORY
-          ========================================= */
-
-          if (this.product) {
-
-            this.selectCategoryForProduct(
-              this.product
-            );
-
-          }
-          else if (this.categories.length > 0) {
-
-            this.selectedCategoryId =
-              this.categories[0].categoryId;
-
-          }
-
-
-          this.isCategoriesLoading = false;
-
-          this.cdr.detectChanges();
-
-
-          /*
-           * Center only after Angular has rendered
-           * the category buttons.
-           */
-
-          if (this.selectedCategoryId !== null) {
-
-            this.centerCategory(
-              this.selectedCategoryId
-            );
-
-          }
-
-        },
-
-
-        error: error => {
-
-          console.error(
-            'Vendor Categories API Error:',
-            error
-          );
-
-          this.categories = [];
-
-          this.selectedCategoryId = null;
-
-          this.isCategoriesLoading = false;
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
+private loadCategories(
+  storeId: number,
+  productStoreId: number
+): void {
+  if (storeId <= 0 || productStoreId <= 0) {
+    console.error('Invalid storeId or productStoreId');
+    return;
   }
+
+  // Cache is identified by the stable storeId.
+  if (
+    this.categoryCacheStoreId === storeId &&
+    this.allCategories.length > 0
+  ) {
+    this.finishCategoryLoading();
+    return;
+  }
+
+  this.isCategoriesLoading = true;
+  this.cdr.detectChanges();
+
+  // Preserve the existing API and its productStoreId parameter.
+  this.productService
+    .getCategoriesByProductStore(productStoreId)
+    .subscribe({
+      next: (categories: ProductCategory[]) => {
+        this.allCategories = (categories ?? []).filter(
+          category =>
+            Number.isInteger(Number(category.categoryId)) &&
+            Number(category.categoryId) > 0
+        );
+
+        this.categoryCacheStoreId = storeId;
+        this.finishCategoryLoading();
+      },
+      error: (error: unknown) => {
+        console.error('Failed to load categories:', error);
+        this.isCategoriesLoading = false;
+        this.completeRefresher();
+        this.cdr.detectChanges();
+      }
+    });
+}
+
+
+private finishCategoryLoading(): void {
+  const mainCategoryId = Number(this.product?.categoryId);
+
+  // Hide a category only when its sole product is the main product.
+  this.categories = this.allCategories.filter(category => {
+const storeId = Number(this.product?.storeId);
+const cacheKey = this.getCategoryCacheKey(
+  storeId,
+  category.categoryId
+);
+
+const products = this.categoryProductsCache.get(cacheKey);
+const totalElements =
+  this.categoryTotalElementsCache.get(cacheKey);
+
+   
+const containsOnlyMainProduct =
+  !!this.product &&
+  totalElements === 1 &&
+  products?.length === 1 &&
+  Number(products[0].productStoreId) ===
+    Number(this.product.productStoreId);
+
+
+    return !containsOnlyMainProduct;
+  });
+
+  this.selectedCategoryId = this.categories.some(
+    category => category.categoryId === mainCategoryId
+  )
+    ? mainCategoryId
+    : this.categories[0]?.categoryId ?? null;
+
+  this.isCategoriesLoading = false;
+  this.completeRefresher();
+
+  if (this.selectedCategoryId !== null) {
+    this.displayCachedCategoryProducts(this.selectedCategoryId);
+  } else {
+    this.exploreProducts = [];
+  }
+
+  this.cdr.detectChanges();
+}
+
+
+
+private displayCachedCategoryProducts(categoryId: number): void {
+  const storeId = Number(this.product?.storeId);
+
+  const cacheKey = this.getCategoryCacheKey(
+    storeId,
+    categoryId
+  );
+
+  const cachedProducts =
+    this.categoryProductsCache.get(cacheKey) ?? [];
+
+  const mainProductId = Number(this.product?.productStoreId);
+
+  console.log('Category ID:', categoryId);
+  console.log('Cached product count:', cachedProducts.length);
+
+  const categoryMatches = cachedProducts.filter(item =>
+    Number(item.categoryId) === Number(categoryId)
+  );
+
+  console.log('Products matching category:', categoryMatches.length);
+
+  this.exploreProducts = categoryMatches.filter(item =>
+    Number(item.productStoreId) !== mainProductId
+  );
+
+  console.log('Products displayed:', this.exploreProducts.length);
+  console.table(this.exploreProducts);
+
+  this.cdr.detectChanges();
+}
+
 
 
   /* =========================================================
@@ -455,6 +691,8 @@ export class ProductPage implements OnInit, OnDestroy {
 
             this.isLoading = false;
 
+            this.completeRefresher();
+
             this.errorMessage =
               'Unable to find the selected product.';
 
@@ -482,6 +720,8 @@ export class ProductPage implements OnInit, OnDestroy {
 
 
           this.isLoading = false;
+
+          this.completeRefresher();
 
           this.errorMessage = '';
 
@@ -557,6 +797,16 @@ export class ProductPage implements OnInit, OnDestroy {
 
     this.selectCategoryForProduct(product);
 
+    if (
+  this.selectedCategoryId !== null &&
+  !this.visibleCategories.some(
+    category => category.categoryId === this.selectedCategoryId
+  )
+) {
+  this.selectedCategoryId =
+    this.visibleCategories[0]?.categoryId ?? null;
+}
+
     this.cdr.detectChanges();
 
     this.startImageSlider();
@@ -588,9 +838,6 @@ export class ProductPage implements OnInit, OnDestroy {
       this.selectedCategoryId =
         matchingCategory.categoryId;
 
-      this.centerCategory(
-        matchingCategory.categoryId
-      );
 
       return;
     }
@@ -610,9 +857,7 @@ export class ProductPage implements OnInit, OnDestroy {
       this.selectedCategoryId =
         this.categories[0].categoryId;
 
-      this.centerCategory(
-        this.selectedCategoryId
-      );
+ 
 
     }
 
@@ -651,32 +896,30 @@ export class ProductPage implements OnInit, OnDestroy {
      CATEGORY SELECTION
   ========================================================= */
 
-  selectCategory(category: ProductCategory): void {
-
-    if (
-      this.selectedCategoryId === category.categoryId
-    ) {
-
-      this.centerCategory(
-        category.categoryId
-      );
-
-      return;
-    }
-
-
-    this.selectedCategoryId =
-      category.categoryId;
-
-    this.centerCategory(
-      category.categoryId
-    );
-
-    this.cdr.detectChanges();
-
+selectCategory(categoryId: number): void {
+  if (
+    !Number.isInteger(Number(categoryId)) ||
+    Number(categoryId) <= 0 ||
+    !this.categories.some(
+      category => Number(category.categoryId) === Number(categoryId)
+    )
+  ) {
+    return;
   }
 
+  this.selectedCategoryId = Number(categoryId);
 
+const storeId = Number(this.product?.storeId);
+const productStoreId = Number(this.product?.productStoreId);
+
+if (storeId > 0 && productStoreId > 0) {
+  this.loadCategoryProducts(
+    storeId,
+    productStoreId,
+    this.selectedCategoryId
+  );
+}
+}
   /* =========================================================
      CENTER THE SELECTED CATEGORY
   ========================================================= */
@@ -730,93 +973,75 @@ export class ProductPage implements OnInit, OnDestroy {
      CATEGORY SCROLL
   ========================================================= */
 
-  onCategoryScroll(): void {
+onCategoryScroll(): void {
+  if (this.categoryScrollFrame !== null) {
+    return;
+  }
 
-    if (this.categoryScrollFrame !== null) {
+  this.categoryScrollFrame = requestAnimationFrame(() => {
+    this.categoryScrollFrame = null;
+
+    const scroller = this.categoryScroller?.nativeElement;
+
+    if (!scroller || !this.product) {
       return;
     }
 
-    this.categoryScrollFrame =
-      requestAnimationFrame(() => {
+    const elements = Array.from(
+      scroller.querySelectorAll<HTMLButtonElement>(
+        'button[data-category-id]'
+      )
+    );
 
-        this.categoryScrollFrame = null;
+    if (elements.length === 0) {
+      return;
+    }
 
-        const scroller =
-          this.categoryScroller?.nativeElement;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const centerX = scrollerRect.left + scrollerRect.width / 2;
 
-        if (!scroller) {
-          return;
-        }
+    let closestElement: HTMLButtonElement | null = null;
+    let closestDistance = Number.POSITIVE_INFINITY;
 
-        const elements =
-          Array.from(
-            scroller.querySelectorAll<HTMLButtonElement>(
-              '[data-category-id]'
-            )
-          );
+    for (const element of elements) {
+      const rect = element.getBoundingClientRect();
+      const elementCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - elementCenter);
 
-        if (elements.length === 0) {
-          return;
-        }
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestElement = element;
+      }
+    }
 
-        const scrollerRect =
-          scroller.getBoundingClientRect();
+    if (!closestElement) {
+      return;
+    }
 
-        const centerX =
-          scrollerRect.left +
-          scrollerRect.width / 2;
+    const categoryId = Number(
+      closestElement.dataset['categoryId']
+    );
 
-        let closestId: number | null = null;
+    if (
+      !Number.isInteger(categoryId) ||
+      categoryId <= 0 ||
+      categoryId === this.selectedCategoryId
+    ) {
+      return;
+    }
 
-        let closestDistance =
-          Number.POSITIVE_INFINITY;
+    this.selectedCategoryId = categoryId;
 
+  this.loadCategoryProducts(
+  Number(this.product.storeId),
+  Number(this.product.productStoreId),
+  categoryId
 
-        for (const element of elements) {
+    );
 
-          const rect =
-            element.getBoundingClientRect();
-
-          const elementCenter =
-            rect.left +
-            rect.width / 2;
-
-          const distance =
-            Math.abs(
-              centerX -
-              elementCenter
-            );
-
-          if (distance < closestDistance) {
-
-            closestDistance =
-              distance;
-
-            closestId =
-              Number(
-                element.dataset['categoryId']
-              );
-
-          }
-
-        }
-
-
-        if (
-          closestId !== null &&
-          closestId !== this.selectedCategoryId
-        ) {
-
-          this.selectedCategoryId =
-            closestId;
-
-          this.cdr.detectChanges();
-
-        }
-
-      });
-
-  }
+    this.cdr.detectChanges();
+  });
+}
 
 
   /* =========================================================
@@ -1167,21 +1392,25 @@ export class ProductPage implements OnInit, OnDestroy {
      No additional product API call.
   ========================================================= */
 
-  openProduct(product: Product): void {
-
-    if (!product?.productStoreId) {
-      return;
-    }
-
-    this.setMainProduct(product);
-
-    this.updateExploreProducts();
-
-    setTimeout(() => {
-      this.scrollToTop();
-    }, 0);
-
+openProduct(product: Product): void {
+  if (!product?.productId || !product?.productStoreId) {
+    return;
   }
+
+this.setMainProduct(product);
+
+if (this.categoryCacheStoreId === Number(product.storeId)) {
+  this.finishCategoryLoading();
+} else {
+  this.loadCategories(
+  Number(product.storeId),
+  Number(product.productStoreId)
+);
+}
+setTimeout(() => {
+  this.scrollToTop();
+}, 0);
+}
 
 
   /* =========================================================
@@ -1250,5 +1479,30 @@ export class ProductPage implements OnInit, OnDestroy {
 
   window.location.href = `tel:${contactNumber}`;
 }
+
+
+
+private readonly productBadgeMap = new Map<number, string>();
+  getProductBadge(product: Product): string {
+    const productKey = product.productStoreId;
+  
+    const existingBadge = this.productBadgeMap.get(productKey);
+  
+    if (existingBadge) {
+      return existingBadge;
+    }
+  
+    const badge =
+      Math.random() < 0.5
+        ? 'assets/images/15-badge.png'
+        : 'assets/images/20-badge.png';
+  
+    this.productBadgeMap.set(productKey, badge);
+  
+    return badge;
+  }
+
+
+
 
 }

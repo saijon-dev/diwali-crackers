@@ -14,7 +14,9 @@ import {
   IonBackButton,
   IonSelect,
   IonSelectOption,
-  ToastController
+  ToastController,
+  IonRefresher,
+  IonRefresherContent
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -53,7 +55,9 @@ import {
     IonBackButton,
     IonSelect,
     IonSelectOption,
-    FormsModule
+    FormsModule,
+    IonRefresher,
+    IonRefresherContent
   ]
 })
 export class AdminProductsPage implements OnInit {
@@ -188,6 +192,11 @@ packUnitErrorMessage = '';
 
   categoryAddErrorMessage = '';
 
+  
+private activeRefresher: HTMLIonRefresherElement | null = null;
+private refreshRequestsRemaining = 0;
+
+
   /*
    * =====================================================
    * ADD PRODUCT STATE
@@ -229,6 +238,36 @@ packUnitErrorMessage = '';
       this.loadPackUnits();
   }
 
+
+  
+handleRefresh(event: CustomEvent): void {
+  this.activeRefresher =
+    event.target as HTMLIonRefresherElement;
+
+  this.refreshRequestsRemaining = 3;
+
+  this.loadAdminProducts();
+  this.loadCategories();
+  this.loadPackUnits();
+}
+
+private completeRefreshRequest(): void {
+  if (!this.activeRefresher) {
+    return;
+  }
+
+  this.refreshRequestsRemaining--;
+
+  if (this.refreshRequestsRemaining <= 0) {
+    const refresher = this.activeRefresher;
+    this.activeRefresher = null;
+    this.refreshRequestsRemaining = 0;
+
+    void refresher.complete();
+  }
+}
+
+
   /*
    * =====================================================
    * LOAD ADMIN PRODUCTS
@@ -249,6 +288,10 @@ packUnitErrorMessage = '';
         this.isLoadingProducts = false;
 
         this.cdr.detectChanges();
+
+        
+this.completeRefreshRequest();
+
       },
 
       error: (error) => {
@@ -264,6 +307,9 @@ packUnitErrorMessage = '';
         this.isLoadingProducts = false;
 
         this.cdr.detectChanges();
+        
+this.completeRefreshRequest();
+
       }
     });
   }
@@ -386,6 +432,9 @@ packUnitErrorMessage = '';
         this.isLoadingCategories = false;
 
         this.cdr.detectChanges();
+        
+this.completeRefreshRequest();
+
       },
 
       error: (error) => {
@@ -398,6 +447,9 @@ packUnitErrorMessage = '';
           'Unable to load categories.';
 
         this.cdr.detectChanges();
+        
+this.completeRefreshRequest();
+
       }
     });
   }
@@ -1106,6 +1158,9 @@ loadPackUnits(): void {
 
       this.isLoadingPackUnits = false;
       this.cdr.detectChanges();
+      
+this.completeRefreshRequest();
+
     },
 
     error: (error) => {
@@ -1120,6 +1175,9 @@ loadPackUnits(): void {
 
       this.isLoadingPackUnits = false;
       this.cdr.detectChanges();
+      
+this.completeRefreshRequest();
+
     }
   });
 }
@@ -1171,18 +1229,23 @@ cancelLogout(): void {
 
 private async showToast(
   message: string,
-  isSuccess = false
+  isSuccess: boolean = false
 ): Promise<void> {
   const toast = await this.toastController.create({
     message,
     duration: 3000,
     position: 'middle',
-    cssClass: 'diwali-toast',
-    icon: isSuccess
-      ? 'checkmark-circle-outline'
-      : 'alert-circle-outline'
+    cssClass: 'diwali-toast'
   });
 
   await toast.present();
 }
+
+goBack(): void {
+  window.history.back();
+}
+
+
+
+
 }

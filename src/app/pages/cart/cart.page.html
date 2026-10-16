@@ -1,11 +1,30 @@
 <ion-content
   [fullscreen]="true"
+  [scrollY]="!isCheckoutScreen"
   class="!bg-white [--padding-bottom:0px]"
 >
+  @if (!isCheckoutScreen) {
+    <ion-refresher
+      slot="fixed"
+      (ionRefresh)="loadCart($event)"
+    >
+      <ion-refresher-content
+        pullingText="Pull to refresh"
+        refreshingSpinner="crescent"
+        refreshingText="Refreshing cart..."
+      ></ion-refresher-content>
+    </ion-refresher>
+  }
+
+
+
 
   <!-- =====================================================
        PAGE WRAPPER
   ===================================================== -->
+
+
+  @if (!isCheckoutScreen) {
 <div
   class="relative min-h-full w-full max-w-full overflow-x-clip bg-white px-3 sm:px-4"
 >
@@ -49,7 +68,7 @@
       <button
         type="button"
         aria-label="Home"
-        (click)="goBack()"
+        (click)="goHome()"
         class="absolute right-[40px] top-[54%] z-30 flex h-[30px] w-[38px] -translate-y-1/2 items-center justify-center rounded-full border-0 bg-transparent p-0 text-[#fff8dc] transition-transform duration-150 active:scale-90"
       >
 
@@ -84,8 +103,8 @@
         class="relative z-30 ml-1 flex min-w-0 items-center"
       >
 
-        <h1
-          class="!m-0 truncate !font-serif !text-[20px] !font-bold !leading-none !tracking-[0.5px] !text-[#fff8dc] sm:!text-[22px]"
+       <h1
+          class="!m-0 !font-sans !text-[20px] !font-extrabold !leading-none !tracking-[0.1px] !text-[#fff8dc] sm:!text-[22px]"
         >
           Cart
         </h1>
@@ -726,278 +745,413 @@
 
   }
 
+} @else {
+  <!-- CHECKOUT SCREEN -->
+<div
+  class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white font-sans text-[#17233c]"
+>
+    <!-- CHECKOUT HEADER -->
+ 
+<!-- CHECKOUT HEADER -->
+<header
+  class="relative z-50 flex h-[76px] shrink-0
+         items-center gap-2 overflow-hidden
+         bg-[#8f071f] px-3 shadow-none"
+>
+
+      <img
+        src="assets/images/right-deepas.png"
+        alt=""
+        aria-hidden="true"
+        class="pointer-events-none absolute right-0 top-0
+               h-[76px] w-auto object-contain opacity-90"
+      />
+
+      <button
+        type="button"
+        (click)="closeCheckoutModal()"
+        aria-label="Back to cart"
+        class="relative z-20 flex h-10 w-10 shrink-0
+               items-center justify-center rounded-full
+               border-0 bg-transparent p-0 text-[#fff8dc]
+               transition-transform active:scale-90"
+      >
+        <ion-icon
+          name="arrow-back-outline"
+          class="!text-[24px]"
+        ></ion-icon>
+      </button>
+
+      <div class="relative z-20 min-w-0">
+        <h1
+          class="!m-0 !font-sans !text-[20px]
+                 !font-extrabold !leading-tight
+                 !text-[#fff8dc]"
+        >
+          Checkout
+        </h1>
+
+        <p
+          class="!m-[3px_0_0] !font-sans !text-[10px]
+                 !font-medium !text-[#fff8dc]"
+        >
+          Delivery Details
+        </p>
+      </div>
+    </header>
+
+    <!-- CHECKOUT CONTENT -->
+
+
+    <form
+  [formGroup]="checkoutForm"
+  (ngSubmit)="makeOrder()"
+  class="flex min-h-0 flex-1 flex-col overflow-hidden"
+>
+
+
+<main
+  class="mx-auto flex min-h-0 w-full max-w-[760px] flex-1 flex-col gap-4 overflow-y-auto overscroll-y-contain touch-pan-y px-3 py-4 pb-6 [-webkit-overflow-scrolling:touch] sm:px-4"
+>
+  <!-- DELIVERY DETAILS -->
+  <section
+    class="rounded-[14px] border border-[#f0e5d8]
+           bg-white p-4
+           shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
+  >
+    <h2
+      class="!m-0 !font-sans !text-[17px]
+             !font-extrabold !text-[#17233c]"
+    >
+      Delivery Details
+    </h2>
+
+    <p
+      class="!mb-4 !mt-1 !font-sans !text-[12px]
+             !font-medium !leading-relaxed !text-[#806b68]"
+    >
+      Enter your details to place your order.
+    </p>
+
+    <!-- NAME -->
+    <div class="mb-4 flex flex-col gap-1.5">
+      <label
+        for="customerName"
+        class="!font-sans !text-[12px]
+               !font-bold !text-[#17233c]"
+      >
+        Name
+      </label>
+
+      <ion-input
+        id="customerName"
+        formControlName="customerName"
+        fill="outline"
+        mode="md"
+        placeholder="Enter your name"
+        autocomplete="name"
+        class="w-full !font-sans !text-[14px] !text-[#17233c]
+               [--background:#fffef8]
+               [--color:#17233c]
+               [--border-color:#ddd3b5]
+               [--border-radius:11px]
+               [--highlight-color-focused:#8f071f]
+               [--padding-start:14px]
+               [--padding-end:14px]
+               [--placeholder-color:#99917e]"
+      ></ion-input>
+
+      @if (
+        checkoutForm.controls.customerName.touched &&
+        checkoutForm.controls.customerName.hasError('required')
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          Name is required.
+        </p>
+      } @else if (
+        checkoutForm.controls.customerName.touched &&
+        checkoutForm.controls.customerName.hasError('pattern')
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          Enter a valid name without numbers or special characters.
+        </p>
+      } @else if (
+        checkoutForm.controls.customerName.touched &&
+        checkoutForm.controls.customerName.hasError('maxlength')
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          Name cannot exceed 80 characters.
+        </p>
+      }
+    </div>
+
+    <!-- MOBILE NUMBER -->
+    <div class="mb-4 flex flex-col gap-1.5">
+      <label
+        for="customerMobile"
+        class="!font-sans !text-[12px]
+               !font-bold !text-[#17233c]"
+      >
+        Mobile Number
+      </label>
+
+      <ion-input
+        id="customerMobile"
+        formControlName="customerMobile"
+        fill="outline"
+        mode="md"
+        type="tel"
+        maxlength="10"
+        inputmode="numeric"
+        autocomplete="tel"
+        placeholder="Enter mobile number"
+        class="w-full !font-sans !text-[14px] !text-[#17233c]
+               [--background:#fffef8]
+               [--color:#17233c]
+               [--border-color:#ddd3b5]
+               [--border-radius:11px]
+               [--highlight-color-focused:#8f071f]
+               [--padding-start:14px]
+               [--padding-end:14px]
+               [--placeholder-color:#99917e]"
+      ></ion-input>
+
+      @if (
+        checkoutForm.controls.customerMobile.touched &&
+        checkoutForm.controls.customerMobile.invalid
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          @if (checkoutForm.controls.customerMobile.hasError('required')) {
+            Mobile number is required.
+          } @else {
+            Enter a valid 10-digit mobile number.
+          }
+        </p>
+      }
+    </div>
+
+    <!-- ALTERNATIVE MOBILE NUMBER -->
+    <div class="mb-4 flex flex-col gap-1.5">
+      <label
+        for="alternativeMobileNumber"
+        class="!font-sans !text-[12px]
+               !font-bold !text-[#17233c]"
+      >
+        Alternative Mobile Number
+      </label>
+
+      <ion-input
+        id="alternativeMobileNumber"
+        formControlName="alternativeMobileNumber"
+        fill="outline"
+        mode="md"
+        type="tel"
+        maxlength="10"
+        inputmode="numeric"
+        autocomplete="tel"
+        placeholder="Enter alternative mobile number"
+        class="w-full !font-sans !text-[14px] !text-[#17233c]
+               [--background:#fffef8]
+               [--color:#17233c]
+               [--border-color:#ddd3b5]
+               [--border-radius:11px]
+               [--highlight-color-focused:#8f071f]
+               [--padding-start:14px]
+               [--padding-end:14px]
+               [--placeholder-color:#99917e]"
+      ></ion-input>
+
+      @if (
+        checkoutForm.controls.alternativeMobileNumber.touched &&
+        checkoutForm.controls.alternativeMobileNumber.invalid
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          @if (
+            checkoutForm.controls.alternativeMobileNumber.hasError('required')
+          ) {
+            Alternative mobile number is required.
+          } @else {
+            Enter a valid 10-digit alternative mobile number.
+          }
+        </p>
+      }
+    </div>
+
+    <!-- DELIVERY ADDRESS -->
+    <div class="flex flex-col gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <label
+          for="deliveryAddress"
+          class="!font-sans !text-[12px]
+                 !font-bold !text-[#17233c]"
+        >
+          Delivery Address
+        </label>
+
+        <!-- <button
+          type="button"
+          [disabled]="isResolvingAddress"
+          (click)="loadDeliveryAddressFromGps()"
+          class="flex min-h-[34px] items-center justify-center
+                 gap-1.5 rounded-lg border border-[#e8c9a5]
+                 bg-[#fff8e8] px-3 py-1.5
+                 !font-sans !text-[11px] !font-bold
+                 !text-[#8f071f] transition-colors
+                 active:bg-[#f8ecd5] disabled:opacity-60"
+        >
+          <ion-icon
+            name="locate-outline"
+            class="!text-[15px]"
+          ></ion-icon>
+
+          {{
+            isResolvingAddress
+              ? 'Detecting...'
+              : 'Use My Current Location'
+          }}
+        </button> -->
+      </div>
+
+      @if (isResolvingAddress) {
+        <p
+          class="!m-0 !font-sans !text-[11px]
+                 !font-medium !text-[#806b68]"
+        >
+          Detecting your location and filling in your address...
+        </p>
+      }
+
+      <ion-textarea
+        id="deliveryAddress"
+        formControlName="deliveryAddress"
+        fill="outline"
+        mode="md"
+        placeholder="Enter your complete delivery address"
+        [rows]="4"
+        autoGrow="true"
+        autocomplete="street-address"
+        class="w-full !font-sans !text-[14px] !text-[#17233c]
+               [--background:#fffef8]
+               [--color:#17233c]
+               [--border-color:#ddd3b5]
+               [--border-radius:11px]
+               [--highlight-color-focused:#8f071f]
+               [--padding-start:14px]
+               [--padding-end:14px]
+               [--padding-top:12px]
+               [--padding-bottom:12px]
+               [--placeholder-color:#99917e]"
+      ></ion-textarea>
+
+      @if (
+        checkoutForm.controls.deliveryAddress.touched &&
+        checkoutForm.controls.deliveryAddress.invalid
+      ) {
+        <p class="!m-0 !font-sans !text-[11px] !text-red-600">
+          @if (checkoutForm.controls.deliveryAddress.hasError('required')) {
+            Delivery address is required.
+          } @else if (
+            checkoutForm.controls.deliveryAddress.hasError('minlength')
+          ) {
+            Enter at least 10 characters for the address.
+          } @else {
+            Address cannot exceed 300 characters.
+          }
+        </p>
+      }
+
+      <p
+        class="!m-0 !font-sans !text-[11px]
+               !font-medium !leading-relaxed !text-[#806b68]"
+      >
+        Please verify your delivery address before placing your order.
+      </p>
+    </div>
+  </section>
+
+  <!-- ORDER SUMMARY -->
+  <section
+    class="rounded-[14px] border border-[#f0e5d8]
+           bg-white p-4
+           shadow-[0_3px_10px_rgba(86,48,10,0.06)]"
+  >
+    <h2
+      class="!m-0 !font-sans !text-[15px]
+             !font-extrabold !text-[#17233c]"
+    >
+      Order Summary
+    </h2>
+
+    <div class="mt-3 flex items-center justify-between gap-3">
+      <span
+        class="!font-sans !text-[12px]
+               !font-medium !text-[#806b68]"
+      >
+        Stores · {{ totalStores }}
+      </span>
+
+      <span
+        class="!font-sans !text-[12px]
+               !font-bold !text-[#17233c]"
+      >
+        Items · {{ totalItems }}
+      </span>
+    </div>
+
+    <div
+      class="mt-3 flex items-center justify-between
+             gap-3 border-t border-[#eadfca] pt-3"
+    >
+      <span
+        class="!font-sans !text-[13px]
+               !font-bold !text-[#17233c]"
+      >
+        Grand Total
+      </span>
+
+      <strong
+        class="!font-sans !text-[20px]
+               !font-extrabold !text-[#9e2020]"
+      >
+        ₹{{ grandTotal | number:'1.2-2' }}
+      </strong>
+    </div>
+
+    <p
+      class="!mb-0 !mt-2 !font-sans !text-[11px]
+             !font-medium !text-[#806b68]"
+    >
+      Payment Method: Cash on Delivery
+    </p>
+  </section>
+</main>
+
+
+    <!-- BOTTOM MAKE ORDER ACTION -->
+
+<footer
+  class="shrink-0 border-t border-[#eadfca] bg-white px-3 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-4px_18px_rgba(86,48,10,0.10)]"
+>
+  <div class="mx-auto w-full max-w-[760px]">
+    <button
+      type="submit"
+      [disabled]="isCreatingOrder"
+      class="flex min-h-[46px] w-full items-center justify-center rounded-[11px] border-0 bg-[#b3123b] px-4 py-3 font-sans text-[13px] font-extrabold text-[#fff8dc] shadow-[0_3px_9px_rgba(100,0,20,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {{ isCreatingOrder ? 'Placing Order...' : 'Make Order' }}
+    </button>
+  </div>
+</footer>
+</form>
+</div>
+
+}
+
+
+
 </ion-content>
 
 
-<!-- =====================================================
-     CHECKOUT MODAL
-===================================================== -->
-
-<ion-modal
-  [isOpen]="isCheckoutModalOpen"
-  [backdropDismiss]="!isCreatingOrder"
-  class="checkout-modal"
-  (didDismiss)="isCheckoutModalOpen = false"
->
-
-  <ng-template>
-
-    <div
-      class="max-h-[90vh] w-full overflow-y-auto bg-white p-5 text-[#17233c] sm:p-[22px]"
-    >
-
-      <!-- HEADER -->
-
-      <div
-        class="mb-5 flex items-start justify-between gap-3"
-      >
-
-        <div>
-
-          <span
-            class="mb-1 block font-sans text-[8px] font-bold tracking-[1.3px] text-[#b3123b]"
-          >
-            CHECKOUT
-          </span>
-
-          <h2
-            class="!m-0 font-serif text-[20px] font-bold leading-tight text-[#17233c] sm:text-[20px]"
-          >
-            Delivery Details
-          </h2>
-
-          <p
-            class="!m-[5px_0_0] font-sans text-[9px] font-medium leading-[1.4] text-[#806b68]"
-          >
-            Enter your details to place your order.
-          </p>
-
-        </div>
-
-
-        <button
-          type="button"
-          [disabled]="isCreatingOrder"
-          (click)="closeCheckoutModal()"
-          aria-label="Close checkout"
-          class="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border-0 bg-[#f8e5e7] p-0 text-[#b3123b] transition-transform duration-150 active:scale-90 disabled:opacity-45"
-        >
-
-          <ion-icon
-            name="close-outline"
-            class="!text-[18px]"
-          ></ion-icon>
-
-        </button>
-
-      </div>
-
-
-      <!-- FORM -->
-
-      <div
-        class="flex flex-col gap-[15px]"
-      >
-
-        <!-- NAME -->
-
-        <div
-          class="flex flex-col gap-1.5"
-        >
-
-          <label
-            for="customerName"
-            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
-          >
-            Name
-          </label>
-
-          <ion-input
-            id="customerName"
-            class="w-full !font-sans !text-[12px]"
-            type="text"
-            [(ngModel)]="customerName"
-            placeholder="Enter your name"
-            autocomplete="name"
-            style="
-              --background: #fffef8;
-              --color: #17233c;
-              --placeholder-color: #99917e;
-              --placeholder-opacity: 0.8;
-              --padding-start: 13px;
-              --padding-end: 13px;
-              --padding-top: 0;
-              --padding-bottom: 0;
-              height: 45px;
-              border: 1px solid #ddd3b5;
-              border-radius: 11px;
-              font-family: Poppins, sans-serif;
-              font-size: 12px;
-            "
-          ></ion-input>
-
-        </div>
-
-
-        <!-- MOBILE -->
-
-        <div
-          class="flex flex-col gap-1.5"
-        >
-
-          <label
-            for="customerMobile"
-            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
-          >
-            Mobile Number
-          </label>
-
-          <ion-input
-            id="customerMobile"
-            class="w-full !font-sans !text-[12px]"
-            type="tel"
-            [(ngModel)]="customerMobile"
-            placeholder="Enter mobile number"
-            maxlength="10"
-            inputmode="numeric"
-            autocomplete="tel"
-            style="
-              --background: #fffef8;
-              --color: #17233c;
-              --placeholder-color: #99917e;
-              --placeholder-opacity: 0.8;
-              --padding-start: 13px;
-              --padding-end: 13px;
-              --padding-top: 0;
-              --padding-bottom: 0;
-              height: 45px;
-              border: 1px solid #ddd3b5;
-              border-radius: 11px;
-              font-family: Poppins, sans-serif;
-              font-size: 12px;
-            "
-          ></ion-input>
-
-        </div>
-
-
-        <!-- ALTERNATIVE MOBILE -->
-<div class="flex flex-col gap-1.5">
-  <label
-    for="alternativeMobileNumber"
-    class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
-  >
-    Alternative Mobile Number
-  </label>
-
-  <ion-input
-    id="alternativeMobileNumber"
-    class="w-full !font-sans !text-[12px]"
-    type="tel"
-    [(ngModel)]="alternativeMobileNumber"
-    placeholder="Enter alternative mobile number"
-    maxlength="10"
-    inputmode="numeric"
-    autocomplete="tel"
-    style="
-      --background: #fffef8;
-      --color: #17233c;
-      --placeholder-color: #99917e;
-      --placeholder-opacity: 0.8;
-      --padding-start: 13px;
-      --padding-end: 13px;
-      --padding-top: 0;
-      --padding-bottom: 0;
-      height: 45px;
-      border: 1px solid #ddd3b5;
-      border-radius: 11px;
-      font-family: Poppins, sans-serif;
-      font-size: 12px;
-    "
-  ></ion-input>
-</div>
-
-
-        <!-- ADDRESS -->
-
-        <div
-          class="flex flex-col gap-1.5"
-        >
-
-          <label
-            for="deliveryAddress"
-            class="font-sans text-[10px] font-semibold leading-tight text-[#17233c]"
-          >
-            Delivery Address
-          </label>
-
-          <ion-textarea
-            id="deliveryAddress"
-            class="w-full !font-sans !text-[12px]"
-            [(ngModel)]="deliveryAddress"
-            placeholder="Enter your complete delivery address"
-            [rows]="4"
-            autoGrow="true"
-            autocomplete="street-address"
-            style="
-              --background: #fffef8;
-              --color: #17233c;
-              --placeholder-color: #99917e;
-              --placeholder-opacity: 0.8;
-              --padding-start: 13px;
-              --padding-end: 13px;
-              --padding-top: 11px;
-              --padding-bottom: 11px;
-              min-height: 100px;
-              border: 1px solid #ddd3b5;
-              border-radius: 11px;
-              font-family: Poppins, sans-serif;
-              font-size: 12px;
-            "
-          ></ion-textarea>
-
-        </div>
-
-
-        <!-- ORDER -->
-
-        <ion-button
-          expand="block"
-          type="button"
-          [disabled]="isCreatingOrder"
-          (click)="makeOrder()"
-          class="!m-0 !font-sans !text-[12px] !font-bold"
-          style="
-            --background: #b3123b;
-            --background-activated: #8f071f;
-            --background-focused: #b3123b;
-            --color: #fff8dc;
-            --border-radius: 13px;
-            --box-shadow: 0 3px 8px rgba(100,0,20,0.15);
-            --padding-top: 0;
-            --padding-bottom: 0;
-          "
-        >
-
-          @if (isCreatingOrder) {
-
-            Placing Order...
-
-          } @else {
-
-            Make Order
-
-          }
-
-        </ion-button>
-
-      </div>
-
-    </div>
-
-  </ng-template>
-
-</ion-modal>
 
 
 
